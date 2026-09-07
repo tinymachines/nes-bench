@@ -1,0 +1,6 @@
+captures/
+roms/
+*.nes
+*.bin
+*.wav
+bench.local.md
