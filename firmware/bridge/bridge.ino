@@ -18,6 +18,8 @@
 //   TRIG n           raise the trigger pin at latch n for a millisecond
 //   RESET            zero the latch index, clear the schedule and the trigger
 //   STATUS           one line: mode, latch index, byte, pad byte, schedule size
+//   MUTATE ON|OFF    the two counters on each other's lines: the clocks-per-latch
+//                    check must go red (B0's mutation, scripted)
 //
 // Nothing here is measured yet: B0 of docs/bench-plan.md is where this
 // meets the part. Built with arduino-cli and the esp32 core 3.x
@@ -61,6 +63,16 @@ static const int PCNT_LIMIT = 32000;
 
 static pcnt_unit_handle_t latch_unit = nullptr;
 static pcnt_unit_handle_t clock_unit = nullptr;
+static bool mutated = false;
+// The register's eight inputs as one word for the GPIO output register,
+// so a byte changes in one store and never half old, half new.
+static uint32_t reg_mask = 0;
+static uint32_t reg_bits_for(uint8_t b) {
+  uint32_t set = 0;
+  for (int i = 0; i < 8; i++) if (!((b >> i) & 1)) set |= 1u << REG_PINS[i];  // pressed = LOW
+  return set;
+}
+static int deferred_writes = 0;
 
 enum Mode { PASS, INJECT };
 static Mode mode = PASS;
@@ -116,12 +128,32 @@ static int delta(pcnt_unit_handle_t unit, int &last) {
   return d;
 }
 
-static void write_register(uint8_t b) {
-  for (int i = 0; i < 8; i++) {
-    // Pressed is a set bit here and a LOW on the register.
-    digitalWrite(REG_PINS[i], (b >> i) & 1 ? LOW : HIGH);
+// The register loads while OUT0 is high (its /PL is not OUT0), so its
+// inputs must not change inside that window or a poll can latch half
+// the old byte and half the new. All eight pins change in one store
+// to the GPIO output register, and only when OUT0 reads low both
+// before and after; otherwise the write waits for the next loop.
+static bool write_register(uint8_t b) {
+  if (digitalRead(CON_LATCH) == HIGH) { deferred_writes++; return false; }
+  uint32_t high = reg_bits_for(b);
+  REG_WRITE(GPIO_OUT_W1TS_REG, high);
+  REG_WRITE(GPIO_OUT_W1TC_REG, reg_mask & ~high);
+  if (digitalRead(CON_LATCH) == HIGH) {
+    // The window opened during the store: write again next loop, so
+    // the register's next load sees one whole byte.
+    deferred_writes++;
+    return false;
   }
   held = b;
+  return true;
+}
+
+static void make_units(bool swapped) {
+  if (latch_unit) { pcnt_unit_stop(latch_unit); pcnt_unit_disable(latch_unit); pcnt_del_unit(latch_unit); }
+  if (clock_unit) { pcnt_unit_stop(clock_unit); pcnt_unit_disable(clock_unit); pcnt_del_unit(clock_unit); }
+  latch_unit = make_unit(swapped ? CON_CLOCK : CON_LATCH, false);
+  clock_unit = make_unit(swapped ? CON_LATCH : CON_CLOCK, true);
+  last_latch_count = 0; last_clock_count = 0;
 }
 
 // The original pad, polled the way the console polls it, at leisure.
@@ -169,16 +201,24 @@ static void handle(String line) {
     Serial.println("# reset");
   }
   else if (line == "STATUS") {
-    Serial.printf("# mode %s latch %llu clocks %llu held %02x pad %02x schedule %d data %d\n",
-                  mode == PASS ? "pass" : "inject", latches, clocks, held, pad_byte, schedule_len, CON_DATA >= 0 ? digitalRead(CON_DATA) : -1);
+    Serial.printf("# mode %s latch %llu clocks %llu held %02x pad %02x schedule %d data %d deferred %d mutate %s\n",
+                  mode == PASS ? "pass" : "inject", latches, clocks, held, pad_byte, schedule_len, CON_DATA >= 0 ? digitalRead(CON_DATA) : -1,
+                  deferred_writes, mutated ? "on" : "off");
+  }
+  else if (line == "MUTATE ON" || line == "MUTATE OFF") {
+    mutated = line == "MUTATE ON";
+    make_units(mutated);
+    Serial.printf("# mutate %s: the counters on %s lines\n", mutated ? "on" : "off", mutated ? "each other's" : "their own");
   }
   else if (line.length()) Serial.println("# ? " + line);
 }
 
 void setup() {
   Serial.begin(921600);
-  for (int i = 0; i < 8; i++) pinMode(REG_PINS[i], OUTPUT);
-  write_register(0);
+  for (int i = 0; i < 8; i++) { pinMode(REG_PINS[i], OUTPUT); reg_mask |= 1u << REG_PINS[i]; }
+  pinMode(CON_LATCH, INPUT);
+  REG_WRITE(GPIO_OUT_W1TS_REG, reg_mask);  // nothing pressed until told
+  held = 0;
   pinMode(CON_LATCH, INPUT);
   pinMode(CON_CLOCK, INPUT);
   if (CON_DATA >= 0) pinMode(CON_DATA, INPUT);
@@ -187,8 +227,7 @@ void setup() {
   pinMode(PAD_DATA, INPUT_PULLUP);
   pinMode(TRIG, OUTPUT);
   digitalWrite(TRIG, LOW);
-  latch_unit = make_unit(CON_LATCH, false);
-  clock_unit = make_unit(CON_CLOCK, true);
+  make_units(false);
   Serial.println("# nes-bench bridge: B0 sniff; MODE PASS");
 }
 
@@ -207,10 +246,8 @@ void loop() {
     last_pad_poll = now;
     pad_byte = poll_pad();
   }
-  // What the register should hold.
-  uint8_t want = mode == PASS ? pad_byte : scheduled_byte();
-  if (want != held) write_register(want);
-  // The console's pulses.
+  // The console's pulses first, so a latch is logged with the byte the
+  // register held at it before any new byte is written.
   int dl = delta(latch_unit, last_latch_count);
   int dc = delta(clock_unit, last_clock_count);
   clocks += dc;
@@ -234,5 +271,8 @@ void loop() {
     }
   }
   if (trig_until && millis() >= trig_until) { digitalWrite(TRIG, LOW); trig_until = 0; }
+  // Then what the register should hold, written outside the load window.
+  uint8_t want = mode == PASS ? pad_byte : scheduled_byte();
+  if (want != held) write_register(want);
   delayMicroseconds(100);
 }

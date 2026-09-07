@@ -1,0 +1,243 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1700 940" width="1700" height="940" role="img" aria-label="OG pad to BLE / USB HID adapter: the bridge's pad poll, made portable">
+
+  <style>
+    text { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; fill: #1f2328; }
+    .title { font-size: 15px; font-weight: 700; font-family: ui-sans-serif, system-ui, sans-serif; }
+    .sub { font-size: 11px; fill: #57606a; font-family: ui-sans-serif, system-ui, sans-serif; }
+    .ref { font-size: 12px; font-weight: 700; }
+    .part { font-size: 10px; fill: #57606a; }
+    .pin { font-size: 9.5px; }
+    .pinno { font-size: 8px; fill: #57606a; }
+    .net { font-size: 9.5px; fill: #0a5b9c; font-weight: 600; }
+    .rail5 { font-size: 9px; fill: #b3261e; font-weight: 700; }
+    .rail3 { font-size: 9px; fill: #b35c00; font-weight: 700; }
+    .gnd { font-size: 9px; fill: #1f2328; font-weight: 700; }
+    .note { font-size: 10px; fill: #57606a; font-family: ui-sans-serif, system-ui, sans-serif; }
+    .box { fill: #ffffff; stroke: #1f2328; stroke-width: 1.3; }
+    .conn { fill: #f3f5f7; stroke: #1f2328; stroke-width: 1.3; }
+    .zone { fill: none; stroke: #57606a; stroke-dasharray: 5 4; stroke-width: 1; }
+    .lead { stroke: #1f2328; stroke-width: 1; }
+    .wire { stroke: #0a5b9c; stroke-width: 1.2; fill: none; }
+    .w5 { stroke: #b3261e; stroke-width: 1.2; fill: none; }
+    .w3 { stroke: #b35c00; stroke-width: 1.2; fill: none; }
+    .wg { stroke: #1f2328; stroke-width: 1.2; fill: none; }
+    .lane { stroke: #1f2328; stroke-width: 1.4; fill: none; }
+    .lanelbl { font-size: 11px; font-weight: 700; }
+    .win { fill: #b3261e; fill-opacity: 0.10; stroke: none; }
+    .safe { fill: #1a7f37; fill-opacity: 0.12; stroke: none; }
+    .mark { stroke: #0a5b9c; stroke-width: 1.2; stroke-dasharray: 3 3; }
+    .auth { font-size: 9px; fill: #b3261e; font-family: ui-sans-serif, system-ui, sans-serif; font-style: italic; }
+  </style>
+
+<rect x="0" y="0" width="1700" height="940" fill="#ffffff"/>
+<text class="title" x="24" y="30">OG pad to BLE / USB HID adapter: the bridge's pad poll, made portable</text>
+<text class="sub" x="24" y="46">ESP32-S3 for USB HID + BLE; ESP32-C6 works for BLE only (its USB port is serial/JTAG, not a device controller). Nothing built.</text>
+<rect class="zone" x="20" y="60" width="720" height="560" rx="6"/>
+<text class="sub" x="28" y="74" text-anchor="start">PADS, polled at 3V3 exactly as the bridge polls them</text>
+<rect class="conn" x="160" y="90" width="130" height="232" rx="3"/>
+<text class="ref" x="166" y="104" text-anchor="start">J1</text>
+<text class="part" x="166" y="116" text-anchor="start">original pad, on the bridge</text>
+<line class="lead" x1="134" y1="146" x2="160" y2="146"/>
+<text class="pin" x="165" y="149.5" text-anchor="start">GND</text>
+<text class="pinno" x="156" y="144" text-anchor="end">1</text>
+<line class="wg" x1="134" y1="146" x2="134" y2="154"/><line class="wg" x1="128" y1="154" x2="140" y2="154"/><line class="wg" x1="131" y1="157" x2="137" y2="157"/>
+<line class="lead" x1="134" y1="172" x2="160" y2="172"/>
+<text class="pin" x="165" y="175.5" text-anchor="start">CLK</text>
+<text class="pinno" x="156" y="170" text-anchor="end">2</text>
+<path class="wire" d="M134,172 l-6,-6 h-53.4 v12 h53.4 z"/>
+<text class="net" x="125" y="175.5" text-anchor="end">PAD_CLK</text>
+<line class="lead" x1="134" y1="198" x2="160" y2="198"/>
+<text class="pin" x="165" y="201.5" text-anchor="start">OUT0</text>
+<text class="pinno" x="156" y="196" text-anchor="end">3</text>
+<path class="wire" d="M134,198 l-6,-6 h-65.80000000000001 v12 h65.80000000000001 z"/>
+<text class="net" x="125" y="201.5" text-anchor="end">PAD_LATCH</text>
+<line class="lead" x1="134" y1="224" x2="160" y2="224"/>
+<text class="pin" x="165" y="227.5" text-anchor="start">D0</text>
+<text class="pinno" x="156" y="222" text-anchor="end">4</text>
+<path class="wire" d="M134,224 l-6,-6 h-53.4 v12 h53.4 z"/>
+<text class="net" x="125" y="227.5" text-anchor="end">PAD1_D0</text>
+<line class="lead" x1="134" y1="250" x2="160" y2="250"/>
+<text class="pin" x="165" y="253.5" text-anchor="start">D3</text>
+<text class="pinno" x="156" y="248" text-anchor="end">5</text>
+<line class="lead" x1="131" y1="247" x2="137" y2="253"/><line class="lead" x1="131" y1="253" x2="137" y2="247"/>
+<line class="lead" x1="134" y1="276" x2="160" y2="276"/>
+<text class="pin" x="165" y="279.5" text-anchor="start">D4</text>
+<text class="pinno" x="156" y="274" text-anchor="end">6</text>
+<line class="lead" x1="131" y1="273" x2="137" y2="279"/><line class="lead" x1="131" y1="279" x2="137" y2="273"/>
+<line class="lead" x1="134" y1="302" x2="160" y2="302"/>
+<text class="pin" x="165" y="305.5" text-anchor="start">+5V</text>
+<text class="pinno" x="156" y="300" text-anchor="end">7</text>
+<line class="w3" x1="134" y1="302" x2="134" y2="293"/><line class="w3" x1="129" y1="293" x2="139" y2="293"/>
+<text class="rail3" x="134" y="291" text-anchor="middle">3V3</text>
+<rect class="conn" x="160" y="340" width="130" height="232" rx="3"/>
+<text class="ref" x="166" y="354" text-anchor="start">J2</text>
+<text class="part" x="166" y="366" text-anchor="start">original pad, on the bridge</text>
+<line class="lead" x1="134" y1="396" x2="160" y2="396"/>
+<text class="pin" x="165" y="399.5" text-anchor="start">GND</text>
+<text class="pinno" x="156" y="394" text-anchor="end">1</text>
+<line class="wg" x1="134" y1="396" x2="134" y2="404"/><line class="wg" x1="128" y1="404" x2="140" y2="404"/><line class="wg" x1="131" y1="407" x2="137" y2="407"/>
+<line class="lead" x1="134" y1="422" x2="160" y2="422"/>
+<text class="pin" x="165" y="425.5" text-anchor="start">CLK</text>
+<text class="pinno" x="156" y="420" text-anchor="end">2</text>
+<path class="wire" d="M134,422 l-6,-6 h-53.4 v12 h53.4 z"/>
+<text class="net" x="125" y="425.5" text-anchor="end">PAD_CLK</text>
+<line class="lead" x1="134" y1="448" x2="160" y2="448"/>
+<text class="pin" x="165" y="451.5" text-anchor="start">OUT0</text>
+<text class="pinno" x="156" y="446" text-anchor="end">3</text>
+<path class="wire" d="M134,448 l-6,-6 h-65.80000000000001 v12 h65.80000000000001 z"/>
+<text class="net" x="125" y="451.5" text-anchor="end">PAD_LATCH</text>
+<line class="lead" x1="134" y1="474" x2="160" y2="474"/>
+<text class="pin" x="165" y="477.5" text-anchor="start">D0</text>
+<text class="pinno" x="156" y="472" text-anchor="end">4</text>
+<path class="wire" d="M134,474 l-6,-6 h-53.4 v12 h53.4 z"/>
+<text class="net" x="125" y="477.5" text-anchor="end">PAD2_D0</text>
+<line class="lead" x1="134" y1="500" x2="160" y2="500"/>
+<text class="pin" x="165" y="503.5" text-anchor="start">D3</text>
+<text class="pinno" x="156" y="498" text-anchor="end">5</text>
+<line class="lead" x1="131" y1="497" x2="137" y2="503"/><line class="lead" x1="131" y1="503" x2="137" y2="497"/>
+<line class="lead" x1="134" y1="526" x2="160" y2="526"/>
+<text class="pin" x="165" y="529.5" text-anchor="start">D4</text>
+<text class="pinno" x="156" y="524" text-anchor="end">6</text>
+<line class="lead" x1="131" y1="523" x2="137" y2="529"/><line class="lead" x1="131" y1="529" x2="137" y2="523"/>
+<line class="lead" x1="134" y1="552" x2="160" y2="552"/>
+<text class="pin" x="165" y="555.5" text-anchor="start">+5V</text>
+<text class="pinno" x="156" y="550" text-anchor="end">7</text>
+<line class="w3" x1="134" y1="552" x2="134" y2="543"/><line class="w3" x1="129" y1="543" x2="139" y2="543"/>
+<text class="rail3" x="134" y="541" text-anchor="middle">3V3</text>
+<text class="note" x="340" y="100" text-anchor="start">The pad's 4021 is a CMOS part rated 3 to 18 V.</text>
+<text class="note" x="340" y="113" text-anchor="start">At 3V3 its D0 is 3V3 logic and needs no shifter.</text>
+<text class="note" x="340" y="126" text-anchor="start">Measure-first item 4 on the bench settles this</text>
+<text class="note" x="340" y="139" text-anchor="start">before any adapter is built; if a pad will not run</text>
+<text class="note" x="340" y="152" text-anchor="start">at 3V3, add a 74LVC245 and feed the pad 5 V.</text>
+<text class="note" x="340" y="165" text-anchor="start"></text>
+<text class="note" x="340" y="178" text-anchor="start">Poll: OUT0 high 12 us, low, 8 clocks at 1 us,</text>
+<text class="note" x="340" y="191" text-anchor="start">read D0 before each rising edge. 1 kHz.</text>
+<text class="note" x="340" y="204" text-anchor="start">The same poll_pad() as firmware/bridge/bridge.ino.</text>
+<path class="wire" d="M400,300 l-6,-6 h-53.4 v12 h53.4 z"/>
+<text class="net" x="391" y="303.5" text-anchor="end">PAD1_D0</text>
+<line class="lead" x1="400" y1="300" x2="418" y2="300"/><rect class="box" x="418" y="293" width="44" height="14"/><line class="lead" x1="462" y1="300" x2="480" y2="300"/>
+<text class="pinno" x="440" y="290" text-anchor="middle">R1,R2</text>
+<text class="pin" x="440" y="304" text-anchor="middle">10k</text>
+<line class="w3" x1="480" y1="300" x2="480" y2="291"/><line class="w3" x1="475" y1="291" x2="485" y2="291"/>
+<text class="rail3" x="480" y="289" text-anchor="middle">3V3</text>
+<text class="note" x="340" y="330" text-anchor="start">pullups on D0 (both pads): unplugged reads 'nothing pressed'</text>
+<rect class="zone" x="760" y="60" width="920" height="560" rx="6"/>
+<text class="sub" x="768" y="74" text-anchor="start">CONTROLLER AND POWER</text>
+<rect class="box" x="900" y="90" width="190" height="258" rx="3"/>
+<text class="ref" x="906" y="104" text-anchor="start">U1</text>
+<text class="part" x="906" y="116" text-anchor="start">ESP32-S3-DevKitC-1 (or C6)</text>
+<text class="part" x="906" y="128" text-anchor="start">TinyUSB HID + NimBLE HID</text>
+<line class="lead" x1="874" y1="146" x2="900" y2="146"/>
+<text class="pin" x="905" y="149.5" text-anchor="start">GPIO4</text>
+<path class="wire" d="M874,146 l-6,-6 h-65.80000000000001 v12 h65.80000000000001 z"/>
+<text class="net" x="865" y="149.5" text-anchor="end">PAD_LATCH</text>
+<line class="lead" x1="874" y1="172" x2="900" y2="172"/>
+<text class="pin" x="905" y="175.5" text-anchor="start">GPIO5</text>
+<path class="wire" d="M874,172 l-6,-6 h-53.4 v12 h53.4 z"/>
+<text class="net" x="865" y="175.5" text-anchor="end">PAD_CLK</text>
+<line class="lead" x1="874" y1="198" x2="900" y2="198"/>
+<text class="pin" x="905" y="201.5" text-anchor="start">GPIO6</text>
+<path class="wire" d="M874,198 l-6,-6 h-53.4 v12 h53.4 z"/>
+<text class="net" x="865" y="201.5" text-anchor="end">PAD1_D0</text>
+<line class="lead" x1="874" y1="224" x2="900" y2="224"/>
+<text class="pin" x="905" y="227.5" text-anchor="start">GPIO7</text>
+<path class="wire" d="M874,224 l-6,-6 h-53.4 v12 h53.4 z"/>
+<text class="net" x="865" y="227.5" text-anchor="end">PAD2_D0</text>
+<line class="lead" x1="874" y1="250" x2="900" y2="250"/>
+<text class="pin" x="905" y="253.5" text-anchor="start">GPIO15</text>
+<path class="wire" d="M874,250 l-6,-6 h-53.4 v12 h53.4 z"/>
+<text class="net" x="865" y="253.5" text-anchor="end">MODE_SW</text>
+<line class="lead" x1="874" y1="276" x2="900" y2="276"/>
+<text class="pin" x="905" y="279.5" text-anchor="start">GPIO16</text>
+<path class="wire" d="M874,276 l-6,-6 h-28.6 v12 h28.6 z"/>
+<text class="net" x="865" y="279.5" text-anchor="end">LED</text>
+<line class="lead" x1="874" y1="302" x2="900" y2="302"/>
+<text class="pin" x="905" y="305.5" text-anchor="start">3V3</text>
+<line class="w3" x1="874" y1="302" x2="874" y2="293"/><line class="w3" x1="869" y1="293" x2="879" y2="293"/>
+<text class="rail3" x="874" y="291" text-anchor="middle">3V3</text>
+<line class="lead" x1="874" y1="328" x2="900" y2="328"/>
+<text class="pin" x="905" y="331.5" text-anchor="start">GND</text>
+<line class="wg" x1="874" y1="328" x2="874" y2="336"/><line class="wg" x1="868" y1="336" x2="880" y2="336"/><line class="wg" x1="871" y1="339" x2="877" y2="339"/>
+<line class="lead" x1="1090" y1="146" x2="1116" y2="146"/>
+<text class="pin" x="1085" y="149.5" text-anchor="end">USB D+/D-</text>
+<path class="wire" d="M1116,146 l6,-6 h53.4 v12 h-53.4 z"/>
+<text class="net" x="1125" y="149.5" text-anchor="start">USB_HID</text>
+<line class="lead" x1="1090" y1="172" x2="1116" y2="172"/>
+<text class="pin" x="1085" y="175.5" text-anchor="end">5V in</text>
+<path class="wire" d="M1116,172 l6,-6 h34.8 v12 h-34.8 z"/>
+<text class="net" x="1125" y="175.5" text-anchor="start">VBUS</text>
+<line class="lead" x1="1090" y1="198" x2="1116" y2="198"/>
+<text class="pin" x="1085" y="201.5" text-anchor="end">BLE</text>
+<path class="wire" d="M1116,198 l6,-6 h41.0 v12 h-41.0 z"/>
+<text class="net" x="1125" y="201.5" text-anchor="start">radio</text>
+<rect class="box" x="1300" y="90" width="150" height="128" rx="3"/>
+<text class="ref" x="1306" y="104" text-anchor="start">U2</text>
+<text class="part" x="1306" y="116" text-anchor="start">TP4056 + protection</text>
+<text class="part" x="1306" y="128" text-anchor="start">LiPo charger module</text>
+<line class="lead" x1="1274" y1="146" x2="1300" y2="146"/>
+<text class="pin" x="1305" y="149.5" text-anchor="start">IN+</text>
+<path class="wire" d="M1274,146 l-6,-6 h-34.8 v12 h34.8 z"/>
+<text class="net" x="1265" y="149.5" text-anchor="end">VBUS</text>
+<line class="lead" x1="1274" y1="172" x2="1300" y2="172"/>
+<text class="pin" x="1305" y="175.5" text-anchor="start">IN-</text>
+<line class="wg" x1="1274" y1="172" x2="1274" y2="180"/><line class="wg" x1="1268" y1="180" x2="1280" y2="180"/><line class="wg" x1="1271" y1="183" x2="1277" y2="183"/>
+<line class="lead" x1="1450" y1="146" x2="1476" y2="146"/>
+<text class="pin" x="1445" y="149.5" text-anchor="end">BAT+</text>
+<line class="w3" x1="1476" y1="146" x2="1476" y2="137"/><line class="w3" x1="1471" y1="137" x2="1481" y2="137"/>
+<text class="rail3" x="1476" y="135" text-anchor="middle">VBAT</text>
+<line class="lead" x1="1450" y1="172" x2="1476" y2="172"/>
+<text class="pin" x="1445" y="175.5" text-anchor="end">BAT-</text>
+<line class="wg" x1="1476" y1="172" x2="1476" y2="180"/><line class="wg" x1="1470" y1="180" x2="1482" y2="180"/><line class="wg" x1="1473" y1="183" x2="1479" y2="183"/>
+<line class="lead" x1="1450" y1="198" x2="1476" y2="198"/>
+<text class="pin" x="1445" y="201.5" text-anchor="end">OUT+</text>
+<path class="wire" d="M1476,198 l6,-6 h53.4 v12 h-53.4 z"/>
+<text class="net" x="1485" y="201.5" text-anchor="start">VBAT_SW</text>
+<rect class="box" x="1300" y="340" width="150" height="102" rx="3"/>
+<text class="ref" x="1306" y="354" text-anchor="start">U3</text>
+<text class="part" x="1306" y="366" text-anchor="start">MCP1700-3302 LDO</text>
+<text class="part" x="1306" y="378" text-anchor="start">or the devkit's own 3V3 from VBUS</text>
+<line class="lead" x1="1274" y1="396" x2="1300" y2="396"/>
+<text class="pin" x="1305" y="399.5" text-anchor="start">VIN</text>
+<path class="wire" d="M1274,396 l-6,-6 h-53.4 v12 h53.4 z"/>
+<text class="net" x="1265" y="399.5" text-anchor="end">VBAT_SW</text>
+<line class="lead" x1="1274" y1="422" x2="1300" y2="422"/>
+<text class="pin" x="1305" y="425.5" text-anchor="start">GND</text>
+<line class="wg" x1="1274" y1="422" x2="1274" y2="430"/><line class="wg" x1="1268" y1="430" x2="1280" y2="430"/><line class="wg" x1="1271" y1="433" x2="1277" y2="433"/>
+<line class="lead" x1="1450" y1="396" x2="1476" y2="396"/>
+<text class="pin" x="1445" y="399.5" text-anchor="end">VOUT</text>
+<line class="w3" x1="1476" y1="396" x2="1476" y2="387"/><line class="w3" x1="1471" y1="387" x2="1481" y2="387"/>
+<text class="rail3" x="1476" y="385" text-anchor="middle">3V3</text>
+<path class="wire" d="M800,400 l-6,-6 h-53.4 v12 h53.4 z"/>
+<text class="net" x="791" y="403.5" text-anchor="end">MODE_SW</text>
+<line class="lead" x1="800" y1="400" x2="818" y2="400"/><rect class="box" x="818" y="393" width="44" height="14"/><line class="lead" x1="862" y1="400" x2="880" y2="400"/>
+<text class="pinno" x="840" y="390" text-anchor="middle">SW1</text>
+<text class="pin" x="840" y="404" text-anchor="middle">slide</text>
+<line class="wg" x1="880" y1="400" x2="880" y2="408"/><line class="wg" x1="874" y1="408" x2="886" y2="408"/><line class="wg" x1="877" y1="411" x2="883" y2="411"/>
+<text class="note" x="900" y="404" text-anchor="start">open = gamepad HID, closed = keyboard HID</text>
+<line class="w3" x1="800" y1="450" x2="800" y2="441"/><line class="w3" x1="795" y1="441" x2="805" y2="441"/>
+<text class="rail3" x="800" y="439" text-anchor="middle">VBAT</text>
+<line class="lead" x1="800" y1="450" x2="818" y2="450"/><rect class="box" x="818" y="443" width="44" height="14"/><line class="lead" x1="862" y1="450" x2="880" y2="450"/>
+<text class="pinno" x="840" y="440" text-anchor="middle">SW2</text>
+<text class="pin" x="840" y="454" text-anchor="middle">power</text>
+<path class="wire" d="M880,450 l6,-6 h53.4 v12 h-53.4 z"/>
+<text class="net" x="889" y="453.5" text-anchor="start">VBAT_SW</text>
+<path class="wire" d="M800,500 l-6,-6 h-28.6 v12 h28.6 z"/>
+<text class="net" x="791" y="503.5" text-anchor="end">LED</text>
+<line class="lead" x1="800" y1="500" x2="818" y2="500"/><rect class="box" x="818" y="493" width="44" height="14"/><line class="lead" x1="862" y1="500" x2="880" y2="500"/>
+<text class="pinno" x="840" y="490" text-anchor="middle">LED1</text>
+<text class="pin" x="840" y="504" text-anchor="middle">+330R</text>
+<line class="wg" x1="880" y1="500" x2="880" y2="508"/><line class="wg" x1="874" y1="508" x2="886" y2="508"/><line class="wg" x1="877" y1="511" x2="883" y2="511"/>
+<text class="note" x="800" y="540" text-anchor="start">Power: on USB, VBUS feeds the devkit and charges the cell; unplugged, the cell through</text>
+<text class="note" x="800" y="553" text-anchor="start">the LDO. A 500 mAh cell runs an S3 in BLE modem sleep for a day (authored; measure).</text>
+<text class="note" x="800" y="566" text-anchor="start">Skip the battery entirely for a USB-only cable adapter: the S3 devkit alone is the whole thing.</text>
+<rect class="zone" x="20" y="640" width="1660" height="290" rx="6"/>
+<text class="sub" x="28" y="654" text-anchor="start">WHAT THE HOST SEES</text>
+<text class="pin" x="40" y="675" text-anchor="start">Keyboard mode   BLE HID keyboard (or USB HID keyboard). Buttons map to keys: A=x B=z Select=RShift Start=Enter D-pad=arrows (configurable).</text>
+<text class="pin" x="40" y="688" text-anchor="start">                Works with any phone, tablet or PC, browser emulators included, with no game-controller support needed. iOS accepts BLE keyboards natively.</text>
+<text class="pin" x="40" y="701" text-anchor="start">Gamepad mode    BLE HID gamepad report (8 buttons + hat). Android, Windows, Linux, macOS and Steam take generic HID gamepads;</text>
+<text class="pin" x="40" y="714" text-anchor="start">                iOS only takes MFi, Xbox and PlayStation layouts, so keyboard mode is the iOS answer. USB HID gamepad on the S3 works everywhere.</text>
+<text class="pin" x="40" y="727" text-anchor="start">Bench mode      Wi-Fi: the adapter streams pad bytes over UDP to the head at 1 kHz, keyed by its own poll count. The head schedules them as AT lines</text>
+<text class="pin" x="40" y="740" text-anchor="start">                onto the bridge, so a hand on a wireless pad becomes a scripted, logged, replayable history. Same L format, one more source.</text>
+<text class="pin" x="40" y="753" text-anchor="start">Two pads        one adapter, two HID interfaces (or two report IDs); both polled on the shared latch and clock.</text>
+<text class="pin" x="40" y="766" text-anchor="start">Latency         1 kHz poll + BLE 7.5 ms connection interval: 8 to 10 ms authored; USB HID 1 ms polling: ~2 ms authored. Measure with the bench's own trigger.</text>
+</svg>

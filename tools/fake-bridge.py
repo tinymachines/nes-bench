@@ -49,6 +49,7 @@ def main():
     latches = 0
     clocks = 0
     trig_at = -1
+    mutated = False  # the counters swapped: the clocks per latch come out wrong
     have_latch = False
     byte_at_latch = 0
     clocks_at_latch = 0
@@ -83,6 +84,8 @@ def main():
                     trig_at = int(line[5:]); out(f"# trig at {trig_at}")
                 elif line == "RESET":
                     latches = 0; clocks = 0; schedule = []; trig_at = -1; have_latch = False; out("# reset")
+                elif line in ("MUTATE ON", "MUTATE OFF"):
+                    mutated = line == "MUTATE ON"; out(f"# mutate {'on' if mutated else 'off'}")
                 elif line == "STATUS":
                     out(f"# mode {mode} latch {latches} clocks {clocks} held {held(mode, pad, set_byte, schedule, latches):02x} pad {pad:02x} schedule {len(schedule)} data -1")
                 elif line:
@@ -92,7 +95,9 @@ def main():
             next_latch += period
             h = held(mode, pad, set_byte, schedule, latches)
             if have_latch:
-                out(f"L {latches - 1} {byte_at_latch:02x} {clocks - clocks_at_latch}")
+                # Swapped counters count the clock line as latches and the
+                # latch line as clocks: one "clock" per poll, many "latches".
+                out(f"L {latches - 1} {byte_at_latch:02x} {1 if mutated else clocks - clocks_at_latch}")
             latches += 1
             clocks_at_latch = clocks
             byte_at_latch = h

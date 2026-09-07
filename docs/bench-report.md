@@ -140,6 +140,34 @@ two frames late, and the bisection named 198. The written record now
 recovers the same frame as the in-process path, anchor line for anchor
 line.
 
+## Added 2026-09-07: the electronics review's sheets, and what they changed
+
+The bench's electronics review returned four schematics and a build
+document (`docs/bench-build-v1-v2.md`, `bench-v1.svg`, `bench-v2.svg`,
+`logical-timing.svg`, `pad-adapter.svg`, drawn by
+`tools/draw-schematics.py`), with a note of what its own double-check
+had amended (the LM1881's pin labels, the relay's supply on the Pi's
+rail, an authored width, a build step that contradicted itself, a
+decoupling count). Taken in as they came, with two things added so
+they cannot drift from the rest: `tools/check-sheets.py` holds the v1
+sheet's every C6 pin to the wiring tables and the committed SVGs to
+the generator, and the build document embeds the sheets.
+
+One firmware change the timing sheet made visible went into
+`bridge.ino` the same day: the 165 loads while OUT0 is high, and the
+eight register pins were being written one at a time, so a poll could
+latch a byte half old and half new. They are now one store to the GPIO
+output register, made only when OUT0 reads low before and after and
+deferred to the next loop otherwise; the loop reads the counters and
+logs the latch before it writes; and `MUTATE ON` swaps the two
+counters' lines so B0's mutation is a line in a script. The fake
+bridge does the same. Compiles for the C6 and the classic ESP32; not
+yet run on a board.
+
+v2 (atomic bytes over SPI, a second port, an LM1881 giving every latch
+its field and line) and the pad adapter are in the plan as what comes
+after the four milestones, with the condition that earns each.
+
 ## What the die said before the part could
 
 The gate asked for clocks per latch on the part, expecting nine where

@@ -27,6 +27,13 @@ register's job, as it is in the pad.
   against fakes with red mutations, the model logs polls) and the
   part's side waiting on the build. The die answered B0's DMC question
   first and the model changed for it.
+- `docs/bench-build-v1-v2.md` with `bench-v1.svg`, `bench-v2.svg`,
+  `logical-timing.svg`, `pad-adapter.svg`: the electronics review's
+  schematics, parts lists and build order for v1 (the plan as it
+  stands) and v2 (atomic bytes, two ports, a sync separator), one
+  poll as timing lanes, and an original pad as a BLE or USB pad for a
+  phone. Drawn by `tools/draw-schematics.py`; `tools/check-sheets.py`
+  holds the v1 sheet to the wiring tables.
 - `docs/bench.svg`: the bench as one drawing, the loop above and the
   bridge's chips with every pin below. Derived: `tools/draw-bench.py`
   reads the pin tables in `docs/wiring.md`, so the drawing cannot

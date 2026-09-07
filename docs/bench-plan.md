@@ -167,6 +167,38 @@ Gate:
   (the `nes` console on the same script, its frames rendered through
   `ntsc-crt`), the comparison, and the checks each gate names.
 
+## Added 2026-09-07: the schematics, v2, and the pad adapter
+
+The bench's electronics review returned four sheets and a build
+document, taken in as `docs/bench-build-v1-v2.md` with
+`docs/bench-v1.svg`, `bench-v2.svg`, `logical-timing.svg` and
+`pad-adapter.svg`, all drawn by `tools/draw-schematics.py` and held to
+this repository's wiring tables by `tools/check-sheets.py`. Three
+things it adds to the plan:
+
+- **v1 is the plan as it stands, drawn as a schematic**, with a build
+  order in nine steps chosen so nothing at 5 V meets the C6 before it
+  has been measured, and one firmware change the timing sheet made
+  visible: the register loads while OUT0 is high, so its eight inputs
+  are now written in one store and only while OUT0 reads low before
+  and after. B0 is v1.
+- **v2 is the bridge after B0 to B3 have run**: 74HC595s in front of
+  the registers so a byte changes on one edge, a second port for
+  two-player histories (`AT2`, `L2`), and an LM1881 sync separator so
+  every latch carries the field and line it landed on, measured in
+  hardware, which closes B0's polls-per-frame gate inside the bridge
+  without the scope. It uses all four of the C6's counters and all
+  fourteen pins. It is not a milestone yet: it earns one when a v1
+  measurement asks for it (a torn byte in the log, a two-player game,
+  or a poll whose place in the frame the scope cannot give).
+- **The pad adapter** is the bridge's `poll_pad` with a radio behind
+  it: an original pad as a BLE or USB HID keyboard or gamepad for a
+  phone, and a bench mode that feeds the head. Its keyboard mapping is
+  the play page's (A is x, B is z, Select the right shift, Start
+  enter, the cross the arrows), so a phone with the adapter drives
+  `/nes/play` with no more code. An ESP32-S3 is the part for USB; the
+  C6 on hand does BLE. Its own milestone, after the bench's four.
+
 ## What this closes, and what it does not
 
 Closes, from the family's reports: N5's gate 3 (a real cartridge, now

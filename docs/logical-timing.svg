@@ -1,0 +1,117 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1500 900" width="1500" height="900" role="img" aria-label="nes-bench: the logic of one poll, and what is counted">
+
+  <style>
+    text { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; fill: #1f2328; }
+    .title { font-size: 15px; font-weight: 700; font-family: ui-sans-serif, system-ui, sans-serif; }
+    .sub { font-size: 11px; fill: #57606a; font-family: ui-sans-serif, system-ui, sans-serif; }
+    .ref { font-size: 12px; font-weight: 700; }
+    .part { font-size: 10px; fill: #57606a; }
+    .pin { font-size: 9.5px; }
+    .pinno { font-size: 8px; fill: #57606a; }
+    .net { font-size: 9.5px; fill: #0a5b9c; font-weight: 600; }
+    .rail5 { font-size: 9px; fill: #b3261e; font-weight: 700; }
+    .rail3 { font-size: 9px; fill: #b35c00; font-weight: 700; }
+    .gnd { font-size: 9px; fill: #1f2328; font-weight: 700; }
+    .note { font-size: 10px; fill: #57606a; font-family: ui-sans-serif, system-ui, sans-serif; }
+    .box { fill: #ffffff; stroke: #1f2328; stroke-width: 1.3; }
+    .conn { fill: #f3f5f7; stroke: #1f2328; stroke-width: 1.3; }
+    .zone { fill: none; stroke: #57606a; stroke-dasharray: 5 4; stroke-width: 1; }
+    .lead { stroke: #1f2328; stroke-width: 1; }
+    .wire { stroke: #0a5b9c; stroke-width: 1.2; fill: none; }
+    .w5 { stroke: #b3261e; stroke-width: 1.2; fill: none; }
+    .w3 { stroke: #b35c00; stroke-width: 1.2; fill: none; }
+    .wg { stroke: #1f2328; stroke-width: 1.2; fill: none; }
+    .lane { stroke: #1f2328; stroke-width: 1.4; fill: none; }
+    .lanelbl { font-size: 11px; font-weight: 700; }
+    .win { fill: #b3261e; fill-opacity: 0.10; stroke: none; }
+    .safe { fill: #1a7f37; fill-opacity: 0.12; stroke: none; }
+    .mark { stroke: #0a5b9c; stroke-width: 1.2; stroke-dasharray: 3 3; }
+    .auth { font-size: 9px; fill: #b3261e; font-family: ui-sans-serif, system-ui, sans-serif; font-style: italic; }
+  </style>
+
+<rect x="0" y="0" width="1500" height="900" fill="#ffffff"/>
+<text class="title" x="24" y="30">nes-bench: the logic of one poll, and what is counted</text>
+<text class="sub" x="24" y="46">timing lanes for one controller read on the part; widths marked authored are B0 measure-first item 3's to replace</text>
+<text class="lanelbl" x="190" y="94" text-anchor="end">OUT0 (console)</text>
+<line x1="200" y1="112" x2="1440" y2="112" stroke="#d0d7de" stroke-width="1"/>
+<text class="lanelbl" x="190" y="154" text-anchor="end">/PL = not OUT0</text>
+<line x1="200" y1="172" x2="1440" y2="172" stroke="#d0d7de" stroke-width="1"/>
+<text class="lanelbl" x="190" y="214" text-anchor="end">165 state</text>
+<line x1="200" y1="232" x2="1440" y2="232" stroke="#d0d7de" stroke-width="1"/>
+<text class="lanelbl" x="190" y="284" text-anchor="end">CLK (console)</text>
+<line x1="200" y1="302" x2="1440" y2="302" stroke="#d0d7de" stroke-width="1"/>
+<text class="lanelbl" x="190" y="354" text-anchor="end">D0 (165 QH)</text>
+<line x1="200" y1="372" x2="1440" y2="372" stroke="#d0d7de" stroke-width="1"/>
+<text class="lanelbl" x="190" y="434" text-anchor="end">PCNT 0 (latch)</text>
+<line x1="200" y1="452" x2="1440" y2="452" stroke="#d0d7de" stroke-width="1"/>
+<text class="lanelbl" x="190" y="494" text-anchor="end">PCNT 1 (clock)</text>
+<line x1="200" y1="512" x2="1440" y2="512" stroke="#d0d7de" stroke-width="1"/>
+<text class="lanelbl" x="190" y="564" text-anchor="end">ESP32 loop</text>
+<line x1="200" y1="582" x2="1440" y2="582" stroke="#d0d7de" stroke-width="1"/>
+<text class="lanelbl" x="190" y="634" text-anchor="end">safe to write</text>
+<line x1="200" y1="652" x2="1440" y2="652" stroke="#d0d7de" stroke-width="1"/>
+<path class="lane" d="M200,108 L260,108 L260,72 L300,72 L300,108 L1440,108"/>
+<text class="auth" x="280.0" y="66" text-anchor="middle">STA $4016 = 1 ... = 0</text>
+<text class="auth" x="280.0" y="122" text-anchor="middle">high ~3 us (authored)</text>
+<path class="lane" d="M200,132 L260,132 L260,168 L300,168 L300,132 L1440,132"/>
+<rect class="win" x="260" y="140" width="40" height="90"/>
+<text class="auth" x="306" y="168" text-anchor="start">load window: 165 is transparent, inputs must not change</text>
+<text class="pin" x="204" y="214" text-anchor="start">holding previous</text>
+<text class="pin" x="330" y="214" text-anchor="start">held: A on QH</text>
+<text class="pin" x="416" y="214" text-anchor="start">B</text>
+<text class="pin" x="491" y="214" text-anchor="start">Sel</text>
+<text class="pin" x="566" y="214" text-anchor="start">Start</text>
+<text class="pin" x="641" y="214" text-anchor="start">Up</text>
+<text class="pin" x="716" y="214" text-anchor="start">Down</text>
+<text class="pin" x="791" y="214" text-anchor="start">Left</text>
+<text class="pin" x="866" y="214" text-anchor="start">Right</text>
+<text class="pin" x="941" y="214" text-anchor="start">DS=0</text>
+<path class="lane" d="M200,262 L400,262 L400,298 L412,298 L412,262 L475,262 L475,298 L487,298 L487,262 L550,262 L550,298 L562,298 L562,262 L625,262 L625,298 L637,298 L637,262 L700,262 L700,298 L712,298 L712,262 L775,262 L775,298 L787,298 L787,262 L850,262 L850,298 L862,298 L862,262 L925,262 L925,298 L937,298 L937,262 L1440,262"/>
+<text class="auth" x="400" y="312" text-anchor="start">LDA $4016: /OE1 low ~500 ns (authored); 4021 and 165 shift on the rising edge</text>
+<text class="auth" x="495" y="256" text-anchor="start">~7 us between reads (authored)</text>
+<path class="lane" d="M200,332 L300,332 L300,368 L412,368 L412,368 L412,332 L487,332 L487,332 L487,332 L562,332 L562,332 L562,332 L637,332 L637,332 L637,332 L712,332 L712,332 L712,332 L787,332 L787,332 L787,332 L862,332 L862,332 L862,332 L937,332 L937,332 L937,368 L1440,368"/>
+<text class="pin" x="304" y="382" text-anchor="start">A pressed: LOW</text>
+<text class="pin" x="941" y="382" text-anchor="start">9th+ read: LOW (console reads 1)</text>
+<line class="mark" x1="260" y1="416" x2="260" y2="448"/>
+<text class="net" x="265" y="434" text-anchor="start">+1 on OUT0 rising edge: latch index n</text>
+<line class="mark" x1="400" y1="476" x2="400" y2="508"/>
+<line class="mark" x1="475" y1="476" x2="475" y2="508"/>
+<line class="mark" x1="550" y1="476" x2="550" y2="508"/>
+<line class="mark" x1="625" y1="476" x2="625" y2="508"/>
+<line class="mark" x1="700" y1="476" x2="700" y2="508"/>
+<line class="mark" x1="775" y1="476" x2="775" y2="508"/>
+<line class="mark" x1="850" y1="476" x2="850" y2="508"/>
+<line class="mark" x1="925" y1="476" x2="925" y2="508"/>
+<text class="net" x="405" y="494" text-anchor="start">+1 per CLK falling edge: 8 per poll, 9 on a DMC collision (alias rule excepted)</text>
+<line x1="230" y1="548" x2="230" y2="572" stroke="#57606a" stroke-width="1"/>
+<line x1="320" y1="548" x2="320" y2="572" stroke="#57606a" stroke-width="1"/>
+<line x1="410" y1="548" x2="410" y2="572" stroke="#57606a" stroke-width="1"/>
+<line x1="500" y1="548" x2="500" y2="572" stroke="#57606a" stroke-width="1"/>
+<line x1="590" y1="548" x2="590" y2="572" stroke="#57606a" stroke-width="1"/>
+<line x1="680" y1="548" x2="680" y2="572" stroke="#57606a" stroke-width="1"/>
+<line x1="770" y1="548" x2="770" y2="572" stroke="#57606a" stroke-width="1"/>
+<line x1="860" y1="548" x2="860" y2="572" stroke="#57606a" stroke-width="1"/>
+<line x1="950" y1="548" x2="950" y2="572" stroke="#57606a" stroke-width="1"/>
+<line x1="1040" y1="548" x2="1040" y2="572" stroke="#57606a" stroke-width="1"/>
+<line x1="1130" y1="548" x2="1130" y2="572" stroke="#57606a" stroke-width="1"/>
+<line x1="1220" y1="548" x2="1220" y2="572" stroke="#57606a" stroke-width="1"/>
+<line x1="1310" y1="548" x2="1310" y2="572" stroke="#57606a" stroke-width="1"/>
+<line x1="1400" y1="548" x2="1400" y2="572" stroke="#57606a" stroke-width="1"/>
+<text class="note" x="234" y="544" text-anchor="start">loop ~100 us: read PCNT deltas, emit L, then write the byte</text>
+<rect class="safe" x="200" y="618" width="52" height="28"/>
+<rect class="safe" x="308" y="618" width="1132" height="28"/>
+<text class="pin" x="206" y="634" text-anchor="start">write allowed</text>
+<text class="pin" x="314" y="634" text-anchor="start">write allowed (v1: OUT0 reads low before and after; v2: RCLK edge is atomic anyway)</text>
+<rect class="zone" x="20" y="690" width="1460" height="190" rx="6"/>
+<text class="sub" x="28" y="704" text-anchor="start">WHAT A RUN IS: the same history on both sides</text>
+<text class="pin" x="40" y="725" text-anchor="start">latch index n     count of OUT0 rising edges since RESET. Part: PCNT 0. Model: $4016 strobe rises in nes-glue::controller.</text>
+<text class="pin" x="40" y="738" text-anchor="start">byte at n         what the register held when OUT0 fell at n. Part: written after latch n-1 (v1) or moved by RCLK after n-1 (v2). Model: set_pad before latch n.</text>
+<text class="pin" x="40" y="751" text-anchor="start">clocks at n       CLK falling edges between latch n and n+1. Part: PCNT 1 delta. Model: $4016 reads. 8 expected; 9 on a DMC collision.</text>
+<text class="pin" x="40" y="764" text-anchor="start">t_us at n (v2)    micros() at detection, jitter one loop. Gives latch interval and, against F lines, polls per field without the scope.</text>
+<text class="pin" x="40" y="777" text-anchor="start">field f, line l   (v2) VSYNC falling edges since RESET; CSYNC falling edges since the last VSYNC. Model: h at the strobe, mapped by B2's alignment class.</text>
+<text class="pin" x="40" y="790" text-anchor="start">trigger           EXT TRIG rises at latch T (v1) or at (f, l) (v2); the scope's single shot lands on a known frame of a known history.</text>
+<text class="pin" x="40" y="803" text-anchor="start"></text>
+<text class="pin" x="40" y="816" text-anchor="start">Script (docs/script.md) -> head (Pi) -> bridge over USB serial -> 165 -> console.    Console -> L lines -> head -> runs/&lt;stamp>/bridge.log.</text>
+<text class="pin" x="40" y="829" text-anchor="start">Same script -> nes-console pad-log -> the same L lines.    compare-logs.py: first latch where byte or clocks differ.    b1-score: capture at T vs model frame at T.</text>
+<text class="pin" x="40" y="842" text-anchor="start">MUTATE (v2 command): PCNT 0 and 1 swapped -> 8-per-latch check must go red.  A gate that stays green under MUTATE is a broken gate.</text>
+</svg>

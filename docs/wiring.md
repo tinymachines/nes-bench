@@ -8,6 +8,12 @@ Every line under "Measure first" is a meter check to make before the
 console is powered through any of this, because a pinout copied from a
 page is a claim, and a 5 V line on an ESP32 pin is a dead ESP32.
 
+The same wiring as a schematic, with the head, the relays and the
+scope on one sheet, is `bench-v1.svg`, drawn by
+`tools/draw-schematics.py` and held to the tables below by
+`tools/check-sheets.py`; the build order and the v2 sheet are in
+`bench-build-v1-v2.md`.
+
 ## What the photographs settled
 
 - **The console is open, and it is an NES-CPU-10 board** (RP2A03G,
