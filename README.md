@@ -22,7 +22,15 @@ register's job, as it is in the pad.
 - `docs/wiring.md`: the pin table to build from, and the measurements
   to make with a meter before the console is powered through it.
 
-Nothing here is built yet. Captures and dumps of cartridges are never
+- `docs/b0-report.md`: B0 as it stands, the machine side closed (the
+  firmware compiles, the tools exist, the model logs polls) and the
+  part's side waiting on the build. The die answered the gate's DMC
+  question first and the model changed for it.
+- `firmware/bridge/`: the ESP32 sketch (arduino-cli, esp32 core 3.x).
+- `tools/`: `sniff.py` (the bridge over serial) and `compare-logs.py`
+  (two poll logs, latch for latch).
+
+The bridge is not built yet. Captures and dumps of cartridges are never
 committed (`captures/`, `roms/` and `*.nes` are ignored); the family's
 own test and bars cartridges are the only ROMs any repository carries.
 
