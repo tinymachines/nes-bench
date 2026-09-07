@@ -21,23 +21,41 @@
 //
 // Nothing here is measured yet: B0 of docs/bench-plan.md is where this
 // meets the part. Built with arduino-cli and the esp32 core 3.x
-// (Arduino as ESP-IDF's driver/pulse_cnt.h).
+// (Arduino as ESP-IDF's driver/pulse_cnt.h); the bench's board is an
+// ESP32-C6-DevKitC-1: arduino-cli compile --fqbn esp32:esp32:esp32c6.
 
 #include "driver/pulse_cnt.h"
 
+// Pins, per docs/wiring.md. The board on the bench is an
+// ESP32-C6-DevKitC-1 (RISC-V, GPIO0..23 on the headers; 8, 9 and 15 are
+// strapping pins, 12 and 13 the USB port, 16 and 17 the UART port, all
+// left alone), which leaves fourteen: exactly what the bridge needs
+// once the D0 monitor is dropped. The classic ESP32 map stays for a
+// board that has input-only pins.
+#if CONFIG_IDF_TARGET_ESP32C6
 // The register's inputs, H down to A: A, B, Select, Start, Up, Down,
 // Left, Right (a 74HCT165 shifts H out first). Pressed is LOW.
-static const int REG_PINS[8] = {16, 17, 18, 19, 21, 22, 23, 25};
-// The console's lines through the 74LVC245 (input-only pins).
-static const int CON_LATCH = 34; // OUT0, counted on its rise
-static const int CON_CLOCK = 35; // CLK (/OE1), counted on its fall
-static const int CON_DATA = 36;  // D0 as the console sees it (reported by STATUS)
+static const int REG_PINS[8] = {18, 19, 20, 21, 22, 23, 10, 11};
+// The console's lines through the 74LVC245.
+static const int CON_LATCH = 0;  // OUT0, counted on its rise
+static const int CON_CLOCK = 1;  // CLK (/OE1), counted on its fall
+static const int CON_DATA = -1;  // not monitored on the C6 (no pin to spare)
 // The original pad on the bridge's own lines, at 3.3 V.
+static const int PAD_LATCH = 2;
+static const int PAD_CLOCK = 3;
+static const int PAD_DATA = 6;
+// The scope's EXT TRIG.
+static const int TRIG = 7;
+#else
+static const int REG_PINS[8] = {16, 17, 18, 19, 21, 22, 23, 25};
+static const int CON_LATCH = 34; // input-only pins carry the console side
+static const int CON_CLOCK = 35;
+static const int CON_DATA = 36;  // D0 as the console sees it (reported by STATUS)
 static const int PAD_LATCH = 26;
 static const int PAD_CLOCK = 27;
 static const int PAD_DATA = 32;
-// The scope's EXT TRIG.
 static const int TRIG = 33;
+#endif
 
 static const int PCNT_LIMIT = 32000;
 
@@ -152,7 +170,7 @@ static void handle(String line) {
   }
   else if (line == "STATUS") {
     Serial.printf("# mode %s latch %llu clocks %llu held %02x pad %02x schedule %d data %d\n",
-                  mode == PASS ? "pass" : "inject", latches, clocks, held, pad_byte, schedule_len, digitalRead(CON_DATA));
+                  mode == PASS ? "pass" : "inject", latches, clocks, held, pad_byte, schedule_len, CON_DATA >= 0 ? digitalRead(CON_DATA) : -1);
   }
   else if (line.length()) Serial.println("# ? " + line);
 }
@@ -163,7 +181,7 @@ void setup() {
   write_register(0);
   pinMode(CON_LATCH, INPUT);
   pinMode(CON_CLOCK, INPUT);
-  pinMode(CON_DATA, INPUT);
+  if (CON_DATA >= 0) pinMode(CON_DATA, INPUT);
   pinMode(PAD_LATCH, OUTPUT);
   pinMode(PAD_CLOCK, OUTPUT);
   pinMode(PAD_DATA, INPUT_PULLUP);
