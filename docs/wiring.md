@@ -135,8 +135,10 @@ sees it in the "measure first" list.
 
 ## The original pad, on the bridge at 3.3 V
 
-The pad's plug goes into a socket on the bridge (the console end of
-the cut extension cable), not into the console.
+The pad plugs into one of the console's own port housings, whose
+harness is unplugged from the board header and plugged into the
+bridge's pad side instead; the board header's pins are the console
+side. Nothing is cut, and the console's other port stays as it is.
 
 | pad plug pin | signal | to |
 |---|---|---|
