@@ -27,10 +27,15 @@ the dialect `ntsc-crt/tools/scope-capture.py` proved on the same
 DS1054Z but adds the external-trigger single shot, untested until the
 scope is back on the LAN with the bridge's trigger line on EXT TRIG.
 
-Run a head as a service on the Pi with a unit like:
+On the Pi, one command installs the head as a service from this
+checkout (packages, the dialout group, the runs directory, a systemd
+unit with the addresses in it, enabled and started; re-run after a
+pull to restart on new code):
 
 ```
-[Service]
-ExecStart=/usr/bin/python3 /home/pi/nes-bench/head/headd.py --bridge /dev/ttyUSB0 --scope SCOPE_IP --runs /home/pi/runs
-Restart=on-failure
+git clone https://github.com/tinymachines/nes-bench && cd nes-bench
+bash head/setup.sh --bridge /dev/ttyUSB0 --scope <ip>      # or --no-scope
+bash head/setup.sh --dry-run --bridge /dev/ttyUSB0 --scope <ip>   # the steps, run none
 ```
+
+Tested here with `--dry-run` only; the first real run is the bench's.
