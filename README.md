@@ -26,7 +26,12 @@ register's job, as it is in the pad.
   firmware compiles, the tools exist, the model logs polls) and the
   part's side waiting on the build. The die answered the gate's DMC
   question first and the model changed for it.
-- `firmware/bridge/`: the ESP32 sketch (arduino-cli, esp32 core 3.x).
+- `docs/bench.svg`: the bench as one drawing, the loop above and the
+  bridge's chips with every pin below. Derived: `tools/draw-bench.py`
+  reads the pin tables in `docs/wiring.md`, so the drawing cannot
+  disagree with the document (`--check` refuses a stale one).
+- `firmware/bridge/`: the ESP32 sketch (arduino-cli, esp32 core 3.x;
+  the bench's board is an ESP32-C6-DevKitC-1).
 - `tools/`: `sniff.py` (the bridge over serial) and `compare-logs.py`
   (two poll logs, latch for latch).
 

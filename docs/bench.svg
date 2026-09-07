@@ -1,0 +1,277 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1000" width="1200" height="1000" role="img" aria-label="The NES bench: the loop and the bridge">
+    <style>
+      text { font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; fill: #1f2328; }
+      .title { font-size: 14px; font-weight: 600; fill: #1f2328; }
+      .sub { font-size: 11px; fill: #57606a; }
+      .band { font-size: 13px; font-weight: 600; fill: #57606a; letter-spacing: 0.04em; }
+      .net { font-size: 10px; fill: #0a5b9c; }
+      .pin { font-size: 10px; fill: #1f2328; }
+      .pinno { font-size: 9px; fill: #57606a; }
+      .box { fill: #ffffff; stroke: #57606a; stroke-width: 1.2; }
+      .chip { fill: #f3f5f7; stroke: #1f2328; stroke-width: 1.4; }
+      .wire { fill: none; stroke: #0a5b9c; stroke-width: 1.2; }
+      .rail { fill: none; stroke: #b3261e; stroke-width: 1.2; }
+      .sep { stroke: #57606a; stroke-dasharray: 4 4; stroke-width: 1; }
+      .bg { fill: #ffffff; }
+      @media (prefers-color-scheme: dark) {
+        text { font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; fill: #e6edf3; }
+        .title { font-size: 14px; font-weight: 600; fill: #e6edf3; }
+        .sub { font-size: 11px; fill: #9aa4b2; }
+        .band { font-size: 13px; font-weight: 600; fill: #9aa4b2; letter-spacing: 0.04em; }
+        .net { font-size: 10px; fill: #79c0ff; }
+        .pin { font-size: 10px; fill: #e6edf3; }
+        .pinno { font-size: 9px; fill: #9aa4b2; }
+        .box { fill: #0d1117; stroke: #9aa4b2; stroke-width: 1.2; }
+        .chip { fill: #161b22; stroke: #e6edf3; stroke-width: 1.4; }
+        .wire { fill: none; stroke: #79c0ff; stroke-width: 1.2; }
+        .rail { fill: none; stroke: #ff7b72; stroke-width: 1.2; }
+        .sep { stroke: #9aa4b2; stroke-dasharray: 4 4; stroke-width: 1; }
+        .bg { fill: #0d1117; }
+      }
+    </style>
+<rect class="bg" x="0" y="0" width="1200" height="1000"/>
+<text class="band" x="24" y="30" text-anchor="start">THE LOOP: the part and the model under one input history</text>
+<rect class="box" x="24" y="50" width="190" height="92" rx="6"/>
+<text class="title" x="119.0" y="70" text-anchor="middle">Workstation</text>
+<text class="sub" x="119.0" y="88" text-anchor="middle">the switch-level model</text>
+<text class="sub" x="119.0" y="103" text-anchor="middle">scripts, pad-log, compare</text>
+<text class="sub" x="119.0" y="118" text-anchor="middle">ntsc-crt recovery</text>
+<rect class="box" x="300" y="50" width="170" height="92" rx="6"/>
+<text class="title" x="385.0" y="70" text-anchor="middle">Raspberry Pi 4</text>
+<text class="sub" x="385.0" y="88" text-anchor="middle">the head: UDP in</text>
+<text class="sub" x="385.0" y="103" text-anchor="middle">serial to the bridge</text>
+<text class="sub" x="385.0" y="118" text-anchor="middle">SCPI to the scope, relays</text>
+<rect class="box" x="560" y="50" width="190" height="92" rx="6"/>
+<text class="title" x="655.0" y="70" text-anchor="middle">ESP32-C6 bridge</text>
+<text class="sub" x="655.0" y="88" text-anchor="middle">counts latch and clock</text>
+<text class="sub" x="655.0" y="103" text-anchor="middle">writes the register</text>
+<text class="sub" x="655.0" y="118" text-anchor="middle">polls the pad</text>
+<rect class="box" x="840" y="50" width="170" height="92" rx="6"/>
+<text class="title" x="925.0" y="70" text-anchor="middle">NES-CPU-10</text>
+<text class="sub" x="925.0" y="88" text-anchor="middle">controller port header</text>
+<text class="sub" x="925.0" y="103" text-anchor="middle">reset button pads</text>
+<text class="sub" x="925.0" y="118" text-anchor="middle">video, audio out</text>
+<rect class="box" x="300" y="200" width="170" height="60" rx="6"/>
+<text class="title" x="385.0" y="220" text-anchor="middle">PC817 module</text>
+<text class="sub" x="385.0" y="238" text-anchor="middle">open-collector across reset</text>
+<rect class="box" x="840" y="200" width="170" height="60" rx="6"/>
+<text class="title" x="925.0" y="220" text-anchor="middle">Original pad</text>
+<text class="sub" x="925.0" y="238" text-anchor="middle">in the console's own housing</text>
+<rect class="box" x="300" y="290" width="170" height="60" rx="6"/>
+<text class="title" x="385.0" y="310" text-anchor="middle">Relay module</text>
+<text class="sub" x="385.0" y="328" text-anchor="middle">one lead of the adapter</text>
+<rect class="box" x="560" y="290" width="190" height="60" rx="6"/>
+<text class="title" x="655.0" y="310" text-anchor="middle">DS1054Z scope</text>
+<text class="sub" x="655.0" y="328" text-anchor="middle">video on a channel, EXT TRIG</text>
+<path class="wire" d="M 214 96 L 300 96"/>
+<text class="net" x="257.0" y="91.0" text-anchor="middle">UDP over the LAN</text>
+<path class="wire" d="M 470 96 L 560 96"/>
+<text class="net" x="515.0" y="91.0" text-anchor="middle">USB serial, 921600</text>
+<path class="wire" d="M 750 84 L 840 84"/>
+<text class="net" x="795.0" y="79.0" text-anchor="middle">latch, clock, data</text>
+<path class="rail" d="M 840 108 L 750 108"/>
+<text class="net" x="795.0" y="120.0" text-anchor="middle">+5 V</text>
+<path class="wire" d="M 840 230 L 700 230 L 700 142"/>
+<text class="net" x="770.0" y="242.0" text-anchor="middle">polled at 3.3 V</text>
+<path class="wire" d="M 655 142 L 655 290"/>
+<text class="net" x="661.0" y="220.0">trigger, GPIO7</text>
+<path class="wire" d="M 1010 110 L 1040 110 L 1040 330 L 750 330"/>
+<text class="net" x="1046.0" y="224.0">video</text>
+<path class="wire" d="M 385 142 L 385 200"/>
+<text class="net" x="391.0" y="175.0">GPIO17</text>
+<path class="wire" d="M 470 230 L 500 230 L 500 170 L 900 170 L 900 142"/>
+<text class="net" x="820.0" y="165.0" text-anchor="middle">reset</text>
+<path class="wire" d="M 340 142 L 340 290"/>
+<text class="net" x="346.0" y="257.0">GPIO27</text>
+<path class="wire" d="M 470 320 L 520 320 L 520 370 L 1100 370 L 1100 96 L 1010 96"/>
+<text class="net" x="1106.0" y="237.0">power</text>
+<text class="sub" x="24" y="400" text-anchor="start">Scripts are bytes by latch index, so the model (set_pad at the same polls) and the part (the register at the same latches)</text>
+<text class="sub" x="24" y="415" text-anchor="start">see one history; the bridge's per-latch log and the model's are diffed latch for latch; a triggered capture is scored through the roundtrip.</text>
+<line class="sep" x1="24" y1="435" x2="1176" y2="435"/>
+<text class="band" x="24" y="465" text-anchor="start">THE BRIDGE: the register is the pad the console clocks; the ESP32 is never in the nanosecond path</text>
+<rect class="chip" x="40" y="520" width="120" height="200" rx="6"/>
+<text class="title" x="100.0" y="540" text-anchor="middle">Port header</text>
+<line class="wire" x1="160" y1="570" x2="178" y2="570"/>
+<text class="pinno" x="181" y="574">7</text>
+<text class="pin" x="154" y="574" text-anchor="end">+5 V</text>
+<line class="wire" x1="160" y1="600" x2="178" y2="600"/>
+<text class="pinno" x="181" y="604">3</text>
+<text class="pin" x="154" y="604" text-anchor="end">OUT0</text>
+<line class="wire" x1="160" y1="630" x2="178" y2="630"/>
+<text class="pinno" x="181" y="634">2</text>
+<text class="pin" x="154" y="634" text-anchor="end">CLK</text>
+<line class="wire" x1="160" y1="660" x2="178" y2="660"/>
+<text class="pinno" x="181" y="664">4</text>
+<text class="pin" x="154" y="664" text-anchor="end">D0</text>
+<line class="wire" x1="160" y1="690" x2="178" y2="690"/>
+<text class="pinno" x="181" y="694">1</text>
+<text class="pin" x="154" y="694" text-anchor="end">GND</text>
+<rect class="chip" x="480" y="500" width="170" height="300" rx="6"/>
+<text class="title" x="565.0" y="520" text-anchor="middle">74HCT165</text>
+<text class="sub" x="565" y="536" text-anchor="middle">at the console's +5 V</text>
+<line class="wire" x1="462" y1="560" x2="480" y2="560"/>
+<text class="pinno" x="459" y="564" text-anchor="end">1</text>
+<text class="pin" x="486" y="564">/PL</text>
+<line class="wire" x1="462" y1="586" x2="480" y2="586"/>
+<text class="pinno" x="459" y="590" text-anchor="end">2</text>
+<text class="pin" x="486" y="590">CP</text>
+<line class="wire" x1="462" y1="612" x2="480" y2="612"/>
+<text class="pinno" x="459" y="616" text-anchor="end">15</text>
+<text class="pin" x="486" y="616">/CE</text>
+<line class="wire" x1="462" y1="638" x2="480" y2="638"/>
+<text class="pinno" x="459" y="642" text-anchor="end">10</text>
+<text class="pin" x="486" y="642">DS</text>
+<line class="wire" x1="462" y1="664" x2="480" y2="664"/>
+<text class="pinno" x="459" y="668" text-anchor="end">9</text>
+<text class="pin" x="486" y="668">QH</text>
+<line class="wire" x1="462" y1="690" x2="480" y2="690"/>
+<text class="pinno" x="459" y="694" text-anchor="end">16</text>
+<text class="pin" x="486" y="694">VCC</text>
+<line class="wire" x1="462" y1="716" x2="480" y2="716"/>
+<text class="pinno" x="459" y="720" text-anchor="end">8</text>
+<text class="pin" x="486" y="720">GND</text>
+<rect class="chip" x="300" y="538" width="90" height="44" rx="6"/>
+<text class="title" x="345.0" y="558" text-anchor="middle">74HCT04</text>
+<text class="sub" x="345" y="574" text-anchor="middle">one gate, +5 V</text>
+<line class="wire" x1="650" y1="560" x2="668" y2="560"/>
+<text class="pinno" x="671" y="564">6</text>
+<text class="pin" x="644" y="564" text-anchor="end">H: A</text>
+<line class="wire" x1="650" y1="586" x2="668" y2="586"/>
+<text class="pinno" x="671" y="590">5</text>
+<text class="pin" x="644" y="590" text-anchor="end">G: B</text>
+<line class="wire" x1="650" y1="612" x2="668" y2="612"/>
+<text class="pinno" x="671" y="616">4</text>
+<text class="pin" x="644" y="616" text-anchor="end">F: Select</text>
+<line class="wire" x1="650" y1="638" x2="668" y2="638"/>
+<text class="pinno" x="671" y="642">3</text>
+<text class="pin" x="644" y="642" text-anchor="end">E: Start</text>
+<line class="wire" x1="650" y1="664" x2="668" y2="664"/>
+<text class="pinno" x="671" y="668">14</text>
+<text class="pin" x="644" y="668" text-anchor="end">D: Up</text>
+<line class="wire" x1="650" y1="690" x2="668" y2="690"/>
+<text class="pinno" x="671" y="694">13</text>
+<text class="pin" x="644" y="694" text-anchor="end">C: Down</text>
+<line class="wire" x1="650" y1="716" x2="668" y2="716"/>
+<text class="pinno" x="671" y="720">12</text>
+<text class="pin" x="644" y="720" text-anchor="end">B: Left</text>
+<line class="wire" x1="650" y1="742" x2="668" y2="742"/>
+<text class="pinno" x="671" y="746">11</text>
+<text class="pin" x="644" y="746" text-anchor="end">A: Right</text>
+<rect class="chip" x="300" y="760" width="150" height="100" rx="6"/>
+<text class="title" x="375.0" y="780" text-anchor="middle">74LVC245</text>
+<text class="sub" x="375" y="796" text-anchor="middle">3.3 V, 5 V-tolerant inputs</text>
+<line class="wire" x1="282" y1="818" x2="300" y2="818"/>
+<text class="pinno" x="279" y="822" text-anchor="end">A1</text>
+<text class="pin" x="306" y="822">OUT0</text>
+<line class="wire" x1="282" y1="844" x2="300" y2="844"/>
+<text class="pinno" x="279" y="848" text-anchor="end">A2</text>
+<text class="pin" x="306" y="848">CLK</text>
+<line class="wire" x1="450" y1="818" x2="468" y2="818"/>
+<text class="pinno" x="471" y="822">B1</text>
+<text class="pin" x="444" y="822" text-anchor="end">GPIO0</text>
+<line class="wire" x1="450" y1="844" x2="468" y2="844"/>
+<text class="pinno" x="471" y="848">B2</text>
+<text class="pin" x="444" y="848" text-anchor="end">GPIO1</text>
+<rect class="chip" x="800" y="500" width="190" height="420" rx="6"/>
+<text class="title" x="895.0" y="520" text-anchor="middle">ESP32-C6-DevKitC-1</text>
+<text class="sub" x="895" y="536" text-anchor="middle">3.3 V; PCNT units on the console side</text>
+<line class="wire" x1="782" y1="560" x2="800" y2="560"/>
+<text class="pinno" x="779" y="564" text-anchor="end"></text>
+<text class="pin" x="806" y="564">GPIO18</text>
+<path class="wire" d="M 668 560 L 782 560"/>
+<line class="wire" x1="782" y1="586" x2="800" y2="586"/>
+<text class="pinno" x="779" y="590" text-anchor="end"></text>
+<text class="pin" x="806" y="590">GPIO19</text>
+<path class="wire" d="M 668 586 L 782 586"/>
+<line class="wire" x1="782" y1="612" x2="800" y2="612"/>
+<text class="pinno" x="779" y="616" text-anchor="end"></text>
+<text class="pin" x="806" y="616">GPIO20</text>
+<path class="wire" d="M 668 612 L 782 612"/>
+<line class="wire" x1="782" y1="638" x2="800" y2="638"/>
+<text class="pinno" x="779" y="642" text-anchor="end"></text>
+<text class="pin" x="806" y="642">GPIO21</text>
+<path class="wire" d="M 668 638 L 782 638"/>
+<line class="wire" x1="782" y1="664" x2="800" y2="664"/>
+<text class="pinno" x="779" y="668" text-anchor="end"></text>
+<text class="pin" x="806" y="668">GPIO22</text>
+<path class="wire" d="M 668 664 L 782 664"/>
+<line class="wire" x1="782" y1="690" x2="800" y2="690"/>
+<text class="pinno" x="779" y="694" text-anchor="end"></text>
+<text class="pin" x="806" y="694">GPIO23</text>
+<path class="wire" d="M 668 690 L 782 690"/>
+<line class="wire" x1="782" y1="716" x2="800" y2="716"/>
+<text class="pinno" x="779" y="720" text-anchor="end"></text>
+<text class="pin" x="806" y="720">GPIO10</text>
+<path class="wire" d="M 668 716 L 782 716"/>
+<line class="wire" x1="782" y1="742" x2="800" y2="742"/>
+<text class="pinno" x="779" y="746" text-anchor="end"></text>
+<text class="pin" x="806" y="746">GPIO11</text>
+<path class="wire" d="M 668 742 L 782 742"/>
+<line class="wire" x1="782" y1="778" x2="800" y2="778"/>
+<text class="pinno" x="779" y="782" text-anchor="end"></text>
+<text class="pin" x="806" y="782">GPIO0: latch count</text>
+<line class="wire" x1="782" y1="804" x2="800" y2="804"/>
+<text class="pinno" x="779" y="808" text-anchor="end"></text>
+<text class="pin" x="806" y="808">GPIO1: clock count</text>
+<path class="wire" d="M 468 818 L 700 818 L 700 778 L 782 778"/>
+<path class="wire" d="M 468 844 L 720 844 L 720 804 L 782 804"/>
+<rect class="chip" x="1060" y="620" width="110" height="170" rx="6"/>
+<text class="title" x="1115.0" y="640" text-anchor="middle">Pad socket</text>
+<text class="sub" x="1115.0" y="658" text-anchor="middle">the console's housing</text>
+<line class="wire" x1="1042" y1="680" x2="1060" y2="680"/>
+<text class="pinno" x="1039" y="684" text-anchor="end">3</text>
+<text class="pin" x="1066" y="684">OUT0</text>
+<line class="wire" x1="990" y1="680" x2="1008" y2="680"/>
+<text class="pinno" x="1011" y="684"></text>
+<text class="pin" x="984" y="684" text-anchor="end">GPIO2: latch out</text>
+<path class="wire" d="M 1008 680 L 1042 680"/>
+<line class="wire" x1="1042" y1="704" x2="1060" y2="704"/>
+<text class="pinno" x="1039" y="708" text-anchor="end">2</text>
+<text class="pin" x="1066" y="708">CLK</text>
+<line class="wire" x1="990" y1="704" x2="1008" y2="704"/>
+<text class="pinno" x="1011" y="708"></text>
+<text class="pin" x="984" y="708" text-anchor="end">GPIO3: clock out</text>
+<path class="wire" d="M 1008 704 L 1042 704"/>
+<line class="wire" x1="1042" y1="728" x2="1060" y2="728"/>
+<text class="pinno" x="1039" y="732" text-anchor="end">4</text>
+<text class="pin" x="1066" y="732">D0</text>
+<line class="wire" x1="990" y1="728" x2="1008" y2="728"/>
+<text class="pinno" x="1011" y="732"></text>
+<text class="pin" x="984" y="732" text-anchor="end">GPIO6: data in</text>
+<path class="wire" d="M 1008 728 L 1042 728"/>
+<line class="wire" x1="1042" y1="752" x2="1060" y2="752"/>
+<text class="pinno" x="1039" y="756" text-anchor="end">7</text>
+<text class="pin" x="1066" y="756">+5</text>
+<line class="wire" x1="990" y1="752" x2="1008" y2="752"/>
+<text class="pinno" x="1011" y="756"></text>
+<text class="pin" x="984" y="756" text-anchor="end">3V3</text>
+<path class="rail" d="M 1008 752 L 1042 752"/>
+<line class="wire" x1="1042" y1="776" x2="1060" y2="776"/>
+<text class="pinno" x="1039" y="780" text-anchor="end">1</text>
+<text class="pin" x="1066" y="780">GND</text>
+<path class="wire" d="M 990 776 L 1042 776"/>
+<line class="wire" x1="990" y1="810" x2="1008" y2="810"/>
+<text class="pinno" x="1011" y="814"></text>
+<text class="pin" x="984" y="814" text-anchor="end">GPIO7: trigger</text>
+<path class="wire" d="M 1008 810 L 1100 810 L 1100 850"/>
+<text class="net" x="1100" y="866" text-anchor="middle">100 ohm to EXT TRIG</text>
+<text class="sub" x="895" y="938" text-anchor="middle">USB-C (UART port) to the Pi: power and the line protocol</text>
+<path class="wire" d="M 178 600 L 240 600 L 240 560 L 300 560"/>
+<text class="net" x="209.0" y="595.0" text-anchor="middle">OUT0</text>
+<path class="wire" d="M 390 560 L 462 560"/>
+<text class="net" x="420" y="554" text-anchor="middle">/PL</text>
+<path class="wire" d="M 178 630 L 260 630 L 260 586 L 462 586"/>
+<text class="net" x="219.0" y="625.0" text-anchor="middle">CLK</text>
+<path class="wire" d="M 178 660 L 220 660 L 220 664 L 462 664"/>
+<text class="net" x="199.0" y="655.0" text-anchor="middle">D0</text>
+<path class="rail" d="M 178 570 L 200 570 L 200 690 L 462 690"/>
+<text class="net" x="189.0" y="565.0" text-anchor="middle">+5 V</text>
+<path class="wire" d="M 178 690 L 180 690 L 180 716 L 462 716"/>
+<text class="net" x="179.0" y="685.0" text-anchor="middle">GND</text>
+<path class="wire" d="M 462 612 L 440 612 L 440 638 L 462 638"/>
+<path class="wire" d="M 440 638 L 440 716"/>
+<path class="wire" d="M 240 600 L 240 818 L 282 818"/>
+<path class="wire" d="M 260 630 L 260 844 L 282 844"/>
+<text class="sub" x="24" y="960" text-anchor="start">Three supplies, one ground: the console's +5 V for the 165 and the 04, the C6's 3.3 V for the 245 and the pad. Pin numbers and GPIOs</text>
+<text class="sub" x="24" y="975" text-anchor="start">are read from docs/wiring.md by tools/draw-bench.py; the tables there are the source and this drawing is derived. Nothing here is built yet.</text>
+</svg>
