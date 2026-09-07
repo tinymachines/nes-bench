@@ -35,7 +35,9 @@ register's job, as it is in the pad.
 - `head/`: the Pi's daemon, the bench under one script (UDP in, the
   bridge over serial, relays, the scope over SCPI, runs served back over
   HTTP); `docs/script.md` is the script's words, shared with the model.
-- `tools/`: `bench.py` (the workstation's client), `sniff.py` (the
+- `tools/`: `bench.py` (the workstation's client), `b1-score.py` (a
+  run's triggered capture against the model's frame at the same poll,
+  through the roundtrip), `sniff.py` (the
   bridge over serial alone), `compare-logs.py` (two poll logs, latch for
   latch), `fake-bridge.py` (the protocol with no part behind it, for
   running the head on a box without an ESP32), `draw-bench.py`.

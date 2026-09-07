@@ -42,6 +42,30 @@ applies it at the strobe's rise before latch n; `nes` @ a99b4eb,
 dialect and adds the external-trigger single shot, untested: the scope
 was off the LAN when this was written. The relays have no Pi wired.
 
+## Added 2026-09-07: the B1 tool, green on the synthesis before any capture
+
+`tools/b1-score.py runs/<stamp> rom.nes` reads the run's script for
+its `TRIG n` and the capture's `.toml` for the rate and the trigger's
+sample (which the head reads off the scope's own preamble, so no offset
+sign convention is trusted), and runs `nes-console`'s `capture-score`
+with the script, the latch and the trigger: the model plays the same
+`SET` and `AT` lines to the first frame that completes after latch n,
+the record is sliced from the trigger's sample on so the recovery's
+first full frame is that frame on the part, and every flat region is
+scored through the roundtrip with N6's tolerances. The recovery needs
+two full frames after the slice, so the head sets the horizontal offset
+to put the trigger early in the record; whether the sign is right is
+the first real capture's to say, and the `.toml` will say it.
+
+Its own green run (`SYNTH_TRIGGER=1`): six frames synthesised through
+the card model, the fourth scored, the synthesis sliced from inside the
+third as a trigger placed there would be, 13 of 13 regions on the bars
+cartridge at every frame count tried across its luma-row step.
+`MUTATE_TRIGGER=1` slices one frame late and is 1 of 13 at the step
+(frames 122), which is what shows the frame selection is checked and
+not only the colours; the public site's boarding runs both and refuses
+to board if the mutation is not red. `nes` @ 59d42c8.
+
 ## What the die said before the part could
 
 The gate asked for clocks per latch on the part, expecting nine where

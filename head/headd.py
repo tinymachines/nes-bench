@@ -210,12 +210,19 @@ class Scope:
 
     def arm(self, ch, scale, offset, tb=0.005, depth=12_000_000):
         """Single-shot on the external trigger: the next rising edge on
-        EXT TRIG stops the scope with the window around it."""
+        EXT TRIG stops the scope with the window around it. The
+        horizontal offset is set to four divisions so the trigger sits
+        early in the record and two full frames follow it, which the
+        recovery needs; the sign convention is not trusted: the record's
+        preamble says where the trigger fell, and that is what is
+        written beside the capture (`trigger_sample`). If the first real
+        capture reports the trigger late in the record, flip the sign
+        here."""
         self.save_setup()
         off = [f":CHANnel{c}:DISPlay OFF" for c in (1, 2, 3, 4) if c != ch]
         for c in [":STOP", *off, f":CHANnel{ch}:DISPlay ON", f":CHANnel{ch}:PROBe 1", f":CHANnel{ch}:COUPling DC",
                   f":CHANnel{ch}:BWLimit OFF", f":CHANnel{ch}:SCALe {scale}", f":CHANnel{ch}:OFFSet {offset}",
-                  ":ACQuire:TYPE NORMal", f":TIMebase:MAIN:SCALe {tb}", ":TRIGger:MODE EDGE",
+                  ":ACQuire:TYPE NORMal", f":TIMebase:MAIN:SCALe {tb}", f":TIMebase:MAIN:OFFSet {tb * 4}", ":TRIGger:MODE EDGE",
                   ":TRIGger:EDGe:SOURce EXT", ":TRIGger:EDGe:SLOPe POSitive", ":TRIGger:EDGe:LEVel 1.5",
                   ":TRIGger:SWEep SINGle"]:
             self.cmd(c)
@@ -249,14 +256,21 @@ class Scope:
             data += self.ask_block(":WAVeform:DATA?")
         if len(data) != mdepth:
             raise RuntimeError(f"short read: {len(data)} of {mdepth}")
+        # The preamble's xorigin is the first sample's time relative to
+        # the trigger (negative when the trigger is inside the record),
+        # xincrement the sample period: the trigger's sample index
+        # follows without any offset sign convention.
+        pre = self.ask(":WAVeform:PREamble?").split(",")
+        xinc, xorig = float(pre[4]), float(pre[5])
+        trigger_sample = int(round(-xorig / xinc))
         (out_dir / f"{name}.u8").write_bytes(bytes(data))
         (out_dir / f"{name}.toml").write_text(
-            f'file = "{name}.u8"\nformat = "u8"\nrate_hz = {srate:.1f}\n'
+            f'file = "{name}.u8"\nformat = "u8"\nrate_hz = {srate:.1f}\ntrigger_sample = {trigger_sample}\n'
             f'# captured {time.strftime("%Y-%m-%d %H:%M")} from {self.idn.split(",")[1] if "," in self.idn else self.idn}\n'
-            f"# by nes-bench head: CH{ch}, EXT TRIG single-shot; {note}\n"
+            f"# by nes-bench head: CH{ch}, EXT TRIG single-shot, xorigin {xorig:g} s; {note}\n"
         )
         lo, hi = min(data), max(data)
-        return dict(points=mdepth, rate=srate, lo=lo, hi=hi)
+        return dict(points=mdepth, rate=srate, lo=lo, hi=hi, trigger_sample=trigger_sample)
 
 
 # -------------------------------------------------------------------- runs
@@ -379,7 +393,7 @@ class Run(threading.Thread):
         self.armed = None
         self.say(f"reading {name}")
         info = h.scope.read_record(ch, self.dir, name, note)
-        self.say(f"captured {name}: {info['points']} points at {info['rate']:.0f} Sa/s, range {info['lo']}..{info['hi']}")
+        self.say(f"captured {name}: {info['points']} points at {info['rate']:.0f} Sa/s, range {info['lo']}..{info['hi']}, trigger at sample {info['trigger_sample']}")
         h.scope.restore_setup()
 
 
