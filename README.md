@@ -32,8 +32,13 @@ register's job, as it is in the pad.
   disagree with the document (`--check` refuses a stale one).
 - `firmware/bridge/`: the ESP32 sketch (arduino-cli, esp32 core 3.x;
   the bench's board is an ESP32-C6-DevKitC-1).
-- `tools/`: `sniff.py` (the bridge over serial) and `compare-logs.py`
-  (two poll logs, latch for latch).
+- `head/`: the Pi's daemon, the bench under one script (UDP in, the
+  bridge over serial, relays, the scope over SCPI, runs served back over
+  HTTP); `docs/script.md` is the script's words, shared with the model.
+- `tools/`: `bench.py` (the workstation's client), `sniff.py` (the
+  bridge over serial alone), `compare-logs.py` (two poll logs, latch for
+  latch), `fake-bridge.py` (the protocol with no part behind it, for
+  running the head on a box without an ESP32), `draw-bench.py`.
 
 The bridge is not built yet. Captures and dumps of cartridges are never
 committed (`captures/`, `roms/` and `*.nes` are ignored); the family's

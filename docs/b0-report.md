@@ -28,6 +28,20 @@ which changed the model.
   strobe and eight reads every NMI, with or without a looping DMC
   sample at the fastest rate).
 
+## Added 2026-09-07: the head, and the script on both sides
+
+`head/headd.py` is the Pi's daemon: one script (`docs/script.md`) played
+onto the bridge, the relays and the scope, the run served back. It ran
+end to end against `tools/fake-bridge.py`, a stand-in for the protocol
+with no part behind it, and the fetched log was diffed against the
+model's for the same script by `tools/compare-logs.py`: every latch
+agreeing, the scheduled byte landing at exactly its latch on both
+sides (the bridge writes it after latch n-1, the model's controller
+applies it at the strobe's rise before latch n; `nes` @ a99b4eb,
+`tests/pad_log.rs`). The scope half shares scope-capture's proven
+dialect and adds the external-trigger single shot, untested: the scope
+was off the LAN when this was written. The relays have no Pi wired.
+
 ## What the die said before the part could
 
 The gate asked for clocks per latch on the part, expecting nine where

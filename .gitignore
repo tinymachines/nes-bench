@@ -4,3 +4,4 @@ roms/
 *.bin
 *.wav
 bench.local.md
+runs/
