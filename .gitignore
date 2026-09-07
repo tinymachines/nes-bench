@@ -4,3 +4,9 @@ roms/
 *.bin
 *.wav
 bench.local.md
+
+# The cartridge reader firmware, databases and the stock repo (GPL, not ours),
+# pulled beside the die data for the bench (github.com/tinymachines/nes-bench).
+extern/oscr-*/
+extern/cartreader/
+extern/cartreader.wiki/
