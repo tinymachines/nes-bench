@@ -37,7 +37,10 @@ register's job, as it is in the pad.
   HTTP); `docs/script.md` is the script's words, shared with the model.
 - `tools/`: `bench.py` (the workstation's client), `b1-score.py` (a
   run's triggered capture against the model's frame at the same poll,
-  through the roundtrip), `sniff.py` (the
+  through the roundtrip), `b2-align.py` (the alignment class off a
+  three-channel capture, the histogram over power-ons, its self-test),
+  `fake-scope.py` (the head's SCPI subset with synthesised records),
+  `sniff.py` (the
   bridge over serial alone), `compare-logs.py` (two poll logs, latch for
   latch), `fake-bridge.py` (the protocol with no part behind it, for
   running the head on a box without an ESP32), `draw-bench.py`.

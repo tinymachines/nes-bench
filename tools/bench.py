@@ -7,7 +7,7 @@ fetch the run.
   python3 tools/bench.py <head> abort
   python3 tools/bench.py <head> bridge "STATUS"
   python3 tools/bench.py <head> runs
-  python3 tools/bench.py <head> fetch <stamp> [runs/]
+  python3 tools/bench.py <head> fetch <stamp> [--into runs/]
 
 <head> is host[:port] (the head's UDP port, default 6530; its HTTP
 listing is on the next port). `run` waits until the head reports the

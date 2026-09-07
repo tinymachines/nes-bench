@@ -167,9 +167,17 @@ class Scope:
     PORT = 5555
     CHUNK = 250_000
 
-    def __init__(self, host):
+    def __init__(self, host, tries=30):
         self.host = host
-        self.s = socket.create_connection((host, self.PORT), timeout=5)
+        # The scope may come up after the Pi: try for half a minute.
+        for i in range(tries):
+            try:
+                self.s = socket.create_connection((host, self.PORT), timeout=5)
+                break
+            except OSError as e:
+                if i == tries - 1:
+                    raise
+                time.sleep(1.0)
         self.s.settimeout(15)
         self.idn = self.ask("*IDN?")
         self.setup = None
@@ -208,7 +216,7 @@ class Scope:
             time.sleep(2.0)
             self.cmd(":RUN")
 
-    def arm(self, ch, scale, offset, tb=0.005, depth=12_000_000):
+    def arm(self, chs, scale, offset, source="EXT", tb=0.005, depth=12_000_000):
         """Single-shot on the external trigger: the next rising edge on
         EXT TRIG stops the scope with the window around it. The
         horizontal offset is set to four divisions so the trigger sits
@@ -219,11 +227,17 @@ class Scope:
         capture reports the trigger late in the record, flip the sign
         here."""
         self.save_setup()
-        off = [f":CHANnel{c}:DISPlay OFF" for c in (1, 2, 3, 4) if c != ch]
-        for c in [":STOP", *off, f":CHANnel{ch}:DISPlay ON", f":CHANnel{ch}:PROBe 1", f":CHANnel{ch}:COUPling DC",
-                  f":CHANnel{ch}:BWLimit OFF", f":CHANnel{ch}:SCALe {scale}", f":CHANnel{ch}:OFFSet {offset}",
+        off = [f":CHANnel{c}:DISPlay OFF" for c in (1, 2, 3, 4) if c not in chs]
+        on = []
+        for ch in chs:
+            on += [f":CHANnel{ch}:DISPlay ON", f":CHANnel{ch}:PROBe 1", f":CHANnel{ch}:COUPling DC",
+                   f":CHANnel{ch}:BWLimit OFF", f":CHANnel{ch}:SCALe {scale}", f":CHANnel{ch}:OFFSet {offset}"]
+        src = "EXT" if source.upper() == "EXT" else f"CHANnel{int(source.upper().lstrip('CHANEL'))}"
+        # A logic-level trigger on a channel sits at 2.5 V; EXT TRIG's is 1.5 V.
+        level = 1.5 if src == "EXT" else 2.5
+        for c in [":STOP", *off, *on,
                   ":ACQuire:TYPE NORMal", f":TIMebase:MAIN:SCALe {tb}", f":TIMebase:MAIN:OFFSet {tb * 4}", ":TRIGger:MODE EDGE",
-                  ":TRIGger:EDGe:SOURce EXT", ":TRIGger:EDGe:SLOPe POSitive", ":TRIGger:EDGe:LEVel 1.5",
+                  f":TRIGger:EDGe:SOURce {src}", ":TRIGger:EDGe:SLOPe POSitive", f":TRIGger:EDGe:LEVel {level}",
                   ":TRIGger:SWEep SINGle"]:
             self.cmd(c)
             time.sleep(0.08)
@@ -242,35 +256,47 @@ class Scope:
     def triggered(self):
         return self.ask(":TRIGger:STATus?").strip() == "STOP"
 
-    def read_record(self, ch, out_dir, name, note):
+    def read_record(self, chs, out_dir, name, note):
+        """Every armed channel's record after the stop, one file each
+        (`name.u8` for a single channel, `name-chN.u8` for several), and
+        one `.toml` naming them all, the rate and the trigger's sample."""
         srate = float(self.ask(":ACQuire:SRATe?"))
         mdepth = int(float(self.ask(":ACQuire:MDEPth?")))
-        self.cmd(f":WAVeform:SOURce CHANnel{ch}")
-        self.cmd(":WAVeform:MODE RAW")
-        self.cmd(":WAVeform:FORMat BYTE")
-        data = bytearray()
-        for start in range(1, mdepth + 1, self.CHUNK):
-            stop = min(start + self.CHUNK - 1, mdepth)
-            self.cmd(f":WAVeform:STARt {start}")
-            self.cmd(f":WAVeform:STOP {stop}")
-            data += self.ask_block(":WAVeform:DATA?")
-        if len(data) != mdepth:
-            raise RuntimeError(f"short read: {len(data)} of {mdepth}")
-        # The preamble's xorigin is the first sample's time relative to
-        # the trigger (negative when the trigger is inside the record),
-        # xincrement the sample period: the trigger's sample index
-        # follows without any offset sign convention.
-        pre = self.ask(":WAVeform:PREamble?").split(",")
-        xinc, xorig = float(pre[4]), float(pre[5])
-        trigger_sample = int(round(-xorig / xinc))
-        (out_dir / f"{name}.u8").write_bytes(bytes(data))
-        (out_dir / f"{name}.toml").write_text(
-            f'file = "{name}.u8"\nformat = "u8"\nrate_hz = {srate:.1f}\ntrigger_sample = {trigger_sample}\n'
-            f'# captured {time.strftime("%Y-%m-%d %H:%M")} from {self.idn.split(",")[1] if "," in self.idn else self.idn}\n'
-            f"# by nes-bench head: CH{ch}, EXT TRIG single-shot, xorigin {xorig:g} s; {note}\n"
-        )
-        lo, hi = min(data), max(data)
-        return dict(points=mdepth, rate=srate, lo=lo, hi=hi, trigger_sample=trigger_sample)
+        files = {}
+        ranges = {}
+        trigger_sample = None
+        xorig = 0.0
+        for ch in chs:
+            self.cmd(f":WAVeform:SOURce CHANnel{ch}")
+            self.cmd(":WAVeform:MODE RAW")
+            self.cmd(":WAVeform:FORMat BYTE")
+            data = bytearray()
+            for start in range(1, mdepth + 1, self.CHUNK):
+                stop = min(start + self.CHUNK - 1, mdepth)
+                self.cmd(f":WAVeform:STARt {start}")
+                self.cmd(f":WAVeform:STOP {stop}")
+                data += self.ask_block(":WAVeform:DATA?")
+            if len(data) != mdepth:
+                raise RuntimeError(f"short read on CH{ch}: {len(data)} of {mdepth}")
+            # The preamble's xorigin is the first sample's time relative
+            # to the trigger (negative when the trigger is inside the
+            # record), xincrement the sample period: the trigger's sample
+            # index follows without any offset sign convention.
+            pre = self.ask(":WAVeform:PREamble?").split(",")
+            xinc, xorig = float(pre[4]), float(pre[5])
+            trigger_sample = int(round(-xorig / xinc))
+            fname = f"{name}.u8" if len(chs) == 1 else f"{name}-ch{ch}.u8"
+            (out_dir / fname).write_bytes(bytes(data))
+            files[ch] = fname
+            ranges[ch] = (min(data), max(data))
+        lines = [f'file = "{files[chs[0]]}"', 'format = "u8"', f"rate_hz = {srate:.1f}", f"trigger_sample = {trigger_sample}"]
+        lines += [f'ch{ch} = "{f}"' for ch, f in files.items()]
+        lines += [f'# captured {time.strftime("%Y-%m-%d %H:%M")} from {self.idn.split(",")[1] if "," in self.idn else self.idn}',
+                  f"# by nes-bench head: CH{','.join(map(str, chs))}, single-shot, xorigin {xorig:g} s; {note}"]
+        (out_dir / f"{name}.toml").write_text("\n".join(lines) + "\n")
+        lo = min(r[0] for r in ranges.values())
+        hi = max(r[1] for r in ranges.values())
+        return dict(points=mdepth, rate=srate, lo=lo, hi=hi, trigger_sample=trigger_sample, files=files)
 
 
 # -------------------------------------------------------------------- runs
@@ -358,17 +384,26 @@ class Run(threading.Thread):
                     if self.armed and h.scope and h.scope.triggered():
                         self.finish_capture()
         elif op == "ARM":
-            # ARM name [channel] [scale] [offset]
+            # ARM name [channels] [scale] [offset] [source]: channels as
+            # 3 or 1,2,4; source EXT (the bridge's trigger) or CHn.
+            # Then [timebase s/div] [depth]: the DS1054Z allows 12 M
+            # points with one or two channels and 6 M with more, and
+            # picks the rate as depth over window; B1's frame captures
+            # want 5 ms/div at 12 M (200 MSa/s over 60 ms), B2's clock
+            # captures 0.5 ms/div at 1.2 M (200 MSa/s over 6 ms).
             name = w[1]
-            ch = int(w[2]) if len(w) > 2 else 3
+            chs = [int(c) for c in (w[2] if len(w) > 2 else "3").split(",")]
             scale = float(w[3]) if len(w) > 3 else 0.5
             offset = float(w[4]) if len(w) > 4 else -1.3
+            source = w[5] if len(w) > 5 else "EXT"
+            tb = float(w[6]) if len(w) > 6 else 0.005
+            depth = int(w[7]) if len(w) > 7 else (12_000_000 if len(chs) <= 2 else 1_200_000)
             if h.scope is None:
                 self.say(f"arm {name}: no scope (--no-scope); recorded as not captured")
                 return
-            status = h.scope.arm(ch, scale, offset)
-            self.armed = (name, ch, f"{scale * 1000:.0f} mV/div, {offset * 1000:.0f} mV offset")
-            self.say(f"armed {name} on CH{ch}, trigger status {status}")
+            status = h.scope.arm(chs, scale, offset, source, tb, depth)
+            self.armed = (name, chs, f"{scale * 1000:.0f} mV/div, {offset * 1000:.0f} mV offset, trigger {source}, {tb * 1000:g} ms/div, {depth} points")
+            self.say(f"armed {name} on CH{','.join(map(str, chs))} from {source}, {tb * 1000:g} ms/div, {depth} points, trigger status {status}")
         elif op == "CAPTURE":
             # CAPTURE: wait for the armed trigger, read the record.
             if not self.armed:
@@ -389,10 +424,10 @@ class Run(threading.Thread):
 
     def finish_capture(self):
         h = self.head
-        name, ch, note = self.armed
+        name, chs, note = self.armed
         self.armed = None
         self.say(f"reading {name}")
-        info = h.scope.read_record(ch, self.dir, name, note)
+        info = h.scope.read_record(chs, self.dir, name, note)
         self.say(f"captured {name}: {info['points']} points at {info['rate']:.0f} Sa/s, range {info['lo']}..{info['hi']}, trigger at sample {info['trigger_sample']}")
         h.scope.restore_setup()
 

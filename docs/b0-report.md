@@ -66,6 +66,40 @@ cartridge at every frame count tried across its luma-row step.
 not only the colours; the public site's boarding runs both and refuses
 to board if the mutation is not red. `nes` @ 59d42c8.
 
+## Added 2026-09-07: the B2 classifier, green on its own synthesis
+
+`tools/b2-align.py` reads the console's CPU-to-PPU alignment off a
+three-channel capture (the master clock, M2, ALE) and, with `sweep`,
+plays a power-on script through the head N times and prints the
+histogram. Its two facts were measured on the dies first: the 2A03's
+M2 falls on the very half-step its clk0 falls, a phi1's start, and
+rises three early (high 15 of 24, the part's documented 62.5 percent
+duty; `v2a03-sim`'s m2-phase, `2a03` @ 51c9b4a), and the 2C02's ALE
+rises on the very half-step pclk0 rises, a dot's start, every other dot
+while rendering (`v2c02-sim`'s ale-phase, 2,508 of 2,508 rises, `2c02`
+@ c3a4b9b). So the offset from an ALE rise to the next M2 fall, in
+half-steps on the console's own master clock as the ruler, is the
+model's cpu_phase minus ppu_phase, and mod 8 it is the class; the pair
+the model runs in, (4, 3), is class 1. A capture whose offsets do not
+sit on half-steps, or whose class is not clean, is refused, not
+classified.
+
+Its gate (`selftest`): the three channels synthesised for 72
+alignments at the head's three-channel rate with the measured pin
+offsets, every one read back as its class; the synthesised ALE shifted
+one half-step (MUTATE) moves the class on all 24. Then the whole path
+through the head: `tools/fake-scope.py` answers the head's SCPI with
+those synthesised records, a B2 script (power off, arm three channels
+on ALE's first rise, power on, capture) played three times by `sweep`,
+each run fetched and classified as the alignment the fake was given.
+The head's ARM took a channel list, a trigger source, a timebase and a
+depth for it (the DS1054Z holds 6 M points at most with three channels,
+so B2's window is 6 ms at 1.2 M; B1's stays 60 ms at 12 M on one).
+
+What only the bench can say: whether the part's histogram over a
+hundred power-ons is flat over its classes or prefers some, which is
+B2's first gate, and whether the model's (4, 3) is among them.
+
 ## What the die said before the part could
 
 The gate asked for clocks per latch on the part, expecting nine where
