@@ -100,6 +100,42 @@ What only the bench can say: whether the part's histogram over a
 hundred power-ons is flat over its classes or prefers some, which is
 B2's first gate, and whether the model's (4, 3) is among them.
 
+## Added 2026-09-07: the B3 tools, a planted divergence found
+
+`tools/b3.py` is B3 in four verbs. `record` turns a run's bridge log
+(MODE PASS, a hand on the original pad) into a script: MODE INJECT, SET
+the first byte, an AT at every change; the firmware's schedule grew to
+two thousand entries for it. `replay` plays that script on the part
+once per latch named, each replay from RESET with one capture
+triggered at its latch, and scores every capture against the model's
+frame at that latch through b1-score; one capture per run, because
+reading a record takes seconds while the console runs on, and the arm
+comes before the trigger in the script because arming is seconds of
+SCPI and a trigger set first can fire unheard, both found here. `agree`
+sets two replays' captures at the same latches against each other, the
+part against itself, region for region under B1's tolerances. `bisect`
+finds the first latch at which a capture disagrees with the model,
+assuming divergence is monotone, in about log2 of the span replays.
+
+To test it without a part, `nes-console`'s polling cartridge got a
+variant, `pad-paint`, that colours its band with the byte it polled,
+and `capture-score` writes its synthesis out as a record with the
+trigger's sample beside it (`SYNTH_OUT`); `tools/fake-scope.py --video`
+serves that synthesis, at the latch the fake bridge triggered at, under
+the run's own script with `--diverge-at N hh` appended, so the "part"
+plays a different byte from latch N on. With the divergence planted at
+latch 200: replays at 100 and 400 agree and disagree with the model as
+they should, two replays agree with each other at both, and `bisect`
+over 0..1024 names latch 200 in eleven replays, latch 199 agreeing.
+`nes` @ e1839eb.
+
+One bug found by that test and fixed: the synthesis had been written
+out after its own trigger slice, with the trigger's sample computed
+from the shortened record, so a reader slicing at that sample landed
+two frames late, and the bisection named 198. The written record now
+recovers the same frame as the in-process path, anchor line for anchor
+line.
+
 ## What the die said before the part could
 
 The gate asked for clocks per latch on the part, expecting nine where

@@ -39,7 +39,11 @@ register's job, as it is in the pad.
   run's triggered capture against the model's frame at the same poll,
   through the roundtrip), `b2-align.py` (the alignment class off a
   three-channel capture, the histogram over power-ons, its self-test),
-  `fake-scope.py` (the head's SCPI subset with synthesised records),
+  `b3.py` (record a run as a script, replay it with captures, the part
+  against itself, bisect to the first divergent latch),
+  `fake-scope.py` (the head's SCPI subset with synthesised records, and
+  with `--video` the model's own frames at the bridge's trigger latch,
+  a divergence plantable),
   `sniff.py` (the
   bridge over serial alone), `compare-logs.py` (two poll logs, latch for
   latch), `fake-bridge.py` (the protocol with no part behind it, for

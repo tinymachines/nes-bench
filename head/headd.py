@@ -178,7 +178,9 @@ class Scope:
                 if i == tries - 1:
                     raise
                 time.sleep(1.0)
-        self.s.settimeout(15)
+        # A RAW read of a 250k chunk can take a while on the instrument
+        # (and the fake scope synthesises its record on demand).
+        self.s.settimeout(90)
         self.idn = self.ask("*IDN?")
         self.setup = None
 
@@ -317,7 +319,8 @@ class Run(threading.Thread):
         self.state = "starting"
         self.line_no = 0
         self.error = None
-        self.armed = None  # (name, ch, note) while a capture waits for its trigger
+        self.armed = None  # (name, chs, note) while a capture waits for its trigger
+        self.captures = []  # the names read so far
         head.bridge.drain()  # the log is this run's lines, not the idle backlog
 
     def say(self, s):
@@ -405,8 +408,13 @@ class Run(threading.Thread):
             self.armed = (name, chs, f"{scale * 1000:.0f} mV/div, {offset * 1000:.0f} mV offset, trigger {source}, {tb * 1000:g} ms/div, {depth} points")
             self.say(f"armed {name} on CH{','.join(map(str, chs))} from {source}, {tb * 1000:g} ms/div, {depth} points, trigger status {status}")
         elif op == "CAPTURE":
-            # CAPTURE: wait for the armed trigger, read the record.
+            # CAPTURE: wait for the armed trigger, read the record. A
+            # WAIT that ran past the trigger has already read it, and
+            # then this is satisfied.
             if not self.armed:
+                if self.captures:
+                    self.say(f"capture: {self.captures[-1]} was already read during the wait")
+                    return
                 raise ValueError("CAPTURE with nothing armed")
             self.wait_capture()
         else:
@@ -428,6 +436,7 @@ class Run(threading.Thread):
         self.armed = None
         self.say(f"reading {name}")
         info = h.scope.read_record(chs, self.dir, name, note)
+        self.captures.append(name)
         self.say(f"captured {name}: {info['points']} points at {info['rate']:.0f} Sa/s, range {info['lo']}..{info['hi']}, trigger at sample {info['trigger_sample']}")
         h.scope.restore_setup()
 
@@ -485,9 +494,20 @@ def serve_udp(head, port):
         s.sendto(out, addr)
 
 
+class _Http(socketserver.ThreadingTCPServer):
+    allow_reuse_address = True  # a restart must not wait out the old socket
+
+
 def serve_http(root, port):
     handler = lambda *a, **k: http.server.SimpleHTTPRequestHandler(*a, directory=str(root), **k)  # noqa: E731
-    with socketserver.ThreadingTCPServer(("0.0.0.0", port), handler) as httpd:
+    try:
+        httpd = _Http(("0.0.0.0", port), handler)
+    except OSError as e:
+        # Half a head is worse than none: the client would run scripts
+        # it cannot fetch.
+        print(f"headd: cannot serve HTTP on {port}: {e}", flush=True)
+        os._exit(2)
+    with httpd:
         httpd.serve_forever()
 
 

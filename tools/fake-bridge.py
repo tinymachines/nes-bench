@@ -27,6 +27,7 @@ def main():
     ap.add_argument("--hz", type=float, default=60.0988)
     ap.add_argument("--pad", default="00", help="the original pad's byte, hex")
     ap.add_argument("--link", default=None, help="symlink path to create for the pty")
+    ap.add_argument("--trigger-file", default=None, help="where to write the latch a TRIG fired at (for tools/fake-scope.py --video)")
     a = ap.parse_args()
     master, slave = pty.openpty()
     # Raw: a pty's line discipline would echo the head's commands back
@@ -99,6 +100,9 @@ def main():
             clocks += 8
             if 0 <= trig_at < latches:
                 out(f"# trigger at latch {latches - 1}")
+                if a.trigger_file:
+                    with open(a.trigger_file, "w") as f:
+                        f.write(f"{latches - 1}\n")
                 trig_at = -1
 
 

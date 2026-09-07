@@ -14,7 +14,7 @@ index the bridge's log and the model's log share.
 | `MODE PASS` / `MODE INJECT` | passed to the bridge: the original pad's byte, or the scripted one | the model has no pad in hand: `INJECT` is the only mode |
 | `SET hh` | the byte to hold now (bit 0 = A, set = pressed) | the byte from the start |
 | `AT n hh` | from latch n on, hold hh; written after latch n-1 so it is in the register at latch n | the controller's schedule, applied at the strobe's rise before latch n |
-| `TRIG n` | the bridge raises EXT TRIG at latch n | nothing (the model renders the frame at n directly) |
+| `TRIG n` | the bridge raises EXT TRIG at latch n; put it after the `ARM`, which takes seconds | nothing (the model renders the frame at n directly) |
 | `ARM name [channels] [scale] [offset] [source] [s/div] [depth]` | the scope set for a single shot: channels `3` or `1,2,4`, the trigger from `EXT` (the bridge's line, the default) or a channel (`CH4`), the timebase and the memory depth (12 M points with one or two channels, at most 6 M with more); the capture is `name.u8` (one channel) or `name-chN.u8` (several) with `name.toml` beside them naming the rate and the trigger's sample | nothing |
 | `CAPTURE` | wait for the armed trigger and read the record (a `WAIT` past the trigger does this too) | nothing |
 | `WAIT n` | until the bridge has logged latch n | run to poll n |

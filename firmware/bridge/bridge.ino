@@ -78,7 +78,7 @@ static long trig_at = -1;
 static unsigned long trig_until = 0;
 
 struct At { uint64_t latch; uint8_t byte; };
-static At schedule[256];
+static At schedule[2048];  // a recorded run's every change of byte (B3)
 static int schedule_len = 0;
 
 static pcnt_unit_handle_t make_unit(int pin, bool on_fall) {
@@ -158,7 +158,7 @@ static void handle(String line) {
     char *end;
     unsigned long n = strtoul(line.c_str() + 3, &end, 10);
     unsigned long b = strtoul(end, nullptr, 16);
-    if (schedule_len < 256) { schedule[schedule_len++] = { (uint64_t)n, (uint8_t)b }; Serial.printf("# at %lu %02lx\n", n, b); }
+    if (schedule_len < 2048) { schedule[schedule_len++] = { (uint64_t)n, (uint8_t)b }; Serial.printf("# at %lu %02lx\n", n, b); }
     else Serial.println("# schedule full");
   }
   else if (line.startsWith("TRIG ")) { trig_at = strtol(line.c_str() + 5, nullptr, 10); Serial.printf("# trig at %ld\n", trig_at); }
