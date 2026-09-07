@@ -1,10 +1,14 @@
-# B0 report: the sniff, machine side closed, the part's side waiting on the build
+# Bench report: B0 to B3, machine side closed, the part's side waiting on the build
 
-Written 2026-09-06. Plan: `docs/bench-plan.md`, first. Nothing here has
-touched the part yet: the bridge is not built. What closed is
-everything B0 could close on the machine, and one thing B0 was going
-to measure on the part turned out to be measurable on the die first,
-which changed the model.
+Begun 2026-09-06 as B0's report and grown into the bench's running
+report as B1, B2 and B3 got their tools before the hardware arrived.
+Plan: `docs/bench-plan.md`, first. Nothing here has touched the part
+yet: the bridge is not built. What closed is everything the four
+milestones could close on the machine, each tool with a green run on a
+synthesis and a mutation that goes red, and one thing B0 was going to
+measure on the part turned out to be measurable on the die first,
+which changed the model. The sections are in the order they were
+written; the part's side of each milestone is the list at the end.
 
 ## What exists
 

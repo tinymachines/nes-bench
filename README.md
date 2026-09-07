@@ -22,10 +22,11 @@ register's job, as it is in the pad.
 - `docs/wiring.md`: the pin table to build from, and the measurements
   to make with a meter before the console is powered through it.
 
-- `docs/b0-report.md`: B0 as it stands, the machine side closed (the
-  firmware compiles, the tools exist, the model logs polls) and the
-  part's side waiting on the build. The die answered the gate's DMC
-  question first and the model changed for it.
+- `docs/bench-report.md`: the bench's running report, B0 to B3 on the
+  machine side (the firmware compiles, the head and every tool run
+  against fakes with red mutations, the model logs polls) and the
+  part's side waiting on the build. The die answered B0's DMC question
+  first and the model changed for it.
 - `docs/bench.svg`: the bench as one drawing, the loop above and the
   bridge's chips with every pin below. Derived: `tools/draw-bench.py`
   reads the pin tables in `docs/wiring.md`, so the drawing cannot
