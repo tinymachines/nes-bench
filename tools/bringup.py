@@ -34,6 +34,7 @@ import json
 import os
 import re
 import sys
+import textwrap
 import time
 from pathlib import Path
 
@@ -279,14 +280,13 @@ STEPS = [
        "Its address belongs in bench.local.md, which git ignores. Nothing else needs it."],
       "scope_idn"),
     S("0.2", "Instruments", "The workstation can open a serial port",
-      ["Plug the Arduino UNO into this workstation by USB. Nothing else connected to it yet:",
-       "no chips, no console, no pad. This step only proves the port opens."],
+      ["Plug the Arduino UNO into this workstation by USB, with nothing else connected to it yet: no chips, no console, no pad. This step only proves the port opens."],
       "serial_open",
       photos=["00-uno-bare.jpg"]),
     S("0.3", "Instruments", "The bridge firmware is on the UNO and answers STATUS",
-      ["Flash it:",
-       "    arduino-cli compile --fqbn arduino:avr:uno firmware/bridge-uno",
-       "    arduino-cli upload  --fqbn arduino:avr:uno -p <port> firmware/bridge-uno"],
+      ["Flash the sketch, putting your own port after -p:",
+       "$ arduino-cli compile --fqbn arduino:avr:uno firmware/bridge-uno",
+       "$ arduino-cli upload  --fqbn arduino:avr:uno -p /dev/ttyACM0 firmware/bridge-uno"],
       "bridge_hello"),
 
     S("1.1", "The harness", "The controller harness's colours mapped by continuity",
@@ -318,29 +318,23 @@ STEPS = [
     S("3.1", "The console side", "U1 and U2 on the board, links on H..A, the pattern on QH",
       ["Console OFF. Build only the console-facing half on the breadboard:",
        "  74HC04 (U1): pin 14 to port +5V, pin 7 to GND, pin 1 from port pin 3 (OUT0).",
-       "  74HC165 (U2): pin 16 to +5V, pin 8 to GND, pin 15 (/CE) to GND, pin 10 (DS) to GND,",
-       "                pin 1 (/PL) from U1 pin 2, pin 2 (CP) from port pin 2 (CLK),",
-       "                pin 9 (QH) to port pin 4 (D0).",
+       "  74HC165 (U2): pin 16 to +5V, pin 8 to GND, pin 15 (/CE) to GND, pin 10 (DS) to GND, pin 1 (/PL) from U1 pin 2, pin 2 (CP) from port pin 2 (CLK), pin 9 (QH) to port pin 4 (D0).",
        "  100 nF across each chip's supply pins.",
-       "  Wire links on the eight inputs to make a KNOWN byte: H is A, then B, Select,",
-       "  Start, Up, Down, Left, Right on pins 6, 5, 4, 3, 14, 13, 12, 11. LOW is pressed.",
+       "  Wire links on the eight inputs to make a KNOWN byte. In pad order A, B, Select, Start, Up, Down, Left, Right those are pins 6, 5, 4, 3, 14, 13, 12, 11, and LOW is pressed.",
        "Scope CH1 still on OUT0, CH2 moved to QH (U2 pin 9). Console on, game running."],
       "scope_qh_pattern",
       photos=["03-console-side-built.jpg", "03-qh-on-scope.jpg"]),
 
     S("4.1", "The UNO side", "The UNO drives the 595, measured on its outputs",
       ["Console OFF and its port half left alone. On the UNO's side of the board:",
-       "  74HC595 (U3): pin 16 to the UNO's 5V, pin 8 to GND, pin 13 (/OE) to GND,",
-       "                pin 10 (/SRCLR) to 5V, pin 14 (SER) from UNO D11,",
-       "                pin 11 (SRCLK) from UNO D13, pin 12 (RCLK) from UNO D10.",
+       "  74HC595 (U3): pin 16 to the UNO's 5V, pin 8 to GND, pin 13 (/OE) to GND, pin 10 (/SRCLR) to 5V, pin 14 (SER) from UNO D11, pin 11 (SRCLK) from UNO D13, pin 12 (RCLK) from UNO D10.",
        "  100 nF across its supply pins.",
        "Do NOT join U3's outputs to U2's inputs yet. Meter on QA (pin 15), black on GND."],
       "bridge_set_byte",
       photos=["04-uno-and-595.jpg"]),
     S("4.2", "The UNO side", "The original pad polled by the bridge at 5 V",
       ["Plug the console's spare port housing into the bridge's pad side:",
-       "  pad pin 1 to GND, pin 7 to the UNO's 5V, pin 3 (OUT0) to UNO D6,",
-       "  pin 2 (CLK) to UNO D7, pin 4 (D0) to UNO D8.",
+       "  pad pin 1 to GND, pin 7 to the UNO's 5V, pin 3 (OUT0) to UNO D6, pin 2 (CLK) to UNO D7, pin 4 (D0) to UNO D8.",
        "Plug an original pad into it. Console still off.",
        "You will be asked to hold buttons; the bridge's own poll should follow them."],
       "bridge_pad_follows",
@@ -369,19 +363,35 @@ STEPS = [
       photos=["06-trigger-cable.jpg"]),
     S("6.2", "The head's hands", "The reset optocoupler pulses the console",
       ["Console on. Find the reset button's two pads; meter which is ground and which is pulled up.",
-       "PC817 module: OUT to the pulled-up pad, its GND to the ground pad, VCC unconnected,",
-       "the Pi's GPIO17 to INPUT +, INPUT - to the Pi's GND."],
+       "PC817 module: OUT to the pulled-up pad, its GND to the ground pad, VCC unconnected, and the Pi's GPIO17 to INPUT + with INPUT - to the Pi's GND."],
       "reset_pulse",
       photos=["06-reset-pads.jpg"]),
     S("6.3", "The head's hands", "The power relay switches the console",
-      ["MAINS SAFETY: the contact goes in series with ONE lead of the low-voltage adapter",
-       "cable between the adapter and the console's DC jack. Never the mains side, never both leads.",
+      ["MAINS SAFETY: the contact goes in series with ONE lead of the low-voltage adapter cable, between the adapter and the console's DC jack. Never the mains side, and never both leads.",
        "Relay module VCC to the Pi's 5V pin, IN to GPIO27 (active low), GND to the Pi's GND."],
       "power_relay",
       photos=["06-relay-inline.jpg"]),
 ]
 
 BY_ID = {s["id"]: s for s in STEPS}
+
+# One sitting at the bench is one command. The steps inside a session
+# share a setup, so splitting them across invocations only means wiring
+# the same thing twice. `docs/build-guide.md` is these five, written out
+# with what to wire, and is generated from this table.
+SESSIONS = [
+    (1, "Instruments", "Nothing is wired. The scope answers, the UNO's port opens, the sketch is on it.",
+     ["0.1", "0.2", "0.3"]),
+    (2, "The console, measured", "Still nothing built. A meter and two probes on the console you already have.",
+     ["1.1", "1.2", "2.1"]),
+    (3, "The bridge, built", "The breadboard, in two halves that are tested apart before they are joined.",
+     ["3.1", "4.1", "4.2"]),
+    (4, "Joined", "The halves wired together. B0's first gate.",
+     ["5.1", "5.2"]),
+    (5, "The head's hands", "The trigger, the reset optocoupler and the power relay.",
+     ["6.1", "6.2", "6.3"]),
+]
+SESSION_OF = {sid: n for n, _t, _d, ids in SESSIONS for sid in ids}
 
 
 # ----------------------------------------------------------------- checks
@@ -715,7 +725,12 @@ def run_step(bench, step, args):
         say(f"{DIM}Answers: {step['replaces']}{OFF}")
     hr()
     for line in step["do"]:
-        say("  " + line)
+        if line.startswith("$ "):
+            say(f"    {BOLD}{line[2:]}{OFF}")
+        elif line.startswith("  "):
+            say(textwrap.fill(line.strip(), 68, initial_indent="    - ", subsequent_indent="      "))
+        else:
+            say(textwrap.fill(line, 70, initial_indent="  ", subsequent_indent="  "))
     say()
     pause()
     fn = CHECKS.get(step["check"])
@@ -729,14 +744,15 @@ def run_step(bench, step, args):
         state, data, line = "fail", {"exception": repr(e)}, f"the check raised: {e}"
     colour = {"pass": GREEN, "fail": RED, "skip": YELLOW}[state]
     say(f"  {colour}{state.upper()}{OFF}  {line}")
-    # Photographs, asked for after the check so the picture shows the state
-    # the notebook records.
+    # Photographs are named, never waited on. Stopping the run for a
+    # keystroke per picture was most of the interruption and bought
+    # nothing: the notebook embeds a photograph when the file arrives and
+    # says it is pending until then, whichever order that happens in.
     taken = []
     for name in step["photos"]:
         dest = PHOTOS / name
-        say(f"  {BOLD}Photo:{OFF} {step['title'].lower()}")
-        say(f"    save it as {DIM}docs/lab/{name}{OFF}")
-        pause("    Press Enter when taken (or type 'skip')" if not dest.exists() else "    (a file is already there) Press Enter")
+        mark = f"{GREEN}already there{OFF}" if dest.exists() else f"{YELLOW}wanted{OFF}"
+        say(f"  Photo {mark}: {DIM}docs/lab/{name}{OFF}  ({step['title'].lower()})")
         taken.append({"file": f"docs/lab/{name}", "present": dest.exists()})
     return {"state": state, "data": data, "line": line, "photos": taken}
 
@@ -745,6 +761,7 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--list", action="store_true")
     ap.add_argument("--step", help="run just this step id")
+    ap.add_argument("--session", type=int, help="run one whole sitting: 1 to 5, see docs/build-guide.md")
     ap.add_argument("--from", dest="from_", help="start at this step id")
     ap.add_argument("--scope", help="the scope's address (else $SCOPE, else bench.local.md)")
     ap.add_argument("--no-scope", action="store_true", help="the scope is absent: its steps SKIP, they do not pass")
@@ -778,7 +795,15 @@ def main():
         say(f"{DIM}Log: docs/lab-log.jsonl. Notebook: python3 tools/lab-notebook.py{OFF}")
         return 0
 
-    if a.step:
+    if a.session:
+        match = [x for x in SESSIONS if x[0] == a.session]
+        if not match:
+            raise SystemExit(f"no session {a.session}; there are {len(SESSIONS)}")
+        n, t, d, ids = match[0]
+        todo = [BY_ID[i] for i in ids]
+        say(f"{BOLD}Session {n}: {t}{OFF}")
+        say(f"{DIM}{d}{OFF}")
+    elif a.step:
         todo = [BY_ID[a.step]] if a.step in BY_ID else []
         if not todo:
             raise SystemExit(f"no step {a.step}; try --list")
@@ -811,10 +836,22 @@ def main():
             hr("=")
             say(f"{RED}Stopped at {s['id']}.{OFF} The next step assumes this one, so fix it and run:")
             say(f"    python3 tools/bringup.py --step {s['id']}")
+            if SESSION_OF.get(s["id"]):
+                say(f"    python3 tools/bringup.py --session {SESSION_OF[s['id']]}   # or the whole sitting again")
             return 1
     hr("=")
-    say(f"{GREEN}Done.{OFF} Render the notebook with:")
-    say("    python3 tools/lab-notebook.py")
+    say(f"{GREEN}Done.{OFF}")
+    wanted = [p["file"] for s in todo for p in [{"file": f"docs/lab/{n}"} for n in s["photos"]]
+              if not (ROOT / p["file"]).exists()]
+    if wanted:
+        say(f"\n{BOLD}Photographs still wanted{OFF} (save under exactly these names, then push):")
+        for w in wanted:
+            say(f"  {w}")
+    say(f"\n{BOLD}Then:{OFF}")
+    say("  python3 tools/lab-notebook.py     # fold it into the notebook")
+    if a.session and a.session < len(SESSIONS):
+        nxt = SESSIONS[a.session][0]
+        say(f"  python3 tools/bringup.py --session {nxt}   # {SESSIONS[a.session][1]}")
     return 0
 
 
