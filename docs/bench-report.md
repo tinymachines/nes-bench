@@ -328,6 +328,55 @@ Still true: nothing here has met the console. What is proven is that the
 firmware compiles, the protocol is unchanged, the checks can fail, and
 the one new hardware limit cannot silently corrupt a run.
 
+## Added 2026-09-08: the bring-up tool, and the notebook it writes
+
+The parts are on the desk, so the next thing is wiring, and wiring is
+where a bench either becomes an instrument or becomes a week of
+plausible wrong answers. `tools/bringup.py` is the procedure: fourteen
+steps in v1b's build order, each printing what to wire, waiting, and
+then **checking something**. It never asks whether a step worked. It
+measures with the scope, reads the bridge's own log, or asks for a meter
+reading and holds it to a range.
+
+Two of the steps are the ones that matter, and both replace authored
+numbers with measured ones:
+
+- **2.1** puts the scope on an original pad's port while a game runs and
+  measures the latch pulse width, the clock pulse width, the interval
+  between clocks and the polls per second. Those four numbers are marked
+  authored throughout `wiring.md` and the timing sheet, and this is what
+  retires them.
+- **5.1** is B0's first gate arriving early: with the bridge joined and
+  a game polling, every poll must carry eight clocks. It listens to the
+  bridge for twenty seconds and prints the histogram.
+
+A failed step stops the run, because the next step assumes the last one.
+One check refuses rather than reports: if the console's supply pin does
+not read about 5 V, the tool will not go on, because a wrong harness map
+and a 5 V line on the wrong pin are the same mistake and one of them
+costs a part.
+
+**It was rehearsed before it met anything.** Step 0.1 ran against the
+real scope. The bridge steps ran against `tools/fake-bridge.py`, which
+speaks the same protocol, and the pad check was proven in both
+directions: it fails against a stand-in holding nothing and passes
+against one holding every button. The supply guard was proven the same
+way, with a bad reading and a good one. The rehearsal found a real
+defect that would have appeared first on hardware: the command reader
+drained the port "until nothing is waiting", which never returns while a
+console is polling sixty times a second and the bridge is streaming a
+line per poll. It is time-bounded now.
+
+Rehearsal attempts are marked in the log and the notebook excludes them
+from the record while saying they happened, because a rehearsal against
+a fake is tool development and not bench work.
+
+The record is `docs/lab-notebook.md`, generated from
+`docs/lab-log.jsonl`. It shows every attempt, not the successful ones: a
+step that took three tries is the part of a notebook worth keeping. It
+embeds a photograph once the file is in `docs/lab/` and names it as
+pending until then, so it carries no broken images and forgets nothing.
+
 ## What B0 still needs from the bench
 
 In the plan's order, once the bridge is built per `docs/wiring.md` and

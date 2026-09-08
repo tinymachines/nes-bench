@@ -27,6 +27,11 @@ register's job, as it is in the pad.
   against fakes with red mutations, the model logs polls) and the
   part's side waiting on the build. The die answered B0's DMC question
   first and the model changed for it.
+- `docs/lab-notebook.md`: the build as it actually happened, generated
+  from `docs/lab-log.jsonl` by `tools/lab-notebook.py`. Nothing in it is
+  typed: `tools/bringup.py` walks the build one step at a time, measures
+  something at each stop, and appends what it found. Photographs live in
+  `docs/lab/`.
 - `docs/bench-v1b-uno.md` with `bench-v1b.svg`: the all-5V UNO
   bridge, the version to build first, and its sketch in
   `firmware/bridge-uno/`.
