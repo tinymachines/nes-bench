@@ -33,6 +33,22 @@ OUT = ROOT / "docs" / "lab-notebook.md"
 MARK = {"pass": "held", "fail": "did not hold", "skip": "skipped"}
 
 
+def bringup_module():
+    """The tool that runs the steps, for the things that belong to it
+    rather than to the record: a step's title and the words for how a
+    measurement was made are authored, and are read from the tool so a
+    rename does not leave the notebook quoting an old one. The numbers,
+    the times and the outcomes come from the log and are never touched."""
+    spec = importlib.util.spec_from_file_location("bringup", ROOT / "tools" / "bringup.py")
+    m = importlib.util.module_from_spec(spec)
+    argv, sys.argv = sys.argv, [sys.argv[0]]
+    try:
+        spec.loader.exec_module(m)
+    finally:
+        sys.argv = argv
+    return m
+
+
 def bringup_steps():
     """The steps, out of the tool that runs them. One fact, one place: a
     second copy of the build order here would drift from the one that is
@@ -87,8 +103,12 @@ def render(entries):
     # but it is worth saying it happened.
     rehearsals = [e for e in entries if e.get("rehearsal")]
     entries = [e for e in entries if not e.get("rehearsal")]
+    b = bringup_module()
+    titles = {st["id"]: st["title"] for st in b.STEPS}
+    methods = getattr(b, "METHODS", {})
     steps = {}
     for e in entries:
+        e = dict(e, title=titles.get(e["step"], e["title"]))
         steps.setdefault(e["step"], []).append(e)
     order = sorted(steps, key=lambda s: [int(x) for x in s.split(".")])
 
@@ -187,6 +207,10 @@ def render(entries):
                 L.append("")
             m = a.get("data", {}).get("map")
             if m:
+                meth = a.get("data", {}).get("method")
+                if meth:
+                    L.append(f"Method: {methods.get(meth, meth)}.")
+                    L.append("")
                 L.append("| port pin | signal | wire |")
                 L.append("|---|---|---|")
                 for k in sorted(m, key=lambda x: int(x[3:])):

@@ -17,7 +17,7 @@ The running record, with every attempt and the photographs, is
 | sitting | what it is | state |
 |---|---|---|
 | 1 | Instruments | done |
-| 2 | The console, measured | not started |
+| 2 | The console, measured | 1 of 3 steps |
 | 3 | The bridge, built | not started |
 | 4 | Joined | not started |
 | 5 | The head's hands | not started |
@@ -102,22 +102,25 @@ Still nothing built. A meter and two probes on the console you already have.
 python3 tools/bringup.py --session 2
 ```
 
-### 1.1  The controller harness's colours mapped by continuity
+### 1.1  The controller harness's colours against the port's pins  (held)
 
 Answers: wiring.md's port table is a published pinout until this step confirms it on THIS board.
 
 - Console UNPLUGGED from the wall. Open it if it is not already.
-- Find the white header on the board where the controller port harness lands (IMG_5666).
-- With the meter on continuity, ring each header pin out to the port socket's pins.
+- Two ways to attach a colour to a pin number, and the record keeps which you used. The port housing has its pin numbers moulded into the plastic beside the crimp terminals, four on one row and three on the other: photograph both rows and read them off. Or find the white header where the harness lands on the board and ring each pin out to the socket with the meter.
+- The moulded numbers are the connector telling you its own numbering, which is worth more than a colour convention. What they do not tell you is whether the harness carries each pin to the board header unswapped. Only the meter does that, so 'both' is the strongest answer.
 - Port pinout, looking into the socket: 1 GND, 2 CLK, 3 OUT0, 4 D0, 5 D3, 6 D4, 7 +5V.
-- Colours are not evidence. Ring every one.
+- Colours are not evidence on their own. Every pin gets a number from the connector or from the meter, never from what the colour usually means.
 
 Then it takes your continuity readings, and refuses fewer than four.
 
 Photographs:
 
+- `docs/lab/01-port-housing-pins-1-4.jpg`  (pushed)
+- `docs/lab/01-port-housing-pins-5-7.jpg`  (pushed)
 - `docs/lab/01-board-header.jpg`  (wanted)
-- `docs/lab/01-port-socket.jpg`  (wanted)
+
+> Last run 2026-09-08 13:26:56: held. 7 of 7 pins mapped, read off the pin numbers moulded into the port housing; the numbering is the housing's own, and step 1.2's +5V reading is what tests it
 
 ### 1.2  The port's idle levels with the console on
 

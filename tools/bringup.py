@@ -308,14 +308,14 @@ STEPS = [
        "$ arduino-cli upload  --fqbn arduino:avr:uno -p /dev/ttyACM0 firmware/bridge-uno"],
       "bridge_hello"),
 
-    S("1.1", "The harness", "The controller harness's colours mapped by continuity",
+    S("1.1", "The harness", "The controller harness's colours against the port's pins",
       ["Console UNPLUGGED from the wall. Open it if it is not already.",
-       "Find the white header on the board where the controller port harness lands (IMG_5666).",
-       "With the meter on continuity, ring each header pin out to the port socket's pins.",
+       "Two ways to attach a colour to a pin number, and the record keeps which you used. The port housing has its pin numbers moulded into the plastic beside the crimp terminals, four on one row and three on the other: photograph both rows and read them off. Or find the white header where the harness lands on the board and ring each pin out to the socket with the meter.",
+       "The moulded numbers are the connector telling you its own numbering, which is worth more than a colour convention. What they do not tell you is whether the harness carries each pin to the board header unswapped. Only the meter does that, so 'both' is the strongest answer.",
        "Port pinout, looking into the socket: 1 GND, 2 CLK, 3 OUT0, 4 D0, 5 D3, 6 D4, 7 +5V.",
-       "Colours are not evidence. Ring every one."],
+       "Colours are not evidence on their own. Every pin gets a number from the connector or from the meter, never from what the colour usually means."],
       "harness_map",
-      photos=["01-board-header.jpg", "01-port-socket.jpg"],
+      photos=["01-port-housing-pins-1-4.jpg", "01-port-housing-pins-5-7.jpg", "01-board-header.jpg"],
       replaces="wiring.md's port table is a published pinout until this step confirms it on THIS board"),
     S("1.2", "The harness", "The port's idle levels with the console on",
       ["Console powered, NOTHING plugged into the port you are measuring.",
@@ -441,16 +441,40 @@ def check_bridge_hello(bench, step):
     return "pass", {"status": status}, status[0]
 
 
+# How a colour got attached to a pin number. The two are not equally
+# strong and the record has to say which was used: a moulded number on
+# the housing is the connector telling you its own numbering, while a
+# meter rung from the board header proves the harness carries it there.
+METHODS = {
+    "meter": "rung out with a meter, header to socket",
+    "moulded": "read off the pin numbers moulded into the port housing",
+    "both": "read off the moulded numbers and confirmed with a meter",
+}
+
+
 def check_harness_map(bench, step):
-    say(f"  {DIM}Enter the wire colour you rang out for each port pin, or 'skip' to leave one blank.{OFF}")
+    say(f"  {DIM}How was each colour attached to its pin number?{OFF}")
+    for k, v in METHODS.items():
+        say(f"    {k}: {v}")
+    method = ask("  method", "meter")
+    if method not in METHODS:
+        return "fail", {"method": method}, f"{method!r} is not one of {', '.join(METHODS)}"
+    say(f"  {DIM}Now the colour at each pin, or 'skip' to leave one blank.{OFF}")
     m = {}
     for pin, name in ((1, "GND"), (2, "CLK"), (3, "OUT0"), (4, "D0"), (5, "D3"), (6, "D4"), (7, "+5V")):
         m[f"pin{pin}"] = {"name": name, "colour": ask(f"  pin {pin} ({name}) colour")}
     named = [k for k, v in m.items() if v["colour"] and v["colour"].lower() != "skip"]
     if len(named) < 4:
-        return "fail", {"map": m}, f"only {len(named)} pins rung out; the four that carry signal are the minimum"
+        return "fail", {"map": m, "method": method}, f"only {len(named)} pins mapped; the four that carry signal are the minimum"
+    note = ""
+    if method == "moulded":
+        # The housing's numbering is the housing's. What it does NOT show
+        # is whether the harness carries each pin to the board header
+        # unswapped, nor that the published function table is right for
+        # this board. Step 1.2's supply reading is what tests both.
+        note = "; the numbering is the housing's own, and step 1.2's +5V reading is what tests it"
     say(f"  {DIM}Put this table into bench.local.md too; it is board-specific and not committed.{OFF}")
-    return "pass", {"map": m}, f"{len(named)} of 7 pins rung out by continuity"
+    return "pass", {"map": m, "method": method}, f"{len(named)} of 7 pins mapped, {METHODS[method]}{note}"
 
 
 def check_port_levels(bench, step):

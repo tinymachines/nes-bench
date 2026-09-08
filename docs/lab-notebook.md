@@ -17,13 +17,14 @@ Those are in the log, marked, and are not counted below.
 
 ## Where the build stands
 
-3 of 3 attempted steps hold, over 6 attempts.
+4 of 4 attempted steps hold, over 7 attempts.
 
 | step | what it proves | attempts | state |
 |---|---|---|---|
 | 0.1 | The scope answers, and says what it is | 2 | held |
 | 0.2 | The workstation can open a serial port | 2 | held |
 | 0.3 | The bridge firmware is on the UNO and answers STATUS | 2 | held |
+| 1.1 | The controller harness's colours against the port's pins | 1 | held |
 
 ## Instruments
 
@@ -48,4 +49,30 @@ Photograph pending: `docs/lab/00-uno-bare.jpg`.
 **Attempt 1, 2026-09-08 12:41:15**: held. # mode pass latch 482 clocks 0 held 00
 
 **Attempt 2, 2026-09-08 12:43:11**: held. # mode pass latch 0 clocks 0 held 00
+
+## The harness
+
+### 1.1  The controller harness's colours against the port's pins
+
+Answers: wiring.md's port table is a published pinout until this step confirms it on THIS board.
+
+**2026-09-08 13:26:56**: held. 7 of 7 pins mapped, read off the pin numbers moulded into the port housing; the numbering is the housing's own, and step 1.2's +5V reading is what tests it
+
+Method: read off the pin numbers moulded into the port housing.
+
+| port pin | signal | wire |
+|---|---|---|
+| 1 | GND | brown |
+| 2 | CLK | red |
+| 3 | OUT0 | orange |
+| 4 | D0 | yellow |
+| 5 | D3 | white |
+| 6 | D4 | blue |
+| 7 | +5V | purple |
+
+![The controller harness's colours against the port's pins](lab/01-port-housing-pins-1-4.jpg)
+
+![The controller harness's colours against the port's pins](lab/01-port-housing-pins-5-7.jpg)
+
+Photograph pending: `docs/lab/01-board-header.jpg`.
 
