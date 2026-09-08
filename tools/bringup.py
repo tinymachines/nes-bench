@@ -153,24 +153,41 @@ class Bench:
     def bridge_port(self):
         if self.args.bridge:
             return self.args.bridge
+        if os.environ.get("BRIDGE"):
+            return os.environ["BRIDGE"]
         found = sorted(glob.glob("/dev/ttyACM*") + glob.glob("/dev/ttyUSB*"))
         return found[0] if found else None
 
     def get_serial(self, baud=115200):
+        """The bridge's serial port, local or over the LAN.
+
+        A port with `://` in it is handed to pyserial's URL handler, so
+        `socket://<pi>:6545` reaches an Arduino plugged into the
+        Raspberry Pi that `head/serial-bridge.py` is running on. That is
+        the arrangement the plan describes and the one the bench uses:
+        the Pi holds the hardware, this workstation holds the model, the
+        log and the record. Either way the board resets as the port
+        opens, so the wait below is the same."""
         if self.serial is not None:
             return self.serial
         port = self.bridge_port()
         if not port:
-            self.serial_why = "no /dev/ttyACM* or /dev/ttyUSB*: is the UNO plugged in?"
+            self.serial_why = ("no /dev/ttyACM* or /dev/ttyUSB* here, and no --bridge given. Plug the UNO "
+                               "into this workstation, or point --bridge at the Pi it is on "
+                               "(socket://<host>:6545, with head/serial-bridge.py running there)")
             return None
-        if not os.access(port, os.R_OK | os.W_OK):
+        remote = "://" in port
+        if not remote and not os.access(port, os.R_OK | os.W_OK):
             self.serial_why = (f"{port} is not readable by you. Fix: sudo usermod -aG dialout $USER, "
                                "then log out and back in (a new shell is not enough)")
             return None
         try:
             import serial
-            self.serial = serial.Serial(port, baud, timeout=1.0)
-            time.sleep(2.0)  # the UNO resets when the port opens
+            if remote:
+                self.serial = serial.serial_for_url(port, baudrate=baud, timeout=1.0)
+            else:
+                self.serial = serial.Serial(port, baud, timeout=1.0)
+            time.sleep(2.5)  # the UNO resets when the port opens, near or far
             self.serial.reset_input_buffer()
             self.serial_why = f"open on {port}"
         except Exception as e:  # noqa: BLE001
@@ -280,7 +297,9 @@ STEPS = [
        "Its address belongs in bench.local.md, which git ignores. Nothing else needs it."],
       "scope_idn"),
     S("0.2", "Instruments", "The workstation can open a serial port",
-      ["Plug the Arduino UNO into this workstation by USB, with nothing else connected to it yet: no chips, no console, no pad. This step only proves the port opens."],
+      ["Plug the Arduino UNO in, with nothing else connected to it yet: no chips, no console, no pad. This step only proves the port opens.",
+       "It can be plugged into this workstation, or into the Raspberry Pi that is the head. For the Pi, run head/serial-bridge.py there and point the tools at it:",
+       "$ python3 tools/bringup.py --session 1 --bridge socket://<pi>:6545"],
       "serial_open",
       photos=["00-uno-bare.jpg"]),
     S("0.3", "Instruments", "The bridge firmware is on the UNO and answers STATUS",
@@ -765,7 +784,10 @@ def main():
     ap.add_argument("--from", dest="from_", help="start at this step id")
     ap.add_argument("--scope", help="the scope's address (else $SCOPE, else bench.local.md)")
     ap.add_argument("--no-scope", action="store_true", help="the scope is absent: its steps SKIP, they do not pass")
-    ap.add_argument("--bridge", help="the UNO's serial port, or a tools/fake-bridge.py pty")
+    ap.add_argument("--bridge", default=None,
+                    help="the UNO's serial port: a local device, a tools/fake-bridge.py pty, or "
+                         "socket://<host>:6545 for one on the Pi running head/serial-bridge.py. "
+                         "$BRIDGE is used if this is not given.")
     ap.add_argument("--operator", default=os.environ.get("USER", "?"))
     ap.add_argument("--rehearse", action="store_true",
                     help="a dry run against stand-ins (tools/fake-bridge.py): logged, but marked so the "

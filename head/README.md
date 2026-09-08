@@ -39,3 +39,50 @@ bash head/setup.sh --dry-run --bridge /dev/ttyUSB0 --scope <ip>   # the steps, r
 ```
 
 Tested here with `--dry-run` only; the first real run is the bench's.
+
+## The Arduino on the Pi, reached from the workstation
+
+Added 2026-09-08, when the bench got a Raspberry Pi as its home base
+with the Uno plugged into it.
+
+`serial-bridge.py` runs on the Pi and puts that serial port on the LAN.
+It is standard library only and nothing is installed to use it, which is
+not laziness: this Pi resolves DNS through DNSCrypt resolvers on another
+subnet, so from the bench network it can reach neither apt nor GitHub.
+That is a deliberate part of its setup, so the tooling goes to the port
+rather than the other way round.
+
+Start it as a transient system unit, which outlives the login:
+
+```
+sudo systemd-run --unit=serial-bridge --collect \
+  -p StandardOutput=append:/var/log/sbridge.log \
+  -p StandardError=append:/var/log/sbridge.log \
+  -p Restart=always -p RestartSec=1 \
+  python3 /tmp/serial-bridge.py --port /dev/ttyACM0 --baud 115200 --listen 0.0.0.0:6545
+```
+
+A **user** unit is the wrong choice and was tried first: without lingering
+enabled the user manager stops when the last ssh session closes and takes
+the service with it, which presents as a bridge that works while you are
+watching and is gone when you come back.
+
+Then, from the workstation, one port serves both jobs:
+
+```
+python3 tools/bringup.py --session 1 --bridge socket://<pi>:6545
+
+avrdude -c arduino -p atmega328p -P net:<pi>:6545 -b 115200 -D \
+        -U flash:w:bridge-uno.ino.hex:i
+```
+
+pyserial understands `socket://` with no extra code, and avrdude 8 takes
+`net:`. It complains three times about `ioctl("TIOCMGET")` because a
+socket is not a tty and it cannot toggle DTR; that is harmless, because
+the bridge opens the serial port as each client connects and closes it
+when they go, so every connection gets the same reset a local open would
+have given it. Holding the port open across connections would work for
+the tools and quietly fail for flashing.
+
+This split is the one the plan describes: the Pi holds the hardware, the
+workstation holds the model, the log and the record.

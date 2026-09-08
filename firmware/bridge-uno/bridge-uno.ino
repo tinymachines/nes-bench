@@ -226,8 +226,16 @@ void setup() {
   PORTB |= _BV(PB2); PORTB &= ~_BV(PB2);
   held = 0;
 
-  pinMode(PIN_CON_LATCH, INPUT);   // T1 needs it as an input
-  pinMode(PIN_CON_CLOCK, INPUT);
+  // Pulled up, not bare. MEASURED on the bench 2026-09-08: with nothing
+  // on D5 the Timer1 input floats and the counter, which is hardware and
+  // asks no questions, took 3,647 "latches" in three seconds, about
+  // 1.2 kHz of noise. A run begun before the console is powered would
+  // carry a latch index that means nothing, and B0's gate counts
+  // latches. The console drives both lines hard when it is on, so a
+  // 30 kilohm internal pull-up costs it nothing and gives the pins a
+  // defined level when it is off or unplugged. CLK idles high anyway.
+  pinMode(PIN_CON_LATCH, INPUT_PULLUP);   // T1 needs it as an input
+  pinMode(PIN_CON_CLOCK, INPUT_PULLUP);
   pinMode(PIN_PAD_LATCH, OUTPUT);
   pinMode(PIN_PAD_CLOCK, OUTPUT);
   pinMode(PIN_PAD_DATA, INPUT_PULLUP);

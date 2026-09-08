@@ -377,6 +377,43 @@ step that took three tries is the part of a notebook worth keeping. It
 embeds a photograph once the file is in `docs/lab/` and names it as
 pending until then, so it carries no broken images and forgets nothing.
 
+## Added 2026-09-08: the first sitting held, and a counter that counted nothing
+
+The bench has a home base: a Raspberry Pi 4 with the Uno plugged into
+it. `head/serial-bridge.py` puts that serial port on the LAN and nothing
+is installed on the Pi to do it, because that machine resolves DNS
+through DNSCrypt resolvers on another subnet and can reach neither apt
+nor GitHub from here. One TCP port serves both the tools, through
+pyserial's `socket://`, and avrdude, through `net:`, so the firmware was
+compiled on the workstation and flashed across the network, verified at
+7,996 bytes.
+
+**Sitting 1 holds.** The scope answers, the port opens, and the sketch
+replies to STATUS. That is the first bench work in the notebook that is
+not a rehearsal.
+
+**It also produced the first finding, and it came from reading a reply
+rather than from a check.** Step 0.3's STATUS line said `latch 482` with
+nothing wired to the board at all. Timer1 is a hardware counter and asks
+no questions: its input pin was floating, and it took **3,647 latches in
+three seconds**, about 1.2 kHz of noise. Nothing failed, and that is the
+point. B0's whole first gate is clocks per latch, `AT n hh` is keyed by
+latch index, and B3's replay is a latch index throughout. A run begun
+before the console was powered would have carried an index that meant
+nothing, and every number downstream of it would have looked like a
+finding about the part.
+
+The fix is one word twice: the two console-side inputs are
+`INPUT_PULLUP` rather than `INPUT`. The console drives both lines hard
+when it is on, so a 30 kilohm internal pull-up costs it nothing, and
+when it is off or unplugged the pins now sit at a defined level instead
+of picking up the room. Measured before and after on the same board:
+3,647 latches in three seconds, then **0 in ten**.
+
+Worth keeping for its own sake: this is the shape the plan expects the
+bench to have. Not a check going red, but an instrument reporting a
+number that had no business being what it was.
+
 ## What B0 still needs from the bench
 
 In the plan's order, once the bridge is built per `docs/wiring.md` and

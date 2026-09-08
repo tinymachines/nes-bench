@@ -16,7 +16,7 @@ The running record, with every attempt and the photographs, is
 
 | sitting | what it is | state |
 |---|---|---|
-| 1 | Instruments | stopped at 0.2 |
+| 1 | Instruments | done |
 | 2 | The console, measured | not started |
 | 3 | The bridge, built | not started |
 | 4 | Joined | not started |
@@ -60,11 +60,17 @@ python3 tools/bringup.py --session 1
 
 Then it asks the scope who it is over the LAN.
 
-> Last run 2026-09-08 11:07:20: held. DS1054Z, firmware 00.04.05.SP2
+> Last run 2026-09-08 12:41:12: held. DS1054Z, firmware 00.04.05.SP2
 
-### 0.2  The workstation can open a serial port  (did not hold)
+### 0.2  The workstation can open a serial port  (held)
 
-- Plug the Arduino UNO into this workstation by USB, with nothing else connected to it yet: no chips, no console, no pad. This step only proves the port opens.
+- Plug the Arduino UNO in, with nothing else connected to it yet: no chips, no console, no pad. This step only proves the port opens.
+- It can be plugged into this workstation, or into the Raspberry Pi that is the head. For the Pi, run head/serial-bridge.py there and point the tools at it:
+
+```
+python3 tools/bringup.py --session 1 --bridge socket://<pi>:6545
+```
+
 
 Then it opens the UNO's serial port, and names the fix if it cannot.
 
@@ -72,9 +78,9 @@ Photographs:
 
 - `docs/lab/00-uno-bare.jpg`  (wanted)
 
-> Last run 2026-09-08 11:07:24: did not hold. no /dev/ttyACM* or /dev/ttyUSB*: is the UNO plugged in?
+> Last run 2026-09-08 12:41:14: held. socket://13.0.0.229:6545 opens
 
-### 0.3  The bridge firmware is on the UNO and answers STATUS
+### 0.3  The bridge firmware is on the UNO and answers STATUS  (held)
 
 - Flash the sketch, putting your own port after -p:
 
@@ -85,6 +91,8 @@ arduino-cli upload  --fqbn arduino:avr:uno -p /dev/ttyACM0 firmware/bridge-uno
 
 
 Then it sends STATUS and reads the bridge's reply.
+
+> Last run 2026-09-08 12:43:11: held. # mode pass latch 0 clocks 0 held 00
 
 ## Sitting 2: The console, measured
 

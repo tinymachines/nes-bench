@@ -17,22 +17,35 @@ Those are in the log, marked, and are not counted below.
 
 ## Where the build stands
 
-1 of 2 attempted steps hold, over 2 attempts.
+3 of 3 attempted steps hold, over 6 attempts.
 
 | step | what it proves | attempts | state |
 |---|---|---|---|
-| 0.1 | The scope answers, and says what it is | 1 | held |
-| 0.2 | The workstation can open a serial port | 1 | did not hold |
+| 0.1 | The scope answers, and says what it is | 2 | held |
+| 0.2 | The workstation can open a serial port | 2 | held |
+| 0.3 | The bridge firmware is on the UNO and answers STATUS | 2 | held |
 
 ## Instruments
 
 ### 0.1  The scope answers, and says what it is
 
-**2026-09-08 11:07:20**: held. DS1054Z, firmware 00.04.05.SP2
+**Attempt 1, 2026-09-08 11:07:20**: held. DS1054Z, firmware 00.04.05.SP2
+
+**Attempt 2, 2026-09-08 12:41:12**: held. DS1054Z, firmware 00.04.05.SP2
 
 ### 0.2  The workstation can open a serial port
 
-**2026-09-08 11:07:24**: did not hold. no /dev/ttyACM* or /dev/ttyUSB*: is the UNO plugged in?
+**Attempt 1, 2026-09-08 11:07:24**: did not hold. no /dev/ttyACM* or /dev/ttyUSB*: is the UNO plugged in?
 
 Photograph pending: `docs/lab/00-uno-bare.jpg`.
+
+**Attempt 2, 2026-09-08 12:41:14**: held. socket://13.0.0.229:6545 opens
+
+Photograph pending: `docs/lab/00-uno-bare.jpg`.
+
+### 0.3  The bridge firmware is on the UNO and answers STATUS
+
+**Attempt 1, 2026-09-08 12:41:15**: held. # mode pass latch 482 clocks 0 held 00
+
+**Attempt 2, 2026-09-08 12:43:11**: held. # mode pass latch 0 clocks 0 held 00
 
