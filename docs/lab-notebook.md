@@ -15,55 +15,24 @@ Before any of it touched hardware the tool was rehearsed against
 stand-ins, 6 attempts between 2026-09-08 and 2026-09-08.
 Those are in the log, marked, and are not counted below.
 
-## Nothing has been built yet
+## Where the build stands
 
-No bench work is logged. The bench exists as a schematic, a pin
-table and a sketch that compiles, and no part of it has been
-wired. The steps below are what the tool will walk; each one
-ends in a measurement, and the result appears here when it runs.
+1 of 2 attempted steps hold, over 2 attempts.
 
-**Instruments**
+| step | what it proves | attempts | state |
+|---|---|---|---|
+| 0.1 | The scope answers, and says what it is | 1 | held |
+| 0.2 | The workstation can open a serial port | 1 | did not hold |
 
-- **0.1** The scope answers, and says what it is
-- **0.2** The workstation can open a serial port
-- **0.3** The bridge firmware is on the UNO and answers STATUS
+## Instruments
 
-**The harness**
+### 0.1  The scope answers, and says what it is
 
-- **1.1** The controller harness's colours mapped by continuity
-  Answers: wiring.md's port table is a published pinout until this step confirms it on THIS board.
-- **1.2** The port's idle levels with the console on
+**2026-09-08 11:07:20**: held. DS1054Z, firmware 00.04.05.SP2
 
-**The part's own timing**
+### 0.2  The workstation can open a serial port
 
-- **2.1** The scope on an original pad's port, a game running
-  Answers: wiring.md's authored 'latch high a few us, clock low a few hundred ns, ~7 us between clocks, 60 polls/s'.
+**2026-09-08 11:07:24**: did not hold. no /dev/ttyACM* or /dev/ttyUSB*: is the UNO plugged in?
 
-**The console side**
-
-- **3.1** U1 and U2 on the board, links on H..A, the pattern on QH
-
-**The UNO side**
-
-- **4.1** The UNO drives the 595, measured on its outputs
-- **4.2** The original pad polled by the bridge at 5 V
-
-**Joined**
-
-- **5.1** The two halves joined, eight clocks per latch on a game
-  Answers: the plan's B0 gate 1, which is the first thing the part gets to answer.
-- **5.2** A pressed button reaches the console through the bridge
-
-**The head's hands**
-
-- **6.1** The trigger reaches the scope
-- **6.2** The reset optocoupler pulses the console
-- **6.3** The power relay switches the console
-
-Start with:
-
-```
-python3 tools/bringup.py --list      # the 14 steps
-python3 tools/bringup.py             # from where you left off
-```
+Photograph pending: `docs/lab/00-uno-bare.jpg`.
 
