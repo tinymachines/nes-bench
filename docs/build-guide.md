@@ -10,7 +10,10 @@ then measures something. It never asks whether a step worked. A step
 that fails stops the run and tells you which one to repeat.
 
 The running record, with every attempt and the photographs, is
-[the lab notebook](lab-notebook.md).
+[the lab notebook](lab-notebook.md). The working document for
+whichever cycle is open, and the place the operator's own
+observations are written down, is in
+[procedures](procedures/README.md).
 
 ## Where it stands
 

@@ -84,7 +84,10 @@ def render():
     L.append("that fails stops the run and tells you which one to repeat.")
     L.append("")
     L.append("The running record, with every attempt and the photographs, is")
-    L.append("[the lab notebook](lab-notebook.md).")
+    L.append("[the lab notebook](lab-notebook.md). The working document for")
+    L.append("whichever cycle is open, and the place the operator's own")
+    L.append("observations are written down, is in")
+    L.append("[procedures](procedures/README.md).")
     L.append("")
 
     # Where things stand, per sitting.
