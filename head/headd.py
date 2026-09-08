@@ -223,11 +223,20 @@ class Scope:
         EXT TRIG stops the scope with the window around it. The
         horizontal offset is set to four divisions so the trigger sits
         early in the record and two full frames follow it, which the
-        recovery needs; the sign convention is not trusted: the record's
-        preamble says where the trigger fell, and that is what is
-        written beside the capture (`trigger_sample`). If the first real
-        capture reports the trigger late in the record, flip the sign
-        here."""
+        recovery needs. The record's preamble says where the trigger
+        actually fell, and that is what is written beside the capture
+        (`trigger_sample`), so nothing downstream depends on the sign.
+
+        MEASURED 2026-09-07 on the DS1054Z, which is what settled the
+        sign this docstring used to say was untrusted. Armed exactly as
+        below (one channel, 5 ms/div, 12 Mpoint) and triggered with
+        :TFORce, the scope reports xorigin -0.028 s at 8 ns per sample:
+        the trigger lands at sample 3,500,000 of 12,000,000, 29.2
+        percent into a 96 ms record, with 68 ms after it. A positive
+        MAIN:OFFSet therefore puts the trigger EARLY, which is what is
+        wanted, and the four divisions leave 4.09 NES frames of record
+        behind the trigger against the two the recovery needs. Do not
+        flip the sign."""
         self.save_setup()
         off = [f":CHANnel{c}:DISPlay OFF" for c in (1, 2, 3, 4) if c not in chs]
         on = []

@@ -5,3 +5,5 @@ roms/
 *.wav
 bench.local.md
 runs/
+__pycache__/
+*.pyc

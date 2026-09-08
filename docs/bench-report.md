@@ -168,6 +168,72 @@ v2 (atomic bytes over SPI, a second port, an LM1881 giving every latch
 its field and line) and the pad adapter are in the plan as what comes
 after the four milestones, with the condition that earns each.
 
+## Added 2026-09-07: the head's capture path on the real instrument
+
+The scope moved to a new network and was missing for a day, which
+turned out to be an Ethernet cable that was not seated. Its address
+lives in `bench.local.md`, ignored, as the repository rule requires.
+With it back, the head's `Scope` class met a real instrument for the
+first time. Everything below ran through `head/headd.py` itself, not a
+transcription of it, against a DS1054Z on firmware 00.04.05.SP2, with
+the front panel saved before the first command and restored after the
+last, because the scope belongs to another experiment.
+
+What held, in the order the class does it: the connect and the identify;
+`save_setup` at 2,085 bytes and the restore that put the timebase and
+the sweep back as found; `arm` with one channel at 5 ms/div and 12
+Mpoint, including the memory-depth-only-takes-while-running workaround,
+which the instrument confirmed on readback; the single shot reaching
+WAIT and then STOP; and `read_record`'s chunked raw read of the whole
+record, 12 million points in 27.9 seconds, about 0.43 Msample/s over
+TCP, with the `.toml` written beside it.
+
+**The horizontal offset sign is settled, and it was already right.**
+The docstring used to say the convention was not trusted and to flip it
+if the first real capture put the trigger late. It puts the trigger
+early. Armed as above and fired with `:TFORce`, the preamble reports
+xorigin -0.028 s at 8 ns per sample, so a positive `MAIN:OFFSet` of four
+divisions leaves this:
+
+| | |
+|---|---|
+| record | 12,000,000 points, 96.0 ms at 125 MSa/s |
+| trigger sample | 3,500,000, 29.2 percent in |
+| record after the trigger | 68.0 ms, 4.09 NES frames |
+| B1's requirement | 2 full frames |
+
+Nothing downstream depends on the sign in any case, because the
+trigger's place is read out of the preamble rather than assumed, but
+the four divisions are now known to clear B1's recovery requirement
+with a frame to spare rather than by hope.
+
+**The capture also re-confirms the timebase, which was not the point of
+it.** The probe was still on the console's composite video and the
+console was running, so the record carries 1,512 sync pulses at a
+median width of 4.664 microseconds, and the colour subcarrier shows up
+as a 0.280 microsecond period. A least-squares fit of the sync times
+over all 1,512 pulses, residual 53.9 ns, gives a line period against
+which two references disagree:
+
+| reference | line rate | this capture reads |
+|---|---|---|
+| the NES's own master clock, 341 dots | 15745.80 Hz | +5.3 ppm |
+| broadcast NTSC | 15734.26 Hz | +739 ppm |
+
+That is the `ntsc-crt` finding again, arrived at from a cold start on a
+different network six days later: the console is roughly 733 ppm off
+broadcast by construction, and the scope is not the thing that is
+wrong. The earlier work put the scope's own error at about -7 ppm; this
+capture puts the pair of scope and console within 6 ppm of each other,
+which a cheap crystal covers on its own. Anything that scores this
+console's video against the broadcast line rate will be wrong by three
+quarters of a part per thousand and will look like a timebase fault.
+
+Not closed by any of this: the external trigger has still never been
+fired by anything but `:TFORce`, because the bridge that raises it does
+not exist yet. What is proven is the arm, the wait, the read and the
+record's geometry, which is everything around the trigger.
+
 ## What the die said before the part could
 
 The gate asked for clocks per latch on the part, expecting nine where
