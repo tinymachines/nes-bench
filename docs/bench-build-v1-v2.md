@@ -54,7 +54,7 @@ hides:
   after, deferred to the next loop otherwise (`STATUS` counts the
   deferrals); the loop reads the counters and logs the latch before it
   writes; and `MUTATE ON` puts the two counters on each other's lines,
-  so B0's mutation is a script line.
+  so B0's sabotage is a script line.
 - The three supply domains as three rail symbols. +5V from J1 pin 7
   feeds U1 and U2 only; 3V3 from the C6 feeds U3 and the pad; the Pi
   feeds the C6 over USB. The only net that crosses all three is GND.
@@ -105,7 +105,7 @@ been measured.
 6. **Join the two sides.** REG_* from the C6 to U2's inputs (remove
    the wire links from step 4), CON_OUT0 and CON_CLK into U3, GND
    between the planes. Console on, `MODE PASS`, a game: the L stream
-   appears, 8 clocks per latch. That is B0's first gate.
+   appears, 8 clocks per latch. That is B0's first check.
 7. **Trigger.** R1 to EXT TRIG. `TRIG 300` and the scope's single
    shot fires. Sign of the horizontal offset gets settled here and
    written to the capture's `.toml`.
@@ -154,7 +154,7 @@ gives clean VSYNC and CSYNC outputs. Through U3 to the C6:
 
 Every L line then carries `<field> <line>`: the poll's position in the
 frame, measured in hardware, which the model knows as `h` at the strobe
-and B2's alignment class maps between. B0's polls-per-frame gate closes
+and B2's alignment class maps between. B0's polls-per-frame check closes
 inside the bridge without the scope.
 
 ### v2 pin budget on the C6
@@ -202,7 +202,7 @@ and stated. Port 1 keeps its hardware counter.
 - `L n hh c t_us f l`, `L2 ...`, `F f t_us lines`.
 - `AT2 n hh`, `TRIG n` unchanged, `TRIGF f l` new.
 - `MUTATE ON|OFF`: reconfigure PCNT 0 and 1 to each other's GPIO. The
-  8-per-latch check must go red with it on. B0's mutation, scripted.
+  8-per-latch check must go red with it on: B0's sabotage, scripted.
 - Loop order: read counters, emit lines, then write. Fixed-size line
   buffer instead of `String`. A cursor into the schedule instead of a
   scan.

@@ -5,7 +5,7 @@ report as B1, B2 and B3 got their tools before the hardware arrived.
 Plan: `docs/bench-plan.md`, first. Nothing here has touched the part
 yet: the bridge is not built. What closed is everything the four
 milestones could close on the machine, each tool with a green run on a
-synthesis and a mutation that goes red, and one thing B0 was going to
+synthesis and a sabotage run that goes red, and one thing B0 was going to
 measure on the part turned out to be measurable on the die first,
 which changed the model. The sections are in the order they were
 written; the part's side of each milestone is the list at the end.
@@ -67,8 +67,8 @@ third as a trigger placed there would be, 13 of 13 regions on the bars
 cartridge at every frame count tried across its luma-row step.
 `MUTATE_TRIGGER=1` slices one frame late and is 1 of 13 at the step
 (frames 122), which is what shows the frame selection is checked and
-not only the colours; the public site's boarding runs both and refuses
-to board if the mutation is not red. `nes` @ 59d42c8.
+not only the colours; the public site runs both again before it
+publishes, and refuses when the sabotage is not red. `nes` @ 59d42c8.
 
 ## Added 2026-09-07: the B2 classifier, green on its own synthesis
 
@@ -88,7 +88,7 @@ the model runs in, (4, 3), is class 1. A capture whose offsets do not
 sit on half-steps, or whose class is not clean, is refused, not
 classified.
 
-Its gate (`selftest`): the three channels synthesised for 72
+Its check (`selftest`): the three channels synthesised for 72
 alignments at the head's three-channel rate with the measured pin
 offsets, every one read back as its class; the synthesised ALE shifted
 one half-step (MUTATE) moves the class on all 24. Then the whole path
@@ -102,7 +102,7 @@ so B2's window is 6 ms at 1.2 M; B1's stays 60 ms at 12 M on one).
 
 What only the bench can say: whether the part's histogram over a
 hundred power-ons is flat over its classes or prefers some, which is
-B2's first gate, and whether the model's (4, 3) is among them.
+B2's first check, and whether the model's (4, 3) is among them.
 
 ## Added 2026-09-07: the B3 tools, a planted divergence found
 
@@ -160,7 +160,7 @@ latch a byte half old and half new. They are now one store to the GPIO
 output register, made only when OUT0 reads low before and after and
 deferred to the next loop otherwise; the loop reads the counters and
 logs the latch before it writes; and `MUTATE ON` swaps the two
-counters' lines so B0's mutation is a line in a script. The fake
+counters' lines so B0's sabotage is a line in a script. The fake
 bridge does the same. Compiles for the C6 and the classic ESP32; not
 yet run on a board.
 
@@ -236,7 +236,7 @@ record's geometry, which is everything around the trigger.
 
 ## What the die said before the part could
 
-The gate asked for clocks per latch on the part, expecting nine where
+B0's check asked for clocks per latch on the part, expecting nine where
 a DMC fetch lands on a poll's read. That is a question the switch-level
 2A03 can answer, so it was asked first (`2a03`'s
 `joy-clock-probe`, `docs/n3-report.md` there):
@@ -257,13 +257,13 @@ a DMC fetch lands on a poll's read. That is a question the switch-level
 
 Three changes followed, each with a test that fails without it:
 
-- Rung 3 of the 6502 (`tinymachines/6502` @ 89ae24f) re-asks its bus
+- The 6502's fast core (`tinymachines/6502` @ 89ae24f) re-asks its bus
   at every phi2 of a read held by RDY and keeps the last byte, which is
   what DL does; `MUTATE_HELD=1` keeps the first and is red.
-- The 2A03's rung (`tinymachines/2a03` @ dbf116b) answers those re-asks
+- The 2A03's fast chip (`tinymachines/2a03` @ dbf116b) answers those re-asks
   from a memo while the core is held and lets one through on the
   re-run, unless the alias rule holds; `tests/joypad.rs` holds the
-  rung's asks per instruction to the die's /OE1 pulses over two
+  fast chip's asks per instruction to the die's /OE1 pulses over two
   cadences, {1: 2820, 2: 6} and {1: 2245, 2: 4}, instruction for
   instruction; `MUTATE_QUIET=1` (five asks per collision) is red.
 - The console (`tinymachines/nes` @ 2ec0fc3) logs polls; on the
@@ -271,7 +271,7 @@ Three changes followed, each with a test that fails without it:
   polls at 21 of 596 latches over 600 frames, recorded in
   `tests/pad_log.rs`.
 
-So the B0 gate's third bullet, the model's DMC fetch schedule beside
+So the third of B0's checks, the model's DMC fetch schedule beside
 the part's nine-clock polls, now has a prediction with an exception the
 documentation does not mention. The part decides.
 
