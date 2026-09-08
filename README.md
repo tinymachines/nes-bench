@@ -27,6 +27,9 @@ register's job, as it is in the pad.
   against fakes with red mutations, the model logs polls) and the
   part's side waiting on the build. The die answered B0's DMC question
   first and the model changed for it.
+- `docs/bench-v1b-uno.md` with `bench-v1b.svg`: the all-5V UNO
+  bridge, the version to build first, and its sketch in
+  `firmware/bridge-uno/`.
 - `docs/bench-build-v1-v2.md` with `bench-v1.svg`, `bench-v2.svg`,
   `logical-timing.svg`, `pad-adapter.svg`: the electronics review's
   schematics, parts lists and build order for v1 (the plan as it

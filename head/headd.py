@@ -337,10 +337,23 @@ class Run(threading.Thread):
         self.log.flush()
         self.state = s
 
+    # A bridge reply that means the run's inputs are not what the script
+    # said. "# schedule full" is the one that matters: the v1b UNO holds
+    # 128 AT entries against the C6's 2048, and a truncated schedule
+    # replays a DIFFERENT input history while every other line looks
+    # healthy. Refusing the run is the only way that failure is visible.
+    REFUSALS = ("# schedule full",)
+
     def pump_bridge(self):
+        bad = None
         for line in self.head.bridge.drain():
             self.blog.write(line + "\n")
+            if any(line.startswith(r) for r in self.REFUSALS):
+                bad = bad or line
         self.blog.flush()
+        if bad:
+            raise RuntimeError(f"the bridge refused part of the script ({bad.lstrip('# ')}): "
+                               "the input history would be wrong, so the run is stopped")
 
     def run(self):
         try:

@@ -9,9 +9,16 @@ source (it was drafted from `docs/wiring.md` and checked by hand), and
 are read from. Two copies drift. This reads the C6's net list out of
 the v1 sheet's source and the tables out of wiring.md and holds them
 equal: every register input's GPIO, the two counter inputs, the pad's
-three lines and the trigger. It also regenerates the four sheets into a
-temporary directory and holds the committed SVGs to them. Exit 1 on any
-difference, and on nothing to compare.
+three lines and the trigger.
+
+It does the same for v1b, whose two copies are the v1b sheet's A1 chip
+and the "UNO pins" table in `docs/bench-v1b-uno.md`: every pin either
+names the same net in both, or this fails. Nine signal pins is the
+floor, so the check cannot pass by comparing nothing.
+
+It then regenerates every sheet into a temporary directory and holds
+the committed SVGs to them; the count it reports is counted, not
+typed. Exit 1 on any difference, and on nothing to compare.
 """
 import re
 import subprocess
@@ -32,6 +39,55 @@ def sheet_nets():
     j = src.index("sh.note(", i)
     block = src[i:j]
     return dict(re.findall(r'\(None, "(GPIO\d+)", "([A-Z0-9_]+)"\)', block))
+
+
+def sheet_v1b_nets():
+    """{pin: net} from the v1b sheet's A1 chip, both its lists."""
+    src = (ROOT / "tools" / "draw-schematics.py").read_text()
+    i = src.index('"A1", "Arduino UNO R3')
+    j = src.index("pad_socket(", i)
+    out = {}
+    for label, net in re.findall(r'\(None, "([^"]+)", "([^"]+)"\)', src[i:j]):
+        for pin in re.findall(r"\bD\d+\b|\b5V\b|\bGND\b", label):
+            out[pin] = net
+    return out
+
+
+def doc_v1b_pins(universe):
+    """{pin: net} from the UNO pins table in docs/bench-v1b-uno.md.
+
+    A row pairs its pins with the nets named in its function cell, in
+    order, when the two counts match; rows that name no net (the serial
+    pair, the supply) are not compared."""
+    md = (ROOT / "docs" / "bench-v1b-uno.md").read_text()
+    body = md[md.index("## UNO pins"):]
+    body = body[: body.index("\n## ", 1)] if "\n## " in body[1:] else body
+    out = {}
+    for line in body.splitlines():
+        cells = [c.strip() for c in line.strip().strip("|").split("|")]
+        if len(cells) < 2 or cells[0] in ("pin", "---"):
+            continue
+        pins = re.findall(r"\bD\d+\b", cells[0])
+        nets = [t for t in re.findall(r"\b[A-Z][A-Z0-9_]{2,}\b", cells[1]) if t in universe]
+        if pins and len(pins) == len(nets):
+            out.update(dict(zip(pins, nets)))
+    return out
+
+
+def check_v1b():
+    sheet = sheet_v1b_nets()
+    doc = doc_v1b_pins(set(sheet.values()))
+    bad = 0
+    for pin, net in sorted(doc.items(), key=lambda kv: int(kv[0][1:])):
+        if sheet.get(pin) != net:
+            print(f"  {pin}: bench-v1b-uno.md says {net}, the v1b sheet says {sheet.get(pin)}")
+            bad += 1
+    if len(doc) < 9:
+        print(f"  only {len(doc)} UNO pins could be compared; the table or the sheet has moved out from under this check")
+        bad += 1
+    if not bad:
+        print(f"check-sheets: {len(doc)} UNO pins on the v1b sheet agree with docs/bench-v1b-uno.md")
+    return bad
 
 
 def main():
@@ -60,15 +116,21 @@ def main():
         print("nothing to compare")
         return 1
     print(f"check-sheets: {len(want)} C6 pins on the v1 sheet agree with docs/wiring.md" if not bad else f"check-sheets: {bad} disagreement(s)")
+    bad += check_v1b()
     # The committed SVGs are what the generator writes.
+    n_sheets = 0
     with tempfile.TemporaryDirectory() as d:
         subprocess.run([sys.executable, str(ROOT / "tools" / "draw-schematics.py"), d], check=True, capture_output=True)
         for p in sorted(Path(d).glob("*.svg")):
+            n_sheets += 1
             committed = ROOT / "docs" / p.name
             if not committed.exists() or committed.read_bytes() != p.read_bytes():
                 print(f"  docs/{p.name} is not what draw-schematics.py writes: regenerate it")
                 bad += 1
-    print("check-sheets: the four sheets are current" if not bad else "")
+    if not n_sheets:
+        print("  the generator wrote no sheets")
+        bad += 1
+    print(f"check-sheets: the {n_sheets} sheets are current" if not bad else "")
     return 1 if bad else 0
 
 

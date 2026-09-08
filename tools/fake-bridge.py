@@ -12,14 +12,30 @@ PASS, SET's or the AT schedule's in INJECT), and streams the same
 The pad byte is whatever --pad says (a hand is not simulated). It is a
 stand-in for the protocol, not for the part: nothing about a real
 console's timing is in it, and it says so on its first line.
+
+It does hold one real limit, because a fake that cannot fail the way
+the part fails is not a stand-in for it: the schedule is bounded, and
+an AT past the bound gets "# schedule full", which the head treats as
+a refusal and stops the run on. The default is the UNO build's, read
+out of its firmware; --schedule-max names another.
 """
 import argparse
 import os
+import re
 import pty
 import select
 import sys
 import time
 import tty
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+
+
+def uno_schedule_max():
+    """The v1b firmware's own SCHEDULE_MAX, so the fake and the part agree."""
+    m = re.search(r"SCHEDULE_MAX\s*=\s*(\d+)", (ROOT / "firmware/bridge-uno/bridge-uno.ino").read_text())
+    return int(m.group(1))
 
 
 def main():
@@ -27,8 +43,10 @@ def main():
     ap.add_argument("--hz", type=float, default=60.0988)
     ap.add_argument("--pad", default="00", help="the original pad's byte, hex")
     ap.add_argument("--link", default=None, help="symlink path to create for the pty")
+    ap.add_argument("--schedule-max", type=int, default=None, help="AT entries the bridge can hold (default: the UNO firmware's)")
     ap.add_argument("--trigger-file", default=None, help="where to write the latch a TRIG fired at (for tools/fake-scope.py --video)")
     a = ap.parse_args()
+    schedule_max = a.schedule_max if a.schedule_max is not None else uno_schedule_max()
     master, slave = pty.openpty()
     # Raw: a pty's line discipline would echo the head's commands back
     # as if the bridge had printed them.
@@ -79,7 +97,10 @@ def main():
                     set_byte = int(line[4:], 16); out(f"# set {set_byte:02x}")
                 elif line.startswith("AT "):
                     n, b = line[3:].split()
-                    schedule.append((int(n), int(b, 16))); out(f"# at {int(n)} {int(b, 16):02x}")
+                    if len(schedule) < schedule_max:
+                        schedule.append((int(n), int(b, 16))); out(f"# at {int(n)} {int(b, 16):02x}")
+                    else:
+                        out("# schedule full")
                 elif line.startswith("TRIG "):
                     trig_at = int(line[5:]); out(f"# trig at {trig_at}")
                 elif line == "RESET":
@@ -87,7 +108,7 @@ def main():
                 elif line in ("MUTATE ON", "MUTATE OFF"):
                     mutated = line == "MUTATE ON"; out(f"# mutate {'on' if mutated else 'off'}")
                 elif line == "STATUS":
-                    out(f"# mode {mode} latch {latches} clocks {clocks} held {held(mode, pad, set_byte, schedule, latches):02x} pad {pad:02x} schedule {len(schedule)} data -1")
+                    out(f"# mode {mode} latch {latches} clocks {clocks} held {held(mode, pad, set_byte, schedule, latches):02x} pad {pad:02x} schedule {len(schedule)}/{schedule_max} data -1")
                 elif line:
                     out("# ? " + line)
         now = time.monotonic()

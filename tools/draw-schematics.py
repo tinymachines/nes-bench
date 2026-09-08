@@ -146,13 +146,13 @@ def pad_socket(sh, x, y, ref, latch, clk, d0, vcc="3V3"):
         (5, "D3", "NC"), (6, "D4", "NC"), (7, "+5V", vcc)], [], conn=True)
 
 
-def hct165(sh, x, y, ref, pl, cp, qh, inputs):
+def hct165(sh, x, y, ref, pl, cp, qh, inputs, part="74HCT165  at +5V"):
     """inputs: nets for H..A (A button first out)."""
     left = [(1, "/PL", pl), (2, "CP", cp), (15, "/CE", "GND"), (10, "DS", "GND"), (16, "VCC", "+5V"), (8, "GND", "GND")]
     names = ["H", "G", "F", "E", "D", "C", "B", "A"]
     nos = [6, 5, 4, 3, 14, 13, 12, 11]
     right = [(9, "QH", qh), (7, "/QH", "NC")] + [(nos[i], names[i], inputs[i]) for i in range(8)]
-    return sh.chip(x, y, 140, ref, "74HCT165  at +5V", left, right, extra="H shifts out first")
+    return sh.chip(x, y, 140, ref, part, left, right, extra="H shifts out first")
 
 
 def esp32c6(sh, x, y, left, right):
@@ -202,18 +202,59 @@ def sheet_v1():
         conn=True, extra="the head: headd.py")
     sh.chip(480, 770, 150, "OK1", "PC817 module", [(None, "IN+", "RST_DRIVE"), (None, "IN-", "GND")],
             [(None, "OUT", "RST_PAD"), (None, "GND", "RST_GND"), (None, "VCC", "NC")], extra="open collector across reset")
-    sh.chip(880, 770, 160, "K1", "relay module, 3V3 in", [(None, "IN", "PWR_DRIVE"), (None, "GND", "GND"), (None, "VCC", "PI_3V3")],
-            [(None, "NO", "AC_LEAD_A"), (None, "COM", "AC_LEAD_B")], extra="one adapter lead only")
-    sh.chip(1300, 770, 160, "SCOPE", "Rigol DS1054Z", [(None, "EXT TRIG", "EXT_TRIG"), (None, "CH1", "VIDEO"), (None, "LAN", "LAN")], [],
+    sh.chip(880, 770, 160, "K1", "relay module, 5 V coil", [(None, "IN", "PWR_DRIVE"), (None, "GND", "GND"), (None, "VCC", "PI_5V")],
+            [(None, "NO", "AC_LEAD_A"), (None, "COM", "AC_LEAD_B")], extra="opto in, active low")
+    sh.chip(1300, 770, 160, "SCOPE", "Rigol DS1054Z", [(None, "EXT TRIG", "EXT_TRIG"), (None, "CH3", "VIDEO"), (None, "LAN", "LAN")], [],
             conn=True, extra="SCPI over the LAN")
     sh.chip(1700, 770, 200, "CON", "NES-001 (NES-CPU-10)", [(None, "reset pad", "RST_PAD"), (None, "reset gnd", "RST_GND"),
                                                              (None, "video", "VIDEO"), (None, "DC jack", "AC_LEAD_A"), (None, "adapter", "AC_LEAD_B")], [], conn=True)
     sh.note(60, 1000, ["Grounds: J1 pin 1, the bridge plane, U4 GND and the Pi GND (through USB) are one net. The console's +5V and the C6's 3V3 share only that net.",
                       "Reset: GPIO17 high lights the module's LED; its transistor pulls the console's pulled-up reset pad to the reset ground pad for 100 ms.",
-                      "Power: K1's normally-open contact in series with one lead of the AC adapter cable, never the mains side, never both leads.",
+                      "Power: GPIO27 low turns K1 on (opto input, VCC from the Pi's 5 V pin: the modules on hand are 5 V coil parts). Its normally-open",
+                      "contact goes in series with one lead of the AC adapter cable, never the mains side, never both leads.",
                       "Authored pulse widths for B0 to replace: latch high a few us, clock low a few hundred ns, ~7 us between clocks, 60 polls/s."])
     sh.done(OUT / "bench-v1.svg")
 
+
+
+# --------------------------------------------------------------- sheet v1b
+def sheet_v1b():
+    sh = Sheet(1900, 1000, "nes-bench bridge v1b: the UNO version, one supply, one port",
+               "the ATmega328 is a 5 V part, so the register, the pad and the console share one domain. 2026-09-08. Not built; pulse widths authored until B0.")
+    sh.zone(20, 60, 1860, 640, "EVERYTHING AT +5V (the UNO's own 5 V pin, fed by its USB from the Pi)")
+    console_port(sh, 60, 90, "J1", {"clk": "CON_CLK", "out0": "CON_OUT0", "d0": "CON_D0"})
+    sh.chip(400, 90, 130, "U1", "74HC04  at +5V", [(1, "1A", "CON_OUT0"), (14, "VCC", "+5V"), (7, "GND", "GND")],
+            [(2, "1Y", "/PL")], extra="5 spare inputs to GND")
+    hct165(sh, 720, 90, "U2", "/PL", "CON_CLK", "CON_D0", part="74HC165  at +5V (the TI bag)", inputs=["Q_A", "Q_B", "Q_SEL", "Q_START", "Q_UP", "Q_DOWN", "Q_LEFT", "Q_RIGHT"])
+    sh.chip(1140, 90, 140, "U3", "74HC595  at +5V", [
+        (14, "SER", "MOSI"), (11, "SRCLK", "SCK"), (12, "RCLK", "RCLK"), (13, "/OE", "GND"), (10, "/SRCLR", "+5V"), (16, "VCC", "+5V"), (8, "GND", "GND")],
+        [(15, "QA", "Q_A"), (1, "QB", "Q_B"), (2, "QC", "Q_SEL"), (3, "QD", "Q_START"), (4, "QE", "Q_UP"), (5, "QF", "Q_DOWN"),
+         (6, "QG", "Q_LEFT"), (7, "QH", "Q_RIGHT"), (9, "QH'", "NC")], extra="one RCLK edge = one byte")
+    sh.chip(1560, 90, 190, "A1", "Arduino UNO R3 (ATmega328P)", [
+        (None, "D13 SCK", "SCK"), (None, "D11 MOSI", "MOSI"), (None, "D10", "RCLK"), (None, "D5 (T1)", "CON_OUT0"),
+        (None, "D2 (INT0)", "CON_CLK"), (None, "D3", "TRIG"), (None, "5V", "+5V"), (None, "GND", "GND"), (None, "USB-B", "PI_USB")],
+        [(None, "D6", "PAD_LATCH"), (None, "D7", "PAD_CLK"), (None, "D8", "PAD_D0"), (None, "D0, D1", "serial")], extra="5 V logic, 16 MHz")
+    pad_socket(sh, 1140, 400, "J2", "PAD_LATCH", "PAD_CLK", "PAD_D0", vcc="+5V")
+    sh.twopin(160, 440, "C1..C3", "100nF", "+5V", "GND")
+    sh.note(300, 444, ["one across each of U1, U2, U3"])
+    sh.twopin(160, 500, "R1", "100R", "TRIG", "EXT_TRIG")
+    sh.note(380, 504, ["to DS1054Z rear EXT TRIG. Check the input's rating first;", "if 5 V exceeds it, a 2:1 divider (two 1k) after R1."])
+    sh.note(60, 560, ["Why this works where the C6 needed shifters: every UNO pin is 5 V, so HC parts at 5 V see real highs,",
+                      "the console's OUT0 and CLK are read directly, and the pad runs at the 5 V it was built for.",
+                      "Why the 595 stays: SPI clocks 8 bits in 2 us at 4 MHz, then one RCLK edge moves them in ~10 ns.",
+                      "No two-store PORT write, no window argument; the firmware still pulses RCLK only while D5 reads low."])
+    sh.note(1380, 400, ["D5 is Timer1's external clock input (T1): a 16-bit", "hardware counter of OUT0 rising edges = latch index.",
+                        "D2 (INT0) falling-edge ISR counts clocks per poll,", "480/s, nothing for a 16 MHz part.",
+                        "D3 rises at latch T (one loop late, ~100 us); the", "74LS74 option makes it edge-exact later.",
+                        "Serial 115200 to the Pi over the UNO's own USB."])
+    sh.zone(20, 720, 1860, 260, "HEAD AND RELAYS (unchanged from v1 except the relay supply)")
+    sh.note(40, 750, ["Pi GPIO17 -> PC817 (or one TLP281 channel) -> console reset pads, 100 ms pulse.",
+                      "Pi GPIO27 -> relay module IN (active low). Relay module VCC from the Pi's 5 V pin: the Songle SRD-05VDC and the",
+                      "Tongling 2-channel board are 5 V coil modules with opto inputs; a 3.3 V GPIO driving the input low turns them on.",
+                      "Normally-open contact in series with one lead of the AC adapter cable, never the mains side.",
+                      "Grounds: J1 pin 1, the bridge, the UNO GND and the Pi GND (through USB) are one net.",
+                      "Scope: video on CH3 at the AUX/RF input (CH1 is B2's master clock), EXT TRIG from R1, SCPI over the LAN from the Pi."])
+    sh.done(OUT / "bench-v1b.svg")
 
 # ------------------------------------------------------------------- sheet v2
 def sheet_v2():
@@ -430,6 +471,7 @@ OUT = Path(sys.argv[1] if len(sys.argv) > 1 else ".")
 if __name__ == "__main__":
     OUT.mkdir(parents=True, exist_ok=True)
     sheet_v1()
+    sheet_v1b()
     sheet_v2()
     sheet_logic()
     sheet_pad()

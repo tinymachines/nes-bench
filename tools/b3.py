@@ -54,6 +54,21 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 
+# What each bridge build can hold, from its own firmware's SCHEDULE_MAX
+# (firmware/bridge-uno on the ATmega328P's 2 KB, firmware/bridge on the
+# C6). Read out of the sources so the two cannot drift.
+def _schedule_max():
+    out = {}
+    for key, rel, pat in (("uno", "firmware/bridge-uno/bridge-uno.ino", r"SCHEDULE_MAX\s*=\s*(\d+)"),
+                          ("c6", "firmware/bridge/bridge.ino", r"schedule\[(\d+)\]")):
+        m = re.search(pat, (HERE.parent / rel).read_text())
+        if m:
+            out[key] = int(m.group(1))
+    return out
+
+
+SCHEDULE_MAX = _schedule_max()
+
 
 def ask(host, port, req, timeout=5.0):
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -105,6 +120,16 @@ def cmd_record(a):
     lines.append(f"# {len(polls)} polls, {changes} changes, last latch {polls[-1][0]}")
     Path(a.out).write_text("\n".join(lines) + "\n")
     print(f"wrote {a.out}: {len(polls)} polls, {changes} changes, latches {polls[0][0]}..{polls[-1][0]}")
+    # The bridge holds the schedule in RAM and the two builds differ by
+    # a factor of sixteen. A record that does not fit is replayed with
+    # its tail missing, which looks like a finding about the part, so it
+    # is named here rather than discovered later.
+    if changes > a.schedule_max:
+        print(f"  REFUSED: {changes} changes will not fit the {a.bridge} bridge's {a.schedule_max}-entry schedule.")
+        print(f"  Record a shorter run, or use the C6 build (--bridge c6, {SCHEDULE_MAX['c6']} entries).")
+        return 1
+    if changes > a.schedule_max * 0.8:
+        print(f"  note: {changes} of the {a.bridge} bridge's {a.schedule_max} schedule entries used")
     return 0
 
 
@@ -221,6 +246,8 @@ def main():
     r = sub.add_parser("record")
     r.add_argument("run")
     r.add_argument("-o", "--out", required=True)
+    r.add_argument("--bridge", choices=sorted(SCHEDULE_MAX), default="uno",
+                   help="which bridge will replay this: uno (v1b, the one built first) or c6 (v1)")
     p = sub.add_parser("replay")
     p.add_argument("head")
     p.add_argument("script")
@@ -242,6 +269,8 @@ def main():
     b.add_argument("--into", default="runs")
     b.add_argument("--nes", default=nes_default)
     a = ap.parse_args()
+    if getattr(a, "bridge", None):
+        a.schedule_max = SCHEDULE_MAX[a.bridge]
     return {"record": cmd_record, "replay": cmd_replay, "agree": cmd_agree, "bisect": cmd_bisect}[a.cmd](a)
 
 

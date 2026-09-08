@@ -199,6 +199,45 @@ things it adds to the plan:
   `/nes/play` with no more code. An ESP32-S3 is the part for USB; the
   C6 on hand does BLE. Its own milestone, after the bench's four.
 
+## Added 2026-09-08: v1b, the UNO bridge, and the firmware that fits it
+
+The parts arrived and one of them decided the build order. The 74HC
+family needs a 3.5 V high when it runs at 5 V, and the ESP32-C6 gives
+3.3 V, so v1 as drawn cannot be built from the kit on the shelf without
+an extra up-shifter. The ATmega328P on an Arduino UNO is a 5 V part, so
+putting it in the middle collapses three voltage domains into one:
+
+- No 74LVC245. The UNO reads the console's OUT0 and CLK directly.
+- No up-shifter into the register. The UNO drives a 74HC595 at 5 V.
+- The pad is polled at the 5 V it was built for, so the plan's
+  measure-first item asking whether a 4021 runs at 3.3 V no longer
+  gates anything.
+
+**v1b is now the first build**, drawn as `docs/bench-v1b.svg`,
+documented in `docs/bench-v1b-uno.md`, and written as
+`firmware/bridge-uno/bridge-uno.ino`, which compiles for
+`arduino:avr:uno`. v1 stays in the set as the C6 version for when v2's
+four counters need it. The milestones and their gates are unchanged:
+B0 to B3 do not care which microcontroller holds the register, because
+the line protocol is the same and `head/headd.py` and every tool were
+written against the protocol rather than the board.
+
+Two of the plan's own claims moved as a result, both because the
+compiler or the instrument said so rather than because anyone argued:
+
+- **The bridge's schedule is a hardware limit, not a number.** The C6
+  holds 2048 AT entries; the ATmega328P has 2 KB of SRAM in total and
+  holds 128. A B3 record longer than that would have been replayed with
+  its tail missing, which is a wrong input history wearing the costume
+  of a finding about the part. Three places now refuse instead:
+  `tools/b3.py record` before the run, `tools/fake-bridge.py` so the
+  failure can be rehearsed without hardware, and the head, which stops
+  any run whose bridge answers `# schedule full`.
+- **B0's mutation needs no jumper.** The latch line lands on D5, which
+  is both Timer1's external clock input and PCINT21, so the clock
+  counter can be fed the latch line in software and put back by a
+  command. The gate keeps its teeth and the bench keeps its hands off.
+
 ## What this closes, and what it does not
 
 Closes, from the family's reports: N5's gate 3 (a real cartridge, now

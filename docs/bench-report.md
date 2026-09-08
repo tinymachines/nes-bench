@@ -275,6 +275,59 @@ So the third of B0's checks, the model's DMC fetch schedule beside
 the part's nine-clock polls, now has a prediction with an exception the
 documentation does not mention. The part decides.
 
+## Added 2026-09-08: the UNO bridge, and what the compiler decided
+
+The bench's electronics review returned a fifth sheet, `bench-v1b.svg`,
+after the parts arrived: the bridge on an Arduino UNO with everything
+at 5 V, because the 74HC parts on the shelf need a 3.5 V high that a
+3.3 V part does not give. It supersedes v1 as the thing to build first.
+It is taken in whole, with the generator that draws it, and
+`tools/check-sheets.py` now holds its every UNO pin to the document's
+own table exactly as it already held v1's to `docs/wiring.md`. Three
+mutations were run against that check and all three are red: a pin
+moved in the document, a row deleted from it, and a sheet edited away
+from what the generator writes.
+
+**The firmware exists and compiles**: `firmware/bridge-uno/bridge-uno.ino`
+for `arduino:avr:uno`, 8,018 bytes of flash and 1,521 of SRAM. Writing
+it is what turned the sheet into a set of decisions, and four of them
+were the document's plan being wrong rather than incomplete.
+
+| what the note planned | what the part allows |
+|---|---|
+| `SPI.transfer(b)` | `SPI.transfer(~b)`: pressed is LOW |
+| a `micros()` field on the L line | four fields, because three tools require exactly four |
+| MUTATE as a jumper on D2 and D5 plus a config pin | PCINT21 on the latch line, in software |
+| the C6's 2048-entry schedule | 128, which is what 2 KB of SRAM holds |
+| `uint64_t` counters and `%llu` | `uint32_t` and `%lu`; avr-libc has no 64-bit printf |
+
+The schedule is the one that mattered, and it is worth stating as a
+trap rather than a number. A record with more changes of byte than the
+bridge can hold does not fail. It replays a **different input history**
+while every L line looks healthy, which is exactly the shape of a false
+finding about the console. So the limit is read out of each firmware's
+own source, never typed, and refused in three places: `tools/b3.py
+record` names it before a run is attempted, `tools/fake-bridge.py`
+enforces the same bound so the failure can be rehearsed with no
+hardware, and the head raises it as a run error the moment the bridge
+answers `# schedule full`. Proven end to end against the fakes: a
+120-entry script runs to `done`, a 200-entry script draws 72 refusals
+and stops on the line that caused it.
+
+**Two drawings were also wrong, and the corrections came from outside
+the review.** The relay modules on hand are 5 V coil parts with opto
+inputs, so the v1 sheet's 3.3 V rail was wrong for them; both sheets now
+show the Pi's 5 V pin and an active-low input. And both sheets put the
+console's video on the scope's CH1, when it is on CH3: that is where
+`scope-capture.py` has always defaulted, where the probe was measured
+sitting on 2026-09-07, and CH1 is the channel B2's alignment classifier
+wants for the master clock. A drawing that claims a channel another tool
+needs is the kind of thing that costs an afternoon at the bench.
+
+Still true: nothing here has met the console. What is proven is that the
+firmware compiles, the protocol is unchanged, the checks can fail, and
+the one new hardware limit cannot silently corrupt a run.
+
 ## What B0 still needs from the bench
 
 In the plan's order, once the bridge is built per `docs/wiring.md` and
