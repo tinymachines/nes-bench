@@ -114,6 +114,8 @@ Answers: wiring.md's port table is a published pinout until this step confirms i
 - The moulded numbers are the connector telling you its own numbering, which is worth more than a colour convention. What they do not tell you is whether the harness carries each pin to the board header unswapped. Only the meter does that, so 'both' is the strongest answer.
 - Port pinout, looking into the socket: 1 GND, 2 CLK, 3 OUT0, 4 D0, 5 D3, 6 D4, 7 +5V.
 - Colours are not evidence on their own. Every pin gets a number from the connector or from the meter, never from what the colour usually means.
+- If a breakout is spliced onto the harness, this step maps its leads too, because the breakout is what a probe actually lands on. Those leads are new wire in whatever colours were to hand and carry no convention at all.
+- Two breakout leads the same colour is the case to watch: a probe's ground clip and its tip go on adjacent leads, and a clip on a driven line grounds it. This step refuses a shared colour that was only read off the housing, and asks you to ring those leads out from the board header first.
 
 Then it takes your continuity readings, and refuses fewer than four.
 
@@ -122,6 +124,7 @@ Photographs:
 - `docs/lab/01-port-housing-pins-1-4.jpg`  (pushed)
 - `docs/lab/01-port-housing-pins-5-7.jpg`  (pushed)
 - `docs/lab/01-board-header.jpg`  (wanted)
+- `docs/lab/01-breakout-map-controller.jpg`  (pushed)
 
 > Last run 2026-09-08 13:26:56: held. 7 of 7 pins mapped, read off the pin numbers moulded into the port housing; the numbering is the housing's own, and step 1.2's +5V reading is what tests it
 
@@ -270,6 +273,7 @@ Then it records which reset pad is ground and checks the pulse resets the consol
 Photographs:
 
 - `docs/lab/06-reset-pads.jpg`  (wanted)
+- `docs/lab/06-breakout-map-power-reset.jpg`  (pushed)
 
 ### 6.3  The power relay switches the console
 

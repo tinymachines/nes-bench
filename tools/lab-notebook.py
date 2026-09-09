@@ -211,12 +211,33 @@ def render(entries):
                 if meth:
                     L.append(f"Method: {methods.get(meth, meth)}.")
                     L.append("")
-                L.append("| port pin | signal | wire |")
-                L.append("|---|---|---|")
+                # A breakout spliced onto the harness gets its own column
+                # rather than its own table: it is the same seven pins,
+                # and two tables of the same pins is how a reader ends up
+                # comparing the wrong rows.
+                bo = a.get("data", {}).get("breakout") or {}
+                head = "| port pin | signal | harness |" + (" breakout lead |" if bo else "")
+                L.append(head if bo else "| port pin | signal | wire |")
+                L.append("|---|---|---|---|" if bo else "|---|---|---|")
                 for k in sorted(m, key=lambda x: int(x[3:])):
                     c = m[k]["colour"] or "not rung out"
-                    L.append(f"| {k[3:]} | {m[k]['name']} | {c} |")
+                    row = f"| {k[3:]} | {m[k]['name']} | {c} |"
+                    if bo:
+                        bc = (bo.get(k) or {}).get("colour") or ""
+                        if bc.strip().lower() in ("", "nc", "none", "-", "skip", "s"):
+                            bc = "not brought out"
+                        row += f" {bc} |"
+                    L.append(row)
                 L.append("")
+                for colour, pins in a.get("data", {}).get("shared", []):
+                    ps = " and ".join(str(x) for x in pins)
+                    L.append(f"Pins {ps} are the same colour on the breakout, both {colour}. "
+                             "They were told apart with the meter, from the board header.")
+                    L.append("")
+                if a.get("data", {}).get("supply_out") is False:
+                    L.append("The +5 V pin is not brought out to the breakout, so the supply "
+                             "reading in step 1.2 is taken at the port housing or the board header.")
+                    L.append("")
             for p in a.get("photos", []):
                 name = Path(p["file"]).name
                 if (ROOT / p["file"]).exists():

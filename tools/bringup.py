@@ -313,9 +313,12 @@ STEPS = [
        "Two ways to attach a colour to a pin number, and the record keeps which you used. The port housing has its pin numbers moulded into the plastic beside the crimp terminals, four on one row and three on the other: photograph both rows and read them off. Or find the white header where the harness lands on the board and ring each pin out to the socket with the meter.",
        "The moulded numbers are the connector telling you its own numbering, which is worth more than a colour convention. What they do not tell you is whether the harness carries each pin to the board header unswapped. Only the meter does that, so 'both' is the strongest answer.",
        "Port pinout, looking into the socket: 1 GND, 2 CLK, 3 OUT0, 4 D0, 5 D3, 6 D4, 7 +5V.",
-       "Colours are not evidence on their own. Every pin gets a number from the connector or from the meter, never from what the colour usually means."],
+       "Colours are not evidence on their own. Every pin gets a number from the connector or from the meter, never from what the colour usually means.",
+       "If a breakout is spliced onto the harness, this step maps its leads too, because the breakout is what a probe actually lands on. Those leads are new wire in whatever colours were to hand and carry no convention at all.",
+       "Two breakout leads the same colour is the case to watch: a probe's ground clip and its tip go on adjacent leads, and a clip on a driven line grounds it. This step refuses a shared colour that was only read off the housing, and asks you to ring those leads out from the board header first."],
       "harness_map",
-      photos=["01-port-housing-pins-1-4.jpg", "01-port-housing-pins-5-7.jpg", "01-board-header.jpg"],
+      photos=["01-port-housing-pins-1-4.jpg", "01-port-housing-pins-5-7.jpg", "01-board-header.jpg",
+              "01-breakout-map-controller.jpg"],
       replaces="wiring.md's port table is a published pinout until this step confirms it on THIS board"),
     S("1.2", "The harness", "The port's idle levels with the console on",
       ["Console powered, NOTHING plugged into the port you are measuring.",
@@ -384,7 +387,7 @@ STEPS = [
       ["Console on. Find the reset button's two pads; meter which is ground and which is pulled up.",
        "PC817 module: OUT to the pulled-up pad, its GND to the ground pad, VCC unconnected, and the Pi's GPIO17 to INPUT + with INPUT - to the Pi's GND."],
       "reset_pulse",
-      photos=["06-reset-pads.jpg"]),
+      photos=["06-reset-pads.jpg", "06-breakout-map-power-reset.jpg"]),
     S("6.3", "The head's hands", "The power relay switches the console",
       ["MAINS SAFETY: the contact goes in series with ONE lead of the low-voltage adapter cable, between the adapter and the console's DC jack. Never the mains side, and never both leads.",
        "Relay module VCC to the Pi's 5V pin, IN to GPIO27 (active low), GND to the Pi's GND."],
@@ -451,6 +454,15 @@ METHODS = {
     "both": "read off the moulded numbers and confirmed with a meter",
 }
 
+PORT_PINS = ((1, "GND"), (2, "CLK"), (3, "OUT0"), (4, "D0"), (5, "D3"), (6, "D4"), (7, "+5V"))
+
+
+def _named(colour):
+    """A colour that is actually a colour. 'skip' leaves a pin blank in the
+    harness map; 'nc' says a breakout does not bring that pin out. Both are
+    answers, and neither is a colour."""
+    return bool(colour) and colour.strip().lower() not in ("skip", "s", "nc", "none", "-")
+
 
 def check_harness_map(bench, step):
     say(f"  {DIM}How was each colour attached to its pin number?{OFF}")
@@ -461,20 +473,58 @@ def check_harness_map(bench, step):
         return "fail", {"method": method}, f"{method!r} is not one of {', '.join(METHODS)}"
     say(f"  {DIM}Now the colour at each pin, or 'skip' to leave one blank.{OFF}")
     m = {}
-    for pin, name in ((1, "GND"), (2, "CLK"), (3, "OUT0"), (4, "D0"), (5, "D3"), (6, "D4"), (7, "+5V")):
+    for pin, name in PORT_PINS:
         m[f"pin{pin}"] = {"name": name, "colour": ask(f"  pin {pin} ({name}) colour")}
-    named = [k for k, v in m.items() if v["colour"] and v["colour"].lower() != "skip"]
+    named = [k for k, v in m.items() if _named(v["colour"])]
+    d = {"map": m, "method": method}
     if len(named) < 4:
-        return "fail", {"map": m, "method": method}, f"only {len(named)} pins mapped; the four that carry signal are the minimum"
-    note = ""
+        return "fail", d, f"only {len(named)} pins mapped; the four that carry signal are the minimum"
+    notes = []
     if method == "moulded":
         # The housing's numbering is the housing's. What it does NOT show
         # is whether the harness carries each pin to the board header
         # unswapped, nor that the published function table is right for
         # this board. Step 1.2's supply reading is what tests both.
-        note = "; the numbering is the housing's own, and step 1.2's +5V reading is what tests it"
+        notes.append("the numbering is the housing's own, and step 1.2's +5V reading is what tests it")
+
+    # A breakout spliced onto the harness is what a probe actually lands
+    # on, so a map that stops at the harness is a map of something nobody
+    # touches. Its leads are new wire in somebody's own colours and carry
+    # no convention at all.
+    if ask_yes("  Is a breakout spliced onto this harness"):
+        say(f"  {DIM}The breakout's lead at each pin: a colour, or 'nc' where the pin is not brought out.{OFF}")
+        b = {}
+        for pin, name in PORT_PINS:
+            b[f"pin{pin}"] = {"name": name, "colour": ask(f"  pin {pin} ({name}) breakout lead")}
+        d["breakout"] = b
+        for k in ("pin1", "pin2", "pin3", "pin4"):
+            if not _named(b[k]["colour"]):
+                return "fail", d, (f"{b[k]['name']} is not on the breakout. GND, CLK, OUT0 and D0 are the four "
+                                   "the bridge touches; a breakout missing one of them cannot carry it")
+        by_colour = {}
+        for k, v in b.items():
+            if _named(v["colour"]):
+                by_colour.setdefault(v["colour"].strip().lower(), []).append(int(k[3:]))
+        shared = sorted([c, sorted(p)] for c, p in by_colour.items() if len(p) > 1)
+        if shared:
+            # Two leads the same colour cannot be told apart by looking,
+            # and a probe's ground clip and its tip are what go on them.
+            # A clip on the wrong one grounds a driven line. Only a meter
+            # separates them, so the method has to have used one.
+            d["shared"] = shared
+            words = "; ".join(f"pins {' and '.join(str(x) for x in p)} are both {c}" for c, p in shared)
+            if method == "moulded":
+                return "fail", d, (f"{words}. A shared colour cannot be read off the housing: ring those leads "
+                                   "out from the board header before a probe goes near them")
+            notes.append(f"{words}, told apart with the meter")
+        d["supply_out"] = _named(b["pin7"]["colour"])
+        if not d["supply_out"]:
+            notes.append("+5V is not brought out, so step 1.2's supply reading is taken at the "
+                         "housing or the board header, not the breakout")
+
     say(f"  {DIM}Put this table into bench.local.md too; it is board-specific and not committed.{OFF}")
-    return "pass", {"map": m, "method": method}, f"{len(named)} of 7 pins mapped, {METHODS[method]}{note}"
+    tail = ("; " + "; ".join(notes)) if notes else ""
+    return "pass", d, f"{len(named)} of 7 pins mapped, {METHODS[method]}{tail}"
 
 
 def check_port_levels(bench, step):
