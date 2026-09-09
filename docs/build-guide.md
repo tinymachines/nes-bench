@@ -116,6 +116,7 @@ Answers: wiring.md's port table is a published pinout until this step confirms i
 - Colours are not evidence on their own. Every pin gets a number from the connector or from the meter, never from what the colour usually means.
 - If a breakout is spliced onto the harness, this step maps its leads too, because the breakout is what a probe actually lands on. Those leads are new wire in whatever colours were to hand and carry no convention at all.
 - Two breakout leads the same colour is the case to watch: a probe's ground clip and its tip go on adjacent leads, and a clip on a driven line grounds it. This step refuses a shared colour that was only read off the housing, and asks you to ring those leads out from the board header first.
+- MEASURED 2026-09-09, the hard way: ring a cable OUT OF CIRCUIT. A tone through a cable still plugged into the console goes through the console's own pull-ups and port buffers, and pins that share nothing beep anyway. The first pass on this bench came back with two pins on one lead, repeatably, and both readings were of the wrong circuit. Unplug the cable, then ring it.
 
 Then it takes your continuity readings, and refuses fewer than four.
 

@@ -193,6 +193,11 @@ With the meter, before anything is powered through the bridge:
 1. The controller harness's wire colours against the port's pins by
    continuity, at the board header (`IMG_5666`); write the table into
    `bench.local.md`. Colours are not evidence.
+   **Ring it out of circuit.** MEASURED 2026-09-09: a tone through a
+   cable still plugged into the console runs through the console's own
+   pull-ups and port buffers, and pins that share nothing beep. The
+   first pass on this bench put two port pins on one lead, repeatably,
+   and it was the instrument talking, not the cable.
 2. Console on, nothing plugged in: port pin 7 to pin 1 reads 5 V, pin
    3 and pin 2 read high (idle), pin 4 reads high (pulled up).
 3. An original pad on the console's other port, a game running: the
