@@ -59,8 +59,14 @@ sudo systemd-run --unit=serial-bridge --collect \
   -p StandardOutput=append:/var/log/sbridge.log \
   -p StandardError=append:/var/log/sbridge.log \
   -p Restart=always -p RestartSec=1 \
-  python3 /tmp/serial-bridge.py --port /dev/ttyACM0 --baud 115200 --listen 0.0.0.0:6545
+  python3 /home/bisenbek/serial-bridge.py --port /dev/ttyACM0 --baud 115200 --listen 0.0.0.0:6545
 ```
+
+**Not from `/tmp`.** It was put there first and was gone the next day: the Pi
+had rebooted and `/tmp` went with it, so the bridge was simply absent with no
+error anywhere to say why. The copy lives in the home directory now. The unit
+is still transient, so a reboot ends it too, but then the command above is one
+line and the script is where it was left.
 
 A **user** unit is the wrong choice and was tried first: without lingering
 enabled the user manager stops when the last ssh session closes and takes
@@ -83,6 +89,13 @@ the bridge opens the serial port as each client connects and closes it
 when they go, so every connection gets the same reset a local open would
 have given it. Holding the port open across connections would work for
 the tools and quietly fail for flashing.
+
+**The Pi's clock is months out and will stay that way.** It cannot resolve
+names, so it cannot reach a time server; `uptime -s` reported a boot in May
+while the workstation said September. Nothing in the bench depends on it, and
+this is why: every timestamp in the log is written by `tools/bringup.py` on the
+workstation, and the scope's own record carries its time. Do not add anything
+that timestamps on the Pi without noticing this first.
 
 This split is the one the plan describes: the Pi holds the hardware, the
 workstation holds the model, the log and the record.
