@@ -318,7 +318,7 @@ STEPS = [
        "Two breakout leads the same colour is the case to watch: a probe's ground clip and its tip go on adjacent leads, and a clip on a driven line grounds it. This step refuses a shared colour that was only read off the housing, and asks you to ring those leads out from the board header first."],
       "harness_map",
       photos=["01-port-housing-pins-1-4.jpg", "01-port-housing-pins-5-7.jpg", "01-board-header.jpg",
-              "01-breakout-map-controller.jpg"],
+              "01-breakout-map-controller.jpg", "01-breakout-ground-marked.jpg"],
       replaces="wiring.md's port table is a published pinout until this step confirms it on THIS board"),
     S("1.2", "The harness", "The port's idle levels with the console on",
       ["Console powered, NOTHING plugged into the port you are measuring.",

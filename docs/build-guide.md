@@ -125,6 +125,7 @@ Photographs:
 - `docs/lab/01-port-housing-pins-5-7.jpg`  (pushed)
 - `docs/lab/01-board-header.jpg`  (wanted)
 - `docs/lab/01-breakout-map-controller.jpg`  (pushed)
+- `docs/lab/01-breakout-ground-marked.jpg`  (pushed)
 
 > Last run 2026-09-08 13:26:56: held. 7 of 7 pins mapped, read off the pin numbers moulded into the port housing; the numbering is the housing's own, and step 1.2's +5V reading is what tests it
 
