@@ -165,7 +165,7 @@ drops one node produces a perfectly well formed file that nothing
 downstream would question, so dropping a node deliberately is the test:
 it reports the missing pad on every net it touches.
 
-## M5: a board. PLACED 2026-09-09, NOT ROUTED
+## M5: a board. PLACED 2026-09-09, ROUTED 2026-09-10 (M8)
 
 Honest about what this costs. A netlist is not a board. A board needs a
 footprint chosen for every part, a placement, a route, a design rule
@@ -189,14 +189,8 @@ the back and supply on the front. The fabrication set plots: nine
 Gerbers, two drill files and a position file. 146 plated holes, which is
 exactly the pad count of the 21 parts.
 
-**It is not routed, and the folder's own README says so in its first
-line.** There are no signal traces. Routing is the step that genuinely
-needs either a person in KiCad or an autorouter, and neither is
-something this repo should pretend to have done. What is removed is
-everything around it: the netlist cannot be retyped wrong, the
-footprints are checked to exist, the placement cannot overlap, and the
-plot step is proven end to end so that re-running it after routing is
-the whole of the last mile.
+**It was not routed, and the folder's own README said so in its first
+line. M8 is where that changed.**
 
 Three things it taught:
 
@@ -333,6 +327,62 @@ made it necessary:
   which is the same trade the revision strip makes by truncating.
 
 Still open: routing the v2b board, and the breadboard sheet on ANSI B.
+
+## M8: the board is routed. DONE 2026-09-10
+
+**506 track segments, 7 vias, 0 unconnected items, 0 clearance
+violations at 200 um.** Two layers, 250 um track, ground poured on the
+back and supply on the front and both also carried as traces.
+
+The router is freerouting 2.1.0, run headless, and it is not in this
+repository: `tools/route-pcb.py` finds a jar through `$FREEROUTING_JAR`
+or `~/.cache/freerouting/` and says how to fetch one if there is none.
+Version 2.4.1 needs a newer Java than this box has, which is worth
+knowing before somebody chases the same afternoon.
+
+**The routing is a recorded artefact**, `docs/routing/bench-v2b.ses`,
+committed, and read on every build by `tools/session.py`. It is the same
+argument as the pin golden in the 6502 repository: the output of a long
+search, checkable against the thing it describes, and worth nothing to
+re-derive on each build. A fresh clone gets a routed board and no build
+needs Java.
+
+What keeps a recorded routing honest is that it carries the placement it
+was made for. Every part's position is in the session file, so
+`check_placement` holds it to the board it is about to go onto and the
+build stops by name when a part has moved in `ROWS`. Old traces on a new
+placement is exactly the failure a recording invites, and it would look
+perfectly plausible in a viewer.
+
+Three things this cost, and all three are the same lesson:
+
+- **The router's own report is not evidence.** The first run came back
+  "0 incomplete connections, 0 clearance violations" and had left three
+  pads with no copper path to their net. The pours had gone out as
+  planes, so it counted every pad on GND and +5V as already connected,
+  and then its own signal traces cut the pours into eleven islands. The
+  pours come off before the export now, both rails route as ordinary
+  nets, and the pours go back on over the top.
+- **A check that reports what you hoped is not a check either.** The
+  first clearance check ignored layers, so every crossing of a front
+  trace over a back one was a violation: 41 of them, all of them
+  nothing. The second one, with layers, went green on the board **and
+  green on a deliberately broken one**, which is the failure that
+  matters. `MUTATE=1` lands a track on a pad of another net;
+  `MUTATE_OPEN=1` deletes a track. Both must refuse, and the tool
+  asserts that MUTATE did.
+- **The order of the two checks is not a preference.** Clearance is
+  measured before the pour and connectivity after it. In a process that
+  has already built a board with `CreateEmptyBoard`, running the zone
+  filler leaves KiCad's shape geometry unable to see collisions at all:
+  the mutated track that collides three ways before the fill collides
+  with nothing after it. Connectivity is the other way round, because an
+  unfilled pour connects nothing. That is the same family as the
+  segfault M5 found in the plot controller, and the same fix: do not
+  trust a board this tool built in this process.
+
+Left open: four pairs of parts have overlapping silkscreen text, and the
+board has never been made.
 
 ## The order, and why
 

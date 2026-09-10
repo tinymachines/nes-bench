@@ -17,6 +17,7 @@ The placement is authored, like the breadboard's. Everything else comes
 from the schematic through tools/netlist.py.
 """
 import argparse
+import os
 import shutil
 import sys
 from pathlib import Path
@@ -31,6 +32,14 @@ import pcbnew  # noqa: E402
 SHEET = "bench-v2b"
 BOARD_W, BOARD_H = 100.0, 100.0     # mm, the cheap fabs' hundred square
 EDGE = 0.15                          # mm, Edge.Cuts line width
+
+# AUTHORED design rules, in um, and the ones the router is held to. They
+# are KiCad's own defaults, which is why they can be authored here and
+# checked against the exported design rather than pushed into the board:
+# KiCad 6's Python bindings cannot reach a netclass. 250 um track and
+# 200 um clearance is inside every cheap fab's capability, with room.
+TRACK_UM, CLEARANCE_UM = 250.0, 200.0
+SESSION = ROOT / "docs" / "routing" / f"{SHEET}.ses"
 
 # AUTHORED: the arrangement, as rows of parts left to right. Signal flow
 # runs down the board: the console ports come in on the left of each row,
@@ -159,6 +168,88 @@ def build():
     return board, placed, keep, applied, unset
 
 
+def vias_of(path):
+    b = pcbnew.LoadBoard(str(path))
+    return len([t for t in b.GetTracks() if t.Type() == pcbnew.PCB_VIA_T])
+
+
+def apply_routing(path):
+    """The recorded routing onto the board, and then the two questions
+    that decide whether a board can be made: is every net actually
+    joined, and is any copper too near copper of another net.
+
+    Neither is taken on the router's word. The router reports its own
+    completion and its own violation count, and a tool's report of its
+    own work is not evidence: the first run here came back "0 incomplete,
+    0 violations" while three pads had no copper path to their net,
+    because the pours had been declared as planes and its own traces had
+    cut them into islands. KiCad's connectivity engine and KiCad's shape
+    geometry answer both questions here, on the finished board, with the
+    zones filled as a fabricator would get them.
+
+    MUTATE=1 lands one track on a pad of another net; the clearance
+    check must go red. MUTATE_OPEN=1 deletes one track; the connectivity
+    check must go red. Both refuse to pass."""
+    board = pcbnew.LoadBoard(str(path))
+    if not SESSION.exists():
+        pcbnew.ZONE_FILLER(board).Fill(board.Zones())
+        board.Save(str(path))
+        return None, None, []
+    ss = load(ROOT / "tools" / "session.py", "session")
+    places, nets = ss.read(SESSION)
+    scale = ss.scale_from(places, board)
+    moved = ss.check_placement(places, board, scale)
+    if moved:
+        for m in moved:
+            print(f"  {m}")
+        raise RuntimeError(f"the recorded routing is not this placement: {len(moved)} part(s) differ. "
+                           "Re-run tools/route-pcb.py.")
+    tracks, vias, problems = ss.apply(nets, board, scale)
+    for m in problems:
+        print(f"  {m}")
+
+    mutated = False
+    if os.environ.get("MUTATE"):
+        # Land a track squarely on a pad of another net. Nudging one by a
+        # fifth of a millimetre was the first version of this and it went
+        # green: there was nothing within a fifth of a millimetre of it,
+        # so the mutation proved only that the board has room in it.
+        pad = board.FindFootprintByReference("U1").FindPadByNumber("1")
+        here, code = pad.GetPosition(), pad.GetNetCode()
+        t = next(x for x in board.GetTracks()
+                 if x.Type() != pcbnew.PCB_VIA_T and x.GetNetCode() != code)
+        t.SetStart(pcbnew.wxPoint(here.x, here.y))
+        t.SetEnd(pcbnew.wxPoint(here.x + 1000000, here.y))
+        t.SetLayer(pcbnew.F_Cu)
+        print(f"  MUTATE: a {t.GetNetname()} track moved onto U1 pad 1 ({pad.GetNetname()})")
+        mutated = True
+    if os.environ.get("MUTATE_OPEN"):
+        board.Remove([x for x in board.GetTracks() if x.Type() != pcbnew.PCB_VIA_T][7])
+        print("  MUTATE_OPEN: one track deleted")
+        mutated = True
+
+    # Clearance BEFORE the pour, connectivity after it, and the order is
+    # not a preference. In a process that has already built a board with
+    # CreateEmptyBoard, running the zone filler leaves the shape geometry
+    # unable to see collisions: the same mutated track that collides with
+    # a pad of another net three ways before the fill collides with
+    # nothing after it. Connectivity is the opposite way round, because
+    # an unfilled pour connects nothing. MUTATE and MUTATE_OPEN are what
+    # hold this pair of orderings honest.
+    viol = ss.clearances(board, int(CLEARANCE_UM * 1000))
+    pcbnew.ZONE_FILLER(board).Fill(board.Zones())
+    conn = board.GetConnectivity()
+    conn.RecalculateRatsnest()
+    unrouted = conn.GetUnconnectedCount()
+    print(f"  routed: {tracks} track segments, {vias} vias, "
+          f"{unrouted} unconnected, {len(viol)} clearance violation(s)")
+    if not (unrouted or viol) and not mutated:
+        board.Save(str(path))
+    if mutated and not (unrouted or viol):
+        raise AssertionError("MUTATE left the board clean: the check cannot see what it claims to")
+    return tracks, unrouted, viol
+
+
 def overlaps(placed, with_text):
     """Two parts in the same place.
 
@@ -225,6 +316,18 @@ def plot(path, outdir):
         written.append(name)
     pctl.ClosePlot()
 
+    # The two copper layers as SVG as well as Gerber. A Gerber viewer is
+    # not something everybody has, and the point of the fabrication set
+    # is that somebody can see what they would be ordering.
+    o.SetExcludeEdgeLayer(False)
+    o.SetPlotReference(True)
+    o.SetPlotValue(False)
+    for attr, name in (("F_Cu", "top-copper"), ("B_Cu", "bottom-copper")):
+        pctl.SetLayer(getattr(pcbnew, attr))
+        pctl.OpenPlotfile(name, pcbnew.PLOT_FORMAT_SVG, name)
+        pctl.PlotLayer()
+    pctl.ClosePlot()
+
     w = pcbnew.EXCELLON_WRITER(board)
     w.SetFormat(True)
     w.SetOptions(False, False, board.GetDesignSettings().GetAuxOrigin(), False)
@@ -255,6 +358,7 @@ def main():
         print(f"  {m}")
     if unset or bad:
         return 1
+
     silk = overlaps(placed, with_text=True)
     if silk:
         print(f"  note: {len(silk)} pair(s) have overlapping silkscreen text: "
@@ -264,30 +368,69 @@ def main():
     path = OUT / f"{SHEET}.kicad_pcb"
     board.Save(str(path))
     print(f"  {len(placed)} footprints placed, {len(keep)} nets, {applied} pads assigned")
+
+    # The routing goes on the SAVED board, reloaded. A board made by
+    # CreateEmptyBoard segfaults the zone filler exactly as it segfaults
+    # the plot controller, and the fill is what makes the connectivity
+    # answer mean anything.
+    routed, unrouted, viol = apply_routing(path)
+    if routed is None:
+        print("  NOT ROUTED: no recorded routing in docs/routing/. "
+              "Run tools/route-pcb.py, or route it in KiCad.")
+    elif unrouted or viol:
+        for m in viol[:8]:
+            print(f"  {m}")
+        print(f"  REFUSED: {unrouted} unconnected item(s), {len(viol)} clearance violation(s)")
+        return 1
     print(f"  wrote {path.relative_to(ROOT)}")
-    readme = f"""# bench-v2b, the board: PLACED, NOT ROUTED
+    stats = (f"**Routed.** {routed} track segments and {vias_of(path)} vias carry every net the "
+             f"schematic has. Checked on this file, not on the router's word: **0 unconnected "
+             f"items** with the pours filled, and **0 clearance violations** at "
+             f"{CLEARANCE_UM:.0f} um."
+             if routed else
+             "**Not routed.** The parts are placed and every net is applied, and there are no "
+             "signal traces. A board made from these files would be a bag of unconnected "
+             "footprints with two copper pours.")
+    readme = f"""# bench-v2b, the board
 
 Generated by `tools/make-pcb.py` with KiCad {pcbnew.GetBuildVersion()}.
 
-**Do not send this to a fabricator.** The parts are placed, every net
-from the schematic is applied, the outline is drawn and ground and
-supply are poured. **There are no signal traces.** A board made from
-these files would be a bag of unconnected footprints with two copper
-pours.
+{stats}
 
 What is here, and what it is for:
 
-- `bench-v2b.kicad_pcb` is the work. Open it in KiCad's PCB editor and
-  route it, or feed it to an autorouter. The ratsnest is already correct,
-  so nothing has to be typed in.
-- The `.gbr`, `.drl` and positions files are the fabrication set, plotted
-  from that board as it stands. They exist so the last step is proven to
-  work rather than assumed: when the routing is done, re-run
-  `python3 tools/make-pcb.py --plot` and these are what gets sent.
+- `bench-v2b.kicad_pcb` is the board. Open it in KiCad's PCB editor to
+  look at it or change it.
+- The `.gbr`, `.drl` and positions files are the fabrication set,
+  plotted from exactly that file.
+
+How the routing is made, and why it is a file:
+
+- The traces come from `docs/routing/bench-v2b.ses`, a Specctra session
+  recorded once by `tools/route-pcb.py` (freerouting, headless) and
+  applied on every build by `tools/session.py`. Routing is the only step
+  here that is slow and not deterministic; recording it means a fresh
+  clone gets a routed board and no build needs Java.
+- The recording carries every part's position, so it is held to the
+  placement it is applied to. Move a part in `ROWS` and the build stops
+  and says which one, rather than laying old traces on a new board.
+- **The router's own report is not the evidence.** It says how many
+  connections it left incomplete and how many clearances it broke;
+  KiCad's connectivity engine and KiCad's shape geometry are asked the
+  same two questions here, on the finished board with the zones filled.
+  The first run of this passed the router's own check with three pads
+  that had no copper path to their net.
 
 Decisions already made, and where they are written down:
 
 - **{BOARD_W:.0f} by {BOARD_H:.0f} mm**, two layers, which is the cheap tier at most fabs.
+- **{TRACK_UM:.0f} um track, {CLEARANCE_UM:.0f} um clearance**, authored in `tools/make-pcb.py` and
+  checked against the design KiCad exports before a router sees it.
+- **Ground is poured on the back and supply on the front, and both are
+  also routed as traces.** Poured alone they were declared to the router
+  as planes, it treated every pad on them as already connected, and its
+  own signal traces then cut the pours into islands. The pours go on
+  over the top of the traces and are the return path, not the only one.
 - **A1 is a cable, not a shield.** A 20 way IDC header and a ribbon to
   the UNO. The pinout is `A1_HEADER` in `tools/export-netlist.py`, and
   five of its pads are ground so the fast edges have a return path near
@@ -308,10 +451,10 @@ a reason to refuse one.
 
     if a.plot:
         filled, written = plot(path, OUT)
-        made = sorted(f.name for f in OUT.iterdir() if f.suffix.lower() in (".gbr", ".drl", ".csv", ".gbrjob"))
+        made = sorted(f.name for f in OUT.iterdir()
+                      if f.suffix.lower() in (".gbr", ".drl", ".csv", ".gbrjob", ".svg"))
         print(f"  zones filled: {bool(filled)}; plotted {len(written)} gerber layer(s)")
         print(f"  fabrication set: {len(made)} files in {OUT.relative_to(ROOT)}")
-    print("  NOT ROUTED: ground and supply are poured; the signal traces are still to do.")
     return 0
 
 

@@ -1,0 +1,79 @@
+{
+  "router": "freerouting-2.1.0.jar",
+  "passes": 40,
+  "rules": {
+    "width_um": 250.0,
+    "clearance_um": 200.1
+  },
+  "stats": {
+    "host": "KiCad's Pcbnew,6.0.2+dfsg-1",
+    "unit": "mm",
+    "board": {
+      "bounding_box": {
+        "x": 1001.0,
+        "y": 1.0,
+        "width": -1.0,
+        "height": -1001.0
+      },
+      "size": {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 1002.0,
+        "height": 1002.0
+      }
+    },
+    "layers": {
+      "total_count": 2,
+      "signal_count": 2
+    },
+    "items": {
+      "total_count": 703,
+      "trace_count": 223,
+      "via_count": 7,
+      "conduction_area_count": 0,
+      "drill_item_count": 146,
+      "pin_count": 0,
+      "component_count": 326,
+      "other_count": 1
+    },
+    "components": {
+      "total_count": 21
+    },
+    "pads": {
+      "total_count": 146
+    },
+    "nets": {
+      "total_count": 39,
+      "class_count": 2
+    },
+    "connections": {
+      "maximum_count": 322,
+      "incomplete_count": 0
+    },
+    "traces": {
+      "total_count": 223,
+      "total_segment_count": 508,
+      "total_length": 25834.002,
+      "total_weighted_length": 82553700.0,
+      "average_length": 115.84754,
+      "total_vertical_length": 6558.572,
+      "total_horizontal_length": 7115.16,
+      "total_angled_length": 6265.5576
+    },
+    "bends": {
+      "total_count": 285,
+      "90_degree_count": 1,
+      "45_degree_count": 284,
+      "other_angle_count": 0
+    },
+    "vias": {
+      "total_count": 7,
+      "through_hole_count": 7,
+      "blind_count": 0,
+      "buried_count": 0
+    },
+    "clearance_violations": {
+      "total_count": 0
+    }
+  }
+}
