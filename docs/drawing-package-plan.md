@@ -416,6 +416,12 @@ tool asserts that it went red. That is the part worth keeping: a check
 that reports nothing on a clean board **and nothing on a broken one** is
 reporting nothing, and that is precisely the state this one was in.
 
+One rule holds all three mutations together, because without it they
+disagreed: **under any MUTATE flag, exit 0 means the check caught it.**
+Two of them refused the board and so exited 1, the third only wrote a
+note and so exited 0, and nothing scripting the three could tell a proof
+from a pass. A mutation run is not asking whether the board is good.
+
 ## The order, and why
 
 M2 before everything. Every later step reads the netlist, so the netlist

@@ -168,6 +168,19 @@ def build():
     return board, placed, keep, applied, unset
 
 
+MUTATIONS = ("MUTATE", "MUTATE_OPEN", "MUTATE_SILK")
+
+
+def mutating():
+    """Under any of these the board is deliberately broken, so the run
+    is not asking whether the board is good: it is asking whether the
+    check can tell. Exit 0 means the check caught it. Without this rule
+    two of the three mutations exited 1 because a refusal is a failure,
+    and the third exited 0 because a silkscreen note is not, and nothing
+    scripting them could tell a proof from a pass."""
+    return [m for m in MUTATIONS if os.environ.get(m)]
+
+
 def vias_of(path):
     b = pcbnew.LoadBoard(str(path))
     return len([t for t in b.GetTracks() if t.Type() == pcbnew.PCB_VIA_T])
@@ -436,9 +449,11 @@ def main():
             print(f"  note: {m}")
         if len(silk) > 6:
             print(f"  note: and {len(silk) - 6} more")
-    if os.environ.get("MUTATE_SILK") and not silk:
-        raise AssertionError("MUTATE_SILK left the silkscreen clean: "
-                             "the check cannot see what it claims to")
+    if os.environ.get("MUTATE_SILK"):
+        if not silk:
+            raise AssertionError("MUTATE_SILK left the silkscreen clean: "
+                                 "the check cannot see what it claims to")
+        print("  MUTATE proof: MUTATE_SILK was caught, and noted")
 
     OUT.mkdir(parents=True, exist_ok=True)
     path = OUT / f"{SHEET}.kicad_pcb"
@@ -457,6 +472,9 @@ def main():
         for m in viol[:8]:
             print(f"  {m}")
         print(f"  REFUSED: {unrouted} unconnected item(s), {len(viol)} clearance violation(s)")
+        if mutating():
+            print(f"  MUTATE proof: {'+'.join(mutating())} was caught, and refused the board")
+            return 0
         return 1
     print(f"  wrote {path.relative_to(ROOT)}")
     stats = (f"**Routed.** {routed} track segments and {vias_of(path)} vias carry every net the "
