@@ -1,0 +1,167 @@
+#!/usr/bin/env python3
+"""The bill of materials, taken from the drawings rather than typed.
+
+  python3 tools/parts.py            # write docs/parts.md
+  python3 tools/parts.py --check    # exit 1 if it is not current
+
+Every part on this bench is already named on a sheet, and a second copy
+of that list in prose would drift from the drawing the day someone edits
+one and not the other. So the sheets are the source: this imports
+`tools/draw-schematics.py`, records what each sheet asks `Sheet.chip`
+and `Sheet.twopin` to draw, and writes the tables out. Nothing is
+written by hand except the status column, which no drawing can know.
+"""
+import argparse
+import importlib.util
+import io
+import sys
+from contextlib import redirect_stdout
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+OUT = ROOT / "docs" / "parts.md"
+
+# Which sheets are worth a bill of materials, in build order, with what
+# each one is. The C6 sheets are the alternative build and are listed
+# after the ones the README says to build.
+SHEETS = [
+    ("bench-v1b", "sheet_v1b", "**Build this first.** The UNO bridge, one port, everything at 5 V."),
+    ("bench-v2b", "sheet_v2b", "**Build this second.** Two ports on one SPI chain, sync counted, still one UNO."),
+    ("bench-v1", "sheet_v1", "The ESP32-C6 alternative to v1b. Not the build."),
+    ("bench-v2", "sheet_v2", "The C6 alternative to v2b. Not the build."),
+    ("pad-adapter", "sheet_pad", "The original pad as a wireless HID device. A separate project."),
+]
+
+# AUTHORED, and the only authored thing here: where each part is. A
+# drawing cannot know what is in somebody's drawer. Keyed by the part
+# string the sheet uses, matched on a prefix so "74HC595  at +5V" and
+# "74HC595  at 3V3" are one entry.
+STATUS = {
+    "Arduino UNO": ("on hand", "the pile"),
+    "Raspberry Pi": ("on hand", "the head, already running the serial bridge"),
+    "ESP32-C6": ("on hand", "DevKitC-1 v1.2, the alternative build"),
+    "ESP32-S3": ("to order", "only if the pad adapter gets built"),
+    "74HCT04": ("on hand", "SN74HCT04N, the tube that arrived 2026-09-09"),
+    "74HC165": ("on hand", "the TI bag. v2b needs a second one"),
+    "74HC595": ("on hand", "the box of 30"),
+    "74LVC245": ("on hand", "C6 sheets only; no UNO sheet uses one any more"),
+    "LM1881N": ("TO ORDER", "the one real order. An old National part, mostly resellers now: buy two"),
+    "PC817": ("on hand", "module, for the reset pads"),
+    "relay module": ("on hand", "5 V coil with an opto input"),
+    "TP4056": ("to order", "pad adapter only"),
+    "MCP1700": ("to order", "pad adapter only"),
+    "100nF": ("on hand", "v2b runs seven"),
+    "680k": ("check", "LM1881 RSET. One resistor"),
+    "100R": ("on hand", "the trigger"),
+    "74HCT165": ("on hand", "the C6 sheets' register. HCT there because the C6 drives it at 3.3 V"),
+    "10k": ("check", "pad adapter only. A common value; check the drawer before ordering"),
+    "330R": ("check", "pad adapter only, the LED"),
+    "slide": ("to order", "pad adapter only, the power switch"),
+    "power": ("to order", "pad adapter only, the battery"),
+    "Rigol": ("on hand", "DS1054Z on the LAN"),
+    "NES-001": ("on hand", "the console, open on the bench"),
+}
+
+
+def status_for(part):
+    for k, v in STATUS.items():
+        if part.startswith(k) or k in part:
+            return v
+    return ("unlisted", "not in the status table: add it")
+
+
+def collect():
+    """Import the drawing tool and run each sheet with Sheet.chip and
+    Sheet.twopin recording instead of only drawing. `done` is stubbed so
+    nothing is written and the real generator stays the only thing that
+    writes SVGs."""
+    spec = importlib.util.spec_from_file_location("draw", ROOT / "tools" / "draw-schematics.py")
+    m = importlib.util.module_from_spec(spec)
+    argv, sys.argv = sys.argv, [sys.argv[0], str(ROOT / "docs")]
+    try:
+        spec.loader.exec_module(m)
+    finally:
+        sys.argv = argv
+
+    found = {}
+    current = {"name": None}
+    real_chip, real_twopin, real_done = m.Sheet.chip, m.Sheet.twopin, m.Sheet.done
+
+    def chip(self, x, y, w, ref, part, left, right, conn=False, extra=None):
+        if not conn:
+            found[current["name"]].append(("ic", ref, part, extra or ""))
+        return real_chip(self, x, y, w, ref, part, left, right, conn=conn, extra=extra)
+
+    def twopin(self, x, y, ref, part, net_a, net_b, horizontal=True):
+        found[current["name"]].append(("passive", ref, part, f"{net_a} to {net_b}"))
+        return real_twopin(self, x, y, ref, part, net_a, net_b, horizontal=horizontal)
+
+    m.Sheet.chip, m.Sheet.twopin, m.Sheet.done = chip, twopin, lambda self, path: None
+    try:
+        for name, fn, _blurb in SHEETS:
+            current["name"] = name
+            found[name] = []
+            with redirect_stdout(io.StringIO()):
+                getattr(m, fn)()
+    finally:
+        m.Sheet.chip, m.Sheet.twopin, m.Sheet.done = real_chip, real_twopin, real_done
+    return found
+
+
+def render(found):
+    L = ["# Parts, per sheet", "",
+         "Generated by `tools/parts.py` from `tools/draw-schematics.py`, which is",
+         "the same file that draws the schematics. Nothing here is typed except",
+         "the status column: a drawing cannot know what is in a drawer.", "",
+         "The console, the Pi, the scope, the relay contacts and the port",
+         "connectors are drawn on the sheets with `conn=True`, which marks a",
+         "thing the bench CONNECTS TO rather than a part to buy, and this list",
+         "skips them for that reason. So everything below is something that has",
+         "to exist in a drawer before a sheet can be built.", ""]
+
+    order, seen = [], set()
+    for name, _fn, _b in SHEETS:
+        for kind, _ref, part, _extra in found[name]:
+            key = part.split("  ")[0].strip()
+            if key not in seen:
+                seen.add(key)
+                order.append((key, kind))
+    L += ["## What to gather", "",
+          "Every distinct part across every sheet, with where it is.", "",
+          "| part | status | note |", "|---|---|---|"]
+    for key, _kind in order:
+        st, note = status_for(key)
+        L.append(f"| {key} | {st} | {note} |")
+    L.append("")
+    unlisted = [k for k, _ in order if status_for(k)[0] == "unlisted"]
+    if unlisted:
+        L += [f"**{len(unlisted)} part(s) have no status**: {', '.join(unlisted)}. "
+              "Add them to `STATUS` in `tools/parts.py`.", ""]
+
+    for name, _fn, blurb in SHEETS:
+        L += [f"## {name}.svg", "", blurb, "",
+              "| ref | part | on the sheet |", "|---|---|---|"]
+        for _kind, ref, part, extra in found[name]:
+            L.append(f"| {ref} | {part} | {extra} |")
+        L.append("")
+    return "\n".join(L) + "\n"
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--check", action="store_true", help="exit 1 if docs/parts.md is not what this writes")
+    a = ap.parse_args()
+    text = render(collect())
+    if a.check:
+        if not OUT.exists() or OUT.read_text() != text:
+            print(f"{OUT} is not current: run python3 tools/parts.py")
+            return 1
+        print(f"{OUT} is current")
+        return 0
+    OUT.write_text(text)
+    print(f"wrote {OUT.relative_to(ROOT)}")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
