@@ -1,0 +1,23 @@
+{
+  "org": "tinymachines",
+  "project": "nes-bench",
+  "docno": "TM-NESB-001",
+  "rev": "A",
+  "drawn": "bisenbek",
+  "page": "ansi-b",
+  "title": "NES controller-port bridge, v1b",
+  "intro": [
+    "The bench that drives an unmodified NES-001 through its controller port and records what the console does about it. This package is the v1b build: an Arduino UNO between a Raspberry Pi and the console, everything on one 5 V rail.",
+    "The schematic sheets are drawn by tools/draw-schematics.py. The parts list and the wiring list on the later sheets are not typed: they are read back out of that same file, so a part or a connection cannot be on a sheet and missing from a list, or renamed on a sheet without the list following.",
+    "Widths and levels marked AUTHORED have not been measured. Everything marked MEASURED carries the date it was taken and is in docs/lab-notebook.md with the record it came from."
+  ],
+  "sheets": [
+    {"kind": "cover", "title": "Cover and sheet index"},
+    {"kind": "schematic", "svg": "bench-v1b.svg", "title": "Bridge v1b, one port, all at 5 V"},
+    {"kind": "schematic", "svg": "bench-v2b.svg", "title": "Bridge v2b, two ports, sync counted"},
+    {"kind": "wiring", "sheet": "bench-v1b", "title": "Wiring list, v1b"},
+    {"kind": "parts", "title": "Parts list"},
+    {"kind": "steps", "session": 3, "title": "Build sequence, sitting 3"},
+    {"kind": "schematic", "svg": "logical-timing.svg", "title": "One poll, as timing lanes"}
+  ]
+}

@@ -7,3 +7,7 @@ bench.local.md
 runs/
 __pycache__/
 *.pyc
+
+# The drawing package: framed sheets and the PDF, rendered from the
+# committed SVGs by tools/make-package.py. Generated, so not committed.
+docs/package/
