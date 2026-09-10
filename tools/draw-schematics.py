@@ -25,6 +25,7 @@ STYLE = """
     .gnd { font-size: 9px; fill: #1f2328; font-weight: 700; }
     .note { font-size: 10px; fill: #57606a; font-family: ui-sans-serif, system-ui, sans-serif; }
     .box { fill: #ffffff; stroke: #1f2328; stroke-width: 1.3; }
+    .offsheet { fill: #eaf3fb; stroke: #0a5b9c; stroke-width: 1.1; }
     .conn { fill: #f3f5f7; stroke: #1f2328; stroke-width: 1.3; }
     .zone { fill: none; stroke: #57606a; stroke-dasharray: 5 4; stroke-width: 1; }
     .lead { stroke: #1f2328; stroke-width: 1; }
@@ -42,6 +43,19 @@ STYLE = """
 """
 
 RAIL_CLASS = {"+5V": "rail5", "3V3": "rail3", "GND": "gnd", "VBAT": "rail3"}
+
+# Nets that leave the drawing: a cable, a radio link, a mains lead, an
+# instrument input. They have one end on the sheet on purpose, and the
+# rule check reads this same set so it can tell them from a wire that
+# stops in mid air. Drawn with an off-sheet flag rather than a plain
+# label, so the sheet says it too.
+OFFSHEET = {
+    "PI_USB": "USB to the Pi", "serial": "115200 to the Pi", "LAN": "SCPI over the LAN",
+    "EXT_TRIG": "scope EXT TRIG", "VIDEO": "console composite video", "radio": "BLE",
+    "USB_HID": "USB to a host", "AC_LEAD_A": "AC adapter lead", "AC_LEAD_B": "AC adapter lead",
+    "PWR_DRIVE": "from the Pi's GPIO27", "RESET_PAD": "console reset pads",
+    "RESET_GND": "console reset pads",
+}
 
 
 class Sheet:
@@ -79,6 +93,13 @@ class Sheet:
                 self.add(f'<line class="{"w5" if name == "+5V" else "w3"}" x1="{x}" y1="{y}" x2="{x}" y2="{y-9}"/>'
                          f'<line class="{"w5" if name == "+5V" else "w3"}" x1="{x-5}" y1="{y-9}" x2="{x+5}" y2="{y-9}"/>')
                 self.text(x, y - 11, name, cls, "middle")
+            return
+        if name in OFFSHEET:
+            w = 8 + 6.2 * len(name)
+            x0 = x if side == "R" else x - w
+            self.add(f'<path class="offsheet" d="M{x0} {y-8} L{x0+w-8} {y-8} L{x0+w} {y} '
+                     f'L{x0+w-8} {y+8} L{x0} {y+8} Z"/>')
+            self.text(x0 + 5, y + 3.5, name, "net")
             return
         if name in ("NC", ""):
             self.add(f'<line class="lead" x1="{x-3}" y1="{y-3}" x2="{x+3}" y2="{y+3}"/><line class="lead" x1="{x-3}" y1="{y+3}" x2="{x+3}" y2="{y-3}"/>')
@@ -125,6 +146,21 @@ class Sheet:
             self.text(x + 40, y + 4, part, "pin", "middle")
             self.netlabel(x + 80, y, net_b, "R")
 
+    def bank(self, x, y, refs, part, net_a, net_b):
+        """N identical parts between the same two nets, drawn once and
+        labelled as a range. Every reference in `refs` is a separate
+        part: the drawing is compact, the netlist is complete, and
+        tools/netlist.py records all of them."""
+        label = refs[0] if len(refs) == 1 else f"{refs[0]}..{refs[-1]}"
+        self.netlabel(x, y, net_a, "L")
+        self.add(f'<line class="lead" x1="{x}" y1="{y}" x2="{x+18}" y2="{y}"/>'
+                 f'<rect class="box" x="{x+18}" y="{y-7}" width="44" height="14"/>'
+                 f'<line class="lead" x1="{x+62}" y1="{y}" x2="{x+80}" y2="{y}"/>')
+        self.text(x + 40, y - 10, label, "pinno", "middle")
+        self.text(x + 40, y + 4, part, "pin", "middle")
+        self.netlabel(x + 80, y, net_b, "R")
+        return len(refs)
+
     def done(self, path):
         self.add("</svg>")
         Path(path).write_text("\n".join(self.o))
@@ -133,17 +169,33 @@ class Sheet:
 
 # --------------------------------------------------------------- shared parts
 def console_port(sh, x, y, ref, nets):
-    """The NES-001 7-pin controller port as seen at the board header."""
+    """The NES-001 controller port, numbered as the pin numbers moulded
+    into THIS console's housing.
+
+    MEASURED 2026-09-09, bring-up steps 1.1 and 1.2. This used to carry
+    the published pinout: D3 on 5, D4 on 6, the supply on 7. On this
+    console the supply is on **pin 5**, and pins 6 and 7 are not carried
+    by the controller cable at all. A continuity run out of circuit
+    found five conductors on pins 1 to 5, and the scope then read 5.000
+    V flat on the pin 5 lead while pin 3 idled low and pin 2 idled high.
+    The published table is a published table; this is the board.
+
+    What sits on pins 6 and 7 on the console side is unknown, because
+    nothing reaches them through the cable to measure with."""
     return sh.chip(x, y, 130, ref, "console controller port", [], [
         (1, "GND", "GND"), (2, "CLK", nets["clk"]), (3, "OUT0", nets["out0"]),
-        (4, "D0", nets["d0"]), (5, "D3", "NC"), (6, "D4", "NC"), (7, "+5V", "+5V")], conn=True,
-        extra="looking into the console's socket")
+        (4, "D0", nets["d0"]), (5, "+5V", "+5V"), (6, "n/c", "NC"), (7, "n/c", "NC")], conn=True,
+        extra="MEASURED 2026-09-09: supply on 5, 6 and 7 not carried")
 
 
 def pad_socket(sh, x, y, ref, latch, clk, d0, vcc="3V3"):
+    """The pad end of a cut controller cable, numbered as `console_port`
+    is: the supply on pin 5, nothing carried on 6 and 7. It is the same
+    cable, so it has the same conductors."""
     return sh.chip(x, y, 130, ref, "original pad, on the bridge", [
         (1, "GND", "GND"), (2, "CLK", clk), (3, "OUT0", latch), (4, "D0", d0),
-        (5, "D3", "NC"), (6, "D4", "NC"), (7, "+5V", vcc)], [], conn=True)
+        (5, "+5V", vcc), (6, "n/c", "NC"), (7, "n/c", "NC")], [], conn=True,
+        extra="the pad half of the cut cable")
 
 
 def hct165(sh, x, y, ref, pl, cp, qh, inputs, part="74HCT165  at +5V"):
@@ -198,7 +250,8 @@ def sheet_v1():
 
     sh.zone(20, 740, 1960, 420, "HEAD AND RELAYS")
     sh.chip(60, 770, 170, "PI", "Raspberry Pi 4 Model B", [], [
-        (None, "USB-A", "PI_USB"), (None, "GPIO17", "RST_DRIVE"), (None, "GPIO27", "PWR_DRIVE"), (None, "GND", "GND"), (None, "ETH", "LAN")],
+        (None, "USB-A", "PI_USB"), (None, "GPIO17", "RST_DRIVE"), (None, "GPIO27", "PWR_DRIVE"),
+        (None, "5V", "PI_5V"), (None, "GND", "GND"), (None, "ETH", "LAN")],
         conn=True, extra="the head: headd.py")
     sh.chip(480, 770, 150, "OK1", "PC817 module", [(None, "IN+", "RST_DRIVE"), (None, "IN-", "GND")],
             [(None, "OUT", "RST_PAD"), (None, "GND", "RST_GND"), (None, "VCC", "NC")], extra="open collector across reset")
@@ -235,7 +288,7 @@ def sheet_v1b():
         (None, "D2 (INT0)", "CON_CLK"), (None, "D3", "TRIG"), (None, "5V", "+5V"), (None, "GND", "GND"), (None, "USB-B", "PI_USB")],
         [(None, "D6", "PAD_LATCH"), (None, "D7", "PAD_CLK"), (None, "D8", "PAD_D0"), (None, "D0, D1", "serial")], extra="5 V logic, 16 MHz")
     pad_socket(sh, 1140, 400, "J2", "PAD_LATCH", "PAD_CLK", "PAD_D0", vcc="+5V")
-    sh.twopin(160, 440, "C1..C3", "100nF", "+5V", "GND")
+    sh.bank(160, 440, ["C1", "C2", "C3"], "100nF", "+5V", "GND")
     sh.note(300, 444, ["one across each of U1, U2, U3"])
     sh.twopin(160, 500, "R1", "100R", "TRIG", "EXT_TRIG")
     sh.note(380, 504, ["to DS1054Z rear EXT TRIG. Check the input's rating first;", "if 5 V exceeds it, a 2:1 divider (two 1k) after R1."])
@@ -279,9 +332,9 @@ def sheet_v2():
                       "rising edge moves both bytes to the outputs in one ~10 ns step. A tear during a load becomes impossible,",
                       "and the firmware still only pulses RCLK while both OUT0 lines read low. 3V3 outputs into HCT inputs",
                       "(Vih 2.0 V) is in spec. 3 GPIOs replace 8; port 2 costs none. DS on both 165s to GND: bit 9+ reads 1."])
-    sh.twopin(160, 760, "C1,C2", "100nF", "+5V", "GND")
+    sh.bank(160, 760, ["C1", "C2"], "100nF", "+5V", "GND")
     sh.note(300, 764, ["U1, U2, U6 supply pins; C5 for U8"])
-    sh.twopin(560, 760, "C3,C4", "100nF", "3V3", "GND")
+    sh.bank(560, 760, ["C3", "C4"], "100nF", "3V3", "GND")
     sh.note(700, 764, ["U5, U7 (and U3) supply pins"])
 
     sh.zone(1480, 60, 900, 780, "SYNC SEPARATOR, +5V")
@@ -322,21 +375,13 @@ def sheet_v2():
                         "Head and relays: unchanged from v1 (Pi GPIO17 reset, GPIO27 power)."])
     sh.note(60, 600, ["C6 -> 595 level: the C6's 3.3 V SCK, MOSI, RCLK each pass through two gates of a second 74HCT04 (U9, +5V):",
                       "HCT accepts a 3.3 V high, and two inversions give a full 5 V non-inverted copy. No LS245, no pullups."])
-    sh.note(60, 640, ["Why the 595s: sixteen bits shift in over SPI at any time; nothing changes at the 165s until one RCLK",
-                      "rising edge moves both bytes to the outputs in one ~10 ns step. A tear during a load becomes impossible,",
-                      "and the firmware still only pulses RCLK while both OUT0 lines read low. 3V3 outputs into HCT inputs",
-                      "(Vih 2.0 V) is in spec. 3 GPIOs replace 8; port 2 costs none. DS on both 165s to GND: bit 9+ reads 1."])
-    sh.twopin(160, 760, "C1,C2", "100nF", "+5V", "GND")
-    sh.note(300, 764, ["U1, U2, U6 supply pins; C5 for U8"])
-    sh.twopin(560, 760, "C3,C4", "100nF", "3V3", "GND")
-    sh.note(700, 764, ["U5, U7 (and U3) supply pins"])
     sh.done(OUT / "bench-v2.svg")
 
 
 # ------------------------------------------------------------- logical sheet
 # --------------------------------------------------------------- sheet v2b
 def sheet_v2b():
-    sh = Sheet(2300, 1320, "nes-bench bridge v2b: the UNO version, two ports, sync counted, one supply",
+    sh = Sheet(2300, 1580, "nes-bench bridge v2b: the UNO version, two ports, sync counted, one supply",
                "v1b plus a second 165/595 pair on the same SPI chain and an LM1881 whose 5 V outputs go straight into the UNO. 2026-09-09. Not built.")
     sh.zone(20, 60, 1460, 780, "CONSOLE SIDE AND REGISTERS, +5V")
     console_port(sh, 60, 90, "J1", {"clk": "CON1_CLK", "out0": "CON1_OUT0", "d0": "CON1_D0"})
@@ -356,17 +401,17 @@ def sheet_v2b():
     sh.note(60, 640, ["Two SPI.transfer() calls (port 2 byte first, then port 1) and one RCLK edge update both registers together.",
                       "The UNO's outputs are 5 V, so HC parts at 5 V see real highs everywhere. No shifters on this sheet at all.",
                       "DS on both 165s to GND: reads after the eighth clock return 1 to the console, as an original pad does."])
-    sh.twopin(160, 760, "C1..C5", "100nF", "+5V", "GND")
+    sh.bank(160, 760, ["C1", "C2", "C3", "C4", "C5", "C6"], "100nF", "+5V", "GND")
     sh.note(300, 764, ["one across each of U1, U2, U5, U6, U7, U8"])
 
     sh.zone(1500, 60, 780, 780, "SYNC SEPARATOR, +5V, straight into the UNO")
     sh.chip(1660, 90, 150, "U8", "LM1881N  at +5V", [
         (2, "VIDEO IN", "VID_AC"), (6, "RSET", "RSET"), (8, "VCC", "+5V"), (4, "GND", "GND")],
         [(1, "CSYNC", "CSYNC"), (3, "VSYNC", "VSYNC"), (5, "BURST", "NC"), (7, "ODD/EVEN", "NC")], extra="5 V outputs: no 245 needed")
-    sh.twopin(1660, 330, "C6", "100nF", "VIDEO", "VID_AC")
+    sh.twopin(1660, 330, "C7", "100nF", "VIDEO", "VID_AC")
     sh.note(1800, 334, ["AC couple from the console's video, 1k series"])
     sh.twopin(1660, 380, "R2", "680k", "RSET", "GND")
-    sh.twopin(1660, 430, "C7", "100nF", "RSET", "GND")
+    sh.twopin(1660, 430, "C8", "100nF", "RSET", "GND")
     sh.note(1540, 500, ["VSYNC: one falling edge per field, 60.0988/s.", "CSYNC: one per line plus the vsync block; the NES",
                         "emits no serrations, so count/field = lines - k (measure k).", "CSYNC at 15.7 kHz on INT1 is ~5% of a 16 MHz",
                         "part; VSYNC and port-2 lines on pin-change interrupts."])
@@ -386,7 +431,16 @@ def sheet_v2b():
                         "GPIO27 -> relay IN (active low), relay VCC from the Pi's 5 V pin (5 V coil modules).",
                         "One NO contact in series with one lead of the AC adapter cable. Scope: CH3 video, EXT TRIG",
                         "from A1 through 100R (divider if the input's rating needs it), SCPI over the LAN.",
-                        "Pads J2 and J4 as on v1b, at 5 V, sharing PAD_LATCH and PAD_CLK, own D0 each."])
+                        "Pads J2 and J4 are drawn below, at 5 V, sharing PAD_LATCH and PAD_CLK with a D0 each."])
+
+    sh.zone(20, 1320, 2260, 240, "THE BRIDGE'S OWN PADS, AND THE TRIGGER, ALL AT +5V")
+    pad_socket(sh, 200, 1350, "J2", "PAD_LATCH", "PAD_CLK", "PAD1_D0", vcc="+5V")
+    pad_socket(sh, 620, 1350, "J4", "PAD_LATCH", "PAD_CLK", "PAD2_D0", vcc="+5V")
+    sh.twopin(1100, 1380, "R1", "100R", "TRIG", "EXT_TRIG")
+    sh.note(1100, 1430, ["to the DS1054Z's rear EXT TRIG. Check the input's rating first;",
+                         "if 5 V exceeds it, a 2:1 divider (two 1k) after R1.",
+                         "Both pads are polled by the same PAD_LATCH and PAD_CLK and answer on their own D0,",
+                         "so one poll reads both. They are the pad halves of two cut controller cables."])
     sh.done(OUT / "bench-v2b.svg")
 
 
@@ -495,7 +549,7 @@ def sheet_pad():
                        "at 3V3, add a 74LVC245 and feed the pad 5 V.",
                        "", "Poll: OUT0 high 12 us, low, 8 clocks at 1 us,", "read D0 before each rising edge. 1 kHz.",
                        "The same poll_pad() as firmware/bridge/bridge.ino."])
-    sh.twopin(400, 300, "R1,R2", "10k", "PAD1_D0", "3V3")
+    sh.bank(400, 300, ["R1", "R2"], "10k", "PAD1_D0", "3V3")
     sh.note(340, 330, ["pullups on D0 (both pads): unplugged reads 'nothing pressed'"])
 
     sh.zone(760, 60, 920, 560, "CONTROLLER AND POWER")

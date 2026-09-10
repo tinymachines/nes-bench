@@ -34,23 +34,25 @@ FN = {"bench-v1b": "sheet_v1b", "bench-v2b": "sheet_v2b", "bench-v1": "sheet_v1"
 
 # A net named this is a deliberate no-connect, not a wire.
 NC = {"NC", "", None}
+# "NC" is a STATEMENT: somebody wrote down that this pin goes nowhere.
+# "" and None are SILENCE: nobody said. A supply pin is allowed to be
+# explicitly unconnected (the PC817 module's VCC is, deliberately, since
+# it is used as an open collector); it is not allowed to be unmentioned.
+SILENCE = {"", None}
 # Rails: a net every board has, which may legitimately have many nodes
 # and which it is worth naming separately in the report.
 RAILS = {"+5V", "GND", "3V3", "PI_5V", "PI_3V3", "VBAT", "VBUS"}
 
 
 def collect():
-    spec = importlib.util.spec_from_file_location("draw", ROOT / "tools" / "draw-schematics.py")
-    m = importlib.util.module_from_spec(spec)
-    argv, sys.argv = sys.argv, [sys.argv[0], str(ROOT / "docs")]
-    try:
-        spec.loader.exec_module(m)
-    finally:
-        sys.argv = argv
+    sys.path.insert(0, str(ROOT / "tools"))
+    from loadmod import load
+    m = load(ROOT / "tools" / "draw-schematics.py", "draw", [sys.argv[0], str(ROOT / "docs")])
 
     sheets = {}
     cur = {"name": None}
     real_chip, real_twopin, real_done = m.Sheet.chip, m.Sheet.twopin, m.Sheet.done
+    real_bank = m.Sheet.bank
 
     def add(ref, part, pin, pinname, net):
         sheets[cur["name"]].append({"ref": ref, "part": part, "pin": pin, "pinname": pinname, "net": net})
@@ -65,7 +67,15 @@ def collect():
         add(ref, part, 2, "2", net_b)
         return real_twopin(self, x, y, ref, part, net_a, net_b, horizontal=horizontal)
 
-    m.Sheet.chip, m.Sheet.twopin, m.Sheet.done = chip, twopin, lambda self, path: None
+    def bank(self, x, y, refs, part, net_a, net_b):
+        """One symbol, N parts. Every designator lands in the netlist."""
+        for r in refs:
+            add(r, part, 1, "1", net_a)
+            add(r, part, 2, "2", net_b)
+        return real_bank(self, x, y, refs, part, net_a, net_b)
+
+    m.Sheet.chip, m.Sheet.twopin, m.Sheet.bank = chip, twopin, bank
+    m.Sheet.done = lambda self, path: None
     try:
         for name in SHEETS:
             cur["name"] = name
@@ -74,7 +84,8 @@ def collect():
                 getattr(m, FN[name])()
     finally:
         m.Sheet.chip, m.Sheet.twopin, m.Sheet.done = real_chip, real_twopin, real_done
-    return sheets
+        m.Sheet.bank = real_bank
+    return sheets, m.OFFSHEET
 
 
 def nets_of(nodes):
@@ -85,17 +96,18 @@ def nets_of(nodes):
     return nets
 
 
-def erc(name, nodes):
+def erc(name, nodes, offsheet):
     """Errors are things that cannot be right. Notes are things worth a
     human's eye that may be perfectly intended."""
     errors, notes = [], []
     nets = nets_of(nodes)
 
     for net, ns in sorted(nets.items()):
-        if len(ns) == 1:
+        if len(ns) == 1 and net not in offsheet:
             n = ns[0]
             errors.append(f"net {net!r} has one end only: {n['ref']} pin {n['pin']} ({n['pinname']}). "
-                          "A net with one end is a wire to nowhere, or a name typed two ways.")
+                          "A net with one end is a wire to nowhere, or a name typed two ways. "
+                          "If it leaves the sheet, name it in OFFSHEET in draw-schematics.py.")
 
     # Every device that is not a connector wants a supply and a ground.
     by_ref = defaultdict(list)
@@ -108,8 +120,9 @@ def erc(name, nodes):
             continue
         on = {n["pinname"].upper(): n["net"] for n in ns if n["pinname"]}
         for supply in ("VCC", "VDD"):
-            if supply in on and on[supply] in NC:
-                errors.append(f"{ref} ({part}) has {supply} on no net")
+            if supply in on and on[supply] in SILENCE:
+                errors.append(f"{ref} ({part}) has {supply} on no net at all. If it is meant to be "
+                              "unconnected, say so: give it the net 'NC'.")
         if "GND" not in names and "VSS" not in names:
             notes.append(f"{ref} ({part}) has a supply pin but no GND or VSS pin drawn")
 
@@ -133,7 +146,7 @@ def erc(name, nodes):
     return errors, notes
 
 
-def report(sheets, only=None):
+def report(sheets, offsheet, only=None):
     L = []
     bad = 0
     for name in SHEETS:
@@ -141,7 +154,7 @@ def report(sheets, only=None):
             continue
         nodes = sheets[name]
         nets = nets_of(nodes)
-        errors, notes = erc(name, nodes)
+        errors, notes = erc(name, nodes, offsheet)
         bad += len(errors)
         refs = len({n["ref"] for n in nodes})
         L.append(f"\n=== {name}: {refs} references, {len(nodes)} pins, {len(nets)} nets")
@@ -159,8 +172,8 @@ def main():
     ap.add_argument("sheet", nargs="?", help="one sheet only")
     ap.add_argument("--erc", action="store_true", help="rule check only; exit 1 on an error")
     a = ap.parse_args()
-    sheets = collect()
-    text, bad = report(sheets, a.sheet)
+    sheets, offsheet = collect()
+    text, bad = report(sheets, offsheet, a.sheet)
     print(text.strip())
     print(f"\n{bad} ERC error(s)")
     return 1 if (bad and a.erc) else 0

@@ -348,7 +348,7 @@ STEPS = [
       ["Console UNPLUGGED from the wall. Open it if it is not already.",
        "Two ways to attach a colour to a pin number, and the record keeps which you used. The port housing has its pin numbers moulded into the plastic beside the crimp terminals, four on one row and three on the other: photograph both rows and read them off. Or find the white header where the harness lands on the board and ring each pin out to the socket with the meter.",
        "The moulded numbers are the connector telling you its own numbering, which is worth more than a colour convention. What they do not tell you is whether the harness carries each pin to the board header unswapped. Only the meter does that, so 'both' is the strongest answer.",
-       "Port pinout, looking into the socket: 1 GND, 2 CLK, 3 OUT0, 4 D0, 5 D3, 6 D4, 7 +5V.",
+       "Port pinout on THIS console, measured 2026-09-09 and written down in docs/wiring.md: 1 GND, 2 CLK, 3 OUT0, 4 D0, 5 +5V, and nothing carried on 6 or 7. The published table puts D3 on 5 and the supply on 7; it does not describe this board.",
        "Colours are not evidence on their own. Every pin gets a number from the connector or from the meter, never from what the colour usually means.",
        "If a breakout is spliced onto the harness, this step maps its leads too, because the breakout is what a probe actually lands on. Those leads are new wire in whatever colours were to hand and carry no convention at all.",
        "Two breakout leads the same colour is the case to watch: a probe's ground clip and its tip go on adjacent leads, and a clip on a driven line grounds it. This step refuses a shared colour that was only read off the housing, and asks you to ring those leads out from the board header first.",
@@ -497,7 +497,10 @@ METHODS = {
     "both": "read off the moulded numbers and confirmed with a meter",
 }
 
-PORT_PINS = ((1, "GND"), (2, "CLK"), (3, "OUT0"), (4, "D0"), (5, "D3"), (6, "D4"), (7, "+5V"))
+# MEASURED 2026-09-09, and held to docs/wiring.md's table by
+# tools/check-sheets.py. The published pinout puts D3 on 5, D4 on 6 and
+# the supply on 7; this console does not.
+PORT_PINS = ((1, "GND"), (2, "CLK"), (3, "OUT0"), (4, "D0"), (5, "+5V"), (6, "n/c"), (7, "n/c"))
 
 
 def _named(colour):

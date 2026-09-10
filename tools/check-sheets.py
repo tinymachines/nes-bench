@@ -90,6 +90,68 @@ def check_v1b():
     return bad
 
 
+def norm(name):
+    """Pin names the same way wherever they are written: no spaces, no
+    parenthetical, upper case. '+5 V', '+5V' and 'OUT0 (latch)' are one
+    name in three hands."""
+    return re.sub(r"\s+|\(.*?\)", "", str(name)).upper()
+
+
+def doc_port_pinout():
+    """The controller port's pinout out of docs/wiring.md, which is the
+    one place it is written down since it was measured on this console
+    2026-09-09."""
+    text = (ROOT / "docs" / "wiring.md").read_text()
+    m = re.search(r"\| pin \| name \| direction \| used as \|\n\|[-| ]+\|\n((?:\|.*\n)+)", text)
+    if not m:
+        return {}
+    out = {}
+    for line in m.group(1).strip().splitlines():
+        cells = [c.strip() for c in line.strip("|").split("|")]
+        if len(cells) >= 2 and cells[0].isdigit():
+            out[int(cells[0])] = norm(cells[1])
+    return out
+
+
+def check_port_pinout():
+    """The rule check cannot catch this one. A connector drawn with the
+    supply on the wrong pin is perfectly connected and perfectly wrong,
+    and it is the error that sends a probe to a pin carrying nothing. So
+    the pinout is held to the measurement instead of to itself: the
+    schematic's connector symbol and the bring-up tool must both agree
+    with the table in wiring.md."""
+    want = doc_port_pinout()
+    if not want:
+        print("  no port pinout table found in docs/wiring.md")
+        return 1
+    bad = 0
+    sys.path.insert(0, str(ROOT / "tools"))
+    from loadmod import load
+    draw = load(ROOT / "tools" / "draw-schematics.py", "draw", [sys.argv[0], str(ROOT / "docs")])
+    seen = {}
+
+    class Probe:
+        def chip(self, x, y, w, ref, part, left, right, conn=False, extra=None):
+            for no, nm, _net in list(left) + list(right):
+                if no is not None:
+                    seen[no] = norm(nm)
+            return 0
+    draw.console_port(Probe(), 0, 0, "J1", {"clk": "CLK", "out0": "OUT0", "d0": "D0"})
+    for pin, name in sorted(want.items()):
+        if seen.get(pin) != name:
+            print(f"  port pin {pin}: wiring.md says {name}, the schematic's connector says {seen.get(pin)}")
+            bad += 1
+
+    bu = load(ROOT / "tools" / "bringup.py", "bringup")
+    for pin, name in bu.PORT_PINS:
+        if want.get(pin) != norm(name):
+            print(f"  port pin {pin}: wiring.md says {want.get(pin)}, bringup.py says {norm(name)}")
+            bad += 1
+    if not bad:
+        print(f"check-sheets: {len(want)} port pins agree across wiring.md, the schematic and the bring-up tool")
+    return bad
+
+
 def main():
     w = draw_bench.read_wiring()
     want = {}
@@ -117,6 +179,7 @@ def main():
         return 1
     print(f"check-sheets: {len(want)} C6 pins on the v1 sheet agree with docs/wiring.md" if not bad else f"check-sheets: {bad} disagreement(s)")
     bad += check_v1b()
+    bad += check_port_pinout()
     # The committed SVGs are what the generator writes.
     n_sheets = 0
     with tempfile.TemporaryDirectory() as d:

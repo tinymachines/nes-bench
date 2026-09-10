@@ -1,6 +1,7 @@
 # Wiring: the bridge, the head, the relays
 
-Authored 2026-09-06 from the published NES-001 controller port pinout,
+Authored 2026-09-06 from the published NES-001 controller port pinout
+and corrected 2026-09-09 where this console disagreed with it,
 the 74HCT165, 74HCT04 and 74LVC245 datasheets, and the ESP32's pin
 rules; revised 2026-09-07 against the gear photographed in this
 directory (`IMG_5660` to `IMG_5675`). Nothing here has been built.
@@ -68,15 +69,24 @@ Published pinout, looking into the console's socket; the numbering is
 the one nesdev and the pad repair guides share. Verify with the meter
 before trusting it (see below).
 
+**MEASURED 2026-09-09 on this console.** This table used to carry the
+published pinout, which puts D3 on 5, D4 on 6 and the supply on 7. Steps
+1.1 and 1.2 say otherwise for this board: a continuity run out of
+circuit found the controller cable carrying five conductors on pins 1 to
+5 and nothing on 6 or 7, and the scope then read 5.000 V flat on the pin
+5 lead. **This table is now the one place the pinout is written down**,
+and `tools/check-sheets.py` holds both the schematic's connector symbol
+and `tools/bringup.py` to it.
+
 | pin | name | direction | used as |
 |---|---|---|---|
 | 1 | GND | | common ground |
 | 2 | CLK | console to pad | the register's clock, and counted |
-| 3 | OUT0 (latch) | console to pad | the register's load, inverted, and counted |
-| 4 | D0 (data) | pad to console | the register's serial output |
-| 5 | D3 | expansion | not connected |
-| 6 | D4 | expansion | not connected |
-| 7 | +5 V | | the register's and the inverter's supply |
+| 3 | OUT0 | console to pad | the register's load, inverted, and counted |
+| 4 | D0 | pad to console | the register's serial output |
+| 5 | +5V | | the supply. MEASURED 5.000 V, where the published table has D3 |
+| 6 | n/c | | not carried by the controller cable; unmeasured on the console side |
+| 7 | n/c | | not carried by the controller cable; unmeasured on the console side |
 
 The pressed level on D0 is LOW (the pad's 4021 pulls the line low; the
 console's 74LS368 inverts it, so the CPU reads 1). After the eighth
@@ -99,7 +109,7 @@ therefore wired H down to A.
 
 | 165 pin | signal | to |
 |---|---|---|
-| 16 VCC | +5 V | port pin 7 |
+| 16 VCC | +5 V | port pin 5 on the C6 sheets; on v1b the UNO's own 5 V pin |
 | 8 GND | GND | port pin 1 |
 | 2 CP (clock) | CLK | port pin 2, direct |
 | 15 /CE (clock inhibit) | | GND |

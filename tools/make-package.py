@@ -33,15 +33,11 @@ sys.path.insert(0, str(ROOT / "tools"))
 import sheetframe as sf  # noqa: E402
 
 
+from loadmod import load as _load  # noqa: E402
+
+
 def load(name, path):
-    spec = importlib.util.spec_from_file_location(name, ROOT / "tools" / path)
-    m = importlib.util.module_from_spec(spec)
-    argv, sys.argv = sys.argv, [sys.argv[0]]
-    try:
-        spec.loader.exec_module(m)
-    finally:
-        sys.argv = argv
-    return m
+    return _load(ROOT / "tools" / path, name)
 
 
 def git_rev():
@@ -90,7 +86,8 @@ def sheet_schematic(p, cfg, spec):
 
 def sheet_wiring(p, cfg, spec):
     nl = load("netlist", "netlist.py")
-    nodes = nl.collect()[spec["sheet"]]
+    sheets, _offsheet = nl.collect()
+    nodes = sheets[spec["sheet"]]
     nets = nl.nets_of(nodes)
     p.header(cfg["project"], spec["title"])
     x, y, w, h = p.body_box(top_pad=44)

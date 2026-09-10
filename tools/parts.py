@@ -75,13 +75,9 @@ def collect():
     Sheet.twopin recording instead of only drawing. `done` is stubbed so
     nothing is written and the real generator stays the only thing that
     writes SVGs."""
-    spec = importlib.util.spec_from_file_location("draw", ROOT / "tools" / "draw-schematics.py")
-    m = importlib.util.module_from_spec(spec)
-    argv, sys.argv = sys.argv, [sys.argv[0], str(ROOT / "docs")]
-    try:
-        spec.loader.exec_module(m)
-    finally:
-        sys.argv = argv
+    sys.path.insert(0, str(ROOT / "tools"))
+    from loadmod import load
+    m = load(ROOT / "tools" / "draw-schematics.py", "draw", [sys.argv[0], str(ROOT / "docs")])
 
     found = {}
     current = {"name": None}

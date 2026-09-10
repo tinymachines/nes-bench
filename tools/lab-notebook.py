@@ -39,13 +39,9 @@ def bringup_module():
     measurement was made are authored, and are read from the tool so a
     rename does not leave the notebook quoting an old one. The numbers,
     the times and the outcomes come from the log and are never touched."""
-    spec = importlib.util.spec_from_file_location("bringup", ROOT / "tools" / "bringup.py")
-    m = importlib.util.module_from_spec(spec)
-    argv, sys.argv = sys.argv, [sys.argv[0]]
-    try:
-        spec.loader.exec_module(m)
-    finally:
-        sys.argv = argv
+    sys.path.insert(0, str(ROOT / "tools"))
+    from loadmod import load
+    m = load(ROOT / "tools" / "bringup.py", "bringup")
     return m
 
 
@@ -53,10 +49,9 @@ def bringup_steps():
     """The steps, out of the tool that runs them. One fact, one place: a
     second copy of the build order here would drift from the one that is
     actually executed, and the reader could not tell which was lying."""
-    spec = importlib.util.spec_from_file_location("bringup", ROOT / "tools" / "bringup.py")
-    m = importlib.util.module_from_spec(spec)
-    sys.argv = [sys.argv[0]]
-    spec.loader.exec_module(m)
+    sys.path.insert(0, str(ROOT / "tools"))
+    from loadmod import load
+    m = load(ROOT / "tools" / "bringup.py", "bringup")
     return m.STEPS
 
 # Values worth a row of their own, in the order they read best, with the

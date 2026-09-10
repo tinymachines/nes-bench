@@ -39,13 +39,9 @@ CHECK_SAYS = {
 
 
 def load(name):
-    spec = importlib.util.spec_from_file_location(name, ROOT / "tools" / f"{name}.py")
-    m = importlib.util.module_from_spec(spec)
-    argv, sys.argv = sys.argv, [sys.argv[0]]
-    try:
-        spec.loader.exec_module(m)
-    finally:
-        sys.argv = argv
+    sys.path.insert(0, str(ROOT / "tools"))
+    from loadmod import load
+    m = load(ROOT / "tools" / f"{name}.py", name)
     return m
 
 

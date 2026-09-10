@@ -57,7 +57,7 @@ Two things it already taught, both fixed:
   a value at height minus 8, so the two collided. It has an assertion
   now: a row under 30 units fails loudly instead of overlapping.
 
-## M2: make the schematics say what is true
+## M2: make the schematics say what is true. DONE 2026-09-09
 
 `tools/netlist.py --erc` reports **19 errors across five sheets**. They
 are not all bugs, and sorting them is the work:
@@ -80,8 +80,18 @@ are not all bugs, and sorting them is the work:
   PC817's VCC is deliberately unconnected but drawn blank rather than
   marked. A deliberate no-connect should say so.
 
-The ERC is **not a deploy gate yet**, and will not be until it is clean.
-A check that is known to fail teaches everyone to ignore it.
+**All five sheets are clean and the ERC is a deploy gate now.** Three
+mutations put it back to red: a repeated designator, a net renamed at
+one end only, and a supply pin left silent.
+
+**What the ERC cannot catch, and what does.** A connector drawn with the
+right connections and the wrong pinout passes every connectivity rule:
+it is perfectly wired and perfectly wrong, and it is the error that
+sends a probe to a pin carrying nothing. So the pinout is held to the
+measurement instead of to itself. `docs/wiring.md`'s port table is now
+the one place it is written down, and `tools/check-sheets.py` holds both
+the schematic's connector symbol and `tools/bringup.py` to it. Putting
+the published pinout back on the sheet fails that check on three pins.
 
 ## M3: the wiring diagram, for building rather than reading
 

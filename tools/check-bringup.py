@@ -27,14 +27,9 @@ HARNESS = ["brown", "red", "orange", "yellow", "white", "blue", "purple"]
 
 
 def bringup():
-    spec = importlib.util.spec_from_file_location("bringup", ROOT / "tools" / "bringup.py")
-    m = importlib.util.module_from_spec(spec)
-    argv, sys.argv = sys.argv, [sys.argv[0]]
-    try:
-        spec.loader.exec_module(m)
-    finally:
-        sys.argv = argv
-    return m
+    sys.path.insert(0, str(ROOT / "tools"))
+    from loadmod import load
+    return load(ROOT / "tools" / "bringup.py", "bringup")
 
 
 def run(b, method, breakout, harness=None):

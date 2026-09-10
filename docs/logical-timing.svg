@@ -14,6 +14,7 @@
     .gnd { font-size: 9px; fill: #1f2328; font-weight: 700; }
     .note { font-size: 10px; fill: #57606a; font-family: ui-sans-serif, system-ui, sans-serif; }
     .box { fill: #ffffff; stroke: #1f2328; stroke-width: 1.3; }
+    .offsheet { fill: #eaf3fb; stroke: #0a5b9c; stroke-width: 1.1; }
     .conn { fill: #f3f5f7; stroke: #1f2328; stroke-width: 1.3; }
     .zone { fill: none; stroke: #57606a; stroke-dasharray: 5 4; stroke-width: 1; }
     .lead { stroke: #1f2328; stroke-width: 1; }
