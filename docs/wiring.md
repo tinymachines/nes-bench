@@ -159,6 +159,40 @@ microseconds, low, then eight clocks at a microsecond each, reading D0
 before each rising edge. The eight bits go to the register's inputs
 in pass mode.
 
+## What the console's own poll measures, and why it is not one number
+
+MEASURED 2026-09-09 on this console, step 2.1, two records of 12 million
+points at 50 MS/s twenty minutes apart. Both were steady inside
+themselves and they disagreed with each other:
+
+| | record A | record B |
+|---|---|---|
+| latch high | 4.44 us | 3.32 us |
+| clock low | 0.62 us | 0.600 us |
+| between clocks | 15.64 us | 10.62 us |
+| polls per second | 60.0997 | 60.0997 |
+| clocks per poll | 8 | 8 |
+
+Divided by the 2A03's cycle of 0.5587 us those are 8 and 6 cycles of
+latch, 1 cycle of clock low, and 28 and 19 cycles between clocks, each
+landing on a whole cycle and the two clock periods to better than half a
+part in a thousand.
+
+**So the latch width and the clock spacing belong to the code, not to
+the console.** The latch is high for the gap between the game's two
+writes to $4016; each clock is one read of $4016; the spacing is the
+game's read loop. Two runs caught two routines.
+
+The two that did not move are structural: eight clocks per poll, and one
+poll per frame at 60.0997 Hz, which is the NES frame rate to fifteen
+parts per million and was not fitted to it.
+
+**The consequence for this bridge:** the 165 has to have its bit up
+before the fastest poll any cartridge might do, not before the one that
+was on screen. A tight unrolled read is about 12 cycles, near 7 us. Do
+not size the register's setup against a median, and do not treat any
+single capture as the console's timing.
+
 ## The trigger
 
 ESP32-C6 GPIO7 through 100 ohms to the scope's rear EXT TRIG (BNC, 1 M

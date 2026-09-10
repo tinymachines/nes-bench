@@ -20,7 +20,7 @@ observations are written down, is in
 | sitting | what it is | state |
 |---|---|---|
 | 1 | Instruments | done |
-| 2 | The console, measured | 1 of 3 steps |
+| 2 | The console, measured | 2 of 3 steps |
 | 3 | The bridge, built | not started |
 | 4 | Joined | not started |
 | 5 | The head's hands | not started |
@@ -142,7 +142,7 @@ Photographs:
 
 - `docs/lab/01-meter-on-port.jpg`  (wanted)
 
-### 2.1  The scope on an original pad's port, a game running
+### 2.1  The scope on an original pad's port, a game running  (held)
 
 Answers: wiring.md's authored 'latch high a few us, clock low a few hundred ns, ~7 us between clocks, 60 polls/s'.
 
@@ -158,6 +158,8 @@ Photographs:
 
 - `docs/lab/02-probes-on-port.jpg`  (wanted)
 - `docs/lab/02-scope-screen.jpg`  (wanted)
+
+> Last run 2026-09-09 21:14:12: held. latch high 3.32 us, clock low 0.600 us, clock period 10.62 us, 60.10 polls/s, 8 clocks per latch over 15 latches
 
 ## Sitting 3: The bridge, built
 

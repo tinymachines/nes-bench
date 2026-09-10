@@ -234,6 +234,31 @@ def edges(sig, thr):
     return np.flatnonzero(d == 1), np.flatnonzero(d == -1)
 
 
+def levels(sig):
+    """A logic line's two levels, found without assuming anything about
+    its duty cycle: split at the midpoint of the extremes, then take the
+    median of each side. Returns (low, high, n_high, n_low).
+
+    MEASURED 2026-09-09, by this refusing a perfectly good capture. This
+    used to threshold on the 2nd and 98th percentiles, which assumes a
+    line spends a couple of percent of its time on each level. The
+    console's latch is high for about 12 us once a frame: **0.03 percent
+    of a 240 ms record**, and the clock is low for the same order. Both
+    percentiles therefore sat inside the SAME level, the test saw a
+    range of one code out of 255, and it reported a flat channel and a
+    probe that was not connected. The probe was connected and the
+    console was running. A needle is not a flat line, and a statistic
+    that cannot see a needle must not be the one guarding against a dead
+    probe."""
+    import numpy as np
+    lo_raw, hi_raw = float(sig.min()), float(sig.max())
+    mid = (lo_raw + hi_raw) / 2.0
+    high, low = sig[sig > mid], sig[sig <= mid]
+    if len(high) == 0 or len(low) == 0:
+        return lo_raw, hi_raw, len(high), len(low)
+    return float(np.median(low)), float(np.median(high)), len(high), len(low)
+
+
 def measure_port(latch, clock, rate):
     """The four numbers the plan says replace the authored ones: the latch
     pulse width, the clock pulse width, the clocks per latch, and the
@@ -241,13 +266,19 @@ def measure_port(latch, clock, rate):
     midpoint, so a 5 V line and a 3.3 V line both read correctly."""
     import numpy as np
     out = {}
+    lv = {}
     for name, sig in (("latch", latch), ("clock", clock)):
-        lo, hi = float(np.percentile(sig, 2)), float(np.percentile(sig, 98))
+        lo, hi, n_high, n_low = levels(sig)
+        lv[name] = (lo, hi)
         out[f"{name}_low_code"], out[f"{name}_high_code"] = lo, hi
         if hi - lo < 20:
             return {"error": f"the {name} channel is flat ({lo:.0f} to {hi:.0f} of 255): is the probe on, and the console running?"}
-    lt = (np.percentile(latch, 2) + np.percentile(latch, 98)) / 2
-    ct = (np.percentile(clock, 2) + np.percentile(clock, 98)) / 2
+        # A handful of samples on one side is a spike or a glitch, not a
+        # level. A real latch needle is hundreds of samples wide.
+        if min(n_high, n_low) < 16:
+            return {"error": f"the {name} channel has only {min(n_high, n_low)} samples away from its resting level: that is a glitch, not a signal"}
+    lt = (lv["latch"][0] + lv["latch"][1]) / 2
+    ct = (lv["clock"][0] + lv["clock"][1]) / 2
     lr, lf = edges(latch, lt)
     cf, cr = edges(clock, ct)[1], edges(clock, ct)[0]
     if len(lr) < 2:
@@ -272,7 +303,12 @@ def measure_port(latch, clock, rate):
             lows.append((r[0] - f) / rate)
     out["clock_low_us"] = float(np.median(lows)) * 1e6 if lows else None
     if len(cf) > 2:
-        out["clock_period_us"] = float(np.median(np.diff(cf))) * 1e6
+        # /rate first. This read 782000000 us until 2026-09-09, because
+        # np.diff over an edge INDEX array is in samples and the 1e6 was
+        # applied to samples. Every other line in this function divides
+        # by rate before scaling; this one did not, and nothing had ever
+        # run it on a real record.
+        out["clock_period_us"] = float(np.median(np.diff(cf))) / rate * 1e6
     per = []
     for a, b in zip(lr[:-1], lr[1:]):
         per.append(int(((cf >= a) & (cf < b)).sum()))

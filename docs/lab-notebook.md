@@ -17,7 +17,7 @@ Those are in the log, marked, and are not counted below.
 
 ## Where the build stands
 
-4 of 4 attempted steps hold, over 7 attempts.
+5 of 5 attempted steps hold, over 9 attempts.
 
 | step | what it proves | attempts | state |
 |---|---|---|---|
@@ -25,6 +25,7 @@ Those are in the log, marked, and are not counted below.
 | 0.2 | The workstation can open a serial port | 2 | held |
 | 0.3 | The bridge firmware is on the UNO and answers STATUS | 2 | held |
 | 1.1 | The controller harness's colours against the port's pins | 1 | held |
+| 2.1 | The scope on an original pad's port, a game running | 2 | held |
 
 ## Instruments
 
@@ -75,4 +76,34 @@ Method: read off the pin numbers moulded into the port housing.
 ![The controller harness's colours against the port's pins](lab/01-port-housing-pins-5-7.jpg)
 
 Photograph pending: `docs/lab/01-board-header.jpg`.
+
+## The part's own timing
+
+### 2.1  The scope on an original pad's port, a game running
+
+Answers: wiring.md's authored 'latch high a few us, clock low a few hundred ns, ~7 us between clocks, 60 polls/s'.
+
+**Attempt 1, 2026-09-09 21:06:59**: did not hold. the latch channel is flat (76 to 77 of 255): is the probe on, and the console running?
+
+Photograph pending: `docs/lab/02-probes-on-port.jpg`.
+
+Photograph pending: `docs/lab/02-scope-screen.jpg`.
+
+**Attempt 2, 2026-09-09 21:14:12**: held. latch high 3.32 us, clock low 0.600 us, clock period 10.62 us, 60.10 polls/s, 8 clocks per latch over 15 latches
+
+| | |
+|---|---|
+| latch pulse, high | 3.32 us |
+| clock pulse, low | 0.6 us |
+| between clocks | 10.62 us |
+| between polls | 16.639 ms |
+| polls per second | 60.1 |
+| latches in the record | 15 |
+| clocks per poll | 8 |
+
+Clocks per poll: 8 clocks on 14 polls.
+
+Photograph pending: `docs/lab/02-probes-on-port.jpg`.
+
+Photograph pending: `docs/lab/02-scope-screen.jpg`.
 
