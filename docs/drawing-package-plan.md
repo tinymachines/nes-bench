@@ -165,7 +165,7 @@ drops one node produces a perfectly well formed file that nothing
 downstream would question, so dropping a node deliberately is the test:
 it reports the missing pad on every net it touches.
 
-## M5: a board
+## M5: a board. PLACED 2026-09-09, NOT ROUTED
 
 Honest about what this costs. A netlist is not a board. A board needs a
 footprint chosen for every part, a placement, a route, a design rule
@@ -174,6 +174,45 @@ drill file, a position file and a BOM. **That is real work and it is
 done in an EDA tool, not here.** KiCad is the obvious choice: free,
 scriptable, and `kicad-cli` can export the whole fab package headlessly
 once a layout exists.
+
+**Decided 2026-09-09: v2b, and a cable rather than a shield.** A1 is a
+20 way IDC header with a ribbon to the UNO. Sixteen signals would fit a
+16 way part exactly and would carry SCK and two console clocks with one
+ground for the whole cable; the 20 way part costs the same and its four
+spare pads are grounds, sitting beside the fastest edges. `A1_HEADER` in
+`tools/export-netlist.py` is that pinout.
+
+KiCad 6.0.2 is installed here now, and `tools/make-pcb.py` builds the
+board through its own `pcbnew` module: 21 footprints placed, 39 nets
+applied, 131 pads assigned, a 100 by 100 mm outline, ground poured on
+the back and supply on the front. The fabrication set plots: nine
+Gerbers, two drill files and a position file. 146 plated holes, which is
+exactly the pad count of the 21 parts.
+
+**It is not routed, and the folder's own README says so in its first
+line.** There are no signal traces. Routing is the step that genuinely
+needs either a person in KiCad or an autorouter, and neither is
+something this repo should pretend to have done. What is removed is
+everything around it: the netlist cannot be retyped wrong, the
+footprints are checked to exist, the placement cannot overlap, and the
+plot step is proven end to end so that re-running it after routing is
+the whole of the last mile.
+
+Three things it taught:
+
+- **A footprint name is a claim about a file.** Two of mine were guesses
+  and both were wrong: DIP-08 is spelled DIP-8, and the axial resistor
+  needs its `_Horizontal` suffix. The check that passed them only asked
+  whether a string was present. It looks in the library now.
+- **Authored coordinates are a mistake I will keep making.** The first
+  placement put nine parts on top of each other, because I was doing
+  footprint arithmetic in my head against sizes I had guessed. The
+  arrangement is authored as rows; the coordinates come from the
+  footprints' own bounding boxes.
+- **Two bounding boxes mean two different things.** Copper overlap is a
+  fabrication error; silkscreen overlap is an assembly annoyance. The
+  first version compared one against the other and reported four faults
+  that were only labels touching.
 
 Worth saying plainly: **v1b is three DIP chips, three capacitors and a
 resistor.** A board for it is a nice object and a good way to learn the

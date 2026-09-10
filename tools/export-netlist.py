@@ -46,19 +46,68 @@ FOOTPRINTS = [
     ("74HCT04", "Package_DIP:DIP-14_W7.62mm", "DIP-14, socketed"),
     ("74HC165", "Package_DIP:DIP-16_W7.62mm", "DIP-16, socketed"),
     ("74HC595", "Package_DIP:DIP-16_W7.62mm", "DIP-16, socketed"),
-    ("LM1881N", "Package_DIP:DIP-08_W7.62mm", "DIP-8, socketed"),
+    ("LM1881N", "Package_DIP:DIP-8_W7.62mm", "DIP-8, socketed"),
     ("100nF", "Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P5.00mm", "5 mm disc, 0.2 inch pitch"),
-    ("100R", "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm", "quarter watt axial"),
-    ("680k", "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm", "quarter watt axial"),
+    ("100R", "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal", "quarter watt axial, lying down"),
+    ("680k", "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal", "quarter watt axial, lying down"),
     ("console controller port", "Connector_PinHeader_2.54mm:PinHeader_1x05_P2.54mm_Vertical",
      "the cut cable lands on a 5 way header; pins 6 and 7 are not carried"),
     ("original pad", "Connector_PinHeader_2.54mm:PinHeader_1x05_P2.54mm_Vertical",
      "the pad half of the cut cable, same 5 conductors"),
-    ("Arduino UNO", "Module:Arduino_UNO_R3_Shield",
-     "SHIELD FORM. Decide before layout: a shield that plugs into the UNO, "
-     "or headers and a cable beside it"),
+    ("Arduino UNO", "Connector_IDC:IDC-Header_2x10_P2.54mm_Vertical",
+     "DECIDED 2026-09-09: cable, not shield. A 20 way IDC box header and a ribbon "
+     "to the UNO, wired per A1_HEADER below"),
 ]
+
+# AUTHORED, and the decision that makes the cable form buildable.
+#
+# A footprint's pads are numbered; a schematic's pins are named. A1's
+# nodes say "D13" and "5V", and an IDC header's pads say 1 to 20, so
+# something has to say which is which. This is that something, and it is
+# the ribbon's pinout.
+#
+# Sixteen signals need sixteen pads, so a 2x8 header would fit exactly
+# and would carry SCK and two clock lines at four megahertz with a
+# single ground for the whole cable. A 20 way part costs the same and
+# leaves four pads spare, so the spares are grounds and they sit beside
+# the fastest edges: SCK, RCLK, MOSI and the two console clocks. In a
+# ribbon the return current follows the nearest ground, and with one
+# ground at the far end it has nowhere near to go.
+A1_HEADER = {
+    1: "5V", 2: "GND",
+    3: "D13", 4: "GND",          # SCK, with a ground beside it
+    5: "D11", 6: "D10",          # MOSI and RCLK
+    7: "GND", 8: "D2",           # ground, then console 1 clock
+    9: "D5", 10: "GND",          # console 1 latch, with a ground
+    11: "D9", 12: "D4",          # console 2 clock and latch
+    13: "D3", 14: "GND",         # CSYNC, with a ground
+    15: "A0", 16: "A1",          # VSYNC and the trigger out
+    17: "D6", 18: "D7",          # pad latch and clock
+    19: "D8", 20: "A2",          # the two pads' data lines
+}
 UNRESOLVED = "Arduino UNO"
+
+
+# Where KiCad keeps its footprints, if it is installed. A footprint name
+# is a claim about a file, and until 2026-09-09 nothing here checked it:
+# two of the names below were guesses and both were wrong (DIP-08 is
+# spelled DIP-8, and the axial resistor needs its _Horizontal suffix).
+# The export was perfectly happy to write them, because the check only
+# asked whether a string was present. A check that cannot look at the
+# thing it names is not a check.
+FP_LIBS = [Path("/usr/share/kicad/footprints"), Path("/usr/share/kicad/modules")]
+
+
+def footprint_file(fp):
+    """The .kicad_mod a footprint name points at, or None if the library
+    is not installed here. Returns False if the library IS installed and
+    the footprint is not in it, which is the case worth failing on."""
+    lib = next((p for p in FP_LIBS if p.is_dir()), None)
+    if lib is None:
+        return None
+    libname, _, name = fp.partition(":")
+    path = lib / f"{libname}.pretty" / f"{name}.kicad_mod"
+    return path if path.is_file() else False
 
 
 def footprint(part):
@@ -66,6 +115,36 @@ def footprint(part):
         if part.startswith(key) or key in part:
             return fp, why
     return None, None
+
+
+def net_pads(ns):
+    """Every (ref, pad, function) a net lands on.
+
+    Usually one pad per node. A1 is the exception and it has to be: the
+    ribbon carries four spare grounds, deliberately, and if only the one
+    pad the schematic draws were connected then the other four would be
+    unconnected pins on a header and the whole reason for the 20 way
+    part would be silently undone."""
+    out = []
+    for n in ns:
+        if n["ref"] == "A1" and (n["pinname"] or "").split(" ")[0] == "GND":
+            for pad, sig in sorted(A1_HEADER.items()):
+                if sig == "GND":
+                    out.append(("A1", str(pad), "GND"))
+            continue
+        pad, _warn = pad_name(n["ref"], n["pin"], n["pinname"])
+        if pad is not None:
+            out.append((n["ref"], pad, n["pinname"]))
+    return out
+
+
+def header_pad(pinname):
+    """A1's pad number for a signal, from the authored ribbon pinout."""
+    want = (pinname or "").split(" ")[0]
+    for pad, sig in A1_HEADER.items():
+        if sig == want:
+            return pad
+    return None
 
 
 def pad_name(ref, pin, pinname):
@@ -82,6 +161,12 @@ def pad_name(ref, pin, pinname):
     if isinstance(pin, int):
         return str(pin), None
     name = (pinname or "").strip()
+    if ref == "A1":
+        pad = header_pad(name)
+        if pad is None:
+            return None, (f"A1 pin {name!r} has no pad in A1_HEADER. The ribbon's pinout has to "
+                          "name every signal the schematic uses.")
+        return str(pad), None
     if "," in name:
         return None, (f"{ref} draws {name!r} as one pin, which is {len(name.split(','))} pads. "
                       "Split it on the schematic before laying out a board.")
@@ -136,12 +221,9 @@ def kicad_net(sheet, nodes, nets):
     L.append("  (nets")
     for i, (net, ns) in enumerate(sorted(nets.items()), 1):
         L.append(f'    (net (code "{i}") (name "{net}")')
-        for n in ns:
-            pad, _warn = pad_name(n["ref"], n["pin"], n["pinname"])
-            if pad is None:
-                continue
-            L.append(f'      (node (ref "{n["ref"]}") (pin "{pad}")'
-                     f' (pinfunction "{n["pinname"]}") (pintype "passive"))')
+        for ref, pad, fn in net_pads(ns):
+            L.append(f'      (node (ref "{ref}") (pin "{pad}")'
+                     f' (pinfunction "{fn}") (pintype "passive"))')
         L.append("    )")
     L.append("  ))")
     return "\n".join(L) + "\n"
@@ -155,11 +237,8 @@ def protel_net(sheet, nodes, nets):
         L += ["[", ref, fp or "UNRESOLVED", value_of(part), "]"]
     for net, ns in sorted(nets.items()):
         L += ["(", net]
-        for n in ns:
-            pad, _warn = pad_name(n["ref"], n["pin"], n["pinname"])
-            if pad is None:
-                continue
-            L.append(f"{n['ref']}-{pad}")
+        for ref, pad, _fn in net_pads(ns):
+            L.append(f"{ref}-{pad}")
         L.append(")")
     return "\n".join(L) + "\n"
 
@@ -202,14 +281,7 @@ def parse_protel(text):
 
 def verify(sheet, keep):
     """What was written back against what was meant, node for node."""
-    want = {}
-    for net, ns in keep.items():
-        pads = set()
-        for n in ns:
-            pad, _w = pad_name(n["ref"], n["pin"], n["pinname"])
-            if pad is not None:
-                pads.add(f"{n['ref']}-{pad}")
-        want[net] = pads
+    want = {net: {f"{r}-{p}" for r, p, _f in net_pads(ns)} for net, ns in keep.items()}
     got = parse_protel((OUT / f"{sheet}.protel.net").read_text())
     bad = []
     for net in sorted(set(want) | set(got)):
@@ -230,13 +302,22 @@ def main():
     missing = []
     for sheet in SHEETS:
         for ref, part in components(sheets[sheet]).items():
-            if footprint(part)[0] is None:
+            fp = footprint(part)[0]
+            if fp is None:
                 missing.append(f"{sheet}: {ref} ({part}) has no footprint. Add it to FOOTPRINTS.")
+                continue
+            found = footprint_file(fp)
+            if found is False:
+                missing.append(f"{sheet}: {ref} ({part}) names {fp!r}, which is not in the "
+                               "footprint library. Check the spelling against what is installed.")
     for m in missing:
         print(f"  {m}")
     if a.check:
         if not missing:
-            print(f"export-netlist: every part on {len(SHEETS)} sheets has a footprint")
+            lib = next((p for p in FP_LIBS if p.is_dir()), None)
+            where = "and every one is in the installed library" if lib else \
+                "(no footprint library installed here, so the names are unverified)"
+            print(f"export-netlist: every part on {len(SHEETS)} sheets has a footprint {where}")
         return 1 if missing else 0
     if missing:
         return 1
@@ -277,8 +358,10 @@ def main():
         n_nodes = sum(len(v) for v in keep.values())
         print(f"    read back: {len(keep)} nets and {n_nodes} nodes match the schematic")
     print(f"\nwrote {OUT.relative_to(ROOT)}/  ({len(SHEETS)} sheets)")
-    print(f"NOTE: A1's footprint is {dict((k, v) for k, v, _ in FOOTPRINTS)[UNRESOLVED]}, which assumes a shield. "
-          "Decide that before laying out.")
+    n_gnd = sum(1 for v in A1_HEADER.values() if v == "GND")
+    print(f"NOTE: A1 is a cable, not a shield: {dict((k, v) for k, v, _ in FOOTPRINTS)[UNRESOLVED]}, "
+          f"wired per A1_HEADER, with {n_gnd} of its pads on GND so the ribbon's fast edges have a "
+          "return path near them.")
     if problems:
         print(f"\n{len(problems)} thing(s) above must be settled on the schematic before a board. "
               "The netlists are written and are correct about everything else.")
