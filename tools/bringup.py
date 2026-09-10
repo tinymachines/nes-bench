@@ -608,7 +608,16 @@ def _capture_two(bench, step, name, note):
 
 def check_scope_port_timing(bench, step):
     import numpy as np
-    info, early = _capture_two(bench, step, "bringup-port-timing", "bring-up 2.1: an original pad's port while a game polls")
+    # MEASURED 2026-09-09: two records of this step twenty minutes apart
+    # came back with an 8 cycle latch and a 28 cycle read loop, and then
+    # a 6 cycle latch and a 19 cycle read loop. Both were steady to one
+    # sample. The port's widths are the GAME'S cycle counts, so a record
+    # without a note of what was on screen cannot be compared with the
+    # next one, and the first pair could not be told apart afterwards
+    # because nobody had written it down.
+    say(f"  {DIM}What is the console showing? (title, demo, gameplay, a name, anything){OFF}")
+    state = ask("  on screen", "not recorded")
+    info, early = _capture_two(bench, step, "bringup-port-timing", f"bring-up 2.1: an original pad's port while a game polls; on screen: {state}")
     if early:
         return early
     latch = np.fromfile(ROOT / "captures" / info["files"][1], dtype=np.uint8).astype(np.float32)
@@ -617,11 +626,20 @@ def check_scope_port_timing(bench, step):
     if "error" in m:
         return "fail", m, m["error"]
     m["capture"] = f"captures/{info['files'][1]}"
+    m["console_state"] = state
+    # The 2A03's cycle, from the crystal. Every width this step measures
+    # is a whole number of these, which is what said they belong to the
+    # game's code and not to the console.
+    cyc_us = 12e6 / 21477272.0
+    m["latch_high_cycles"] = round(m["latch_high_us"] / cyc_us) if m.get("latch_high_us") else None
+    if m.get("clock_period_us"):
+        m["clock_period_cycles"] = round(m["clock_period_us"] / cyc_us)
     ok = m.get("clocks_per_latch_mode") == 8
     line = (f"latch high {m['latch_high_us']:.2f} us, clock low {m['clock_low_us']:.3f} us, "
             f"clock period {m.get('clock_period_us', float('nan')):.2f} us, "
             f"{m['polls_per_s']:.2f} polls/s, {m.get('clocks_per_latch_mode')} clocks per latch "
-            f"over {m['latches_seen']} latches")
+            f"over {m['latches_seen']} latches; that is {m.get('latch_high_cycles')} and "
+            f"{m.get('clock_period_cycles')} CPU cycles, on screen: {state}")
     return ("pass" if ok else "fail"), m, line + ("" if ok else "  <- expected 8 clocks per latch")
 
 

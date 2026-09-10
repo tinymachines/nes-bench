@@ -159,7 +159,7 @@ Photographs:
 - `docs/lab/02-probes-on-port.jpg`  (wanted)
 - `docs/lab/02-scope-screen.jpg`  (wanted)
 
-> Last run 2026-09-09 21:14:12: held. latch high 3.32 us, clock low 0.600 us, clock period 10.62 us, 60.10 polls/s, 8 clocks per latch over 15 latches
+> Last run 2026-09-09 21:24:27: held. latch high 3.32 us, clock low 0.580 us, clock period 10.62 us, 60.10 polls/s, 8 clocks per latch over 15 latches
 
 ## Sitting 3: The bridge, built
 
