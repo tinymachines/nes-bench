@@ -534,6 +534,15 @@ def _v1b_body_2(sh):
         "SPI clocks 8 bits into U3 in 2 us at 4 MHz and one RCLK edge moves them to",
         "its outputs in ~10 ns, so the console never sees half a byte. The firmware",
         "still only pulses RCLK while D5 reads low. Serial 115200 to the Pi over USB."])
+    band3 = "THE HEAD, THE RELAYS AND THE SCOPE (unchanged from v1 except the relay supply)"
+    sh.note(*sh.slot(2, 0, label=band3), [
+        "Pi GPIO17 to a PC817 or one TLP281 channel, to the console's reset pads, 100 ms.",
+        "Pi GPIO27 to the relay module's IN (active low); relay VCC from the Pi's 5 V pin,",
+        "because the Songle SRD-05VDC and the Tongling board are 5 V coil parts."])
+    sh.note(*sh.slot(2, 1), [
+        "One normally-open contact in series with one lead of the AC adapter cable, never",
+        "the mains side and never both. Grounds: J1 pin 1, the bridge, the UNO GND and the",
+        "Pi GND through USB are one net. Scope: video on CH3, EXT TRIG from R1, SCPI by LAN."])
 
 
 def sheet_v1b():
