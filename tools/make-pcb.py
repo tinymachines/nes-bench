@@ -250,25 +250,84 @@ def apply_routing(path):
     return tracks, unrouted, viol
 
 
-def overlaps(placed, with_text):
-    """Two parts in the same place.
-
-    `with_text` picks which bounding box, and the difference matters. The
-    copper box is a fabrication error: two parts cannot occupy the same
-    holes. The box including the reference and value text is a silkscreen
-    problem, which makes a board harder to assemble and is not a reason
-    to refuse one. The first version of this check compared text boxes
-    against a packer that used copper boxes, and reported four overlaps
-    that were only labels touching."""
+def overlaps(placed):
+    """Two parts in the same holes. A fabrication error, and the reason
+    the packer measures footprints instead of trusting arithmetic done
+    in somebody's head."""
     bad = []
     items = sorted(placed.items())
     for i, (r1, f1) in enumerate(items):
-        b1 = f1.GetBoundingBox() if with_text else f1.GetBoundingBox(False, False)
+        b1 = f1.GetBoundingBox(False, False)
         for r2, f2 in items[i + 1:]:
-            b2 = f2.GetBoundingBox() if with_text else f2.GetBoundingBox(False, False)
-            if b1.Intersects(b2):
+            if b1.Intersects(f2.GetBoundingBox(False, False)):
                 bad.append(f"{r1} and {r2}")
     return bad
+
+
+SILK_TO_CU = {pcbnew.F_SilkS: pcbnew.F_Cu, pcbnew.B_SilkS: pcbnew.B_Cu}
+
+
+def silk_items(fp):
+    """What a footprint actually puts on a silkscreen layer: its
+    reference label if that is where the label lives, and its outline.
+
+    NOT its bounding box. A footprint's box includes the Value field,
+    and these libraries put Value on F.Fab, which is not a silkscreen,
+    is not plotted, and is not in the fabrication set at all. J2's value
+    is the string "original pad, on the bridge": twenty one millimetres
+    of text on a three and a half millimetre connector. That box is what
+    made this check report four silkscreen overlaps for as long as it
+    existed, and all four of them were fab-layer text that nothing will
+    ever print. Measure the layer the question is about."""
+    out = []
+    for field in (fp.Reference(), fp.Value()):
+        if field.GetLayer() in SILK_TO_CU and field.IsVisible():
+            out.append((field.GetLayer(), field.GetBoundingBox(),
+                        f'the "{field.GetText()}" label'))
+    for item in fp.GraphicalItems():
+        if item.GetLayer() in SILK_TO_CU:
+            out.append((item.GetLayer(), item.GetBoundingBox(), "an outline"))
+    return out
+
+
+def silkscreen_faults(board):
+    """Silkscreen that will not read as drawn: a label on top of another
+    part's silkscreen, or silkscreen over anybody's pad.
+
+    Neither refuses a board. A fab clips silk off pads and a crowded
+    label is an assembly annoyance, not a fabrication error, which is
+    exactly why they are counted separately from copper. They are worth
+    counting because a reference designator nobody can read is what
+    turns a fifteen minute build into an hour with a magnifier.
+
+    MUTATE_SILK=1 drags one reference label onto its neighbour's, and
+    this has to go red: a check that reports nothing on a clean board
+    and nothing on a broken one is reporting nothing."""
+    fps = sorted(board.GetFootprints(), key=lambda f: f.GetReference())
+    silk = {f.GetReference(): silk_items(f) for f in fps}
+    if os.environ.get("MUTATE_SILK"):
+        a, b = fps[0], fps[1]
+        a.Reference().SetPosition(b.Reference().GetPosition())
+        silk[a.GetReference()] = silk_items(a)
+        print(f"  MUTATE_SILK: {a.GetReference()}'s label moved onto {b.GetReference()}'s")
+    faults = []
+    for i, f1 in enumerate(fps):
+        for f2 in fps[i + 1:]:
+            for l1, b1, w1 in silk[f1.GetReference()]:
+                for l2, b2, w2 in silk[f2.GetReference()]:
+                    if l1 == l2 and b1.Intersects(b2):
+                        faults.append(f"{f1.GetReference()} {w1} touches {f2.GetReference()} {w2}")
+    for f1 in fps:
+        for layer, box, what in silk[f1.GetReference()]:
+            cu = SILK_TO_CU[layer]
+            for f2 in fps:
+                for pad in f2.Pads():
+                    if not pad.IsOnLayer(cu) or (f1 is f2 and what == "an outline"):
+                        continue
+                    if box.Intersects(pad.GetBoundingBox()):
+                        faults.append(f"{f1.GetReference()} {what} sits over "
+                                      f"{f2.GetReference()}-{pad.GetNumber()}")
+    return faults
 
 
 def outside(placed):
@@ -322,7 +381,8 @@ def plot(path, outdir):
     o.SetExcludeEdgeLayer(False)
     o.SetPlotReference(True)
     o.SetPlotValue(False)
-    for attr, name in (("F_Cu", "top-copper"), ("B_Cu", "bottom-copper")):
+    for attr, name in (("F_Cu", "top-copper"), ("B_Cu", "bottom-copper"),
+                       ("F_SilkS", "top-silk")):
         pctl.SetLayer(getattr(pcbnew, attr))
         pctl.OpenPlotfile(name, pcbnew.PLOT_FORMAT_SVG, name)
         pctl.PlotLayer()
@@ -352,17 +412,24 @@ def main():
     a = ap.parse_args()
 
     board, placed, keep, applied, unset = build()
-    bad = [f"{a} overlap in copper" for a in overlaps(placed, with_text=False)]
+    bad = [f"{a} overlap in copper" for a in overlaps(placed)]
     bad += [f"{r} is not fully inside the board outline" for r in outside(placed)]
     for m in unset + bad:
         print(f"  {m}")
     if unset or bad:
         return 1
 
-    silk = overlaps(placed, with_text=True)
+    silk = silkscreen_faults(board)
+    print(f"  silkscreen: {len(silk)} fault(s) on the two silk layers "
+          f"across {len(placed)} parts")
     if silk:
-        print(f"  note: {len(silk)} pair(s) have overlapping silkscreen text: "
-              f"{', '.join(silk[:4])}{' ...' if len(silk) > 4 else ''}")
+        for m in silk[:6]:
+            print(f"  note: {m}")
+        if len(silk) > 6:
+            print(f"  note: and {len(silk) - 6} more")
+    if os.environ.get("MUTATE_SILK") and not silk:
+        raise AssertionError("MUTATE_SILK left the silkscreen clean: "
+                             "the check cannot see what it claims to")
 
     OUT.mkdir(parents=True, exist_ok=True)
     path = OUT / f"{SHEET}.kicad_pcb"
@@ -403,6 +470,9 @@ What is here, and what it is for:
   look at it or change it.
 - The `.gbr`, `.drl` and positions files are the fabrication set,
   plotted from exactly that file.
+- `bench-v2b-top-copper.svg`, `-bottom-copper.svg` and `-top-silk.svg`
+  are the same three layers to look at without a Gerber viewer. The silk
+  one is the sheet to print when placing parts.
 
 How the routing is made, and why it is a file:
 
@@ -442,10 +512,13 @@ Decisions already made, and where they are written down:
   coordinates are computed from the footprints' own sizes, because the
   version that authored coordinates by hand put nine parts on top of
   each other.
-
-Known and not fixed: four pairs of parts have overlapping silkscreen
-text. That makes the board harder to read while assembling it and is not
-a reason to refuse one.
+- **The silkscreen is clear**: no reference label on another part's
+  silkscreen, and no silkscreen over anybody's pad. This used to say
+  four pairs overlapped. They did not. The check was measuring each
+  footprint's whole bounding box, which includes the Value field, and
+  these libraries put Value on F.Fab: J2's is the string "original pad,
+  on the bridge", 21 mm of text on a 3.6 mm connector, on a layer that
+  is not plotted and is not in this folder.
 """
     (OUT / "README.md").write_text(readme)
 

@@ -206,7 +206,8 @@ Three things it taught:
 - **Two bounding boxes mean two different things.** Copper overlap is a
   fabrication error; silkscreen overlap is an assembly annoyance. The
   first version compared one against the other and reported four faults
-  that were only labels touching.
+  that were only labels touching. It then reported the same four for a
+  week, and M9 is where they turned out not to exist.
 
 Worth saying plainly: **v1b is three DIP chips, three capacitors and a
 resistor.** A board for it is a nice object and a good way to learn the
@@ -381,8 +382,39 @@ Three things this cost, and all three are the same lesson:
   segfault M5 found in the plot controller, and the same fix: do not
   trust a board this tool built in this process.
 
-Left open: four pairs of parts have overlapping silkscreen text, and the
-board has never been made.
+Left open: the board has never been made.
+
+## M9: the silkscreen, measured on the silkscreen. DONE 2026-09-10
+
+**There were no silkscreen overlaps.** The four this repository has been
+carrying as a known defect since M5 were an artefact of the check.
+
+It compared each footprint's whole bounding box, and a footprint's box
+includes the Value field. These libraries put Value on **F.Fab**, which
+is not a silkscreen, is not plotted, and is not in the fabrication set
+at all. J2's value is the string "original pad, on the bridge": twenty
+one millimetres of text on a three and a half millimetre connector. Four
+of those, four "overlaps", none of which anything will ever print.
+
+The check now reads the two silk layers and nothing else: the reference
+label when the label lives there, plus the footprint's outline, item by
+item rather than part by part. It asks two questions instead of one,
+because they are different questions:
+
+- a label on top of another part's silkscreen, which is what makes a
+  reference designator unreadable;
+- silkscreen over anybody's pad, which a fab clips off and which leaves
+  the outline with pieces missing.
+
+Both come back **zero**, and neither refuses a board: they are assembly
+problems, not fabrication ones, and they are reported as notes with the
+count printed on every run so that silence is not mistaken for a check
+that did not run.
+
+`MUTATE_SILK=1` drags one reference label onto its neighbour's, and the
+tool asserts that it went red. That is the part worth keeping: a check
+that reports nothing on a clean board **and nothing on a broken one** is
+reporting nothing, and that is precisely the state this one was in.
 
 ## The order, and why
 
