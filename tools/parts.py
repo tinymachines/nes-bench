@@ -82,17 +82,35 @@ def collect():
     found = {}
     current = {"name": None}
     real_chip, real_twopin, real_done = m.Sheet.chip, m.Sheet.twopin, m.Sheet.done
+    real_bank = m.Sheet.bank
+
+    def drawing(sheet):
+        """Only the drawing pass of a derived-coordinate sheet is a
+        drawing; the measuring pass is not a bill of materials either."""
+        return not getattr(sheet, "measuring", False)
 
     def chip(self, x, y, w, ref, part, left, right, conn=False, extra=None):
-        if not conn:
+        if not conn and drawing(self):
             found[current["name"]].append(("ic", ref, part, extra or ""))
         return real_chip(self, x, y, w, ref, part, left, right, conn=conn, extra=extra)
 
     def twopin(self, x, y, ref, part, net_a, net_b, horizontal=True):
-        found[current["name"]].append(("passive", ref, part, f"{net_a} to {net_b}"))
+        if drawing(self):
+            found[current["name"]].append(("passive", ref, part, f"{net_a} to {net_b}"))
         return real_twopin(self, x, y, ref, part, net_a, net_b, horizontal=horizontal)
 
+    def bank(self, x, y, refs, part, net_a, net_b):
+        """N identical parts drawn as one symbol. Every one of them has
+        to be bought, so every one of them is a line in the list. This
+        was missed for as long as bank() existed: C4 and C5 were on the
+        v2 sheet and in nobody's drawer."""
+        if drawing(self):
+            for r in refs:
+                found[current["name"]].append(("passive", r, part, f"{net_a} to {net_b}"))
+        return real_bank(self, x, y, refs, part, net_a, net_b)
+
     m.Sheet.chip, m.Sheet.twopin, m.Sheet.done = chip, twopin, lambda self, path: None
+    m.Sheet.bank = bank
     try:
         for name, fn, _blurb in SHEETS:
             current["name"] = name
@@ -101,6 +119,7 @@ def collect():
                 getattr(m, fn)()
     finally:
         m.Sheet.chip, m.Sheet.twopin, m.Sheet.done = real_chip, real_twopin, real_done
+        m.Sheet.bank = real_bank
     return found
 
 
@@ -135,7 +154,9 @@ def render(found):
               "Add them to `STATUS` in `tools/parts.py`.", ""]
 
     for name, _fn, blurb in SHEETS:
-        L += [f"## {name}.svg", "", blurb, "",
+        # A sheet name, not a file name: v1b is one schematic drawn on
+        # two sheets of paper, and this list is per schematic.
+        L += [f"## {name}", "", blurb, "",
               "| ref | part | on the sheet |", "|---|---|---|"]
         for _kind, ref, part, extra in found[name]:
             L.append(f"| {ref} | {part} | {extra} |")

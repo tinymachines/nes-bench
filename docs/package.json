@@ -4,11 +4,11 @@
   "docno": "TM-NESB-001",
   "rev": "A",
   "drawn": "bisenbek",
-  "page": "ansi-b",
+  "page": "ansi-a",
   "title": "NES controller-port bridge, v1b",
   "intro": [
-    "The bench that drives an unmodified NES-001 through its controller port and records what the console does about it. This package is the v1b build: an Arduino UNO between a Raspberry Pi and the console, everything on one 5 V rail.",
-    "The schematic sheets are drawn by tools/draw-schematics.py. The parts list and the wiring list on the later sheets are not typed: they are read back out of that same file, so a part or a connection cannot be on a sheet and missing from a list, or renamed on a sheet without the list following.",
+    "The bench drives an unmodified NES-001 through its controller port and records what the console does about it. This package is the v1b build: an Arduino UNO between a Raspberry Pi and the console, everything on one 5 V rail.",
+    "Nothing here is placed or typed by hand. The schematic's arrangement is authored and its coordinates come from the parts' own measured sizes; the parts list and the wiring list are read back out of that same file, so a part or a connection cannot be on a sheet and missing from a list. A sheet that would print its smallest text below 5 pt is refused rather than shrunk, which is why two sheets here are ANSI B and the v2b bridge, one drawing of eleven parts, is not in this package at all: it gets its own, split the way this one is, before it is built.",
     "Widths and levels marked AUTHORED have not been measured. Everything marked MEASURED carries the date it was taken and is in docs/lab-notebook.md with the record it came from."
   ],
   "sheets": [
@@ -18,18 +18,19 @@
     },
     {
       "kind": "schematic",
-      "svg": "bench-v1b.svg",
-      "title": "Bridge v1b, one port, all at 5 V"
+      "svg": "bench-v1b-1.svg",
+      "title": "Bridge v1b, sheet 1: the console side"
     },
     {
       "kind": "schematic",
-      "svg": "bench-v2b.svg",
-      "title": "Bridge v2b, two ports, sync counted"
+      "svg": "bench-v1b-2.svg",
+      "title": "Bridge v1b, sheet 2: the bridge side"
     },
     {
       "kind": "schematic",
       "svg": "breadboard-v1b.svg",
-      "title": "Breadboard layout and every jumper"
+      "title": "Breadboard layout and every jumper",
+      "page": "ansi-b"
     },
     {
       "kind": "wiring",
@@ -48,7 +49,30 @@
     {
       "kind": "schematic",
       "svg": "logical-timing.svg",
-      "title": "One poll, as timing lanes"
+      "title": "One poll, as timing lanes",
+      "page": "ansi-b"
     }
+  ],
+  "revisions": [
+    [
+      "-",
+      "2026-09-07",
+      "first wiring list, ESP32-C6 bridge, three supplies"
+    ],
+    [
+      "-",
+      "2026-09-08",
+      "v1b: the UNO, one 5 V rail, a 165 and a 595"
+    ],
+    [
+      "-",
+      "2026-09-09",
+      "port pinout replaced by this console's measurement"
+    ],
+    [
+      "A",
+      "2026-09-10",
+      "two letter sheets, coordinates derived not typed"
+    ]
   ]
 }

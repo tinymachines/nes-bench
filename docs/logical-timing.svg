@@ -7,7 +7,9 @@
     .ref { font-size: 12px; font-weight: 700; }
     .part { font-size: 10px; fill: #57606a; }
     .pin { font-size: 9.5px; }
-    .pinno { font-size: 8px; fill: #57606a; }
+    .pinno { font-size: 9px; fill: #57606a; }
+    .linkflag { fill: #fdf3e3; stroke: #a35c00; stroke-width: 1.1; }
+    .linkno { font-size: 9px; fill: #a35c00; font-weight: 700; }
     .net { font-size: 9.5px; fill: #0a5b9c; font-weight: 600; }
     .rail5 { font-size: 9px; fill: #b3261e; font-weight: 700; }
     .rail3 { font-size: 9px; fill: #b35c00; font-weight: 700; }
@@ -31,8 +33,10 @@
   </style>
 
 <rect x="0" y="0" width="1500" height="900" fill="#ffffff"/>
+<g class="sheet-heading" data-height="60">
 <text class="title" x="24" y="30">nes-bench: the logic of one poll, and what is counted</text>
 <text class="sub" x="24" y="46">timing lanes for one controller read on the part; widths marked authored are B0 measure-first item 3's to replace</text>
+</g>
 <text class="lanelbl" x="190" y="94" text-anchor="end">OUT0 (console)</text>
 <line x1="200" y1="112" x2="1440" y2="112" stroke="#d0d7de" stroke-width="1"/>
 <text class="lanelbl" x="190" y="154" text-anchor="end">/PL = not OUT0</text>

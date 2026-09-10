@@ -378,7 +378,7 @@ STEPS = [
 
     S("3.1", "The console side", "U1 and U2 on the board, links on H..A, the pattern on QH",
       ["Console OFF. Build only the console-facing half on the breadboard:",
-       "The supply is the UNO's own 5 V pin, fed by its USB from the Pi, and NOT the console's pin 7. v1b is one 5 V domain (bench-v1b.svg says so on the sheet), and the console shares only ground: its pin 1 to the UNO's GND. That is also the only 5 V available, because the breakout does not bring pin 7 out.",
+       "The supply is the UNO's own 5 V pin, fed by its USB from the Pi, and NOT the console's pin 7. v1b is one 5 V domain (the schematic's first sheet says so), and the console shares only ground: its pin 1 to the UNO's GND. That is also the only 5 V available, because the breakout does not bring pin 7 out.",
        "Leads, from step 1.1's rung-out map: yellow GND, blue CLK, black OUT0, green D0, red +5V. Use the marks on the leads, not the port pin numbers, and not the published pinout.",
        "  74HCT04 (U1): pin 14 to the UNO's 5V, pin 7 to GND, pin 1 from the BLACK lead (OUT0).",
        "  74HC165 (U2): pin 16 to the UNO's 5V, pin 8 to GND, pin 15 (/CE) to GND, pin 10 (DS) to GND, pin 1 (/PL) from U1 pin 2, pin 2 (CP) from the BLUE lead (CLK), pin 9 (QH) to the GREEN lead (D0).",

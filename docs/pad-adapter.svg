@@ -7,7 +7,9 @@
     .ref { font-size: 12px; font-weight: 700; }
     .part { font-size: 10px; fill: #57606a; }
     .pin { font-size: 9.5px; }
-    .pinno { font-size: 8px; fill: #57606a; }
+    .pinno { font-size: 9px; fill: #57606a; }
+    .linkflag { fill: #fdf3e3; stroke: #a35c00; stroke-width: 1.1; }
+    .linkno { font-size: 9px; fill: #a35c00; font-weight: 700; }
     .net { font-size: 9.5px; fill: #0a5b9c; font-weight: 600; }
     .rail5 { font-size: 9px; fill: #b3261e; font-weight: 700; }
     .rail3 { font-size: 9px; fill: #b35c00; font-weight: 700; }
@@ -31,14 +33,16 @@
   </style>
 
 <rect x="0" y="0" width="1700" height="940" fill="#ffffff"/>
+<g class="sheet-heading" data-height="60">
 <text class="title" x="24" y="30">OG pad to BLE / USB HID adapter: the bridge's pad poll, made portable</text>
 <text class="sub" x="24" y="46">ESP32-S3 for USB HID + BLE; ESP32-C6 works for BLE only (its USB port is serial/JTAG, not a device controller). Nothing built.</text>
+</g>
 <rect class="zone" x="20" y="60" width="720" height="560" rx="6"/>
 <text class="sub" x="28" y="74" text-anchor="start">PADS, polled at 3V3 exactly as the bridge polls them</text>
-<rect class="conn" x="160" y="90" width="130" height="232" rx="3"/>
+<rect class="conn" x="160" y="90" width="176.0" height="232" rx="3"/>
 <text class="ref" x="166" y="104" text-anchor="start">J1</text>
 <text class="part" x="166" y="116" text-anchor="start">original pad, on the bridge</text>
-<text class="part" x="166" y="128" text-anchor="start">the pad half of the cut cable</text>
+<text class="part" x="161" y="335" text-anchor="start">the pad half of the cut cable</text>
 <line class="lead" x1="134" y1="146" x2="160" y2="146"/>
 <text class="pin" x="165" y="149.5" text-anchor="start">GND</text>
 <text class="pinno" x="156" y="144" text-anchor="end">1</text>
@@ -71,10 +75,10 @@
 <text class="pin" x="165" y="305.5" text-anchor="start">n/c</text>
 <text class="pinno" x="156" y="300" text-anchor="end">7</text>
 <line class="lead" x1="131" y1="299" x2="137" y2="305"/><line class="lead" x1="131" y1="305" x2="137" y2="299"/>
-<rect class="conn" x="160" y="340" width="130" height="232" rx="3"/>
+<rect class="conn" x="160" y="340" width="176.0" height="232" rx="3"/>
 <text class="ref" x="166" y="354" text-anchor="start">J2</text>
 <text class="part" x="166" y="366" text-anchor="start">original pad, on the bridge</text>
-<text class="part" x="166" y="378" text-anchor="start">the pad half of the cut cable</text>
+<text class="part" x="161" y="585" text-anchor="start">the pad half of the cut cable</text>
 <line class="lead" x1="134" y1="396" x2="160" y2="396"/>
 <text class="pin" x="165" y="399.5" text-anchor="start">GND</text>
 <text class="pinno" x="156" y="394" text-anchor="end">1</text>
@@ -129,7 +133,7 @@
 <rect class="box" x="900" y="90" width="190" height="258" rx="3"/>
 <text class="ref" x="906" y="104" text-anchor="start">U1</text>
 <text class="part" x="906" y="116" text-anchor="start">ESP32-S3-DevKitC-1 (or C6)</text>
-<text class="part" x="906" y="128" text-anchor="start">TinyUSB HID + NimBLE HID</text>
+<text class="part" x="901" y="361" text-anchor="start">TinyUSB HID + NimBLE HID</text>
 <line class="lead" x1="874" y1="146" x2="900" y2="146"/>
 <text class="pin" x="905" y="149.5" text-anchor="start">GPIO4</text>
 <path class="wire" d="M874,146 l-6,-6 h-65.80000000000001 v12 h65.80000000000001 z"/>
@@ -176,7 +180,7 @@
 <rect class="box" x="1300" y="90" width="150" height="128" rx="3"/>
 <text class="ref" x="1306" y="104" text-anchor="start">U2</text>
 <text class="part" x="1306" y="116" text-anchor="start">TP4056 + protection</text>
-<text class="part" x="1306" y="128" text-anchor="start">LiPo charger module</text>
+<text class="part" x="1301" y="231" text-anchor="start">LiPo charger module</text>
 <line class="lead" x1="1274" y1="146" x2="1300" y2="146"/>
 <text class="pin" x="1305" y="149.5" text-anchor="start">IN+</text>
 <path class="wire" d="M1274,146 l-6,-6 h-34.8 v12 h34.8 z"/>
@@ -198,7 +202,7 @@
 <rect class="box" x="1300" y="340" width="150" height="102" rx="3"/>
 <text class="ref" x="1306" y="354" text-anchor="start">U3</text>
 <text class="part" x="1306" y="366" text-anchor="start">MCP1700-3302 LDO</text>
-<text class="part" x="1306" y="378" text-anchor="start">or the devkit's own 3V3 from VBUS</text>
+<text class="part" x="1301" y="455" text-anchor="start">or the devkit's own 3V3 from VBUS</text>
 <line class="lead" x1="1274" y1="396" x2="1300" y2="396"/>
 <text class="pin" x="1305" y="399.5" text-anchor="start">VIN</text>
 <path class="wire" d="M1274,396 l-6,-6 h-53.4 v12 h53.4 z"/>

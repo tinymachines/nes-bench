@@ -15,3 +15,7 @@ docs/package/
 # The fabrication handoff: netlists and BOMs, written from the committed
 # schematics by tools/export-netlist.py. Generated, so not committed.
 docs/fab/
+
+# Sheet renderings, made from the committed SVGs by tools/render-png.py
+# on demand and by the deploy. Generated, so not committed.
+docs/*.png

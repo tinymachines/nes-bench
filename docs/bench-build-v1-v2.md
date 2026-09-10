@@ -16,7 +16,9 @@ removes every level shifter. `docs/bench-v1b-uno.md` is its document
 and `firmware/bridge-uno/` its sketch. v1 below stays in the set as the
 C6 version, for when v2's counters need it.
 
-![The bridge, v1b: the UNO version, everything at 5 V, the one to build first](bench-v1b.svg)
+![The bridge, v1b, sheet 1: the console port, the inverter and the register](bench-v1b-1.svg)
+
+![The bridge, v1b, sheet 2: the UNO, the output register and the bridge's own pad](bench-v1b-2.svg)
 
 ![The bridge, v1: the pad the console clocks, one port](bench-v1.svg)
 
@@ -27,7 +29,8 @@ C6 version, for when v2's counters need it.
 ![The pad adapter: an original pad to BLE or USB HID, with a bench mode](pad-adapter.svg)
 
 
-- `bench-v1b.svg`: the same bridge on an Arduino UNO, one supply. No
+- `bench-v1b-1.svg` and `bench-v1b-2.svg`: the same bridge on an Arduino
+  UNO, one supply, on two landscape letter sheets. No
   74LVC245 and no LS245 up-shifter: the UNO reads the console's OUT0
   and CLK directly and drives the 595 at 5 V.
 - `bench-v1.svg`: the bridge exactly as `wiring.md` has it. One port,

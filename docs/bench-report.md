@@ -277,7 +277,8 @@ documentation does not mention. The part decides.
 
 ## Added 2026-09-08: the UNO bridge, and what the compiler decided
 
-The bench's electronics review returned a fifth sheet, `bench-v1b.svg`,
+The bench's electronics review returned a fifth sheet, v1b (now
+`bench-v1b-1.svg` and `bench-v1b-2.svg`),
 after the parts arrived: the bridge on an Arduino UNO with everything
 at 5 V, because the 74HC parts on the shelf need a 3.5 V high that a
 3.3 V part does not give. It supersedes v1 as the thing to build first.

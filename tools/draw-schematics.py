@@ -18,7 +18,9 @@ STYLE = """
     .ref { font-size: 12px; font-weight: 700; }
     .part { font-size: 10px; fill: #57606a; }
     .pin { font-size: 9.5px; }
-    .pinno { font-size: 8px; fill: #57606a; }
+    .pinno { font-size: 9px; fill: #57606a; }
+    .linkflag { fill: #fdf3e3; stroke: #a35c00; stroke-width: 1.1; }
+    .linkno { font-size: 9px; fill: #a35c00; font-weight: 700; }
     .net { font-size: 9.5px; fill: #0a5b9c; font-weight: 600; }
     .rail5 { font-size: 9px; fill: #b3261e; font-weight: 700; }
     .rail3 { font-size: 9px; fill: #b35c00; font-weight: 700; }
@@ -58,31 +60,205 @@ OFFSHEET = {
 }
 
 
+
+# ------------------------------------------------------------------ layout
+# Authored arrangement, derived coordinates: the same split as the PCB
+# placer and the breadboard sheet. A sheet says which band, column and
+# row each part sits in; nothing below types an x or a y. The body is
+# drawn twice, once to measure every part where it stands and once to
+# draw it where the measurements say it goes, so adding a pin to a chip
+# moves its neighbours instead of quietly overlapping them.
+#
+# The reason this exists: a sheet whose coordinates are authored has an
+# authored SIZE, and a page has a fixed one. bench-v1b was 1900 by 1000
+# and landed on a letter page at 63%, which puts a 9.5 px pin name at
+# 4.5 pt. `plan()` derives the size from the parts and `fits()` refuses
+# an arrangement that will not print.
+
+CHARW = 6.2        # advance of the pin/net monospace at its own size
+NOTE_CHARW = 5.4   # advance of the note sans at 10 px
+PART_CHARW = 6.0   # advance of the part-name sans at 10 px
+NOTE_LH = 13
+LEAD = 26          # pin lead length: the gap a net flag hangs in
+GAP = 30           # between columns of a band
+BAND_GAP = 24      # between bands
+PAD = 22           # band box to sheet edge
+BAND_TOP = 26      # band label to the first part
+HEADING_H = 60     # the sheet's own title and subtitle, above the first band
+
+
+def flagw(name, links=()):
+    """How far a net flag reaches out past the end of a pin lead. The
+    drawing code below is what these numbers describe; if a flag is
+    drawn wider than this says, parts overlap on a derived sheet."""
+    if name in RAIL_CLASS:
+        return max(16.0, CHARW * len(name) / 2 + 6)
+    if name in links:
+        return 20 + CHARW * len(name) + 6.6 * len(links[name])
+    if name in OFFSHEET:
+        return 10 + CHARW * len(name)
+    if name in ("NC", "", None):
+        return 8.0
+    return CHARW * len(name) + 18
+
+
+def plan(measured, target=None):
+    """Coordinates for every slot, and the sheet size they imply.
+
+    `measured` is slot -> (x0, y0, x1, y1) about that slot's anchor.
+    Columns are as wide as their widest part, rows as tall as their
+    tallest, and a band is as wide as its widest row. Returns
+    (plan, w, h, bands) where bands maps a band index to its box."""
+    keys = list(measured)
+    out, bandbox = {}, {}
+    y = HEADING_H + 6      # clear of the sheet's own heading
+    for b in sorted({k[0] for k in keys}):
+        ks = [k for k in keys if k[0] == b]
+        cols, rows = sorted({k[1] for k in ks}), sorted({k[2] for k in ks})
+        colw, colpad = {}, {}
+        for c in cols:
+            bx = [measured[k] for k in ks if k[1] == c]
+            colw[c] = max(v[2] - v[0] for v in bx)
+            colpad[c] = max(-v[0] for v in bx)
+        rowh, rowpad = {}, {}
+        for r in rows:
+            bx = [measured[k] for k in ks if k[2] == r]
+            rowh[r] = max(v[3] - v[1] for v in bx)
+            rowpad[r] = max(-v[1] for v in bx)
+        cx, colx = 0.0, {}
+        for c in cols:
+            colx[c] = cx
+            cx += colw[c] + GAP
+        ry, rowy = 0.0, {}
+        for r in rows:
+            rowy[r] = ry
+            ry += rowh[r] + BAND_GAP
+        bw = cx - GAP
+        bh = ry - BAND_GAP
+        bandbox[b] = (PAD, y, bw + 2 * BAND_TOP, bh + BAND_TOP + 16)
+        for k in ks:
+            out[k] = (PAD + BAND_TOP + colx[k[1]] + colpad[k[1]],
+                      y + BAND_TOP + rowy[k[2]] + rowpad[k[2]])
+        y += bh + BAND_TOP + 16 + BAND_GAP
+    wide = max(v[2] for v in bandbox.values())
+    bandbox = {b: (v[0], v[1], wide, v[3]) for b, v in bandbox.items()}
+    return out, PAD + wide + PAD, y - BAND_GAP + PAD, bandbox
+
+
+def fits(name, w, h, box, floor_pt=5.0, smallest_px=9.0):
+    """Refuse an arrangement that will not print.
+
+    `box` is the drawing area of the page it is going on, in the same
+    96 dpi units. The sheet is placed at min(bw/w, bh/h), so the
+    smallest text on it prints at that fraction of `smallest_px`, times
+    0.75 pt per unit. Below about 5 pt a pin name on a printed sheet is
+    a smudge, and the whole point of the package is that somebody can
+    build from it at the bench."""
+    scale = min(box[0] / w, box[1] / h)
+    pt = smallest_px * scale * 0.75
+    assert pt >= floor_pt, (
+        f"{name} is {w:.0f} by {h:.0f} and would place at {scale*100:.0f}% "
+        f"in a {box[0]:.0f} by {box[1]:.0f} box, printing its smallest text at "
+        f"{pt:.1f} pt. The floor is {floor_pt} pt. Give the band fewer columns, "
+        f"move a band onto a second sheet, or give the sheet a bigger page.")
+    return scale
+
+
+def laid(path, title, sub, body, box, links=None):
+    """Draw `body` twice: measure, then place."""
+    m = Sheet(0, 0, title, sub, measure=True, links=links)
+    body(m)
+    p, w, h, bands = plan(m.boxes)
+    fits(Path(path).name, w, h, box)
+    sh = Sheet(w, h, title, sub, plan=p, bands=bands, links=links)
+    for b, (bx, by, bw, bh) in sorted(bands.items()):
+        sh.zone(bx, by, bw, bh, m.bands.get(b, ""))
+    body(sh)
+    sh.done(path)
+
 class Sheet:
-    def __init__(self, w, h, title, sub):
+    def __init__(self, w, h, title, sub, measure=False, plan=None, bands=None, links=None):
         self.w, self.h = w, h
+        self.measuring, self.plan, self.bandbox = measure, plan, bands or {}
+        self.links = links or {}
+        self.boxes, self.bands, self.cur = {}, {}, None
+        if measure:
+            self.o = []
+            return
+        # The heading is its own group, and says how tall it is. A sheet
+        # read on its own needs to name itself; the same sheet placed in
+        # a frame does not, because the title block already does, and
+        # two bold titles a hand's width apart is how a package starts
+        # looking like a slide deck.
         self.o = [f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {w} {h}" width="{w}" height="{h}" role="img" aria-label="{title}">',
                   STYLE, f'<rect x="0" y="0" width="{w}" height="{h}" fill="#ffffff"/>',
+                  f'<g class="sheet-heading" data-height="{HEADING_H}">',
                   f'<text class="title" x="24" y="30">{title}</text>',
-                  f'<text class="sub" x="24" y="46">{sub}</text>']
+                  f'<text class="sub" x="24" y="46">{sub}</text>', '</g>']
 
     def add(self, s):
         self.o.append(s)
 
+    # ------------------------------------------------------ derived layout
+    def slot(self, band, col, row=0, label=None):
+        """Name the place the next part goes. Returns the (x, y) to draw
+        it at, which is (0, 0) while measuring and the derived
+        coordinate afterwards, so a part-drawing helper needs no idea
+        which pass it is in."""
+        self.cur = (band, col, row)
+        if label:
+            self.bands[band] = label
+        if self.measuring:
+            self.boxes.setdefault(self.cur, (0.0, 0.0, 0.0, 0.0))
+            return 0, 0
+        return self.plan[self.cur]
+
+    def grow(self, x0, y0, x1, y1):
+        """Record how much room the part just drawn wanted. Only the
+        measuring pass keeps it."""
+        if not self.measuring or self.cur is None:
+            return
+        b = self.boxes[self.cur]
+        self.boxes[self.cur] = (min(b[0], x0), min(b[1], y0), max(b[2], x1), max(b[3], y1))
+
     def text(self, x, y, s, cls, anchor="start"):
+        if self.measuring:
+            return
         s = s.replace("&", "&amp;").replace("<", "&lt;")
         self.add(f'<text class="{cls}" x="{x}" y="{y}" text-anchor="{anchor}">{s}</text>')
 
     def note(self, x, y, lines):
+        self.grow(x, y - 11, x + NOTE_CHARW * max(len(l) for l in lines),
+                  y + NOTE_LH * (len(lines) - 1) + 5)
+        if self.measuring:
+            return
         for i, l in enumerate(lines):
-            self.text(x, y + i * 13, l, "note")
+            self.text(x, y + i * NOTE_LH, l, "note")
 
     def zone(self, x, y, w, h, label):
+        if self.measuring:
+            return
         self.add(f'<rect class="zone" x="{x}" y="{y}" width="{w}" height="{h}" rx="6"/>')
         self.text(x + 8, y + 14, label, "sub")
 
     def netlabel(self, x, y, name, side):
         """A net flag at the end of a pin lead. Rails get their symbol."""
+        if self.measuring:
+            return
+        if name in self.links:
+            dest = self.links[name]
+            w = flagw(name, self.links)
+            if side == "R":
+                self.add(f'<path class="linkflag" d="M{x+w} {y} L{x+w-10} {y-9} L{x} {y-9} '
+                         f'L{x} {y+9} L{x+w-10} {y+9} Z"/>')
+                self.text(x + 6, y + 3.5, name, "net")
+                self.text(x + w - 13, y + 3.5, dest, "linkno", "end")
+            else:
+                self.add(f'<path class="linkflag" d="M{x-w} {y} L{x-w+10} {y-9} L{x} {y-9} '
+                         f'L{x} {y+9} L{x-w+10} {y+9} Z"/>')
+                self.text(x - w + 14, y + 3.5, name, "net")
+                self.text(x - 6, y + 3.5, dest, "linkno", "end")
+            return
         if name in RAIL_CLASS:
             cls = RAIL_CLASS[name]
             if name == "GND":
@@ -116,11 +292,25 @@ class Sheet:
         """left/right: list of (pin number, pin name, net). Returns height."""
         n = max(len(left), len(right))
         h = n * PITCH + 50
+        # The part number goes inside the box, so the box is at least as
+        # wide as the part number. The extra line goes under it, where a
+        # note on a symbol belongs, and is measured: it used to be drawn
+        # inside and ran out through the right-hand wall of every
+        # connector on the sheet.
+        w = max(w, 14 + PART_CHARW * len(part))
+        lw = max([flagw(net, self.links) for _, _, net in left], default=0)
+        rw = max([flagw(net, self.links) for _, _, net in right], default=0)
+        self.grow(x - (LEAD + lw if left else 0), y,
+                  max(x + w + (LEAD + rw if right else 0),
+                      x + (PART_CHARW * len(extra) if extra else 0)),
+                  y + h + (17 if extra else 0))
+        if self.measuring:
+            return h
         self.add(f'<rect class="{"conn" if conn else "box"}" x="{x}" y="{y}" width="{w}" height="{h}" rx="3"/>')
         self.text(x + 6, y + 14, ref, "ref")
         self.text(x + 6, y + 26, part, "part")
         if extra:
-            self.text(x + 6, y + 38, extra, "part")
+            self.text(x + 1, y + h + 13, extra, "part")
         for i, (no, nm, net) in enumerate(left):
             py = y + 50 + i * PITCH + 6
             self.add(f'<line class="lead" x1="{x-26}" y1="{py}" x2="{x}" y2="{py}"/>')
@@ -137,6 +327,10 @@ class Sheet:
 
     def twopin(self, x, y, ref, part, net_a, net_b, horizontal=True):
         """A resistor or capacitor drawn as a labelled box between two nets."""
+        self.grow(x - flagw(net_a, self.links), y - 16,
+                  x + 80 + flagw(net_b, self.links), y + 16)
+        if self.measuring:
+            return
         if horizontal:
             self.netlabel(x, y, net_a, "L")
             self.add(f'<line class="lead" x1="{x}" y1="{y}" x2="{x+18}" y2="{y}"/>'
@@ -152,6 +346,10 @@ class Sheet:
         part: the drawing is compact, the netlist is complete, and
         tools/netlist.py records all of them."""
         label = refs[0] if len(refs) == 1 else f"{refs[0]}..{refs[-1]}"
+        self.grow(x - flagw(net_a, self.links), y - 16,
+                  x + 80 + flagw(net_b, self.links), y + 16)
+        if self.measuring:
+            return len(refs)
         self.netlabel(x, y, net_a, "L")
         self.add(f'<line class="lead" x1="{x}" y1="{y}" x2="{x+18}" y2="{y}"/>'
                  f'<rect class="box" x="{x+18}" y="{y-7}" width="44" height="14"/>'
@@ -271,43 +469,82 @@ def sheet_v1():
 
 
 # --------------------------------------------------------------- sheet v1b
-def sheet_v1b():
-    sh = Sheet(1900, 1000, "nes-bench bridge v1b: the UNO version, one supply, one port",
-               "the ATmega328 is a 5 V part, so the register, the pad and the console share one domain. 2026-09-08. Not built; pulse widths authored until B0.")
-    sh.zone(20, 60, 1860, 640, "EVERYTHING AT +5V (the UNO's own 5 V pin, fed by its USB from the Pi)")
-    console_port(sh, 60, 90, "J1", {"clk": "CON_CLK", "out0": "CON_OUT0", "d0": "CON_D0"})
-    sh.chip(400, 90, 130, "U1", "74HCT04  at +5V", [(1, "1A", "CON_OUT0"), (14, "VCC", "+5V"), (7, "GND", "GND")],
+# Two sheets of paper, one schematic. The netlist tools collect both
+# bodies under the name bench-v1b, so the rule check still sees a whole
+# design; what is split is the paper. Nets that continue on the other
+# sheet carry a link flag with the sheet number in it, which is what the
+# flag is for: a reader who wants the other end of Q_START is told where
+# it is instead of being left to search.
+LETTER = None   # set at import: the drawing area of a landscape letter page
+
+V1B_TITLE = "nes-bench bridge v1b: the UNO version, one supply, one port"
+V1B_SUB = ("the ATmega328 is a 5 V part, so the register, the pad and the console share one domain. "
+           "2026-09-08. Not built; pulse widths authored until B0.")
+Q_NETS = ["Q_A", "Q_B", "Q_SEL", "Q_START", "Q_UP", "Q_DOWN", "Q_LEFT", "Q_RIGHT"]
+
+
+def _v1b_body_1(sh):
+    band = "THE CONSOLE PORT, THE INVERTER AND THE REGISTER, ALL AT +5V"
+    console_port(sh, *sh.slot(0, 0, label=band), "J1",
+                 {"clk": "CON_CLK", "out0": "CON_OUT0", "d0": "CON_D0"})
+    x, y = sh.slot(0, 1)
+    sh.chip(x, y, 130, "U1", "74HCT04  at +5V",
+            [(1, "1A", "CON_OUT0"), (14, "VCC", "+5V"), (7, "GND", "GND")],
             [(2, "1Y", "/PL")], extra="2.0 V threshold: safe on NMOS OUT0")
-    hct165(sh, 720, 90, "U2", "/PL", "CON_CLK", "CON_D0", part="74HC165  at +5V (the TI bag)", inputs=["Q_A", "Q_B", "Q_SEL", "Q_START", "Q_UP", "Q_DOWN", "Q_LEFT", "Q_RIGHT"])
-    sh.chip(1140, 90, 140, "U3", "74HC595  at +5V", [
-        (14, "SER", "MOSI"), (11, "SRCLK", "SCK"), (12, "RCLK", "RCLK"), (13, "/OE", "GND"), (10, "/SRCLR", "+5V"), (16, "VCC", "+5V"), (8, "GND", "GND")],
-        [(15, "QA", "Q_A"), (1, "QB", "Q_B"), (2, "QC", "Q_SEL"), (3, "QD", "Q_START"), (4, "QE", "Q_UP"), (5, "QF", "Q_DOWN"),
-         (6, "QG", "Q_LEFT"), (7, "QH", "Q_RIGHT"), (9, "QH'", "NC")], extra="one RCLK edge = one byte")
-    sh.chip(1560, 90, 190, "A1", "Arduino UNO R3 (ATmega328P)", [
-        (None, "D13 SCK", "SCK"), (None, "D11 MOSI", "MOSI"), (None, "D10", "RCLK"), (None, "D5 (T1)", "CON_OUT0"),
-        (None, "D2 (INT0)", "CON_CLK"), (None, "D3", "TRIG"), (None, "5V", "+5V"), (None, "GND", "GND"), (None, "USB-B", "PI_USB")],
-        [(None, "D6", "PAD_LATCH"), (None, "D7", "PAD_CLK"), (None, "D8", "PAD_D0"), (None, "D0, D1", "serial")], extra="5 V logic, 16 MHz")
-    pad_socket(sh, 1140, 400, "J2", "PAD_LATCH", "PAD_CLK", "PAD_D0", vcc="+5V")
-    sh.bank(160, 440, ["C1", "C2", "C3"], "100nF", "+5V", "GND")
-    sh.note(300, 444, ["one across each of U1, U2, U3"])
-    sh.twopin(160, 500, "R1", "100R", "TRIG", "EXT_TRIG")
-    sh.note(380, 504, ["to DS1054Z rear EXT TRIG. Check the input's rating first;", "if 5 V exceeds it, a 2:1 divider (two 1k) after R1."])
-    sh.note(60, 560, ["Why this works where the C6 needed shifters: every UNO pin is 5 V, so HC parts at 5 V see real highs,",
-                      "the console's OUT0 and CLK are read directly, and the pad runs at the 5 V it was built for.",
-                      "Why the 595 stays: SPI clocks 8 bits in 2 us at 4 MHz, then one RCLK edge moves them in ~10 ns.",
-                      "No two-store PORT write, no window argument; the firmware still pulses RCLK only while D5 reads low."])
-    sh.note(1380, 400, ["D5 is Timer1's external clock input (T1): a 16-bit", "hardware counter of OUT0 rising edges = latch index.",
-                        "D2 (INT0) falling-edge ISR counts clocks per poll,", "480/s, nothing for a 16 MHz part.",
-                        "D3 rises at latch T (one loop late, ~100 us); the", "74LS74 option makes it edge-exact later.",
-                        "Serial 115200 to the Pi over the UNO's own USB."])
-    sh.zone(20, 720, 1860, 260, "HEAD AND RELAYS (unchanged from v1 except the relay supply)")
-    sh.note(40, 750, ["Pi GPIO17 -> PC817 (or one TLP281 channel) -> console reset pads, 100 ms pulse.",
-                      "Pi GPIO27 -> relay module IN (active low). Relay module VCC from the Pi's 5 V pin: the Songle SRD-05VDC and the",
-                      "Tongling 2-channel board are 5 V coil modules with opto inputs; a 3.3 V GPIO driving the input low turns them on.",
-                      "Normally-open contact in series with one lead of the AC adapter cable, never the mains side.",
-                      "Grounds: J1 pin 1, the bridge, the UNO GND and the Pi GND (through USB) are one net.",
-                      "Scope: video on CH3 at the AUX/RF input (CH1 is B2's master clock), EXT TRIG from R1, SCPI over the LAN from the Pi."])
-    sh.done(OUT / "bench-v1b.svg")
+    hct165(sh, *sh.slot(0, 2), "U2", "/PL", "CON_CLK", "CON_D0",
+           part="74HC165  at +5V (the TI bag)", inputs=Q_NETS)
+    band2 = "DECOUPLING, AND WHAT THE CONSOLE ACTUALLY DOES"
+    sh.bank(*sh.slot(1, 0, label=band2), ["C1", "C2", "C3"], "100nF", "+5V", "GND")
+    sh.note(*sh.slot(1, 1), ["one 100nF across each of U1, U2 and U3,", "at the chip's own supply pins"])
+    sh.note(*sh.slot(1, 2), [
+        "OUT0 high: U1 drives /PL low and the 165 loads its eight inputs. It is transparent while low,",
+        "so the byte must already be in U3 (sheet 2). OUT0 falls, /PL goes high, the byte is held, and",
+        "QH shows A. Each CLK rising edge shifts the next bit out: B, Select, Start, Up, Down, Left,",
+        "Right, then DS = GND, so the ninth read and later return 1 as an original pad does.",
+        "Pressed is LOW, which is what the pad's own 4021 drives."])
+
+
+def _v1b_body_2(sh):
+    band = "THE UNO, THE OUTPUT REGISTER AND THE BRIDGE'S OWN PAD, ALL AT +5V"
+    pad_socket(sh, *sh.slot(0, 0, label=band), "J2", "PAD_LATCH", "PAD_CLK", "PAD_D0", vcc="+5V")
+    x, y = sh.slot(0, 1)
+    sh.chip(x, y, 190, "A1", "Arduino UNO R3 (ATmega328P)", [
+        (None, "D13 SCK", "SCK"), (None, "D11 MOSI", "MOSI"), (None, "D10", "RCLK"),
+        (None, "D5 (T1)", "CON_OUT0"), (None, "D2 (INT0)", "CON_CLK"), (None, "D3", "TRIG"),
+        (None, "5V", "+5V"), (None, "GND", "GND"), (None, "USB-B", "PI_USB")],
+        [(None, "D6", "PAD_LATCH"), (None, "D7", "PAD_CLK"), (None, "D8", "PAD_D0"),
+         (None, "D0, D1", "serial")], extra="5 V logic, 16 MHz")
+    x, y = sh.slot(0, 2)
+    sh.chip(x, y, 140, "U3", "74HC595  at +5V", [
+        (14, "SER", "MOSI"), (11, "SRCLK", "SCK"), (12, "RCLK", "RCLK"), (13, "/OE", "GND"),
+        (10, "/SRCLR", "+5V"), (16, "VCC", "+5V"), (8, "GND", "GND")],
+        [(15, "QA", "Q_A"), (1, "QB", "Q_B"), (2, "QC", "Q_SEL"), (3, "QD", "Q_START"),
+         (4, "QE", "Q_UP"), (5, "QF", "Q_DOWN"), (6, "QG", "Q_LEFT"), (7, "QH", "Q_RIGHT"),
+         (9, "QH'", "NC")], extra="one RCLK edge = one byte")
+    band2 = "THE TRIGGER, AND WHY THESE PINS"
+    sh.twopin(*sh.slot(1, 0, label=band2), "R1", "100R", "TRIG", "EXT_TRIG")
+    sh.note(*sh.slot(1, 1), ["to the DS1054Z's rear EXT TRIG. Check the input's",
+                             "rating first; if 5 V exceeds it, a 2:1 divider",
+                             "(two 1k) after R1."])
+    sh.note(*sh.slot(1, 2), [
+        "D5 is Timer1's external clock input (T1): a 16-bit hardware counter of",
+        "OUT0 rising edges, which is the latch index. D2 (INT0) takes a falling-edge",
+        "ISR counting clocks per poll, 480/s, nothing for a 16 MHz part. D3 rises at",
+        "latch T, one loop late (~100 us); a 74LS74 makes it edge-exact later.",
+        "SPI clocks 8 bits into U3 in 2 us at 4 MHz and one RCLK edge moves them to",
+        "its outputs in ~10 ns, so the console never sees half a byte. The firmware",
+        "still only pulses RCLK while D5 reads low. Serial 115200 to the Pi over USB."])
+
+
+def sheet_v1b():
+    """One schematic on two landscape letter sheets."""
+    cross = {"CON_OUT0": "2", "CON_CLK": "2"}
+    laid(OUT / "bench-v1b-1.svg", V1B_TITLE + "  (sheet 1 of 2: the console side)", V1B_SUB,
+         _v1b_body_1, LETTER, links={**cross, **{q: "2" for q in Q_NETS}})
+    back = {"CON_OUT0": "1", "CON_CLK": "1"}
+    laid(OUT / "bench-v1b-2.svg", V1B_TITLE + "  (sheet 2 of 2: the bridge side)", V1B_SUB,
+         _v1b_body_2, LETTER, links={**back, **{q: "1" for q in Q_NETS}})
+
 
 # ------------------------------------------------------------------- sheet v2
 def sheet_v2():
@@ -587,6 +824,12 @@ def sheet_pad():
 
 
 OUT = Path(sys.argv[1] if len(sys.argv) > 1 else ".")
+
+# The page a laid sheet is drawn to fit. Asked of the frame rather than
+# typed here: the title block's height is part of this number.
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import sheetframe as _sf  # noqa: E402
+LETTER = _sf.drawing_box("ansi-a")
 
 if __name__ == "__main__":
     OUT.mkdir(parents=True, exist_ok=True)

@@ -18,17 +18,18 @@ Every distinct part across every sheet, with where it is.
 |---|---|---|
 | 74HCT04 | on hand | SN74HCT04N, the tube that arrived 2026-09-09 |
 | 74HC165 | on hand | the TI bag. v2b needs a second one |
-| 74HC595 | on hand | the box of 30 |
+| 100nF | on hand | v2b runs seven |
 | Arduino UNO R3 (ATmega328P) | on hand | the pile |
+| 74HC595 | on hand | the box of 30 |
 | 100R | on hand | the trigger |
 | LM1881N | TO ORDER | the one real order. An old National part, mostly resellers now: buy two |
-| 100nF | on hand | v2b runs seven |
 | 680k | check | LM1881 RSET. One resistor |
 | 74HCT165 | on hand | the C6 sheets' register. HCT there because the C6 drives it at 3.3 V |
 | 74LVC245 | on hand | C6 sheets only; no UNO sheet uses one any more |
 | ESP32-C6-DevKitC-1 v1.2 | on hand | DevKitC-1 v1.2, the alternative build |
 | PC817 module | on hand | module, for the reset pads |
 | relay module, 5 V coil | on hand | 5 V coil with an opto input |
+| 10k | check | pad adapter only. A common value; check the drawer before ordering |
 | ESP32-S3-DevKitC-1 (or C6) | to order | only if the pad adapter gets built |
 | TP4056 + protection | to order | pad adapter only |
 | MCP1700-3302 LDO | to order | pad adapter only |
@@ -36,7 +37,7 @@ Every distinct part across every sheet, with where it is.
 | power | to order | pad adapter only, the battery |
 | +330R | check | pad adapter only, the LED |
 
-## bench-v1b.svg
+## bench-v1b
 
 **Build this first.** The UNO bridge, one port, everything at 5 V.
 
@@ -44,11 +45,14 @@ Every distinct part across every sheet, with where it is.
 |---|---|---|
 | U1 | 74HCT04  at +5V | 2.0 V threshold: safe on NMOS OUT0 |
 | U2 | 74HC165  at +5V (the TI bag) | H shifts out first |
-| U3 | 74HC595  at +5V | one RCLK edge = one byte |
+| C1 | 100nF | +5V to GND |
+| C2 | 100nF | +5V to GND |
+| C3 | 100nF | +5V to GND |
 | A1 | Arduino UNO R3 (ATmega328P) | 5 V logic, 16 MHz |
+| U3 | 74HC595  at +5V | one RCLK edge = one byte |
 | R1 | 100R | TRIG to EXT_TRIG |
 
-## bench-v2b.svg
+## bench-v2b
 
 **Build this second.** Two ports on one SPI chain, sync counted, still one UNO.
 
@@ -59,6 +63,12 @@ Every distinct part across every sheet, with where it is.
 | U6 | 74HC165  at +5V | H shifts out first |
 | U5 | 74HC595  at +5V | port 1 byte (shifted in second) |
 | U7 | 74HC595  at +5V | port 2 byte, chained |
+| C1 | 100nF | +5V to GND |
+| C2 | 100nF | +5V to GND |
+| C3 | 100nF | +5V to GND |
+| C4 | 100nF | +5V to GND |
+| C5 | 100nF | +5V to GND |
+| C6 | 100nF | +5V to GND |
 | U8 | LM1881N  at +5V | 5 V outputs: no 245 needed |
 | C7 | 100nF | VIDEO to VID_AC |
 | R2 | 680k | RSET to GND |
@@ -66,7 +76,7 @@ Every distinct part across every sheet, with where it is.
 | A1 | Arduino UNO R3 (ATmega328P) | serial 115200 to the Pi |
 | R1 | 100R | TRIG to EXT_TRIG |
 
-## bench-v1.svg
+## bench-v1
 
 The ESP32-C6 alternative to v1b. Not the build.
 
@@ -83,7 +93,7 @@ The ESP32-C6 alternative to v1b. Not the build.
 | OK1 | PC817 module | open collector across reset |
 | K1 | relay module, 5 V coil | opto in, active low |
 
-## bench-v2.svg
+## bench-v2
 
 The C6 alternative to v2b. Not the build.
 
@@ -94,6 +104,10 @@ The C6 alternative to v2b. Not the build.
 | U6 | 74HCT165  at +5V | H shifts out first |
 | U5 | 74HC595  at 3V3 | port 1 byte |
 | U7 | 74HC595  at 3V3 | port 2 byte, chained |
+| C1 | 100nF | +5V to GND |
+| C2 | 100nF | +5V to GND |
+| C3 | 100nF | 3V3 to GND |
+| C4 | 100nF | 3V3 to GND |
 | U8 | LM1881N  at +5V | composite sync out |
 | C6 | 100nF | VIDEO to VID_AC |
 | R2 | 680k | RSET to GND |
@@ -102,12 +116,14 @@ The C6 alternative to v2b. Not the build.
 | U4 | ESP32-C6-DevKitC-1 v1.2 | RISC-V, BLE 5, Wi-Fi 6 |
 | R1 | 100R | TRIG to EXT_TRIG |
 
-## pad-adapter.svg
+## pad-adapter
 
 The original pad as a wireless HID device. A separate project.
 
 | ref | part | on the sheet |
 |---|---|---|
+| R1 | 10k | PAD1_D0 to 3V3 |
+| R2 | 10k | PAD1_D0 to 3V3 |
 | U1 | ESP32-S3-DevKitC-1 (or C6) | TinyUSB HID + NimBLE HID |
 | U2 | TP4056 + protection | LiPo charger module |
 | U3 | MCP1700-3302 LDO | or the devkit's own 3V3 from VBUS |

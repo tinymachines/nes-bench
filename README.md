@@ -42,7 +42,7 @@ register's job, as it is in the pad.
   typed: `tools/bringup.py` walks the build one step at a time, measures
   something at each stop, and appends what it found. Photographs live in
   `docs/lab/`.
-- `docs/bench-v1b-uno.md` with `bench-v1b.svg`: the all-5V UNO
+- `docs/bench-v1b-uno.md` with `bench-v1b-1.svg` and `bench-v1b-2.svg`: the all-5V UNO
   bridge, the version to build first, and its sketch in
   `firmware/bridge-uno/`.
 - `docs/bench-build-v1-v2.md` with `bench-v1.svg`, `bench-v2.svg`,

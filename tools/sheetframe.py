@@ -53,7 +53,47 @@ STYLE = """<style>
 
 MARGIN = 26      # paper edge to the outer rule
 ZONE = 20        # width of the zone gutter
-TB_W, TB_H = 470, 146   # title block
+
+# The title block, proportioned to the paper. It was one fixed size, and
+# 470 units is a fifth of an ANSI B sheet and nearly half a letter one:
+# on landscape letter it ate the drawing.
+TITLEBLOCK = {
+    "wide":   dict(w=470, h=146, band=30, r1=40, r2=34),
+    "narrow": dict(w=408, h=126, band=26, r1=36, r2=31),
+}
+# Column fractions of the block's width: drawing no., rev, date, then
+# the sheet number fills what is left.
+TB_COLS = (150 / 470, 60 / 470, 130 / 470)
+TB_W, TB_H = TITLEBLOCK["wide"]["w"], TITLEBLOCK["wide"]["h"]   # ANSI B, kept for callers
+
+# The smallest text a placed drawing may print at. A pin name under
+# about 5 pt is a smudge on paper, and a package nobody can build at the
+# bench is not a package.
+FLOOR_PT = 5.0
+
+
+def titleblock(size):
+    return TITLEBLOCK["wide" if PAGES[size][0] > 1300 else "narrow"]
+
+
+def drawing_box(size="ansi-b", top_pad=46):
+    """The width and height a placed drawing may use on this page. The
+    same arithmetic `Page.full_box` does, available before a Page
+    exists, so a drawing tool can size a sheet to the page it is going
+    on instead of being scaled down to fit one."""
+    w, h = PAGES[size]
+    tb = titleblock(size)
+    iw = w - 2 * (MARGIN + ZONE)
+    ih = h - 2 * (MARGIN + ZONE)
+    return iw - 12, ih - top_pad - (tb["h"] + 10)
+
+
+def smallest_font_px(src):
+    """The smallest font-size in an SVG's own stylesheet. Not a parse of
+    the cascade: every sheet here declares its sizes in one <style>
+    block, and this is what decides whether it can be printed."""
+    sizes = [float(v) for v in re.findall(r"font-size:\s*([\d.]+)px", src)]
+    return min(sizes) if sizes else 0.0
 
 
 def esc(s):
@@ -63,6 +103,8 @@ def esc(s):
 class Page:
     def __init__(self, meta, size="ansi-b"):
         self.w, self.h = PAGES[size]
+        self.size = size
+        self.tb = titleblock(size)
         self.meta = meta
         self.o = [f'<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" '
                   f'viewBox="0 0 {self.w} {self.h}" width="{self.w}" height="{self.h}">', STYLE,
@@ -122,27 +164,62 @@ class Page:
 
     def _titleblock(self):
         ix, iy, iw, ih = self._inner
-        x = ix + iw - TB_W
-        y = iy + ih - TB_H
+        tb = self.tb
+        bw, bh = tb["w"], tb["h"]
+        x = ix + iw - bw
+        y = iy + ih - bh
         m = self.meta
-        self.add(f'<rect class="tmf-rule" x="{x}" y="{y}" width="{TB_W}" height="{TB_H}"/>')
-        self.add(f'<rect class="tmf-band" x="{x+1}" y="{y+1}" width="{TB_W-2}" height="30"/>')
-        self.text(x + 8, y + 21, m.get("org", ""), "tmf-head")
-        self.text(x + TB_W - 8, y + 21, m.get("project", ""), "tmf-head", "end")
-        r1 = y + 31
-        self._cell(x, r1, TB_W, 40, "sheet title", m.get("title", ""), "tmf-val-big")
-        r2 = r1 + 40
-        self._cell(x, r2, 150, 34, "drawing no.", m.get("docno", ""))
-        self._cell(x + 150, r2, 60, 34, "rev", m.get("rev", ""))
-        self._cell(x + 210, r2, 130, 34, "date", m.get("date", ""))
-        self._cell(x + 340, r2, TB_W - 340, 34, "sheet", m.get("sheet", ""))
-        r3 = r2 + 34
-        h3 = TB_H - (r3 - y) - 1
+        c1, c2, c3 = [round(bw * f) for f in TB_COLS]
+        self.add(f'<rect class="tmf-rule" x="{x}" y="{y}" width="{bw}" height="{bh}"/>')
+        self.add(f'<rect class="tmf-band" x="{x+1}" y="{y+1}" width="{bw-2}" height="{tb["band"]}"/>')
+        self.text(x + 8, y + tb["band"] - 9, m.get("org", ""), "tmf-head")
+        self.text(x + bw - 8, y + tb["band"] - 9, m.get("project", ""), "tmf-head", "end")
+        r1 = y + tb["band"] + 1
+        self._cell(x, r1, bw, tb["r1"], "sheet title", m.get("title", ""), "tmf-val-big")
+        r2 = r1 + tb["r1"]
+        self._cell(x, r2, c1, tb["r2"], "drawing no.", m.get("docno", ""))
+        self._cell(x + c1, r2, c2, tb["r2"], "rev", m.get("rev", ""))
+        self._cell(x + c1 + c2, r2, c3, tb["r2"], "date", m.get("date", ""))
+        self._cell(x + c1 + c2 + c3, r2, bw - c1 - c2 - c3, tb["r2"], "sheet", m.get("sheet", ""))
+        r3 = r2 + tb["r2"]
+        h3 = bh - (r3 - y) - 1
         assert h3 >= 30, f"title block last row is {h3} units: a label and a value need 30"
-        self._cell(x, r3, 150, h3, "drawn by", m.get("drawn", ""))
-        self._cell(x + 150, r3, 190, h3, "source", m.get("source", ""))
-        self._cell(x + 340, r3, TB_W - 340, h3, "scale", m.get("scale", "NTS"))
+        self._cell(x, r3, c1, h3, "drawn by", m.get("drawn", ""))
+        self._cell(x + c1, r3, c2 + c3, h3, "source", m.get("source", ""))
+        self._cell(x + c1 + c2 + c3, r3, bw - c1 - c2 - c3, h3, "scale", m.get("scale", "NTS"))
         self._tb = (x, y)
+
+    def revisions(self, rows):
+        """The revision strip, immediately left of the title block. Rows
+        are (rev, date, what changed), newest last, as a drawing office
+        writes them."""
+        if not rows:
+            return
+        ix, iy, iw, ih = self._inner
+        tb = self.tb
+        w = min(470, iw - tb["w"] - 20)
+        x = ix + iw - tb["w"] - w
+        y = iy + ih - tb["h"]
+        self.add(f'<rect class="tmf-rule" x="{x}" y="{y}" width="{w}" height="{tb["h"]}"/>')
+        self.add(f'<rect class="tmf-band" x="{x+1}" y="{y+1}" width="{w-1}" height="{tb["band"]}"/>')
+        cw = (44, 88)
+        # A revision note is one line in a fixed column. Cut it here
+        # rather than letting it run out through the title block, which
+        # is what an untruncated one does and what it did.
+        room = int((w - cw[0] - cw[1] - 14) / 6.3)
+        for lab, cx in zip(("rev", "date", "revision"), (0, cw[0], cw[0] + cw[1])):
+            self.text(x + cx + 6, y + tb["band"] - 9, lab.upper(), "tmf-lab")
+        lh = (tb["h"] - tb["band"]) / max(len(rows), 4)
+        cy = y + tb["band"]
+        for rev, dt, what in rows[-4:]:
+            cy += lh
+            self.text(x + 6, cy - 5, rev, "tmf-tdm")
+            self.text(x + cw[0] + 6, cy - 5, dt, "tmf-tdm")
+            self.text(x + cw[0] + cw[1] + 6, cy - 5,
+                      what if len(what) <= room else what[:room - 3] + "...", "tmf-td")
+            self.add(f'<line class="tmf-hair" x1="{x}" y1="{cy:.1f}" x2="{x+w}" y2="{cy:.1f}"/>')
+        for cx in (cw[0], cw[0] + cw[1]):
+            self.add(f'<line class="tmf-hair" x1="{x+cx}" y1="{y}" x2="{x+cx}" y2="{y+tb["h"]}"/>')
 
     def header(self, left, right=""):
         ix, iy, iw, _ = self._inner
@@ -153,8 +230,9 @@ class Page:
         return iy + 28
 
     def footer(self, text):
+        """Above the title block, not through it."""
         ix, iy, iw, ih = self._inner
-        self.text(ix + 8, iy + ih - 8, text, "tmf-foot")
+        self.text(ix + 8, iy + ih - self.tb["h"] - 8, text, "tmf-foot")
 
     def body_box(self, top_pad=40, right_of_titleblock=False):
         """The area a drawing or a table may use, clear of the frame,
@@ -162,7 +240,7 @@ class Page:
         ix, iy, iw, ih = self._inner
         x, y = ix + 10, iy + top_pad
         w = iw - 20
-        h = ih - top_pad - (TB_H + 14)
+        h = ih - top_pad - (self.tb["h"] + 28)   # 28: room for the footer line
         return x, y, w, h
 
     def full_box(self, top_pad=40):
@@ -171,14 +249,35 @@ class Page:
         and would have the title block sitting on top of a corner of it,
         which is how a pin number goes missing from a printed page."""
         ix, iy, iw, ih = self._inner
-        return ix + 6, iy + top_pad, iw - 12, ih - top_pad - (TB_H + 10)
+        return ix + 6, iy + top_pad, iw - 12, ih - top_pad - (self.tb["h"] + 10)
 
     # ------------------------------------------------------- placing things
-    def place_svg(self, path, box):
+    def place_svg(self, path, box, drop_heading=False):
         """Nest a source SVG, scaled to fit the box and centred. The
         nested viewBox does the scaling, so it stays vector and the
-        source file is not touched."""
+        source file is not touched.
+
+        `drop_heading` removes the drawing's own title group and crops
+        the space it occupied out of the viewBox, for a page whose title
+        block already names the sheet. It returns the subtitle it
+        dropped so the page can print it once, which keeps that sentence
+        in the drawing where it belongs instead of in this package's
+        JSON as a second copy."""
         src = Path(path).read_text()
+        sub = ""
+        if drop_heading:
+            g = re.search(r'<g class="sheet-heading"[^>]*data-height="([\d.]+)"[^>]*>(.*?)</g>',
+                          src, re.S)
+            if g:
+                t = re.search(r'<text class="sub"[^>]*>(.*?)</text>', g.group(2), re.S)
+                sub = html.unescape(t.group(1)).strip() if t else ""
+                self._crop_top = float(g.group(1))
+                src = src[:g.start()] + src[g.end():]
+            else:
+                self._crop_top = 0.0
+        else:
+            self._crop_top = 0.0
+        self._dropped_sub = sub
         mroot = re.search(r"<svg\b[^>]*>", src)
         if not mroot:
             raise ValueError(f"{path} has no <svg> root")
@@ -189,10 +288,25 @@ class Page:
             sw = float(re.search(r'width="([\d.]+)"', mroot.group(0)).group(1))
             sh = float(re.search(r'height="([\d.]+)"', mroot.group(0)).group(1))
         inner = src[mroot.end():src.rindex("</svg>")]
+        top = getattr(self, "_crop_top", 0.0)
+        sh -= top
         x, y, w, h = box
+        scale = min(w / sw, h / sh)
+        # A drawing is placed by scaling its viewBox, so its own type
+        # scales with it. This is the only place that knows both the
+        # type size and the scale, so it is the only place that can
+        # refuse a page nobody could read.
+        px = smallest_font_px(src)
+        pt = px * scale * 0.75
+        if px and pt < FLOOR_PT:
+            raise AssertionError(
+                f"{Path(path).name} is {sw:g} by {sh:g} and places at {scale*100:.0f}% "
+                f"in this box, printing its smallest text ({px:g} px) at {pt:.1f} pt. "
+                f"The floor is {FLOOR_PT} pt. Re-lay the sheet, split it, or give it "
+                f"a bigger page in package.json.")
         self.add(f'<svg x="{x:.1f}" y="{y:.1f}" width="{w:.1f}" height="{h:.1f}" '
-                 f'viewBox="0 0 {sw:g} {sh:g}" preserveAspectRatio="xMidYMid meet">{inner}</svg>')
-        return min(w / sw, h / sh)
+                 f'viewBox="0 {top:g} {sw:g} {sh:g}" preserveAspectRatio="xMidYMid meet">{inner}</svg>')
+        return scale
 
     def table(self, box, headers, rows, widths=None, mono=()):
         """A table that stops at the bottom of the box and says how many
@@ -224,16 +338,18 @@ class Page:
             self.text(x + 6, cy + 15, f"{left} more row(s) continue on the next sheet", "tmf-foot")
         return drawn
 
-    def steps(self, box, items):
+    def steps(self, box, items, start=1):
+        """As many steps as fit, numbered from `start`. Returns how many
+        were drawn; the caller decides what to do with the rest, which
+        on a paginated package is another sheet."""
         x, y, w, h = box
         cy = y + 18
-        for i, it in enumerate(items, 1):
+        for i, it in enumerate(items, start):
             if cy > y + h - 8:
-                self.text(x, cy, f"{len(items)-i+1} more step(s) continue on the next sheet", "tmf-foot")
-                return i - 1
+                return i - start
             self.text(x, cy, f"{i}.", "tmf-h2")
             for line in wrap(it, 96):
-                self.text(x + 26, cy, line, "tmf-body")
+                self.text(x + 30, cy, line, "tmf-body")
                 cy += 17
             cy += 8
         return len(items)
@@ -241,6 +357,7 @@ class Page:
     def done(self, path):
         self._frame()
         self._titleblock()
+        self.revisions(self.meta.get("revisions", []))
         self.add("</svg>")
         Path(path).write_text("\n".join(self.o))
         return path

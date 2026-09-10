@@ -57,21 +57,33 @@ def collect():
     def add(ref, part, pin, pinname, net):
         sheets[cur["name"]].append({"ref": ref, "part": part, "pin": pin, "pinname": pinname, "net": net})
 
+    def drawing(sheet):
+        """A sheet whose coordinates are derived is drawn twice: once to
+        measure where every part wants to be, once to draw it there.
+        Only the second pass is a drawing, so only the second pass is a
+        netlist. Without this the rule check reports every pin on such a
+        sheet as drawn twice, which is exactly what it did the first
+        time one existed."""
+        return not getattr(sheet, "measuring", False)
+
     def chip(self, x, y, w, ref, part, left, right, conn=False, extra=None):
-        for no, nm, net in list(left) + list(right):
-            add(ref, part, no, nm, net)
+        if drawing(self):
+            for no, nm, net in list(left) + list(right):
+                add(ref, part, no, nm, net)
         return real_chip(self, x, y, w, ref, part, left, right, conn=conn, extra=extra)
 
     def twopin(self, x, y, ref, part, net_a, net_b, horizontal=True):
-        add(ref, part, 1, "1", net_a)
-        add(ref, part, 2, "2", net_b)
+        if drawing(self):
+            add(ref, part, 1, "1", net_a)
+            add(ref, part, 2, "2", net_b)
         return real_twopin(self, x, y, ref, part, net_a, net_b, horizontal=horizontal)
 
     def bank(self, x, y, refs, part, net_a, net_b):
         """One symbol, N parts. Every designator lands in the netlist."""
-        for r in refs:
-            add(r, part, 1, "1", net_a)
-            add(r, part, 2, "2", net_b)
+        if drawing(self):
+            for r in refs:
+                add(r, part, 1, "1", net_a)
+                add(r, part, 2, "2", net_b)
         return real_bank(self, x, y, refs, part, net_a, net_b)
 
     m.Sheet.chip, m.Sheet.twopin, m.Sheet.bank = chip, twopin, bank

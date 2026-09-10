@@ -213,7 +213,8 @@ putting it in the middle collapses three voltage domains into one:
   measure-first item asking whether a 4021 runs at 3.3 V no longer
   gates anything.
 
-**v1b is now the first build**, drawn as `docs/bench-v1b.svg`,
+**v1b is now the first build**, drawn as `docs/bench-v1b-1.svg` and
+`docs/bench-v1b-2.svg`,
 documented in `docs/bench-v1b-uno.md`, and written as
 `firmware/bridge-uno/bridge-uno.ino`, which compiles for
 `arduino:avr:uno`. v1 stays in the set as the C6 version for when v2's

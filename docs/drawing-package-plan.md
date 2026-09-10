@@ -221,6 +221,71 @@ has. **v2b is the one that wants a board**: two register pairs, a sync
 separator, and enough wires that a breadboard becomes the experiment's
 biggest error source.
 
+## M6: landscape letter, and coordinates nobody types. DONE 2026-09-10
+
+The package built at M4 was ANSI B, 17 by 11 inches, because that is
+what the drawings happened to be. `bench-v1b.svg` was 1900 by 1000
+units, it landed on the page at 76%, and a third of the sheet was
+white. On the letter paper that is actually in the house it would have
+placed at 63%, which puts a 9.5 px pin name on paper at **4.5 pt**.
+
+Three changes, and the middle one is the only interesting one.
+
+**The page decides how big the drawing may be, not the other way
+round.** `sheetframe.drawing_box("ansi-a")` answers 952 by 542 units,
+title block and header already subtracted, and `draw-schematics.py`
+asks it rather than carrying a copy. The title block is proportioned to
+the paper too: 470 units is a fifth of an ANSI B sheet and nearly half
+a letter one, and at letter size it was eating the drawing.
+
+**The coordinates are derived.** This is the same authored/derived
+split as the PCB placer and the breadboard sheet, arriving in the last
+place that still typed numbers. A sheet body now says which band,
+column and row each part sits in and nothing else; the body is drawn
+twice, once to measure every part where it stands and once to draw it
+where the measurements say it goes. Columns are as wide as their widest
+part **including its net flags**, rows as tall as their tallest, and
+the dashed band boxes are derived from what is inside them. Adding a
+pin to a chip moves its neighbours instead of quietly overlapping them,
+and the sheet's own size falls out at the end.
+
+**A sheet that will not print is refused.** `place_svg` is the one
+place that knows both a drawing's type size and the scale it is being
+placed at, so it is the only place that can tell. Below 5 pt it raises
+rather than shrinks. That is not decoration: it is what forced the rest
+of this milestone, and it is what said, in numbers, that
+
+- **v1b does not fit on one letter sheet.** Five parts in a row is
+  1500 units wide before the flags; letter gives 952. It is now **one
+  schematic on two sheets of paper**, console side and bridge side,
+  with the nets that cross carrying a link flag with the other sheet's
+  number in it. The netlist tools collect both bodies under the one
+  name `bench-v1b`, so the rule check still sees a whole design: what
+  is split is the paper, not the circuit.
+- **v2b does not fit on any paper in this house.** 2300 by 1580 places
+  at 48% on ANSI B and 3.3 pt. It is out of this package until it gets
+  the same split, and the cover says so rather than the reader finding
+  out with a magnifier.
+- **the breadboard and the timing lanes need ANSI B**, so they declare
+  it in `package.json` and the index prints a paper column. A breadboard
+  is 63 columns long and one poll is one poll wide; neither shrinks.
+
+Two things it cost, both worth the same lesson:
+
+- **The rule check caught the first draft immediately.** A body drawn
+  twice was recorded twice, so every pin on the sheet came back as
+  drawn more than once. The recorders now ask the sheet whether it is
+  measuring. The check that found it is the one built at M2, on its
+  own work, two days later.
+- **`bank()` was never in the bill of materials.** Wrapping the
+  recorders to fix the double count is what made it obvious that three
+  of them wrap `chip` and `twopin` and none of them wrapped `bank`.
+  C4 and C5 have been on the v2 sheet and in nobody's drawer since the
+  day banks were added.
+
+Left open, by name: the v2b package, and a breadboard sheet split into
+two letter pages if the ANSI B one turns out to be a nuisance to print.
+
 ## The order, and why
 
 M2 before everything. Every later step reads the netlist, so the netlist
