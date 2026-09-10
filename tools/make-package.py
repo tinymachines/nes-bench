@@ -102,6 +102,17 @@ def sheet_schematic(p, cfg, spec):
              f'drawn by tools/draw-schematics.py')
 
 
+def paginate(p, spec, rows, box, headers, widths, mono):
+    """A table that carries on to another sheet when it has to. The
+    driver reads `_left` and adds the paper; this only has to say how
+    much it managed and where the next sheet should start."""
+    skip = spec.get("from", 0)
+    drawn = p.table(box, headers, rows[skip:], widths=widths, mono=mono)
+    spec["_drawn_here"] = drawn
+    spec["_left"] = len(rows) - skip - drawn
+    return drawn
+
+
 def sheet_wiring(p, cfg, spec):
     nl = load("netlist", "netlist.py")
     sheets, _offsheet = nl.collect()
@@ -111,14 +122,16 @@ def sheet_wiring(p, cfg, spec):
     x, y, w, h = p.body_box(top_pad=44)
     p.text(x, y + 6, "Every wire on the board, net by net", "tmf-h2")
     p.text(x, y + 26, "Connect everything on a row together. Read back out of the schematic, "
-                      "so it cannot disagree with it.", "tmf-body")
+                      "so it cannot disagree with it."
+                      + ("  Continued from the previous sheet." if spec.get("from") else ""),
+           "tmf-body")
     rows = []
     for net, ns in sorted(nets.items(), key=lambda kv: (kv[0] not in nl.RAILS, kv[0])):
         pins = ", ".join(f"{n['ref']}-{n['pin']}" if n["pin"] is not None else f"{n['ref']} {n['pinname']}"
                          for n in ns)
         rows.append([net, str(len(ns)), pins])
-    p.table((x, y + 40, w, h - 46), ["net", "ends", "join these"], rows,
-            widths=[0.14, 0.07, 0.79], mono=(0, 2))
+    paginate(p, spec, rows, (x, y + 40, w, h - 46), ["net", "ends", "join these"],
+             [0.14, 0.07, 0.79], (0, 2))
 
 
 def sheet_parts(p, cfg, spec):
@@ -128,9 +141,14 @@ def sheet_parts(p, cfg, spec):
     x, y, w, h = p.body_box(top_pad=44)
     p.text(x, y + 6, "Everything that has to be in a drawer", "tmf-h2")
     p.text(x, y + 26, "Parts from every sheet, deduplicated. The status column is the only "
-                      "authored thing in this package's tables.", "tmf-body")
+                      "authored thing in this package's tables."
+                      + ("  Continued from the previous sheet." if spec.get("from") else ""),
+           "tmf-body")
     seen, rows = set(), []
+    only = spec.get("only")
     for name, _fn, _b in pt.SHEETS:
+        if only and name not in only:
+            continue
         for _kind, ref, part, _extra in found[name]:
             key = part.split("  ")[0].strip()
             if key in seen:
@@ -138,8 +156,8 @@ def sheet_parts(p, cfg, spec):
             seen.add(key)
             st, note = pt.status_for(key)
             rows.append([key, st, note])
-    p.table((x, y + 40, w, h - 46), ["part", "status", "note"], rows,
-            widths=[0.28, 0.12, 0.60], mono=(0,))
+    paginate(p, spec, rows, (x, y + 40, w, h - 46), ["part", "status", "note"],
+             [0.28, 0.12, 0.60], (0,))
 
 
 def steps_items(cfg, spec):
@@ -191,14 +209,9 @@ def render(cfg, specs, out):
     return files
 
 
-def main():
-    ap = argparse.ArgumentParser()
-    ap.add_argument("--svg-only", action="store_true")
-    ap.add_argument("--config", default=str(ROOT / "docs" / "package.json"))
-    a = ap.parse_args()
-    cfg = json.loads(Path(a.config).read_text())
-    OUT.mkdir(parents=True, exist_ok=True)
-    for f in OUT.glob("*.svg"):
+def build(cfg, out, svg_only):
+    out.mkdir(parents=True, exist_ok=True)
+    for f in out.glob("*.svg"):
         f.unlink()
     # A build sequence is as long as it is. Render, and if a steps sheet
     # ran out of paper, put another one after it and render the whole
@@ -207,7 +220,7 @@ def main():
     specs = [dict(s) for s in cfg["sheets"]]
     files = []
     for _ in range(24):
-        files = render(cfg, specs, OUT)
+        files = render(cfg, specs, out)
         grown = False
         for i, spec in enumerate(specs):
             if not spec.get("_left"):
@@ -217,7 +230,7 @@ def main():
             # A sheet that overflows keeps overflowing on every pass:
             # what decides whether to add paper is whether the sheet
             # that carries on from here is already there.
-            if after and after["kind"] == "steps" and after.get("from") == nxt:
+            if after and after["kind"] == spec["kind"] and after.get("from") == nxt:
                 continue
             specs.insert(i + 1, {**{k: v for k, v in spec.items() if not k.startswith("_")},
                                  "from": nxt})
@@ -226,22 +239,43 @@ def main():
         if not grown:
             break
     else:
-        raise AssertionError("a steps sheet keeps overflowing: it fits nothing on a page")
-    for f in OUT.glob("*.svg"):
+        raise AssertionError("a sheet keeps overflowing: it fits nothing on a page")
+    for f in out.glob("*.svg"):
         if str(f) not in files:
             f.unlink()
     for i, spec in enumerate(specs, 1):
         print(f"  sheet {i}/{len(specs)}  {spec['title']}")
-    if a.svg_only:
+    if svg_only:
         return 0
-    pdf = OUT / f"{cfg['project']}-{cfg['docno']}-rev{cfg['rev']}.pdf"
+    pdf = out / f"{cfg['project']}-{cfg['docno']}-rev{cfg['rev']}.pdf"
     r = subprocess.run(["rsvg-convert", "-f", "pdf", "-o", str(pdf), *files],
                        capture_output=True, text=True)
     if r.returncode != 0 or not pdf.exists():
         print(f"rsvg-convert failed: {r.stderr.strip()[:300]}")
         return 1
-    print(f"\n{pdf.relative_to(ROOT)}  {pdf.stat().st_size//1024} KB, {len(files)} pages")
+    print(f"\n{pdf.relative_to(ROOT)}  {pdf.stat().st_size//1024} KB, {len(files)} pages\n")
     return 0
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--svg-only", action="store_true")
+    ap.add_argument("--config", help="one manifest; the default is every docs/package*.json")
+    a = ap.parse_args()
+    # One drawing package per manifest. v1b and v2b are different
+    # builds, they are numbered separately (TM-NESB-001 and -002), and
+    # each gets its own directory so building one cannot quietly delete
+    # the other's sheets.
+    configs = [Path(a.config)] if a.config else sorted((ROOT / "docs").glob("package*.json"))
+    if not configs:
+        print("no package manifest found")
+        return 1
+    bad = 0
+    for c in configs:
+        cfg = json.loads(c.read_text())
+        print(f"{c.name}  {cfg['docno']}  {cfg['title']}")
+        bad |= build(cfg, OUT / cfg["docno"].lower(), a.svg_only)
+    return bad
 
 
 if __name__ == "__main__":

@@ -285,6 +285,54 @@ Two things it cost, both worth the same lesson:
 
 Left open, by name: the v2b package, and a breadboard sheet split into
 two letter pages if the ANSI B one turns out to be a nuisance to print.
+The v2b package is M7.
+
+## M7: the v2b package. DONE 2026-09-10
+
+`TM-NESB-002`, nine pages, landscape letter, and the drawing that M6
+refused is now four sheets that print:
+
+| sheet | what is on it | places at |
+|---|---|---|
+| 1 | port 1: J1, the inverter, U2 | 83% |
+| 2 | port 2: J3, U6, and the decoupling | 92% |
+| 3 | the UNO and both output registers on one SPI chain | 79% |
+| 4 | the LM1881, both pads, the trigger and the passives | 92% |
+
+**Three columns is the letter limit** and it is arithmetic, not taste:
+a DIP with net flags on both sides wants about 310 units, letter gives
+952, and two rows of tall parts is 650 units of height against 542. The
+split follows the circuit rather than the page, which is why port 1 and
+port 2 get a sheet each even though port 2's sheet has room to spare:
+the pair of them are the same circuit twice and reading them side by
+side is the point.
+
+**Nothing about the design changed.** The rule check still collects all
+four bodies under the one name `bench-v2b` and reports the same 21
+references, 143 pins and 42 nets it did when this was one sheet, so
+what was split is the paper.
+
+Four things this milestone added to the machinery, each because a sheet
+made it necessary:
+
+- **Each package has its own manifest and its own directory.**
+  `make-package.py` with no arguments builds every `docs/package*.json`
+  into `docs/package/<docno>/`. Before this, a second package would
+  have deleted the first one's sheets on its way past.
+- **Wiring and parts lists paginate**, the way the build sequence
+  already did. v2b's 42 nets do not fit on a letter page; the driver
+  adds the sheet and re-renders the package so "sheet n of m" is still
+  true on every page. The table itself no longer writes "continues on
+  the next sheet", because it is not the table's business whether there
+  is one.
+- **A parts list can be scoped to its own sheets.** A person building
+  v1b does not need the pad adapter's LiPo charger in their list.
+- **The sheet title fits its cell.** "Bridge v2b, sheet 4: sync, the
+  pads and the trigger" ran out through the right-hand rule and off the
+  paper at 19 px. It is set smaller when it has to be, down to 10 px,
+  which is the same trade the revision strip makes by truncating.
+
+Still open: routing the v2b board, and the breadboard sheet on ANSI B.
 
 ## The order, and why
 

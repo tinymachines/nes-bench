@@ -626,68 +626,149 @@ def sheet_v2():
 
 # ------------------------------------------------------------- logical sheet
 # --------------------------------------------------------------- sheet v2b
-def sheet_v2b():
-    sh = Sheet(2300, 1580, "nes-bench bridge v2b: the UNO version, two ports, sync counted, one supply",
-               "v1b plus a second 165/595 pair on the same SPI chain and an LM1881 whose 5 V outputs go straight into the UNO. 2026-09-09. Not built.")
-    sh.zone(20, 60, 1460, 780, "CONSOLE SIDE AND REGISTERS, +5V")
-    console_port(sh, 60, 90, "J1", {"clk": "CON1_CLK", "out0": "CON1_OUT0", "d0": "CON1_D0"})
-    console_port(sh, 60, 360, "J3", {"clk": "CON2_CLK", "out0": "CON2_OUT0", "d0": "CON2_D0"})
-    sh.chip(400, 90, 130, "U1", "74HCT04  at +5V", [(1, "1A", "CON1_OUT0"), (3, "2A", "CON2_OUT0"), (14, "VCC", "+5V"), (7, "GND", "GND")],
-            [(2, "1Y", "/PL1"), (4, "2Y", "/PL2")], extra="4 spare inputs to GND")
-    hct165(sh, 720, 90, "U2", "/PL1", "CON1_CLK", "CON1_D0", part="74HC165  at +5V", inputs=["Q1A", "Q1B", "Q1SEL", "Q1START", "Q1UP", "Q1DOWN", "Q1LEFT", "Q1RIGHT"])
-    hct165(sh, 720, 440, "U6", "/PL2", "CON2_CLK", "CON2_D0", part="74HC165  at +5V", inputs=["Q2A", "Q2B", "Q2SEL", "Q2START", "Q2UP", "Q2DOWN", "Q2LEFT", "Q2RIGHT"])
-    sh.chip(1140, 90, 140, "U5", "74HC595  at +5V", [
-        (14, "SER", "MOSI"), (11, "SRCLK", "SCK"), (12, "RCLK", "RCLK"), (13, "/OE", "GND"), (10, "/SRCLR", "+5V"), (16, "VCC", "+5V"), (8, "GND", "GND")],
-        [(15, "QA", "Q1A"), (1, "QB", "Q1B"), (2, "QC", "Q1SEL"), (3, "QD", "Q1START"), (4, "QE", "Q1UP"), (5, "QF", "Q1DOWN"),
-         (6, "QG", "Q1LEFT"), (7, "QH", "Q1RIGHT"), (9, "QH'", "CHAIN")], extra="port 1 byte (shifted in second)")
-    sh.chip(1140, 440, 140, "U7", "74HC595  at +5V", [
-        (14, "SER", "CHAIN"), (11, "SRCLK", "SCK"), (12, "RCLK", "RCLK"), (13, "/OE", "GND"), (10, "/SRCLR", "+5V"), (16, "VCC", "+5V"), (8, "GND", "GND")],
-        [(15, "QA", "Q2A"), (1, "QB", "Q2B"), (2, "QC", "Q2SEL"), (3, "QD", "Q2START"), (4, "QE", "Q2UP"), (5, "QF", "Q2DOWN"),
-         (6, "QG", "Q2LEFT"), (7, "QH", "Q2RIGHT"), (9, "QH'", "NC")], extra="port 2 byte, chained")
-    sh.note(60, 640, ["Two SPI.transfer() calls (port 2 byte first, then port 1) and one RCLK edge update both registers together.",
-                      "The UNO's outputs are 5 V, so HC parts at 5 V see real highs everywhere. No shifters on this sheet at all.",
-                      "DS on both 165s to GND: reads after the eighth clock return 1 to the console, as an original pad does."])
-    sh.bank(160, 760, ["C1", "C2", "C3", "C4", "C5", "C6"], "100nF", "+5V", "GND")
-    sh.note(300, 764, ["one across each of U1, U2, U5, U6, U7, U8"])
+V2B_TITLE = "nes-bench bridge v2b: the UNO version, two ports, sync counted, one supply"
+V2B_SUB = ("v1b plus a second 165/595 pair on the same SPI chain and an LM1881 whose 5 V outputs go "
+           "straight into the UNO. 2026-09-09. Not built.")
+Q1_NETS = ["Q1A", "Q1B", "Q1SEL", "Q1START", "Q1UP", "Q1DOWN", "Q1LEFT", "Q1RIGHT"]
+Q2_NETS = ["Q2A", "Q2B", "Q2SEL", "Q2START", "Q2UP", "Q2DOWN", "Q2LEFT", "Q2RIGHT"]
 
-    sh.zone(1500, 60, 780, 780, "SYNC SEPARATOR, +5V, straight into the UNO")
-    sh.chip(1660, 90, 150, "U8", "LM1881N  at +5V", [
+
+def _v2b_body_1(sh):
+    band = "PORT 1: THE CONSOLE PORT, THE INVERTER AND ITS REGISTER, ALL AT +5V"
+    console_port(sh, *sh.slot(0, 0, label=band), "J1",
+                 {"clk": "CON1_CLK", "out0": "CON1_OUT0", "d0": "CON1_D0"})
+    x, y = sh.slot(0, 1)
+    sh.chip(x, y, 130, "U1", "74HCT04  at +5V",
+            [(1, "1A", "CON1_OUT0"), (3, "2A", "CON2_OUT0"), (14, "VCC", "+5V"), (7, "GND", "GND")],
+            [(2, "1Y", "/PL1"), (4, "2Y", "/PL2")],
+            extra="4 spare inputs to GND")
+    hct165(sh, *sh.slot(0, 2), "U2", "/PL1", "CON1_CLK", "CON1_D0",
+           part="74HC165  at +5V", inputs=Q1_NETS)
+    band2 = "WHAT THE CONSOLE DOES, AND WHAT MAY NOT MOVE WHILE IT DOES IT"
+    sh.note(*sh.slot(1, 0, label=band2), [
+        "OUT0 high: U1 drives /PL1 low and U2 loads its eight inputs. It is transparent while low, so the",
+        "byte must already be on U5's outputs (sheet 3). OUT0 falls, /PL1 goes high, the byte is held, and",
+        "QH shows A. Each CLK rising edge shifts the next bit out. DS to GND means the ninth read and",
+        "later return 1 to the console, which is what an original pad does. Pressed is LOW.",
+        "Port 2 is the same circuit on sheet 2. It shares this inverter, U1's second channel, and",
+        "the SPI chain; it has its own register, its own pad and its own D0."])
+
+
+def _v2b_body_2(sh):
+    band = "PORT 2: THE SECOND CONSOLE PORT AND ITS REGISTER, ALL AT +5V"
+    console_port(sh, *sh.slot(0, 0, label=band), "J3",
+                 {"clk": "CON2_CLK", "out0": "CON2_OUT0", "d0": "CON2_D0"})
+    hct165(sh, *sh.slot(0, 1), "U6", "/PL2", "CON2_CLK", "CON2_D0",
+           part="74HC165  at +5V", inputs=Q2_NETS)
+    band2 = "DECOUPLING, AND WHY THE REGISTERS ARE WRITTEN THE WAY THEY ARE"
+    sh.bank(*sh.slot(1, 0, label=band2), ["C1", "C2", "C3", "C4", "C5", "C6"], "100nF", "+5V", "GND")
+    sh.note(*sh.slot(1, 1), ["one across each of U1, U2, U5,", "U6, U7 and U8, at its own",
+                             "supply pins"])
+    sh.note(*sh.slot(1, 2), [
+        "Two SPI.transfer() calls, port 2's byte first and then port 1's, and one RCLK",
+        "edge updates both registers together. A tear during a load is impossible, and the",
+        "firmware still only pulses RCLK while both OUT0 lines read low.",
+        "The UNO's outputs are 5 V, so HC parts at 5 V see real highs everywhere. There is",
+        "not one level shifter on any sheet of this drawing."])
+
+
+def _v2b_body_3(sh):
+    band = "THE UNO AND THE TWO OUTPUT REGISTERS ON ONE SPI CHAIN, ALL AT +5V"
+    x, y = sh.slot(0, 0, label=band)
+    sh.chip(x, y, 200, "A1", "Arduino UNO R3 (ATmega328P)", [
+        (None, "D13 SCK", "SCK"), (None, "D11 MOSI", "MOSI"), (None, "D10", "RCLK"),
+        (None, "D5 (T1)", "CON1_OUT0"), (None, "D2 (INT0)", "CON1_CLK"),
+        (None, "D3 (INT1)", "CSYNC"), (None, "D4 (PCINT)", "CON2_OUT0"),
+        (None, "D9 (PCINT)", "CON2_CLK"), (None, "A0 (PCINT)", "VSYNC")],
+        [(None, "A1", "TRIG"), (None, "D6", "PAD_LATCH"), (None, "D7", "PAD_CLK"),
+         (None, "D8", "PAD1_D0"), (None, "A2", "PAD2_D0"), (None, "5V", "+5V"),
+         (None, "GND", "GND"), (None, "USB-B", "PI_USB")], extra="serial 115200 to the Pi")
+    x, y = sh.slot(0, 1)
+    sh.chip(x, y, 140, "U5", "74HC595  at +5V", [
+        (14, "SER", "MOSI"), (11, "SRCLK", "SCK"), (12, "RCLK", "RCLK"), (13, "/OE", "GND"),
+        (10, "/SRCLR", "+5V"), (16, "VCC", "+5V"), (8, "GND", "GND")],
+        [(15, "QA", "Q1A"), (1, "QB", "Q1B"), (2, "QC", "Q1SEL"), (3, "QD", "Q1START"),
+         (4, "QE", "Q1UP"), (5, "QF", "Q1DOWN"), (6, "QG", "Q1LEFT"), (7, "QH", "Q1RIGHT"),
+         (9, "QH'", "CHAIN")], extra="port 1's byte, shifted in second")
+    x, y = sh.slot(0, 2)
+    sh.chip(x, y, 140, "U7", "74HC595  at +5V", [
+        (14, "SER", "CHAIN"), (11, "SRCLK", "SCK"), (12, "RCLK", "RCLK"), (13, "/OE", "GND"),
+        (10, "/SRCLR", "+5V"), (16, "VCC", "+5V"), (8, "GND", "GND")],
+        [(15, "QA", "Q2A"), (1, "QB", "Q2B"), (2, "QC", "Q2SEL"), (3, "QD", "Q2START"),
+         (4, "QE", "Q2UP"), (5, "QF", "Q2DOWN"), (6, "QG", "Q2LEFT"), (7, "QH", "Q2RIGHT"),
+         (9, "QH'", "NC")], extra="port 2's byte, chained from U5")
+    band2 = "WHAT COUNTS WHAT, AND THE HEAD"
+    sh.note(*sh.slot(1, 0, label=band2), [
+        "LATCH1 on Timer1's external clock: hardware, and the",
+        "reference every software count is checked against.",
+        "CLK1 on INT0, CSYNC on INT1. LATCH2, CLK2 and VSYNC",
+        "on pin-change ISRs. The 8-per-latch and polls-per-field",
+        "gates cross-check them; a count that stays green under",
+        "MUTATE (the D2/D5 jumper swap, D4 the config pin) is a",
+        "broken count. A1 rises at latch T or at (field, line).",
+        "L <latch> <byte> <clocks> <t_us> <field> <line>;",
+        "L2 for port 2; F <field> <t_us> <lines>."])
+    sh.note(*sh.slot(1, 1), [
+        "Head and relays, unchanged from v1b. Pi GPIO17 to a",
+        "PC817 or one TLP281 channel, to the console's reset",
+        "pads, 100 ms. Pi GPIO27 to the relay module's IN",
+        "(active low); relay VCC from the Pi's 5 V pin, because",
+        "the modules on hand are 5 V coil parts. One",
+        "normally-open contact in series with one lead of the AC",
+        "adapter cable, never the mains side and never both.",
+        "Scope: video on CH3, EXT TRIG from R1 (sheet 4),",
+        "SCPI over the LAN."])
+
+
+def _v2b_body_4(sh):
+    band = "THE SYNC SEPARATOR, THE BRIDGE'S OWN PADS AND THE TRIGGER, ALL AT +5V"
+    x, y = sh.slot(0, 0, label=band)
+    sh.chip(x, y, 150, "U8", "LM1881N  at +5V", [
         (2, "VIDEO IN", "VID_AC"), (6, "RSET", "RSET"), (8, "VCC", "+5V"), (4, "GND", "GND")],
-        [(1, "CSYNC", "CSYNC"), (3, "VSYNC", "VSYNC"), (5, "BURST", "NC"), (7, "ODD/EVEN", "NC")], extra="5 V outputs: no 245 needed")
-    sh.twopin(1660, 330, "C7", "100nF", "VIDEO", "VID_AC")
-    sh.note(1800, 334, ["AC couple from the console's video, 1k series"])
-    sh.twopin(1660, 380, "R2", "680k", "RSET", "GND")
-    sh.twopin(1660, 430, "C8", "100nF", "RSET", "GND")
-    sh.note(1540, 500, ["VSYNC: one falling edge per field, 60.0988/s.", "CSYNC: one per line plus the vsync block; the NES",
-                        "emits no serrations, so count/field = lines - k (measure k).", "CSYNC at 15.7 kHz on INT1 is ~5% of a 16 MHz",
-                        "part; VSYNC and port-2 lines on pin-change interrupts."])
+        [(1, "CSYNC", "CSYNC"), (3, "VSYNC", "VSYNC"), (5, "BURST", "NC"), (7, "ODD/EVEN", "NC")],
+        extra="5 V outputs: no 245 needed")
+    pad_socket(sh, *sh.slot(0, 1), "J2", "PAD_LATCH", "PAD_CLK", "PAD1_D0", vcc="+5V")
+    pad_socket(sh, *sh.slot(0, 2), "J4", "PAD_LATCH", "PAD_CLK", "PAD2_D0", vcc="+5V")
+    band2 = "THE PASSIVES ON THIS SHEET"
+    sh.twopin(*sh.slot(1, 0, label=band2), "C7", "100nF", "VIDEO", "VID_AC")
+    sh.twopin(*sh.slot(1, 1), "R2", "680k", "RSET", "GND")
+    sh.twopin(*sh.slot(1, 2), "C8", "100nF", "RSET", "GND")
+    sh.twopin(*sh.slot(1, 3), "R1", "100R", "TRIG", "EXT_TRIG")
+    band3 = "WHERE THESE SIGNALS COME FROM AND WHAT THEY ARE WORTH"
+    sh.note(*sh.slot(2, 0, label=band3), [
+        "C7 AC couples the console's video, tapped after Q1 at the AUX/RF",
+        "input with a 1k series resistor: the point the scope already probes.",
+        "VSYNC: one falling edge per field, 60.0988/s.",
+        "CSYNC: one per line plus the vsync block. The NES emits no",
+        "serrations, so the count per field is lines minus k, and k is",
+        "measured rather than assumed."])
+    sh.note(*sh.slot(2, 1), [
+        "R1 goes to the DS1054Z's rear EXT TRIG. Check the input's rating",
+        "first; if 5 V exceeds it, a 2:1 divider (two 1k) after R1.",
+        "Both pads are polled by the same PAD_LATCH and PAD_CLK and answer",
+        "on their own D0, so one poll reads both. They are the pad halves",
+        "of two cut controller cables, and they run at the 5 V they were",
+        "built for."])
 
-    sh.zone(20, 860, 2260, 440, "THE UNO (all pins 5 V) AND THE HEAD")
-    sh.chip(200, 890, 200, "A1", "Arduino UNO R3 (ATmega328P)", [
-        (None, "D13 SCK", "SCK"), (None, "D11 MOSI", "MOSI"), (None, "D10", "RCLK"), (None, "D5 (T1)", "CON1_OUT0"), (None, "D2 (INT0)", "CON1_CLK"),
-        (None, "D3 (INT1)", "CSYNC"), (None, "D4 (PCINT)", "CON2_OUT0"), (None, "D9 (PCINT)", "CON2_CLK"), (None, "A0 (PCINT)", "VSYNC")],
-        [(None, "A1", "TRIG"), (None, "D6", "PAD_LATCH"), (None, "D7", "PAD_CLK"), (None, "D8", "PAD1_D0"), (None, "A2", "PAD2_D0"),
-         (None, "5V", "+5V"), (None, "GND", "GND"), (None, "USB-B", "PI_USB")], extra="serial 115200 to the Pi")
-    sh.note(560, 900, ["Counters: LATCH1 on Timer1's external clock (hardware, the reference). CLK1 on INT0, CSYNC on INT1,",
-                       "LATCH2, CLK2, VSYNC on pin-change ISRs. Every software count is cross-checked against the hardware",
-                       "one by the 8-per-latch and polls-per-field gates; a count that fails under MUTATE (D2/D5 jumper swap,",
-                       "D4 config pin) is a broken count. Trigger A1 rises at latch T or at (field, line), one loop late.",
-                       "L <latch> <byte> <clocks> <t_us> <field> <line>; L2 for port 2; F <field> <t_us> <lines>."])
-    sh.note(1400, 900, ["Head and relays: the Pi, unchanged. GPIO17 -> PC817 or TLP281 -> reset pads.",
-                        "GPIO27 -> relay IN (active low), relay VCC from the Pi's 5 V pin (5 V coil modules).",
-                        "One NO contact in series with one lead of the AC adapter cable. Scope: CH3 video, EXT TRIG",
-                        "from A1 through 100R (divider if the input's rating needs it), SCPI over the LAN.",
-                        "Pads J2 and J4 are drawn below, at 5 V, sharing PAD_LATCH and PAD_CLK with a D0 each."])
 
-    sh.zone(20, 1320, 2260, 240, "THE BRIDGE'S OWN PADS, AND THE TRIGGER, ALL AT +5V")
-    pad_socket(sh, 200, 1350, "J2", "PAD_LATCH", "PAD_CLK", "PAD1_D0", vcc="+5V")
-    pad_socket(sh, 620, 1350, "J4", "PAD_LATCH", "PAD_CLK", "PAD2_D0", vcc="+5V")
-    sh.twopin(1100, 1380, "R1", "100R", "TRIG", "EXT_TRIG")
-    sh.note(1100, 1430, ["to the DS1054Z's rear EXT TRIG. Check the input's rating first;",
-                         "if 5 V exceeds it, a 2:1 divider (two 1k) after R1.",
-                         "Both pads are polled by the same PAD_LATCH and PAD_CLK and answer on their own D0,",
-                         "so one poll reads both. They are the pad halves of two cut controller cables."])
-    sh.done(OUT / "bench-v2b.svg")
+def sheet_v2b():
+    """One schematic on four landscape letter sheets."""
+    q1 = {q: "3" for q in Q1_NETS}
+    q2 = {q: "3" for q in Q2_NETS}
+    laid(OUT / "bench-v2b-1.svg", V2B_TITLE + "  (sheet 1 of 4: port 1)", V2B_SUB, _v2b_body_1,
+         LETTER, links={"CON1_OUT0": "3", "CON1_CLK": "3", "CON2_OUT0": "2,3", "/PL2": "2", **q1})
+    laid(OUT / "bench-v2b-2.svg", V2B_TITLE + "  (sheet 2 of 4: port 2)", V2B_SUB, _v2b_body_2,
+         LETTER, links={"CON2_OUT0": "1,3", "CON2_CLK": "3", "/PL2": "1", **q2})
+    laid(OUT / "bench-v2b-3.svg", V2B_TITLE + "  (sheet 3 of 4: the UNO and the registers)",
+         V2B_SUB, _v2b_body_3, LETTER,
+         links={"CON1_OUT0": "1", "CON1_CLK": "1", "CON2_OUT0": "1,2", "CON2_CLK": "2",
+                "CSYNC": "4", "VSYNC": "4", "TRIG": "4", "PAD_LATCH": "4", "PAD_CLK": "4",
+                "PAD1_D0": "4", "PAD2_D0": "4",
+                **{q: "1" for q in Q1_NETS}, **{q: "2" for q in Q2_NETS}})
+    laid(OUT / "bench-v2b-4.svg", V2B_TITLE + "  (sheet 4 of 4: sync, the pads and the trigger)",
+         V2B_SUB, _v2b_body_4, LETTER,
+         links={"CSYNC": "3", "VSYNC": "3", "TRIG": "3", "PAD_LATCH": "3", "PAD_CLK": "3",
+                "PAD1_D0": "3", "PAD2_D0": "3"})
 
 
 def sheet_logic():

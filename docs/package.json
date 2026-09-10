@@ -39,7 +39,10 @@
     },
     {
       "kind": "parts",
-      "title": "Parts list"
+      "title": "Parts list",
+      "only": [
+        "bench-v1b"
+      ]
     },
     {
       "kind": "steps",

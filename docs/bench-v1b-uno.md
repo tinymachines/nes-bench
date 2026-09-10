@@ -117,9 +117,10 @@ tools need nothing beyond the serial speed.
 
 ## v2b, the UNO version of v2, added 2026-09-09
 
-`bench-v2b.svg` is v1b plus a second 165/595 pair on the same SPI chain
-and an LM1881 whose 5 V outputs go straight into the UNO. It removes the
-last 74LVC245 from the UNO designs and it removes the second
+`bench-v2b-1.svg` to `bench-v2b-4.svg` are one schematic on four
+landscape letter sheets: v1b plus a second 165/595 pair on the same SPI
+chain and an LM1881 whose 5 V outputs go straight into the UNO. It
+removes the last 74LVC245 from the UNO designs and it removes the second
 microcontroller: every count lands on the UNO, Timer1's hardware input
 on LATCH1 and interrupts for the rest. The README that came with the
 sheets says to build v1b, then v2b.

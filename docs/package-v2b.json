@@ -1,0 +1,80 @@
+{
+  "org": "tinymachines",
+  "project": "nes-bench",
+  "docno": "TM-NESB-002",
+  "rev": "A",
+  "drawn": "bisenbek",
+  "page": "ansi-a",
+  "title": "NES controller-port bridge, v2b",
+  "intro": [
+    "The two-port bridge. It is v1b plus a second port with its own register, a second output register on the same SPI chain, and an LM1881 sync separator whose 5 V outputs go straight into the UNO, so a poll can be placed against a field and a line rather than only against a latch index. Everything is still on one 5 V rail and there is not one level shifter on any sheet.",
+    "This is a drawing, not a build. Nothing here has been made; v1b is the one on the bench. What this package is for is ordering the parts, cutting the board, and having something to build from when v1b's fourteen steps are done.",
+    "Nothing is placed or typed by hand. The schematic's arrangement is authored and its coordinates come from the parts' own measured sizes; the wiring list and the parts list are read back out of that same file. A sheet that would print its smallest text below 5 pt is refused rather than shrunk, which is why this schematic is on four sheets: eleven parts and 42 nets do not fit on one page anybody can print."
+  ],
+  "revisions": [
+    [
+      "-",
+      "2026-09-08",
+      "v2 redrawn for the UNO: no 245, no C6, one rail"
+    ],
+    [
+      "-",
+      "2026-09-09",
+      "port pinout replaced by this console's measurement"
+    ],
+    [
+      "-",
+      "2026-09-09",
+      "placed and poured as a board, signal traces still to do"
+    ],
+    [
+      "A",
+      "2026-09-10",
+      "four letter sheets, coordinates derived not typed"
+    ]
+  ],
+  "sheets": [
+    {
+      "kind": "cover",
+      "title": "Cover and sheet index"
+    },
+    {
+      "kind": "schematic",
+      "svg": "bench-v2b-1.svg",
+      "title": "Bridge v2b, sheet 1: port 1"
+    },
+    {
+      "kind": "schematic",
+      "svg": "bench-v2b-2.svg",
+      "title": "Bridge v2b, sheet 2: port 2"
+    },
+    {
+      "kind": "schematic",
+      "svg": "bench-v2b-3.svg",
+      "title": "Bridge v2b, sheet 3: the UNO and the registers"
+    },
+    {
+      "kind": "schematic",
+      "svg": "bench-v2b-4.svg",
+      "title": "Bridge v2b, sheet 4: sync, the pads and the trigger"
+    },
+    {
+      "kind": "wiring",
+      "sheet": "bench-v2b",
+      "title": "Wiring list, v2b"
+    },
+    {
+      "kind": "parts",
+      "title": "Parts list",
+      "only": [
+        "bench-v2b"
+      ]
+    },
+    {
+      "kind": "schematic",
+      "svg": "logical-timing.svg",
+      "title": "One poll, as timing lanes",
+      "page": "ansi-b"
+    }
+  ]
+}

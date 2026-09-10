@@ -120,8 +120,9 @@ class Page:
     def add(self, s):
         self.o.append(s)
 
-    def text(self, x, y, s, cls="tmf-body", anchor="start"):
-        self.add(f'<text class="{cls}" x="{x:.1f}" y="{y:.1f}" text-anchor="{anchor}">{esc(s)}</text>')
+    def text(self, x, y, s, cls="tmf-body", anchor="start", px=None):
+        size = f' style="font-size:{px:.1f}px"' if px else ""
+        self.add(f'<text class="{cls}" x="{x:.1f}" y="{y:.1f}" text-anchor="{anchor}"{size}>{esc(s)}</text>')
 
     # ---------------------------------------------------------- the frame
     def _geometry(self):
@@ -157,10 +158,23 @@ class Page:
                 self.add(f'<line class="tmf-hair" x1="{m}" y1="{y0:.1f}" x2="{ix}" y2="{y0:.1f}"/>')
                 self.add(f'<line class="tmf-hair" x1="{self.w-ix}" y1="{y0:.1f}" x2="{self.w-m}" y2="{y0:.1f}"/>')
 
-    def _cell(self, x, y, w, h, label, value, cls="tmf-val"):
+    # Advance of the title block's sans, as a fraction of its size. Used
+    # only to decide whether a value has to be set smaller to fit its
+    # cell; a title that runs out through the right-hand rule and off
+    # the paper is worse than one set a point down.
+    ADVANCE = 0.60
+
+    def _cell(self, x, y, w, h, label, value, cls="tmf-val", px=None):
         self.add(f'<rect class="tmf-hair" x="{x:.1f}" y="{y:.1f}" width="{w:.1f}" height="{h:.1f}"/>')
         self.text(x + 6, y + 12, label.upper(), "tmf-lab")
-        self.text(x + 6, y + h - 8, value, cls)
+        if px and value:
+            room = w - 12
+            need = self.ADVANCE * px * len(str(value))
+            if need > room:
+                px = max(10.0, room / (self.ADVANCE * len(str(value))))
+            self.text(x + 6, y + h - 8, value, cls, px=px)
+        else:
+            self.text(x + 6, y + h - 8, value, cls)
 
     def _titleblock(self):
         ix, iy, iw, ih = self._inner
@@ -175,7 +189,7 @@ class Page:
         self.text(x + 8, y + tb["band"] - 9, m.get("org", ""), "tmf-head")
         self.text(x + bw - 8, y + tb["band"] - 9, m.get("project", ""), "tmf-head", "end")
         r1 = y + tb["band"] + 1
-        self._cell(x, r1, bw, tb["r1"], "sheet title", m.get("title", ""), "tmf-val-big")
+        self._cell(x, r1, bw, tb["r1"], "sheet title", m.get("title", ""), "tmf-val-big", px=19.0)
         r2 = r1 + tb["r1"]
         self._cell(x, r2, c1, tb["r2"], "drawing no.", m.get("docno", ""))
         self._cell(x + c1, r2, c2, tb["r2"], "rev", m.get("rev", ""))
@@ -333,9 +347,6 @@ class Page:
                 self.text(xs[i] + 6, cy - 5, cell, "tmf-tdm" if i in mono else "tmf-td")
             self.add(f'<line class="tmf-hair" x1="{x}" y1="{cy:.1f}" x2="{x+w}" y2="{cy:.1f}"/>')
             drawn += 1
-        left = len(rows) - drawn
-        if left:
-            self.text(x + 6, cy + 15, f"{left} more row(s) continue on the next sheet", "tmf-foot")
         return drawn
 
     def steps(self, box, items, start=1):

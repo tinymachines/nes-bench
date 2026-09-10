@@ -61,19 +61,19 @@ Every distinct part across every sheet, with where it is.
 | U1 | 74HCT04  at +5V | 4 spare inputs to GND |
 | U2 | 74HC165  at +5V | H shifts out first |
 | U6 | 74HC165  at +5V | H shifts out first |
-| U5 | 74HC595  at +5V | port 1 byte (shifted in second) |
-| U7 | 74HC595  at +5V | port 2 byte, chained |
 | C1 | 100nF | +5V to GND |
 | C2 | 100nF | +5V to GND |
 | C3 | 100nF | +5V to GND |
 | C4 | 100nF | +5V to GND |
 | C5 | 100nF | +5V to GND |
 | C6 | 100nF | +5V to GND |
+| A1 | Arduino UNO R3 (ATmega328P) | serial 115200 to the Pi |
+| U5 | 74HC595  at +5V | port 1's byte, shifted in second |
+| U7 | 74HC595  at +5V | port 2's byte, chained from U5 |
 | U8 | LM1881N  at +5V | 5 V outputs: no 245 needed |
 | C7 | 100nF | VIDEO to VID_AC |
 | R2 | 680k | RSET to GND |
 | C8 | 100nF | RSET to GND |
-| A1 | Arduino UNO R3 (ATmega328P) | serial 115200 to the Pi |
 | R1 | 100R | TRIG to EXT_TRIG |
 
 ## bench-v1
