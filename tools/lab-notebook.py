@@ -66,6 +66,8 @@ UNITS = {
     "clock_period_us": ("between clocks", "us"), "latch_period_ms": ("between polls", "ms"),
     "polls_per_s": ("polls per second", ""), "latches_seen": ("latches in the record", ""),
     "clocks_per_latch_mode": ("clocks per poll", ""), "polls": ("polls logged", ""),
+    "supply_v": ("the supply lead", "V"), "out0_idle_v": ("OUT0 idle", "V"),
+    "clk_idle_v": ("CLK idle", "V"), "d0_idle_v": ("D0 idle", "V"),
     "pin7_v": ("port pin 7, the +5V rail", "V"), "pin3_v": ("port pin 3, OUT0 idle", "V"),
     "pin2_v": ("port pin 2, CLK idle", "V"), "pin4_v": ("port pin 4, D0 idle", "V"),
     "qa_v": ("595 QA, not pressed", "V"), "qd_v": ("595 QD, pressed", "V"),

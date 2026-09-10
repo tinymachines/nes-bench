@@ -138,6 +138,44 @@ def check_measure_port(b):
     return bad
 
 
+def run_levels(b, answers):
+    """One scripted pass through step 1.2."""
+    it = iter(answers)
+    real_input, builtins.input = builtins.input, lambda p="": next(it)
+    out, real_out = io.StringIO(), sys.stdout
+    sys.stdout = out
+    try:
+        return b.check_port_levels(None, None)
+    finally:
+        sys.stdout = real_out
+        builtins.input = real_input
+
+
+# (label, [instrument, supply, out0, clk, d0], expected state, a word in the summary)
+LEVEL_CASES = [
+    ("this board: supply 5 V, OUT0 low, CLK high", ["scope", "5.00", "0.07", "5.00", "4.9"], "pass", "OUT0 idles"),
+    ("OUT0 and CLK the wrong way round", ["meter", "5.00", "5.00", "0.07", "4.9"], "fail", "swapped"),
+    ("a supply that is not a supply", ["meter", "0.02", "0.07", "5.00", "4.9"], "fail", "not about 5"),
+    ("the supply skipped", ["meter", "skip", "0.07", "5.00", "4.9"], "fail", "must not be skipped"),
+]
+
+
+def check_levels(b):
+    """Step 1.2's guards. The supply guard used to be aimed at port pin 7,
+    which on this board carries nothing, so it could only ever have
+    failed. The idle-direction guard is new and is the cheap test that
+    OUT0 and CLK have not been swapped."""
+    bad = 0
+    for label, answers, want, needle in LEVEL_CASES:
+        state, data, summary = run_levels(b, answers)
+        ok = state == want and needle in summary
+        print(f"{'ok  ' if ok else 'FAIL'} 1.2 {label}: {state}: {summary}")
+        if not ok:
+            bad += 1
+            print(f"       wanted {want} with {needle!r}")
+    return bad
+
+
 def main():
     b = bringup()
     bad = 0
@@ -161,8 +199,9 @@ def main():
         print(f"ok   supply_out follows pin 7 both ways")
 
     bad += check_measure_port(b)
+    bad += check_levels(b)
 
-    print(f"\n{len(CASES) + 9} checks, {bad} failing")
+    print(f"\n{len(CASES) + 9 + len(LEVEL_CASES)} checks, {bad} failing")
     return 1 if bad else 0
 
 

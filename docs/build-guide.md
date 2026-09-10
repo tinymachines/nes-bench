@@ -20,7 +20,7 @@ observations are written down, is in
 | sitting | what it is | state |
 |---|---|---|
 | 1 | Instruments | done |
-| 2 | The console, measured | 2 of 3 steps |
+| 2 | The console, measured | done |
 | 3 | The bridge, built | not started |
 | 4 | Joined | not started |
 | 5 | The head's hands | not started |
@@ -130,17 +130,21 @@ Photographs:
 
 > Last run 2026-09-08 13:26:56: held. 7 of 7 pins mapped, read off the pin numbers moulded into the port housing; the numbering is the housing's own, and step 1.2's +5V reading is what tests it
 
-### 1.2  The port's idle levels with the console on
+### 1.2  The port's idle levels with the console on  (held)
 
-- Console powered, NOTHING plugged into the port you are measuring.
-- Meter black on port pin 1 (GND). Measure pins 7, 3, 2 and 4 in turn.
-- Expect: pin 7 near 5 V, pins 3 and 2 idle, pin 4 pulled up.
+- Console powered. Meter black on the lead step 1.1 rang out as GND.
+- Measure the supply lead, then OUT0, then CLK, then D0.
+- Do NOT go by the published pinout's numbers: step 1.1 is what says which lead is which on this board, and on this one the supply is not where the published table puts it.
+- Expect: the supply near 5 V, OUT0 idling LOW, CLK idling HIGH, D0 pulled up.
+- A scope on those leads answers this better than a meter does, and the step records which instrument you used.
 
 Then it takes four meter readings and REFUSES to continue if the supply pin is not about 5 V.
 
 Photographs:
 
 - `docs/lab/01-meter-on-port.jpg`  (wanted)
+
+> Last run 2026-09-09 21:33:50: held. supply 5.0 V; OUT0 idles 0.091, CLK idles 5.002, D0 None, read with the scope CH4/CH1/CH2, 1x, grounds on the yellow lead; D0 not read
 
 ### 2.1  The scope on an original pad's port, a game running  (held)
 

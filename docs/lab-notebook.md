@@ -17,7 +17,7 @@ Those are in the log, marked, and are not counted below.
 
 ## Where the build stands
 
-5 of 5 attempted steps hold, over 10 attempts.
+6 of 6 attempted steps hold, over 11 attempts.
 
 | step | what it proves | attempts | state |
 |---|---|---|---|
@@ -25,6 +25,7 @@ Those are in the log, marked, and are not counted below.
 | 0.2 | The workstation can open a serial port | 2 | held |
 | 0.3 | The bridge firmware is on the UNO and answers STATUS | 2 | held |
 | 1.1 | The controller harness's colours against the port's pins | 1 | held |
+| 1.2 | The port's idle levels with the console on | 1 | held |
 | 2.1 | The scope on an original pad's port, a game running | 3 | held |
 
 ## Instruments
@@ -76,6 +77,18 @@ Method: read off the pin numbers moulded into the port housing.
 ![The controller harness's colours against the port's pins](lab/01-port-housing-pins-5-7.jpg)
 
 Photograph pending: `docs/lab/01-board-header.jpg`.
+
+### 1.2  The port's idle levels with the console on
+
+**2026-09-09 21:33:50**: held. supply 5.0 V; OUT0 idles 0.091, CLK idles 5.002, D0 None, read with the scope CH4/CH1/CH2, 1x, grounds on the yellow lead; D0 not read
+
+| | |
+|---|---|
+| the supply lead | 5 V |
+| OUT0 idle | 0.091 V |
+| CLK idle | 5.002 V |
+
+Photograph pending: `docs/lab/01-meter-on-port.jpg`.
 
 ## The part's own timing
 

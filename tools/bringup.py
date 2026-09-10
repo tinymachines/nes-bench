@@ -358,9 +358,11 @@ STEPS = [
               "01-breakout-map-controller.jpg", "01-breakout-ground-marked.jpg"],
       replaces="wiring.md's port table is a published pinout until this step confirms it on THIS board"),
     S("1.2", "The harness", "The port's idle levels with the console on",
-      ["Console powered, NOTHING plugged into the port you are measuring.",
-       "Meter black on port pin 1 (GND). Measure pins 7, 3, 2 and 4 in turn.",
-       "Expect: pin 7 near 5 V, pins 3 and 2 idle, pin 4 pulled up."],
+      ["Console powered. Meter black on the lead step 1.1 rang out as GND.",
+       "Measure the supply lead, then OUT0, then CLK, then D0.",
+       "Do NOT go by the published pinout's numbers: step 1.1 is what says which lead is which on this board, and on this one the supply is not where the published table puts it.",
+       "Expect: the supply near 5 V, OUT0 idling LOW, CLK idling HIGH, D0 pulled up.",
+       "A scope on those leads answers this better than a meter does, and the step records which instrument you used."],
       "port_levels",
       photos=["01-meter-on-port.jpg"]),
 
@@ -566,17 +568,43 @@ def check_harness_map(bench, step):
 
 
 def check_port_levels(bench, step):
-    v = {}
-    v["pin7_v"] = ask_float("  pin 7 (+5V) to pin 1", "V")
-    v["pin3_v"] = ask_float("  pin 3 (OUT0) idle", "V")
-    v["pin2_v"] = ask_float("  pin 2 (CLK) idle", "V")
-    v["pin4_v"] = ask_float("  pin 4 (D0) idle", "V")
-    if v["pin7_v"] is None:
-        return "fail", v, "the supply pin is the one that must not be skipped"
-    if not 4.5 <= v["pin7_v"] <= 5.5:
-        return "fail", v, (f"pin 7 reads {v['pin7_v']} V, not about 5. Either the harness map is wrong "
-                           "or the console's supply is. Do not build onto this.")
-    return "pass", v, f"+5V rail {v['pin7_v']} V; OUT0 {v['pin3_v']}, CLK {v['pin2_v']}, D0 {v['pin4_v']}"
+    """The port's four levels with the console on, and which lines idle
+    which way.
+
+    This asked for "pin 7" until 2026-09-09, because the published NES
+    pinout puts the supply there. On THIS console's connector it is on
+    pin 5 and pin 7 carries nothing at all, which step 1.1 rang out. So
+    the readings are named by what they ARE and the operator says which
+    lead each came off, rather than the step naming a pin number out of
+    a table that does not describe the board in front of it."""
+    say(f"  {DIM}Which instrument did these come off?{OFF}")
+    instrument = ask("  instrument", "meter")
+    v = {"instrument": instrument}
+    v["supply_v"] = ask_float("  the supply lead, to ground", "V")
+    v["out0_idle_v"] = ask_float("  OUT0 idle", "V")
+    v["clk_idle_v"] = ask_float("  CLK idle", "V")
+    v["d0_idle_v"] = ask_float("  D0 idle", "V")
+    if v["supply_v"] is None:
+        return "fail", v, "the supply is the one reading that must not be skipped"
+    if not 4.5 <= v["supply_v"] <= 5.5:
+        return "fail", v, (f"the supply lead reads {v['supply_v']} V, not about 5. Either the map from "
+                           "step 1.1 is wrong or the console's supply is. Do not build onto this.")
+    # MEASURED 2026-09-09 by step 2.1: OUT0 sits at 0 V and pulses high,
+    # CLK sits at 5 V and pulses low. A meter on a line that is idle
+    # almost all the time reads the idle level, so these two readings
+    # are the cheapest test there is that the two leads are not swapped,
+    # and swapping them is the mistake this bench is most set up to make.
+    lo, hi = v["out0_idle_v"], v["clk_idle_v"]
+    if lo is not None and hi is not None and lo > hi:
+        return "fail", v, (f"OUT0 reads {lo} V and CLK reads {hi} V, which is the wrong way round: OUT0 "
+                           "idles LOW and pulses high, CLK idles HIGH and pulses low. The two leads look swapped.")
+    # A skipped reading has to show in the record. A summary that reads
+    # the same whether or not a line was measured is how a partial step
+    # becomes a finished one in somebody's memory.
+    missing = [n for n, k in (("OUT0", "out0_idle_v"), ("CLK", "clk_idle_v"), ("D0", "d0_idle_v")) if v[k] is None]
+    tail = f"; {', '.join(missing)} not read" if missing else ""
+    return "pass", v, (f"supply {v['supply_v']} V; OUT0 idles {v['out0_idle_v']}, CLK idles {v['clk_idle_v']}, "
+                       f"D0 {v['d0_idle_v']}, read with the {instrument}{tail}")
 
 
 def _capture_two(bench, step, name, note):
