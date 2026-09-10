@@ -93,18 +93,36 @@ the one place it is written down, and `tools/check-sheets.py` holds both
 the schematic's connector symbol and `tools/bringup.py` to it. Putting
 the published pinout back on the sheet fails that check on three pins.
 
-## M3: the wiring diagram, for building rather than reading
+## M3: the wiring diagram, for building rather than reading. DONE 2026-09-09
 
 A schematic says what connects. It does not say where to put it. The
 "for dummies" artefact is two pieces:
 
 - **The wiring list**, which is built and on sheet 4: every net, every
   end, read out of the schematic so it cannot disagree with it.
-- **A breadboard picture**, which is not built. It needs a *placement*:
-  which row each chip sits in, which rail each lead lands on. That is
-  authored, one table, and then **every wire is derived from the
-  netlist**. Authored placement, derived wires, the same split this
-  project uses everywhere else.
+- **A breadboard picture**, `tools/breadboard.py`, which is built. The
+  placement is authored, one table at the top of that file: which column
+  each package starts in, where each cable comes in, where the
+  decoupling sits. **Every wire is derived from the netlist**: 21
+  numbered jumpers and 16 rail stubs on v1b. Changing a net in the
+  schematic changes the picture, which is how the claim is tested.
+
+  Three things it taught:
+
+  - **The hole a pin lands in is computed, not placed.** A DIP with its
+    notch left puts pin 1 at the bottom-left and counts anticlockwise,
+    so pin i of an N-pin package is at column c0+(i-1) below and
+    c0+(N-i) above. Get that rule wrong and every wire is wrong while
+    the picture still looks like a breadboard, so it is asserted against
+    both package sizes' known supply pins.
+  - **A wire does not plug into a pin.** The leg is already in that
+    hole. It goes into another hole in the same column, which is the
+    same node, and the drawing has to say which one: the key gives a
+    column and a row for every end.
+  - **The first router drew all 37 wires as orthogonal runs in lanes**,
+    every one correct and the picture unreadable. Curved jumpers with a
+    numbered key read the way an assembly drawing reads, and are closer
+    to what a jumper actually looks like lying on a board.
 
 ## M4: the netlist out, in a format an EDA tool takes
 
