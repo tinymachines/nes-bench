@@ -124,12 +124,46 @@ A schematic says what connects. It does not say where to put it. The
     numbered key read the way an assembly drawing reads, and are closer
     to what a jumper actually looks like lying on a board.
 
-## M4: the netlist out, in a format an EDA tool takes
+## M4: the netlist out, in a format an EDA tool takes. DONE 2026-09-09
 
-KiCad is not installed here. It does not need to be for this step: the
-netlist can be written as a KiCad `.net` s-expression or the older
-Protel format, both of which nearly every tool imports. That is the
-handoff, and it is small once M2 is done.
+`tools/export-netlist.py` writes, per sheet, into `docs/fab/`:
+
+- `<sheet>.net`, a KiCad netlist for File > Import > Netlist,
+- `<sheet>.protel.net`, which nearly every other tool takes,
+- `<sheet>-bom.csv`, grouped by value and footprint.
+
+v1b is 10 components and 21 routable nets; v2b is 21 and 39. Neither
+needs KiCad installed to produce.
+
+**The connections are derived; the footprints are a decision.** A 100 nF
+capacitor can be any of a dozen packages and only the person with the
+drawer knows which, so `FOOTPRINTS` is authored and `--check` fails on a
+part that has not been given one. The deploy runs that check, so a new
+part on a sheet cannot ship as an empty field.
+
+**Two things the export refused to paper over.**
+
+- **A1 is not a component.** It is an Arduino board. Giving it a
+  footprint at all is already a decision: `Module:Arduino_UNO_R3_Shield`
+  says this PCB plugs into the UNO's headers. If it is meant to sit
+  beside the UNO on a cable, A1 becomes a pin header instead. Every file
+  written says so.
+- **A schematic pin is a label; a netlist node is a pad.** "D2 (INT0)"
+  and "D13 SCK" become D2 and D13, which are pads. A pin that names more
+  than one physical pin cannot become a node at all, and the exporter
+  refuses to invent one rather than guessing. The UNO's serial is drawn
+  as a single pin "D0, D1", which is two pads; it happens to sit on an
+  off-sheet net, so nothing is lost today, but the same rule will stop a
+  future sheet quietly.
+
+Single-node nets are left out of the netlists and named in the output:
+they are connectors leaving the board, real but with nothing to route.
+
+**The writer is checked against itself.** Every file is read back and
+compared node for node with the schematic it came from. A writer that
+drops one node produces a perfectly well formed file that nothing
+downstream would question, so dropping a node deliberately is the test:
+it reports the missing pad on every net it touches.
 
 ## M5: a board
 

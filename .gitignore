@@ -11,3 +11,7 @@ __pycache__/
 # The drawing package: framed sheets and the PDF, rendered from the
 # committed SVGs by tools/make-package.py. Generated, so not committed.
 docs/package/
+
+# The fabrication handoff: netlists and BOMs, written from the committed
+# schematics by tools/export-netlist.py. Generated, so not committed.
+docs/fab/
