@@ -394,14 +394,23 @@ def plot(path, outdir):
     w.CreateDrillandMapFilesSet(str(outdir), True, False)
 
     IU = pcbnew.IU_PER_MM
+
+    def cell(v):
+        """A value with a comma in it has to be quoted, or the file is
+        not the format its extension claims. J2's value is "original
+        pad, on the bridge", which shifted every column after it by one
+        for anybody reading this with a CSV reader."""
+        v = str(v)
+        return f'"{v}"' if ('"' in v or "," in v) else v
+
     rows = ["Ref,Val,Package,PosX,PosY,Rot,Side"]
     for fp in sorted(board.GetFootprints(), key=lambda f: f.GetReference()):
         pos = fp.GetPosition()
         side = "bottom" if fp.IsFlipped() else "top"
-        rows.append(f"{fp.GetReference()},{fp.GetValue()},"
-                    f"{fp.GetFPID().GetLibItemName()},"
-                    f"{pos.x / IU:.3f},{-pos.y / IU:.3f},"
-                    f"{fp.GetOrientationDegrees():.1f},{side}")
+        rows.append(",".join(cell(v) for v in (
+            fp.GetReference(), fp.GetValue(), fp.GetFPID().GetLibItemName(),
+            f"{pos.x / IU:.3f}", f"{-pos.y / IU:.3f}",
+            f"{fp.GetOrientationDegrees():.1f}", side)))
     (outdir / "bench-v2b-positions.csv").write_text("\n".join(rows) + "\n")
     return filled, written
 

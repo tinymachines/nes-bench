@@ -125,6 +125,20 @@ microcontroller: every count lands on the UNO, Timer1's hardware input
 on LATCH1 and interrupts for the rest. The README that came with the
 sheets says to build v1b, then v2b.
 
+![v2b sheet 1 of 4: port 1, the console port, the inverter and its register](bench-v2b-1.svg)
+
+![v2b sheet 2 of 4: port 2, the second console port and its register, and the decoupling](bench-v2b-2.svg)
+
+![v2b sheet 3 of 4: the UNO and the two output registers on one SPI chain](bench-v2b-3.svg)
+
+![v2b sheet 4 of 4: the LM1881 sync separator, both pads, and the trigger](bench-v2b-4.svg)
+
+The board for these sheets is placed and routed: two layers, ground
+poured on the back and supply on the front, every net carried, and no
+unconnected item or clearance violation on the finished file. The
+fabrication set and what it was checked against are in
+`docs/fab/bench-v2b/README.md`.
+
 Two things about it are open, and both are named here rather than drawn
 as settled:
 
