@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2400 1290" width="2400" height="1290" role="img" aria-label="nes-bench bridge v2: two ports, atomic bytes, the frame counted in hardware">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2300 1320" width="2300" height="1320" role="img" aria-label="nes-bench bridge v2b: the UNO version, two ports, sync counted, one supply">
 
   <style>
     text { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; fill: #1f2328; }
@@ -29,11 +29,11 @@
     .auth { font-size: 9px; fill: #b3261e; font-family: ui-sans-serif, system-ui, sans-serif; font-style: italic; }
   </style>
 
-<rect x="0" y="0" width="2400" height="1290" fill="#ffffff"/>
-<text class="title" x="24" y="30">nes-bench bridge v2: two ports, atomic bytes, the frame counted in hardware</text>
-<text class="sub" x="24" y="46">extends v1 with 74HC595s on SPI (one RCLK edge updates both registers), an LM1881 sync separator, and a second pad. Nothing built; every number authored until B0.</text>
-<rect class="zone" x="20" y="60" width="1440" height="780" rx="6"/>
-<text class="sub" x="28" y="74" text-anchor="start">CONSOLE SIDE, +5V logic</text>
+<rect x="0" y="0" width="2300" height="1320" fill="#ffffff"/>
+<text class="title" x="24" y="30">nes-bench bridge v2b: the UNO version, two ports, sync counted, one supply</text>
+<text class="sub" x="24" y="46">v1b plus a second 165/595 pair on the same SPI chain and an LM1881 whose 5 V outputs go straight into the UNO. 2026-09-09. Not built.</text>
+<rect class="zone" x="20" y="60" width="1460" height="780" rx="6"/>
+<text class="sub" x="28" y="74" text-anchor="start">CONSOLE SIDE AND REGISTERS, +5V</text>
 <rect class="conn" x="60" y="90" width="130" height="232" rx="3"/>
 <text class="ref" x="66" y="104" text-anchor="start">J1</text>
 <text class="part" x="66" y="116" text-anchor="start">console controller port</text>
@@ -141,7 +141,7 @@
 <text class="net" x="565" y="175.5" text-anchor="start">/PL2</text>
 <rect class="box" x="720" y="90" width="140" height="310" rx="3"/>
 <text class="ref" x="726" y="104" text-anchor="start">U2</text>
-<text class="part" x="726" y="116" text-anchor="start">74HCT165  at +5V</text>
+<text class="part" x="726" y="116" text-anchor="start">74HC165  at +5V</text>
 <text class="part" x="726" y="128" text-anchor="start">H shifts out first</text>
 <line class="lead" x1="694" y1="146" x2="720" y2="146"/>
 <text class="pin" x="725" y="149.5" text-anchor="start">/PL</text>
@@ -221,7 +221,7 @@
 <text class="net" x="895" y="383.5" text-anchor="start">Q1RIGHT</text>
 <rect class="box" x="720" y="440" width="140" height="310" rx="3"/>
 <text class="ref" x="726" y="454" text-anchor="start">U6</text>
-<text class="part" x="726" y="466" text-anchor="start">74HCT165  at +5V</text>
+<text class="part" x="726" y="466" text-anchor="start">74HC165  at +5V</text>
 <text class="part" x="726" y="478" text-anchor="start">H shifts out first</text>
 <line class="lead" x1="694" y1="496" x2="720" y2="496"/>
 <text class="pin" x="725" y="499.5" text-anchor="start">/PL</text>
@@ -301,8 +301,8 @@
 <text class="net" x="895" y="733.5" text-anchor="start">Q2RIGHT</text>
 <rect class="box" x="1140" y="90" width="140" height="284" rx="3"/>
 <text class="ref" x="1146" y="104" text-anchor="start">U5</text>
-<text class="part" x="1146" y="116" text-anchor="start">74HC595  at 3V3</text>
-<text class="part" x="1146" y="128" text-anchor="start">port 1 byte</text>
+<text class="part" x="1146" y="116" text-anchor="start">74HC595  at +5V</text>
+<text class="part" x="1146" y="128" text-anchor="start">port 1 byte (shifted in second)</text>
 <line class="lead" x1="1114" y1="146" x2="1140" y2="146"/>
 <text class="pin" x="1145" y="149.5" text-anchor="start">SER</text>
 <text class="pinno" x="1136" y="144" text-anchor="end">14</text>
@@ -325,13 +325,13 @@
 <line class="lead" x1="1114" y1="250" x2="1140" y2="250"/>
 <text class="pin" x="1145" y="253.5" text-anchor="start">/SRCLR</text>
 <text class="pinno" x="1136" y="248" text-anchor="end">10</text>
-<line class="w3" x1="1114" y1="250" x2="1114" y2="241"/><line class="w3" x1="1109" y1="241" x2="1119" y2="241"/>
-<text class="rail3" x="1114" y="239" text-anchor="middle">3V3</text>
+<line class="w5" x1="1114" y1="250" x2="1114" y2="241"/><line class="w5" x1="1109" y1="241" x2="1119" y2="241"/>
+<text class="rail5" x="1114" y="239" text-anchor="middle">+5V</text>
 <line class="lead" x1="1114" y1="276" x2="1140" y2="276"/>
 <text class="pin" x="1145" y="279.5" text-anchor="start">VCC</text>
 <text class="pinno" x="1136" y="274" text-anchor="end">16</text>
-<line class="w3" x1="1114" y1="276" x2="1114" y2="267"/><line class="w3" x1="1109" y1="267" x2="1119" y2="267"/>
-<text class="rail3" x="1114" y="265" text-anchor="middle">3V3</text>
+<line class="w5" x1="1114" y1="276" x2="1114" y2="267"/><line class="w5" x1="1109" y1="267" x2="1119" y2="267"/>
+<text class="rail5" x="1114" y="265" text-anchor="middle">+5V</text>
 <line class="lead" x1="1114" y1="302" x2="1140" y2="302"/>
 <text class="pin" x="1145" y="305.5" text-anchor="start">GND</text>
 <text class="pinno" x="1136" y="300" text-anchor="end">8</text>
@@ -383,7 +383,7 @@
 <text class="net" x="1315" y="357.5" text-anchor="start">CHAIN</text>
 <rect class="box" x="1140" y="440" width="140" height="284" rx="3"/>
 <text class="ref" x="1146" y="454" text-anchor="start">U7</text>
-<text class="part" x="1146" y="466" text-anchor="start">74HC595  at 3V3</text>
+<text class="part" x="1146" y="466" text-anchor="start">74HC595  at +5V</text>
 <text class="part" x="1146" y="478" text-anchor="start">port 2 byte, chained</text>
 <line class="lead" x1="1114" y1="496" x2="1140" y2="496"/>
 <text class="pin" x="1145" y="499.5" text-anchor="start">SER</text>
@@ -407,13 +407,13 @@
 <line class="lead" x1="1114" y1="600" x2="1140" y2="600"/>
 <text class="pin" x="1145" y="603.5" text-anchor="start">/SRCLR</text>
 <text class="pinno" x="1136" y="598" text-anchor="end">10</text>
-<line class="w3" x1="1114" y1="600" x2="1114" y2="591"/><line class="w3" x1="1109" y1="591" x2="1119" y2="591"/>
-<text class="rail3" x="1114" y="589" text-anchor="middle">3V3</text>
+<line class="w5" x1="1114" y1="600" x2="1114" y2="591"/><line class="w5" x1="1109" y1="591" x2="1119" y2="591"/>
+<text class="rail5" x="1114" y="589" text-anchor="middle">+5V</text>
 <line class="lead" x1="1114" y1="626" x2="1140" y2="626"/>
 <text class="pin" x="1145" y="629.5" text-anchor="start">VCC</text>
 <text class="pinno" x="1136" y="624" text-anchor="end">16</text>
-<line class="w3" x1="1114" y1="626" x2="1114" y2="617"/><line class="w3" x1="1109" y1="617" x2="1119" y2="617"/>
-<text class="rail3" x="1114" y="615" text-anchor="middle">3V3</text>
+<line class="w5" x1="1114" y1="626" x2="1114" y2="617"/><line class="w5" x1="1109" y1="617" x2="1119" y2="617"/>
+<text class="rail5" x="1114" y="615" text-anchor="middle">+5V</text>
 <line class="lead" x1="1114" y1="652" x2="1140" y2="652"/>
 <text class="pin" x="1145" y="655.5" text-anchor="start">GND</text>
 <text class="pinno" x="1136" y="650" text-anchor="end">8</text>
@@ -462,361 +462,165 @@
 <text class="pin" x="1275" y="707.5" text-anchor="end">QH'</text>
 <text class="pinno" x="1284" y="702" text-anchor="start">9</text>
 <line class="lead" x1="1303" y1="701" x2="1309" y2="707"/><line class="lead" x1="1303" y1="707" x2="1309" y2="701"/>
-<text class="note" x="60" y="640" text-anchor="start">Why the 595s: sixteen bits shift in over SPI at any time; nothing changes at the 165s until one RCLK</text>
-<text class="note" x="60" y="653" text-anchor="start">rising edge moves both bytes to the outputs in one ~10 ns step. A tear during a load becomes impossible,</text>
-<text class="note" x="60" y="666" text-anchor="start">and the firmware still only pulses RCLK while both OUT0 lines read low. 3V3 outputs into HCT inputs</text>
-<text class="note" x="60" y="679" text-anchor="start">(Vih 2.0 V) is in spec. 3 GPIOs replace 8; port 2 costs none. DS on both 165s to GND: bit 9+ reads 1.</text>
+<text class="note" x="60" y="640" text-anchor="start">Two SPI.transfer() calls (port 2 byte first, then port 1) and one RCLK edge update both registers together.</text>
+<text class="note" x="60" y="653" text-anchor="start">The UNO's outputs are 5 V, so HC parts at 5 V see real highs everywhere. No shifters on this sheet at all.</text>
+<text class="note" x="60" y="666" text-anchor="start">DS on both 165s to GND: reads after the eighth clock return 1 to the console, as an original pad does.</text>
 <line class="w5" x1="160" y1="760" x2="160" y2="751"/><line class="w5" x1="155" y1="751" x2="165" y2="751"/>
 <text class="rail5" x="160" y="749" text-anchor="middle">+5V</text>
 <line class="lead" x1="160" y1="760" x2="178" y2="760"/><rect class="box" x="178" y="753" width="44" height="14"/><line class="lead" x1="222" y1="760" x2="240" y2="760"/>
-<text class="pinno" x="200" y="750" text-anchor="middle">C1,C2</text>
+<text class="pinno" x="200" y="750" text-anchor="middle">C1..C5</text>
 <text class="pin" x="200" y="764" text-anchor="middle">100nF</text>
 <line class="wg" x1="240" y1="760" x2="240" y2="768"/><line class="wg" x1="234" y1="768" x2="246" y2="768"/><line class="wg" x1="237" y1="771" x2="243" y2="771"/>
-<text class="note" x="300" y="764" text-anchor="start">U1, U2, U6 supply pins; C5 for U8</text>
-<line class="w3" x1="560" y1="760" x2="560" y2="751"/><line class="w3" x1="555" y1="751" x2="565" y2="751"/>
-<text class="rail3" x="560" y="749" text-anchor="middle">3V3</text>
-<line class="lead" x1="560" y1="760" x2="578" y2="760"/><rect class="box" x="578" y="753" width="44" height="14"/><line class="lead" x1="622" y1="760" x2="640" y2="760"/>
-<text class="pinno" x="600" y="750" text-anchor="middle">C3,C4</text>
-<text class="pin" x="600" y="764" text-anchor="middle">100nF</text>
-<line class="wg" x1="640" y1="760" x2="640" y2="768"/><line class="wg" x1="634" y1="768" x2="646" y2="768"/><line class="wg" x1="637" y1="771" x2="643" y2="771"/>
-<text class="note" x="700" y="764" text-anchor="start">U5, U7 (and U3) supply pins</text>
-<rect class="zone" x="1480" y="60" width="900" height="780" rx="6"/>
-<text class="sub" x="1488" y="74" text-anchor="start">SYNC SEPARATOR, +5V</text>
-<rect class="box" x="1640" y="90" width="150" height="154" rx="3"/>
-<text class="ref" x="1646" y="104" text-anchor="start">U8</text>
-<text class="part" x="1646" y="116" text-anchor="start">LM1881N  at +5V</text>
-<text class="part" x="1646" y="128" text-anchor="start">composite sync out</text>
-<line class="lead" x1="1614" y1="146" x2="1640" y2="146"/>
-<text class="pin" x="1645" y="149.5" text-anchor="start">VIDEO IN</text>
-<text class="pinno" x="1636" y="144" text-anchor="end">2</text>
-<path class="wire" d="M1614,146 l-6,-6 h-47.2 v12 h47.2 z"/>
-<text class="net" x="1605" y="149.5" text-anchor="end">VID_AC</text>
-<line class="lead" x1="1614" y1="172" x2="1640" y2="172"/>
-<text class="pin" x="1645" y="175.5" text-anchor="start">RSET</text>
-<text class="pinno" x="1636" y="170" text-anchor="end">6</text>
-<path class="wire" d="M1614,172 l-6,-6 h-34.8 v12 h34.8 z"/>
-<text class="net" x="1605" y="175.5" text-anchor="end">RSET</text>
-<line class="lead" x1="1614" y1="198" x2="1640" y2="198"/>
-<text class="pin" x="1645" y="201.5" text-anchor="start">VCC</text>
-<text class="pinno" x="1636" y="196" text-anchor="end">8</text>
-<line class="w5" x1="1614" y1="198" x2="1614" y2="189"/><line class="w5" x1="1609" y1="189" x2="1619" y2="189"/>
-<text class="rail5" x="1614" y="187" text-anchor="middle">+5V</text>
-<line class="lead" x1="1614" y1="224" x2="1640" y2="224"/>
-<text class="pin" x="1645" y="227.5" text-anchor="start">GND</text>
-<text class="pinno" x="1636" y="222" text-anchor="end">4</text>
-<line class="wg" x1="1614" y1="224" x2="1614" y2="232"/><line class="wg" x1="1608" y1="232" x2="1620" y2="232"/><line class="wg" x1="1611" y1="235" x2="1617" y2="235"/>
-<line class="lead" x1="1790" y1="146" x2="1816" y2="146"/>
-<text class="pin" x="1785" y="149.5" text-anchor="end">CSYNC</text>
-<text class="pinno" x="1794" y="144" text-anchor="start">1</text>
-<path class="wire" d="M1816,146 l6,-6 h53.4 v12 h-53.4 z"/>
-<text class="net" x="1825" y="149.5" text-anchor="start">CSYNC_5</text>
-<line class="lead" x1="1790" y1="172" x2="1816" y2="172"/>
-<text class="pin" x="1785" y="175.5" text-anchor="end">VSYNC</text>
-<text class="pinno" x="1794" y="170" text-anchor="start">3</text>
-<path class="wire" d="M1816,172 l6,-6 h53.4 v12 h-53.4 z"/>
-<text class="net" x="1825" y="175.5" text-anchor="start">VSYNC_5</text>
-<line class="lead" x1="1790" y1="198" x2="1816" y2="198"/>
-<text class="pin" x="1785" y="201.5" text-anchor="end">BURST</text>
-<text class="pinno" x="1794" y="196" text-anchor="start">5</text>
-<line class="lead" x1="1813" y1="195" x2="1819" y2="201"/><line class="lead" x1="1813" y1="201" x2="1819" y2="195"/>
-<line class="lead" x1="1790" y1="224" x2="1816" y2="224"/>
-<text class="pin" x="1785" y="227.5" text-anchor="end">ODD/EVEN</text>
-<text class="pinno" x="1794" y="222" text-anchor="start">7</text>
-<line class="lead" x1="1813" y1="221" x2="1819" y2="227"/><line class="lead" x1="1813" y1="227" x2="1819" y2="221"/>
-<path class="wire" d="M1640,330 l-6,-6 h-41.0 v12 h41.0 z"/>
-<text class="net" x="1631" y="333.5" text-anchor="end">VIDEO</text>
-<line class="lead" x1="1640" y1="330" x2="1658" y2="330"/><rect class="box" x="1658" y="323" width="44" height="14"/><line class="lead" x1="1702" y1="330" x2="1720" y2="330"/>
-<text class="pinno" x="1680" y="320" text-anchor="middle">C6</text>
-<text class="pin" x="1680" y="334" text-anchor="middle">100nF</text>
-<path class="wire" d="M1720,330 l6,-6 h47.2 v12 h-47.2 z"/>
-<text class="net" x="1729" y="333.5" text-anchor="start">VID_AC</text>
-<text class="note" x="1780" y="334" text-anchor="start">AC couple from the console's video (75R load present)</text>
-<path class="wire" d="M1640,380 l-6,-6 h-34.8 v12 h34.8 z"/>
-<text class="net" x="1631" y="383.5" text-anchor="end">RSET</text>
-<line class="lead" x1="1640" y1="380" x2="1658" y2="380"/><rect class="box" x="1658" y="373" width="44" height="14"/><line class="lead" x1="1702" y1="380" x2="1720" y2="380"/>
-<text class="pinno" x="1680" y="370" text-anchor="middle">R2</text>
-<text class="pin" x="1680" y="384" text-anchor="middle">680k</text>
-<line class="wg" x1="1720" y1="380" x2="1720" y2="388"/><line class="wg" x1="1714" y1="388" x2="1726" y2="388"/><line class="wg" x1="1717" y1="391" x2="1723" y2="391"/>
-<path class="wire" d="M1640,430 l-6,-6 h-34.8 v12 h34.8 z"/>
-<text class="net" x="1631" y="433.5" text-anchor="end">RSET</text>
-<line class="lead" x1="1640" y1="430" x2="1658" y2="430"/><rect class="box" x="1658" y="423" width="44" height="14"/><line class="lead" x1="1702" y1="430" x2="1720" y2="430"/>
-<text class="pinno" x="1680" y="420" text-anchor="middle">C7</text>
-<text class="pin" x="1680" y="434" text-anchor="middle">100nF</text>
-<line class="wg" x1="1720" y1="430" x2="1720" y2="438"/><line class="wg" x1="1714" y1="438" x2="1726" y2="438"/><line class="wg" x1="1717" y1="441" x2="1723" y2="441"/>
-<text class="note" x="1520" y="500" text-anchor="start">Tap VIDEO after Q1 (the AUX/RF input), the point the</text>
-<text class="note" x="1520" y="513" text-anchor="start">scope already probes; a 1k series R protects the tap.</text>
-<text class="note" x="1520" y="526" text-anchor="start">VSYNC: one falling edge per field, 60.0988/s.</text>
-<text class="note" x="1520" y="539" text-anchor="start">CSYNC: one falling edge per line plus the vsync block;</text>
-<text class="note" x="1520" y="552" text-anchor="start">the NES has no serrations, so count = lines - 2 (measure).</text>
-<text class="note" x="1520" y="565" text-anchor="start">Both are 5V outputs: through the 245 like the port lines.</text>
-<rect class="zone" x="20" y="860" width="2360" height="410" rx="6"/>
-<text class="sub" x="28" y="874" text-anchor="start">BRIDGE SIDE, 3V3 logic</text>
-<rect class="box" x="200" y="890" width="150" height="336" rx="3"/>
-<text class="ref" x="206" y="904" text-anchor="start">U3</text>
-<text class="part" x="206" y="916" text-anchor="start">74LVC245  at 3V3</text>
-<text class="part" x="206" y="928" text-anchor="start">six lines down to 3V3</text>
+<text class="note" x="300" y="764" text-anchor="start">one across each of U1, U2, U5, U6, U7, U8</text>
+<rect class="zone" x="1500" y="60" width="780" height="780" rx="6"/>
+<text class="sub" x="1508" y="74" text-anchor="start">SYNC SEPARATOR, +5V, straight into the UNO</text>
+<rect class="box" x="1660" y="90" width="150" height="154" rx="3"/>
+<text class="ref" x="1666" y="104" text-anchor="start">U8</text>
+<text class="part" x="1666" y="116" text-anchor="start">LM1881N  at +5V</text>
+<text class="part" x="1666" y="128" text-anchor="start">5 V outputs: no 245 needed</text>
+<line class="lead" x1="1634" y1="146" x2="1660" y2="146"/>
+<text class="pin" x="1665" y="149.5" text-anchor="start">VIDEO IN</text>
+<text class="pinno" x="1656" y="144" text-anchor="end">2</text>
+<path class="wire" d="M1634,146 l-6,-6 h-47.2 v12 h47.2 z"/>
+<text class="net" x="1625" y="149.5" text-anchor="end">VID_AC</text>
+<line class="lead" x1="1634" y1="172" x2="1660" y2="172"/>
+<text class="pin" x="1665" y="175.5" text-anchor="start">RSET</text>
+<text class="pinno" x="1656" y="170" text-anchor="end">6</text>
+<path class="wire" d="M1634,172 l-6,-6 h-34.8 v12 h34.8 z"/>
+<text class="net" x="1625" y="175.5" text-anchor="end">RSET</text>
+<line class="lead" x1="1634" y1="198" x2="1660" y2="198"/>
+<text class="pin" x="1665" y="201.5" text-anchor="start">VCC</text>
+<text class="pinno" x="1656" y="196" text-anchor="end">8</text>
+<line class="w5" x1="1634" y1="198" x2="1634" y2="189"/><line class="w5" x1="1629" y1="189" x2="1639" y2="189"/>
+<text class="rail5" x="1634" y="187" text-anchor="middle">+5V</text>
+<line class="lead" x1="1634" y1="224" x2="1660" y2="224"/>
+<text class="pin" x="1665" y="227.5" text-anchor="start">GND</text>
+<text class="pinno" x="1656" y="222" text-anchor="end">4</text>
+<line class="wg" x1="1634" y1="224" x2="1634" y2="232"/><line class="wg" x1="1628" y1="232" x2="1640" y2="232"/><line class="wg" x1="1631" y1="235" x2="1637" y2="235"/>
+<line class="lead" x1="1810" y1="146" x2="1836" y2="146"/>
+<text class="pin" x="1805" y="149.5" text-anchor="end">CSYNC</text>
+<text class="pinno" x="1814" y="144" text-anchor="start">1</text>
+<path class="wire" d="M1836,146 l6,-6 h41.0 v12 h-41.0 z"/>
+<text class="net" x="1845" y="149.5" text-anchor="start">CSYNC</text>
+<line class="lead" x1="1810" y1="172" x2="1836" y2="172"/>
+<text class="pin" x="1805" y="175.5" text-anchor="end">VSYNC</text>
+<text class="pinno" x="1814" y="170" text-anchor="start">3</text>
+<path class="wire" d="M1836,172 l6,-6 h41.0 v12 h-41.0 z"/>
+<text class="net" x="1845" y="175.5" text-anchor="start">VSYNC</text>
+<line class="lead" x1="1810" y1="198" x2="1836" y2="198"/>
+<text class="pin" x="1805" y="201.5" text-anchor="end">BURST</text>
+<text class="pinno" x="1814" y="196" text-anchor="start">5</text>
+<line class="lead" x1="1833" y1="195" x2="1839" y2="201"/><line class="lead" x1="1833" y1="201" x2="1839" y2="195"/>
+<line class="lead" x1="1810" y1="224" x2="1836" y2="224"/>
+<text class="pin" x="1805" y="227.5" text-anchor="end">ODD/EVEN</text>
+<text class="pinno" x="1814" y="222" text-anchor="start">7</text>
+<line class="lead" x1="1833" y1="221" x2="1839" y2="227"/><line class="lead" x1="1833" y1="227" x2="1839" y2="221"/>
+<path class="wire" d="M1660,330 l-6,-6 h-41.0 v12 h41.0 z"/>
+<text class="net" x="1651" y="333.5" text-anchor="end">VIDEO</text>
+<line class="lead" x1="1660" y1="330" x2="1678" y2="330"/><rect class="box" x="1678" y="323" width="44" height="14"/><line class="lead" x1="1722" y1="330" x2="1740" y2="330"/>
+<text class="pinno" x="1700" y="320" text-anchor="middle">C6</text>
+<text class="pin" x="1700" y="334" text-anchor="middle">100nF</text>
+<path class="wire" d="M1740,330 l6,-6 h47.2 v12 h-47.2 z"/>
+<text class="net" x="1749" y="333.5" text-anchor="start">VID_AC</text>
+<text class="note" x="1800" y="334" text-anchor="start">AC couple from the console's video, 1k series</text>
+<path class="wire" d="M1660,380 l-6,-6 h-34.8 v12 h34.8 z"/>
+<text class="net" x="1651" y="383.5" text-anchor="end">RSET</text>
+<line class="lead" x1="1660" y1="380" x2="1678" y2="380"/><rect class="box" x="1678" y="373" width="44" height="14"/><line class="lead" x1="1722" y1="380" x2="1740" y2="380"/>
+<text class="pinno" x="1700" y="370" text-anchor="middle">R2</text>
+<text class="pin" x="1700" y="384" text-anchor="middle">680k</text>
+<line class="wg" x1="1740" y1="380" x2="1740" y2="388"/><line class="wg" x1="1734" y1="388" x2="1746" y2="388"/><line class="wg" x1="1737" y1="391" x2="1743" y2="391"/>
+<path class="wire" d="M1660,430 l-6,-6 h-34.8 v12 h34.8 z"/>
+<text class="net" x="1651" y="433.5" text-anchor="end">RSET</text>
+<line class="lead" x1="1660" y1="430" x2="1678" y2="430"/><rect class="box" x="1678" y="423" width="44" height="14"/><line class="lead" x1="1722" y1="430" x2="1740" y2="430"/>
+<text class="pinno" x="1700" y="420" text-anchor="middle">C7</text>
+<text class="pin" x="1700" y="434" text-anchor="middle">100nF</text>
+<line class="wg" x1="1740" y1="430" x2="1740" y2="438"/><line class="wg" x1="1734" y1="438" x2="1746" y2="438"/><line class="wg" x1="1737" y1="441" x2="1743" y2="441"/>
+<text class="note" x="1540" y="500" text-anchor="start">VSYNC: one falling edge per field, 60.0988/s.</text>
+<text class="note" x="1540" y="513" text-anchor="start">CSYNC: one per line plus the vsync block; the NES</text>
+<text class="note" x="1540" y="526" text-anchor="start">emits no serrations, so count/field = lines - k (measure k).</text>
+<text class="note" x="1540" y="539" text-anchor="start">CSYNC at 15.7 kHz on INT1 is ~5% of a 16 MHz</text>
+<text class="note" x="1540" y="552" text-anchor="start">part; VSYNC and port-2 lines on pin-change interrupts.</text>
+<rect class="zone" x="20" y="860" width="2260" height="440" rx="6"/>
+<text class="sub" x="28" y="874" text-anchor="start">THE UNO (all pins 5 V) AND THE HEAD</text>
+<rect class="box" x="200" y="890" width="200" height="284" rx="3"/>
+<text class="ref" x="206" y="904" text-anchor="start">A1</text>
+<text class="part" x="206" y="916" text-anchor="start">Arduino UNO R3 (ATmega328P)</text>
+<text class="part" x="206" y="928" text-anchor="start">serial 115200 to the Pi</text>
 <line class="lead" x1="174" y1="946" x2="200" y2="946"/>
-<text class="pin" x="205" y="949.5" text-anchor="start">DIR</text>
-<text class="pinno" x="196" y="944" text-anchor="end">1</text>
-<line class="w3" x1="174" y1="946" x2="174" y2="937"/><line class="w3" x1="169" y1="937" x2="179" y2="937"/>
-<text class="rail3" x="174" y="935" text-anchor="middle">3V3</text>
+<text class="pin" x="205" y="949.5" text-anchor="start">D13 SCK</text>
+<path class="wire" d="M174,946 l-6,-6 h-28.6 v12 h28.6 z"/>
+<text class="net" x="165" y="949.5" text-anchor="end">SCK</text>
 <line class="lead" x1="174" y1="972" x2="200" y2="972"/>
-<text class="pin" x="205" y="975.5" text-anchor="start">/OE</text>
-<text class="pinno" x="196" y="970" text-anchor="end">19</text>
-<line class="wg" x1="174" y1="972" x2="174" y2="980"/><line class="wg" x1="168" y1="980" x2="180" y2="980"/><line class="wg" x1="171" y1="983" x2="177" y2="983"/>
+<text class="pin" x="205" y="975.5" text-anchor="start">D11 MOSI</text>
+<path class="wire" d="M174,972 l-6,-6 h-34.8 v12 h34.8 z"/>
+<text class="net" x="165" y="975.5" text-anchor="end">MOSI</text>
 <line class="lead" x1="174" y1="998" x2="200" y2="998"/>
-<text class="pin" x="205" y="1001.5" text-anchor="start">A1</text>
-<text class="pinno" x="196" y="996" text-anchor="end">2</text>
-<path class="wire" d="M174,998 l-6,-6 h-65.80000000000001 v12 h65.80000000000001 z"/>
-<text class="net" x="165" y="1001.5" text-anchor="end">CON1_OUT0</text>
+<text class="pin" x="205" y="1001.5" text-anchor="start">D10</text>
+<path class="wire" d="M174,998 l-6,-6 h-34.8 v12 h34.8 z"/>
+<text class="net" x="165" y="1001.5" text-anchor="end">RCLK</text>
 <line class="lead" x1="174" y1="1024" x2="200" y2="1024"/>
-<text class="pin" x="205" y="1027.5" text-anchor="start">A2</text>
-<text class="pinno" x="196" y="1022" text-anchor="end">3</text>
-<path class="wire" d="M174,1024 l-6,-6 h-59.6 v12 h59.6 z"/>
-<text class="net" x="165" y="1027.5" text-anchor="end">CON1_CLK</text>
+<text class="pin" x="205" y="1027.5" text-anchor="start">D5 (T1)</text>
+<path class="wire" d="M174,1024 l-6,-6 h-65.80000000000001 v12 h65.80000000000001 z"/>
+<text class="net" x="165" y="1027.5" text-anchor="end">CON1_OUT0</text>
 <line class="lead" x1="174" y1="1050" x2="200" y2="1050"/>
-<text class="pin" x="205" y="1053.5" text-anchor="start">A3</text>
-<text class="pinno" x="196" y="1048" text-anchor="end">4</text>
-<path class="wire" d="M174,1050 l-6,-6 h-65.80000000000001 v12 h65.80000000000001 z"/>
-<text class="net" x="165" y="1053.5" text-anchor="end">CON2_OUT0</text>
+<text class="pin" x="205" y="1053.5" text-anchor="start">D2 (INT0)</text>
+<path class="wire" d="M174,1050 l-6,-6 h-59.6 v12 h59.6 z"/>
+<text class="net" x="165" y="1053.5" text-anchor="end">CON1_CLK</text>
 <line class="lead" x1="174" y1="1076" x2="200" y2="1076"/>
-<text class="pin" x="205" y="1079.5" text-anchor="start">A4</text>
-<text class="pinno" x="196" y="1074" text-anchor="end">5</text>
-<path class="wire" d="M174,1076 l-6,-6 h-59.6 v12 h59.6 z"/>
-<text class="net" x="165" y="1079.5" text-anchor="end">CON2_CLK</text>
+<text class="pin" x="205" y="1079.5" text-anchor="start">D3 (INT1)</text>
+<path class="wire" d="M174,1076 l-6,-6 h-41.0 v12 h41.0 z"/>
+<text class="net" x="165" y="1079.5" text-anchor="end">CSYNC</text>
 <line class="lead" x1="174" y1="1102" x2="200" y2="1102"/>
-<text class="pin" x="205" y="1105.5" text-anchor="start">A5</text>
-<text class="pinno" x="196" y="1100" text-anchor="end">6</text>
-<path class="wire" d="M174,1102 l-6,-6 h-53.4 v12 h53.4 z"/>
-<text class="net" x="165" y="1105.5" text-anchor="end">VSYNC_5</text>
+<text class="pin" x="205" y="1105.5" text-anchor="start">D4 (PCINT)</text>
+<path class="wire" d="M174,1102 l-6,-6 h-65.80000000000001 v12 h65.80000000000001 z"/>
+<text class="net" x="165" y="1105.5" text-anchor="end">CON2_OUT0</text>
 <line class="lead" x1="174" y1="1128" x2="200" y2="1128"/>
-<text class="pin" x="205" y="1131.5" text-anchor="start">A6</text>
-<text class="pinno" x="196" y="1126" text-anchor="end">7</text>
-<path class="wire" d="M174,1128 l-6,-6 h-53.4 v12 h53.4 z"/>
-<text class="net" x="165" y="1131.5" text-anchor="end">CSYNC_5</text>
+<text class="pin" x="205" y="1131.5" text-anchor="start">D9 (PCINT)</text>
+<path class="wire" d="M174,1128 l-6,-6 h-59.6 v12 h59.6 z"/>
+<text class="net" x="165" y="1131.5" text-anchor="end">CON2_CLK</text>
 <line class="lead" x1="174" y1="1154" x2="200" y2="1154"/>
-<text class="pin" x="205" y="1157.5" text-anchor="start">A7,A8</text>
-<text class="pinno" x="196" y="1152" text-anchor="end">8</text>
-<line class="wg" x1="174" y1="1154" x2="174" y2="1162"/><line class="wg" x1="168" y1="1162" x2="180" y2="1162"/><line class="wg" x1="171" y1="1165" x2="177" y2="1165"/>
-<line class="lead" x1="174" y1="1180" x2="200" y2="1180"/>
-<text class="pin" x="205" y="1183.5" text-anchor="start">VCC</text>
-<text class="pinno" x="196" y="1178" text-anchor="end">20</text>
-<line class="w3" x1="174" y1="1180" x2="174" y2="1171"/><line class="w3" x1="169" y1="1171" x2="179" y2="1171"/>
-<text class="rail3" x="174" y="1169" text-anchor="middle">3V3</text>
-<line class="lead" x1="174" y1="1206" x2="200" y2="1206"/>
-<text class="pin" x="205" y="1209.5" text-anchor="start">GND</text>
-<text class="pinno" x="196" y="1204" text-anchor="end">10</text>
-<line class="wg" x1="174" y1="1206" x2="174" y2="1214"/><line class="wg" x1="168" y1="1214" x2="180" y2="1214"/><line class="wg" x1="171" y1="1217" x2="177" y2="1217"/>
-<line class="lead" x1="350" y1="946" x2="376" y2="946"/>
-<text class="pin" x="345" y="949.5" text-anchor="end">B1</text>
-<text class="pinno" x="354" y="944" text-anchor="start">18</text>
-<path class="wire" d="M376,946 l6,-6 h47.2 v12 h-47.2 z"/>
-<text class="net" x="385" y="949.5" text-anchor="start">LATCH1</text>
-<line class="lead" x1="350" y1="972" x2="376" y2="972"/>
-<text class="pin" x="345" y="975.5" text-anchor="end">B2</text>
-<text class="pinno" x="354" y="970" text-anchor="start">17</text>
-<path class="wire" d="M376,972 l6,-6 h34.8 v12 h-34.8 z"/>
-<text class="net" x="385" y="975.5" text-anchor="start">CLK1</text>
-<line class="lead" x1="350" y1="998" x2="376" y2="998"/>
-<text class="pin" x="345" y="1001.5" text-anchor="end">B3</text>
-<text class="pinno" x="354" y="996" text-anchor="start">16</text>
-<path class="wire" d="M376,998 l6,-6 h47.2 v12 h-47.2 z"/>
-<text class="net" x="385" y="1001.5" text-anchor="start">LATCH2</text>
-<line class="lead" x1="350" y1="1024" x2="376" y2="1024"/>
-<text class="pin" x="345" y="1027.5" text-anchor="end">B4</text>
-<text class="pinno" x="354" y="1022" text-anchor="start">15</text>
-<path class="wire" d="M376,1024 l6,-6 h34.8 v12 h-34.8 z"/>
-<text class="net" x="385" y="1027.5" text-anchor="start">CLK2</text>
-<line class="lead" x1="350" y1="1050" x2="376" y2="1050"/>
-<text class="pin" x="345" y="1053.5" text-anchor="end">B5</text>
-<text class="pinno" x="354" y="1048" text-anchor="start">14</text>
-<path class="wire" d="M376,1050 l6,-6 h41.0 v12 h-41.0 z"/>
-<text class="net" x="385" y="1053.5" text-anchor="start">VSYNC</text>
-<line class="lead" x1="350" y1="1076" x2="376" y2="1076"/>
-<text class="pin" x="345" y="1079.5" text-anchor="end">B6</text>
-<text class="pinno" x="354" y="1074" text-anchor="start">13</text>
-<path class="wire" d="M376,1076 l6,-6 h41.0 v12 h-41.0 z"/>
-<text class="net" x="385" y="1079.5" text-anchor="start">CSYNC</text>
-<rect class="box" x="620" y="890" width="190" height="284" rx="3"/>
-<text class="ref" x="626" y="904" text-anchor="start">U4</text>
-<text class="part" x="626" y="916" text-anchor="start">ESP32-C6-DevKitC-1 v1.2</text>
-<text class="part" x="626" y="928" text-anchor="start">RISC-V, BLE 5, Wi-Fi 6</text>
-<line class="lead" x1="594" y1="946" x2="620" y2="946"/>
-<text class="pin" x="625" y="949.5" text-anchor="start">GPIO0</text>
-<path class="wire" d="M594,946 l-6,-6 h-47.2 v12 h47.2 z"/>
-<text class="net" x="585" y="949.5" text-anchor="end">LATCH1</text>
-<line class="lead" x1="594" y1="972" x2="620" y2="972"/>
-<text class="pin" x="625" y="975.5" text-anchor="start">GPIO1</text>
-<path class="wire" d="M594,972 l-6,-6 h-34.8 v12 h34.8 z"/>
-<text class="net" x="585" y="975.5" text-anchor="end">CLK1</text>
-<line class="lead" x1="594" y1="998" x2="620" y2="998"/>
-<text class="pin" x="625" y="1001.5" text-anchor="start">GPIO10</text>
-<path class="wire" d="M594,998 l-6,-6 h-34.8 v12 h34.8 z"/>
-<text class="net" x="585" y="1001.5" text-anchor="end">CLK2</text>
-<line class="lead" x1="594" y1="1024" x2="620" y2="1024"/>
-<text class="pin" x="625" y="1027.5" text-anchor="start">GPIO11</text>
-<path class="wire" d="M594,1024 l-6,-6 h-41.0 v12 h41.0 z"/>
-<text class="net" x="585" y="1027.5" text-anchor="end">CSYNC</text>
-<line class="lead" x1="594" y1="1050" x2="620" y2="1050"/>
-<text class="pin" x="625" y="1053.5" text-anchor="start">GPIO21</text>
-<path class="wire" d="M594,1050 l-6,-6 h-47.2 v12 h47.2 z"/>
-<text class="net" x="585" y="1053.5" text-anchor="end">LATCH2</text>
-<line class="lead" x1="594" y1="1076" x2="620" y2="1076"/>
-<text class="pin" x="625" y="1079.5" text-anchor="start">GPIO22</text>
-<path class="wire" d="M594,1076 l-6,-6 h-41.0 v12 h41.0 z"/>
-<text class="net" x="585" y="1079.5" text-anchor="end">VSYNC</text>
-<line class="lead" x1="594" y1="1102" x2="620" y2="1102"/>
-<text class="pin" x="625" y="1105.5" text-anchor="start">3V3</text>
-<line class="w3" x1="594" y1="1102" x2="594" y2="1093"/><line class="w3" x1="589" y1="1093" x2="599" y2="1093"/>
-<text class="rail3" x="594" y="1091" text-anchor="middle">3V3</text>
-<line class="lead" x1="594" y1="1128" x2="620" y2="1128"/>
-<text class="pin" x="625" y="1131.5" text-anchor="start">GND</text>
-<line class="wg" x1="594" y1="1128" x2="594" y2="1136"/><line class="wg" x1="588" y1="1136" x2="600" y2="1136"/><line class="wg" x1="591" y1="1139" x2="597" y2="1139"/>
-<line class="lead" x1="594" y1="1154" x2="620" y2="1154"/>
-<text class="pin" x="625" y="1157.5" text-anchor="start">USB-UART</text>
-<path class="wire" d="M594,1154 l-6,-6 h-47.2 v12 h47.2 z"/>
-<text class="net" x="585" y="1157.5" text-anchor="end">PI_USB</text>
-<line class="lead" x1="810" y1="946" x2="836" y2="946"/>
-<text class="pin" x="805" y="949.5" text-anchor="end">GPIO18</text>
-<path class="wire" d="M836,946 l6,-6 h28.6 v12 h-28.6 z"/>
-<text class="net" x="845" y="949.5" text-anchor="start">SCK</text>
-<line class="lead" x1="810" y1="972" x2="836" y2="972"/>
-<text class="pin" x="805" y="975.5" text-anchor="end">GPIO19</text>
-<path class="wire" d="M836,972 l6,-6 h34.8 v12 h-34.8 z"/>
-<text class="net" x="845" y="975.5" text-anchor="start">MOSI</text>
-<line class="lead" x1="810" y1="998" x2="836" y2="998"/>
-<text class="pin" x="805" y="1001.5" text-anchor="end">GPIO20</text>
-<path class="wire" d="M836,998 l6,-6 h34.8 v12 h-34.8 z"/>
-<text class="net" x="845" y="1001.5" text-anchor="start">RCLK</text>
-<line class="lead" x1="810" y1="1024" x2="836" y2="1024"/>
-<text class="pin" x="805" y="1027.5" text-anchor="end">GPIO2</text>
-<path class="wire" d="M836,1024 l6,-6 h65.80000000000001 v12 h-65.80000000000001 z"/>
-<text class="net" x="845" y="1027.5" text-anchor="start">PAD_LATCH</text>
-<line class="lead" x1="810" y1="1050" x2="836" y2="1050"/>
-<text class="pin" x="805" y="1053.5" text-anchor="end">GPIO3</text>
-<path class="wire" d="M836,1050 l6,-6 h53.4 v12 h-53.4 z"/>
-<text class="net" x="845" y="1053.5" text-anchor="start">PAD_CLK</text>
-<line class="lead" x1="810" y1="1076" x2="836" y2="1076"/>
-<text class="pin" x="805" y="1079.5" text-anchor="end">GPIO6</text>
-<path class="wire" d="M836,1076 l6,-6 h53.4 v12 h-53.4 z"/>
-<text class="net" x="845" y="1079.5" text-anchor="start">PAD1_D0</text>
-<line class="lead" x1="810" y1="1102" x2="836" y2="1102"/>
-<text class="pin" x="805" y="1105.5" text-anchor="end">GPIO23</text>
-<path class="wire" d="M836,1102 l6,-6 h53.4 v12 h-53.4 z"/>
-<text class="net" x="845" y="1105.5" text-anchor="start">PAD2_D0</text>
-<line class="lead" x1="810" y1="1128" x2="836" y2="1128"/>
-<text class="pin" x="805" y="1131.5" text-anchor="end">GPIO7</text>
-<path class="wire" d="M836,1128 l6,-6 h34.8 v12 h-34.8 z"/>
-<text class="net" x="845" y="1131.5" text-anchor="start">TRIG</text>
-<text class="note" x="520" y="1200" text-anchor="start">PCNT unit 0: LATCH1 rises (latch index, port 1)</text>
-<text class="note" x="520" y="1213" text-anchor="start">PCNT unit 1: CLK1 falls (clocks per poll, port 1)</text>
-<text class="note" x="520" y="1226" text-anchor="start">PCNT unit 2: CLK2 falls (clocks per poll, port 2)</text>
-<text class="note" x="520" y="1239" text-anchor="start">PCNT unit 3: CSYNC falls (line counter)</text>
-<text class="note" x="520" y="1252" text-anchor="start">GPIO21, GPIO22: ISR, 60/s each, timestamp + PCNT3 snapshot</text>
-<text class="note" x="520" y="1265" text-anchor="start">(a 3 us ISR latency is 5% of a 63.5 us line)</text>
-<text class="note" x="520" y="1278" text-anchor="start">All 14 free pins used; 4, 5, 8, 9, 12, 13, 15, 16, 17 untouched</text>
-<rect class="conn" x="1200" y="890" width="130" height="232" rx="3"/>
-<text class="ref" x="1206" y="904" text-anchor="start">J2</text>
-<text class="part" x="1206" y="916" text-anchor="start">original pad, on the bridge</text>
-<line class="lead" x1="1174" y1="946" x2="1200" y2="946"/>
-<text class="pin" x="1205" y="949.5" text-anchor="start">GND</text>
-<text class="pinno" x="1196" y="944" text-anchor="end">1</text>
-<line class="wg" x1="1174" y1="946" x2="1174" y2="954"/><line class="wg" x1="1168" y1="954" x2="1180" y2="954"/><line class="wg" x1="1171" y1="957" x2="1177" y2="957"/>
-<line class="lead" x1="1174" y1="972" x2="1200" y2="972"/>
-<text class="pin" x="1205" y="975.5" text-anchor="start">CLK</text>
-<text class="pinno" x="1196" y="970" text-anchor="end">2</text>
-<path class="wire" d="M1174,972 l-6,-6 h-53.4 v12 h53.4 z"/>
-<text class="net" x="1165" y="975.5" text-anchor="end">PAD_CLK</text>
-<line class="lead" x1="1174" y1="998" x2="1200" y2="998"/>
-<text class="pin" x="1205" y="1001.5" text-anchor="start">OUT0</text>
-<text class="pinno" x="1196" y="996" text-anchor="end">3</text>
-<path class="wire" d="M1174,998 l-6,-6 h-65.80000000000001 v12 h65.80000000000001 z"/>
-<text class="net" x="1165" y="1001.5" text-anchor="end">PAD_LATCH</text>
-<line class="lead" x1="1174" y1="1024" x2="1200" y2="1024"/>
-<text class="pin" x="1205" y="1027.5" text-anchor="start">D0</text>
-<text class="pinno" x="1196" y="1022" text-anchor="end">4</text>
-<path class="wire" d="M1174,1024 l-6,-6 h-53.4 v12 h53.4 z"/>
-<text class="net" x="1165" y="1027.5" text-anchor="end">PAD1_D0</text>
-<line class="lead" x1="1174" y1="1050" x2="1200" y2="1050"/>
-<text class="pin" x="1205" y="1053.5" text-anchor="start">D3</text>
-<text class="pinno" x="1196" y="1048" text-anchor="end">5</text>
-<line class="lead" x1="1171" y1="1047" x2="1177" y2="1053"/><line class="lead" x1="1171" y1="1053" x2="1177" y2="1047"/>
-<line class="lead" x1="1174" y1="1076" x2="1200" y2="1076"/>
-<text class="pin" x="1205" y="1079.5" text-anchor="start">D4</text>
-<text class="pinno" x="1196" y="1074" text-anchor="end">6</text>
-<line class="lead" x1="1171" y1="1073" x2="1177" y2="1079"/><line class="lead" x1="1171" y1="1079" x2="1177" y2="1073"/>
-<line class="lead" x1="1174" y1="1102" x2="1200" y2="1102"/>
-<text class="pin" x="1205" y="1105.5" text-anchor="start">+5V</text>
-<text class="pinno" x="1196" y="1100" text-anchor="end">7</text>
-<line class="w3" x1="1174" y1="1102" x2="1174" y2="1093"/><line class="w3" x1="1169" y1="1093" x2="1179" y2="1093"/>
-<text class="rail3" x="1174" y="1091" text-anchor="middle">3V3</text>
-<rect class="conn" x="1560" y="890" width="130" height="232" rx="3"/>
-<text class="ref" x="1566" y="904" text-anchor="start">J4</text>
-<text class="part" x="1566" y="916" text-anchor="start">original pad, on the bridge</text>
-<line class="lead" x1="1534" y1="946" x2="1560" y2="946"/>
-<text class="pin" x="1565" y="949.5" text-anchor="start">GND</text>
-<text class="pinno" x="1556" y="944" text-anchor="end">1</text>
-<line class="wg" x1="1534" y1="946" x2="1534" y2="954"/><line class="wg" x1="1528" y1="954" x2="1540" y2="954"/><line class="wg" x1="1531" y1="957" x2="1537" y2="957"/>
-<line class="lead" x1="1534" y1="972" x2="1560" y2="972"/>
-<text class="pin" x="1565" y="975.5" text-anchor="start">CLK</text>
-<text class="pinno" x="1556" y="970" text-anchor="end">2</text>
-<path class="wire" d="M1534,972 l-6,-6 h-53.4 v12 h53.4 z"/>
-<text class="net" x="1525" y="975.5" text-anchor="end">PAD_CLK</text>
-<line class="lead" x1="1534" y1="998" x2="1560" y2="998"/>
-<text class="pin" x="1565" y="1001.5" text-anchor="start">OUT0</text>
-<text class="pinno" x="1556" y="996" text-anchor="end">3</text>
-<path class="wire" d="M1534,998 l-6,-6 h-65.80000000000001 v12 h65.80000000000001 z"/>
-<text class="net" x="1525" y="1001.5" text-anchor="end">PAD_LATCH</text>
-<line class="lead" x1="1534" y1="1024" x2="1560" y2="1024"/>
-<text class="pin" x="1565" y="1027.5" text-anchor="start">D0</text>
-<text class="pinno" x="1556" y="1022" text-anchor="end">4</text>
-<path class="wire" d="M1534,1024 l-6,-6 h-53.4 v12 h53.4 z"/>
-<text class="net" x="1525" y="1027.5" text-anchor="end">PAD2_D0</text>
-<line class="lead" x1="1534" y1="1050" x2="1560" y2="1050"/>
-<text class="pin" x="1565" y="1053.5" text-anchor="start">D3</text>
-<text class="pinno" x="1556" y="1048" text-anchor="end">5</text>
-<line class="lead" x1="1531" y1="1047" x2="1537" y2="1053"/><line class="lead" x1="1531" y1="1053" x2="1537" y2="1047"/>
-<line class="lead" x1="1534" y1="1076" x2="1560" y2="1076"/>
-<text class="pin" x="1565" y="1079.5" text-anchor="start">D4</text>
-<text class="pinno" x="1556" y="1074" text-anchor="end">6</text>
-<line class="lead" x1="1531" y1="1073" x2="1537" y2="1079"/><line class="lead" x1="1531" y1="1079" x2="1537" y2="1073"/>
-<line class="lead" x1="1534" y1="1102" x2="1560" y2="1102"/>
-<text class="pin" x="1565" y="1105.5" text-anchor="start">+5V</text>
-<text class="pinno" x="1556" y="1100" text-anchor="end">7</text>
-<line class="w3" x1="1534" y1="1102" x2="1534" y2="1093"/><line class="w3" x1="1529" y1="1093" x2="1539" y2="1093"/>
-<text class="rail3" x="1534" y="1091" text-anchor="middle">3V3</text>
-<text class="note" x="1200" y="1160" text-anchor="start">Both pads share the bridge's own latch and clock; each has its own D0. Polled together at 1 kHz.</text>
-<path class="wire" d="M1900,920 l-6,-6 h-34.8 v12 h34.8 z"/>
-<text class="net" x="1891" y="923.5" text-anchor="end">TRIG</text>
-<line class="lead" x1="1900" y1="920" x2="1918" y2="920"/><rect class="box" x="1918" y="913" width="44" height="14"/><line class="lead" x1="1962" y1="920" x2="1980" y2="920"/>
-<text class="pinno" x="1940" y="910" text-anchor="middle">R1</text>
-<text class="pin" x="1940" y="924" text-anchor="middle">100R</text>
-<path class="wire" d="M1980,920 l6,-6 h59.6 v12 h-59.6 z"/>
-<text class="net" x="1989" y="923.5" text-anchor="start">EXT_TRIG</text>
-<text class="note" x="1900" y="950" text-anchor="start">EXT TRIG; fires at a latch index,</text>
-<text class="note" x="1900" y="963" text-anchor="start">or at (field, line)</text>
-<text class="note" x="1200" y="1220" text-anchor="start">L line, v2:  L &lt;latch> &lt;byte> &lt;clocks> &lt;t_us> &lt;field> &lt;line></text>
-<text class="note" x="1200" y="1233" text-anchor="start">L2 line for port 2. F line per field: F &lt;field> &lt;t_us> &lt;lines>.</text>
-<text class="note" x="1200" y="1246" text-anchor="start">MUTATE ON swaps PCNT 0 and 1 pins at runtime (B0's red run).</text>
-<text class="note" x="1200" y="1259" text-anchor="start">Head and relays: unchanged from v1 (Pi GPIO17 reset, GPIO27 power).</text>
-<text class="note" x="60" y="600" text-anchor="start">C6 -> 595 level: the C6's 3.3 V SCK, MOSI, RCLK each pass through two gates of a second 74HCT04 (U9, +5V):</text>
-<text class="note" x="60" y="613" text-anchor="start">HCT accepts a 3.3 V high, and two inversions give a full 5 V non-inverted copy. No LS245, no pullups.</text>
-<text class="note" x="60" y="640" text-anchor="start">Why the 595s: sixteen bits shift in over SPI at any time; nothing changes at the 165s until one RCLK</text>
-<text class="note" x="60" y="653" text-anchor="start">rising edge moves both bytes to the outputs in one ~10 ns step. A tear during a load becomes impossible,</text>
-<text class="note" x="60" y="666" text-anchor="start">and the firmware still only pulses RCLK while both OUT0 lines read low. 3V3 outputs into HCT inputs</text>
-<text class="note" x="60" y="679" text-anchor="start">(Vih 2.0 V) is in spec. 3 GPIOs replace 8; port 2 costs none. DS on both 165s to GND: bit 9+ reads 1.</text>
-<line class="w5" x1="160" y1="760" x2="160" y2="751"/><line class="w5" x1="155" y1="751" x2="165" y2="751"/>
-<text class="rail5" x="160" y="749" text-anchor="middle">+5V</text>
-<line class="lead" x1="160" y1="760" x2="178" y2="760"/><rect class="box" x="178" y="753" width="44" height="14"/><line class="lead" x1="222" y1="760" x2="240" y2="760"/>
-<text class="pinno" x="200" y="750" text-anchor="middle">C1,C2</text>
-<text class="pin" x="200" y="764" text-anchor="middle">100nF</text>
-<line class="wg" x1="240" y1="760" x2="240" y2="768"/><line class="wg" x1="234" y1="768" x2="246" y2="768"/><line class="wg" x1="237" y1="771" x2="243" y2="771"/>
-<text class="note" x="300" y="764" text-anchor="start">U1, U2, U6 supply pins; C5 for U8</text>
-<line class="w3" x1="560" y1="760" x2="560" y2="751"/><line class="w3" x1="555" y1="751" x2="565" y2="751"/>
-<text class="rail3" x="560" y="749" text-anchor="middle">3V3</text>
-<line class="lead" x1="560" y1="760" x2="578" y2="760"/><rect class="box" x="578" y="753" width="44" height="14"/><line class="lead" x1="622" y1="760" x2="640" y2="760"/>
-<text class="pinno" x="600" y="750" text-anchor="middle">C3,C4</text>
-<text class="pin" x="600" y="764" text-anchor="middle">100nF</text>
-<line class="wg" x1="640" y1="760" x2="640" y2="768"/><line class="wg" x1="634" y1="768" x2="646" y2="768"/><line class="wg" x1="637" y1="771" x2="643" y2="771"/>
-<text class="note" x="700" y="764" text-anchor="start">U5, U7 (and U3) supply pins</text>
+<text class="pin" x="205" y="1157.5" text-anchor="start">A0 (PCINT)</text>
+<path class="wire" d="M174,1154 l-6,-6 h-41.0 v12 h41.0 z"/>
+<text class="net" x="165" y="1157.5" text-anchor="end">VSYNC</text>
+<line class="lead" x1="400" y1="946" x2="426" y2="946"/>
+<text class="pin" x="395" y="949.5" text-anchor="end">A1</text>
+<path class="wire" d="M426,946 l6,-6 h34.8 v12 h-34.8 z"/>
+<text class="net" x="435" y="949.5" text-anchor="start">TRIG</text>
+<line class="lead" x1="400" y1="972" x2="426" y2="972"/>
+<text class="pin" x="395" y="975.5" text-anchor="end">D6</text>
+<path class="wire" d="M426,972 l6,-6 h65.80000000000001 v12 h-65.80000000000001 z"/>
+<text class="net" x="435" y="975.5" text-anchor="start">PAD_LATCH</text>
+<line class="lead" x1="400" y1="998" x2="426" y2="998"/>
+<text class="pin" x="395" y="1001.5" text-anchor="end">D7</text>
+<path class="wire" d="M426,998 l6,-6 h53.4 v12 h-53.4 z"/>
+<text class="net" x="435" y="1001.5" text-anchor="start">PAD_CLK</text>
+<line class="lead" x1="400" y1="1024" x2="426" y2="1024"/>
+<text class="pin" x="395" y="1027.5" text-anchor="end">D8</text>
+<path class="wire" d="M426,1024 l6,-6 h53.4 v12 h-53.4 z"/>
+<text class="net" x="435" y="1027.5" text-anchor="start">PAD1_D0</text>
+<line class="lead" x1="400" y1="1050" x2="426" y2="1050"/>
+<text class="pin" x="395" y="1053.5" text-anchor="end">A2</text>
+<path class="wire" d="M426,1050 l6,-6 h53.4 v12 h-53.4 z"/>
+<text class="net" x="435" y="1053.5" text-anchor="start">PAD2_D0</text>
+<line class="lead" x1="400" y1="1076" x2="426" y2="1076"/>
+<text class="pin" x="395" y="1079.5" text-anchor="end">5V</text>
+<line class="w5" x1="426" y1="1076" x2="426" y2="1067"/><line class="w5" x1="421" y1="1067" x2="431" y2="1067"/>
+<text class="rail5" x="426" y="1065" text-anchor="middle">+5V</text>
+<line class="lead" x1="400" y1="1102" x2="426" y2="1102"/>
+<text class="pin" x="395" y="1105.5" text-anchor="end">GND</text>
+<line class="wg" x1="426" y1="1102" x2="426" y2="1110"/><line class="wg" x1="420" y1="1110" x2="432" y2="1110"/><line class="wg" x1="423" y1="1113" x2="429" y2="1113"/>
+<line class="lead" x1="400" y1="1128" x2="426" y2="1128"/>
+<text class="pin" x="395" y="1131.5" text-anchor="end">USB-B</text>
+<path class="wire" d="M426,1128 l6,-6 h47.2 v12 h-47.2 z"/>
+<text class="net" x="435" y="1131.5" text-anchor="start">PI_USB</text>
+<text class="note" x="560" y="900" text-anchor="start">Counters: LATCH1 on Timer1's external clock (hardware, the reference). CLK1 on INT0, CSYNC on INT1,</text>
+<text class="note" x="560" y="913" text-anchor="start">LATCH2, CLK2, VSYNC on pin-change ISRs. Every software count is cross-checked against the hardware</text>
+<text class="note" x="560" y="926" text-anchor="start">one by the 8-per-latch and polls-per-field gates; a count that fails under MUTATE (D2/D5 jumper swap,</text>
+<text class="note" x="560" y="939" text-anchor="start">D4 config pin) is a broken count. Trigger A1 rises at latch T or at (field, line), one loop late.</text>
+<text class="note" x="560" y="952" text-anchor="start">L &lt;latch> &lt;byte> &lt;clocks> &lt;t_us> &lt;field> &lt;line>; L2 for port 2; F &lt;field> &lt;t_us> &lt;lines>.</text>
+<text class="note" x="1400" y="900" text-anchor="start">Head and relays: the Pi, unchanged. GPIO17 -> PC817 or TLP281 -> reset pads.</text>
+<text class="note" x="1400" y="913" text-anchor="start">GPIO27 -> relay IN (active low), relay VCC from the Pi's 5 V pin (5 V coil modules).</text>
+<text class="note" x="1400" y="926" text-anchor="start">One NO contact in series with one lead of the AC adapter cable. Scope: CH3 video, EXT TRIG</text>
+<text class="note" x="1400" y="939" text-anchor="start">from A1 through 100R (divider if the input's rating needs it), SCPI over the LAN.</text>
+<text class="note" x="1400" y="952" text-anchor="start">Pads J2 and J4 as on v1b, at 5 V, sharing PAD_LATCH and PAD_CLK, own D0 each.</text>
 </svg>

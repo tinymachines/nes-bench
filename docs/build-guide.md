@@ -44,7 +44,7 @@ Nothing else needs it, and nothing else should carry it.
 
 On the desk, over the five sittings: a meter, two scope probes, the
 UNO and a USB cable, the console open with a game in it, two original
-pads, the breadboard, a 74HC04, a 74HC165, a 74HC595, three 100 nF
+pads, the breadboard, a 74HCT04, a 74HC165, a 74HC595, three 100 nF
 capacitors, a 100 ohm resistor, a BNC lead to the scope's rear EXT
 TRIG, the PC817 module, the relay module, and the Pi.
 
@@ -177,7 +177,7 @@ python3 tools/bringup.py --session 3
 
 - Console OFF. Build only the console-facing half on the breadboard:
 - The supply is the UNO's own 5 V pin, fed by its USB from the Pi, and NOT the console's pin 7. v1b is one 5 V domain (bench-v1b.svg says so on the sheet), and the console shares only ground: its pin 1 to the UNO's GND. That is also the only 5 V available, because the breakout does not bring pin 7 out.
-    - 74HC04 (U1): pin 14 to the UNO's 5V, pin 7 to GND, pin 1 from port pin 3 (OUT0).
+    - 74HCT04 (U1): pin 14 to the UNO's 5V, pin 7 to GND, pin 1 from port pin 3 (OUT0).
     - 74HC165 (U2): pin 16 to the UNO's 5V, pin 8 to GND, pin 15 (/CE) to GND, pin 10 (DS) to GND, pin 1 (/PL) from U1 pin 2, pin 2 (CP) from port pin 2 (CLK), pin 9 (QH) to port pin 4 (D0).
     - 100 nF across each chip's supply pins.
     - Wire links on the eight inputs to make a KNOWN byte. In pad order A, B, Select, Start, Up, Down, Left, Right those are pins 6, 5, 4, 3, 14, 13, 12, 11, and LOW is pressed.

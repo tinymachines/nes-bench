@@ -128,7 +128,7 @@ def render():
     L.append("")
     L.append("On the desk, over the five sittings: a meter, two scope probes, the")
     L.append("UNO and a USB cable, the console open with a game in it, two original")
-    L.append("pads, the breadboard, a 74HC04, a 74HC165, a 74HC595, three 100 nF")
+    L.append("pads, the breadboard, a 74HCT04, a 74HC165, a 74HC595, three 100 nF")
     L.append("capacitors, a 100 ohm resistor, a BNC lead to the scope's rear EXT")
     L.append("TRIG, the PC817 module, the relay module, and the Pi.")
     L.append("")

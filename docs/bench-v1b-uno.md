@@ -6,7 +6,7 @@ counters need it.
 
 ## Why
 
-The 74HC parts that arrived (HC165, HC595, HC04) need a 3.5 V high at
+The 74HC parts that arrived (HC165, HC595) need a 3.5 V high at
 5 V. The ESP32-C6 gives 3.3 V. The UNO's ATmega328P is a 5 V part, so
 with it in the middle every signal on the console side is 5 V and in
 spec, and three things fall out:
@@ -21,7 +21,7 @@ spec, and three things fall out:
 | ref | part | from |
 |---|---|---|
 | A1 | Arduino UNO R3 | the pile |
-| U1 | 74HC04 | the Minidodoca kit |
+| U1 | SN74HCT04N | the tube that arrived 2026-09-09. HCT: 2.0 V input threshold, safe on the 2A03's NMOS OUT0 |
 | U2 | SN74HC165N | the TI bag |
 | U3 | SN74HC595N | the box of 30 |
 | C1..C3 | 100 nF | |
@@ -115,6 +115,30 @@ tools need nothing beyond the serial speed.
   and pad side. Two microcontrollers, each in its own voltage domain,
   joined only by the Pi's USB.
 
+## v2b, the UNO version of v2, added 2026-09-09
+
+`bench-v2b.svg` is v1b plus a second 165/595 pair on the same SPI chain
+and an LM1881 whose 5 V outputs go straight into the UNO. It removes the
+last 74LVC245 from the UNO designs and it removes the second
+microcontroller: every count lands on the UNO, Timer1's hardware input
+on LATCH1 and interrupts for the rest. The README that came with the
+sheets says to build v1b, then v2b.
+
+Two things about it are open, and both are named here rather than drawn
+as settled:
+
+- **Its L line has six fields**, `L <latch> <byte> <clocks> <t_us>
+  <field> <line>`, plus `L2` for the second port and an `F` line per
+  field. This document already records that a fifth field breaks
+  `tools/b3.py`, `tools/compare-logs.py` and `head/headd.py`, all of
+  which require exactly four. v2b therefore cannot be built without a
+  protocol version and three tools updated together, and that is a
+  decision, not an oversight. The four field line is v1b's and stays.
+- **The CSYNC load is authored.** The sheet says 15.7 kHz on INT1 is
+  about 5 percent of a 16 MHz part. That is arithmetic, not a
+  measurement, and it is the number that decides whether one UNO can
+  carry all six counted lines. Measure it before trusting it.
+
 ## Amendments made when the firmware was written, 2026-09-08
 
 The sketch is `firmware/bridge-uno/bridge-uno.ino`, and it compiles:
@@ -134,6 +158,13 @@ the bullets above now say what was built rather than what was planned.
 - The relay modules on hand are 5 V coil parts with opto inputs, so the
   v1 sheet's 3.3 V rail was wrong for them too; both sheets now show
   the Pi's 5 V pin and an active-low input.
+
+One part changed after all of that, 2026-09-09: **U1 is an SN74HCT04N
+now, not an HC04.** HCT's input threshold is 2.0 V rather than HC's
+3.5 V, which is what makes it safe on the 2A03's NMOS OUT0 output, and
+the "LS04 until measured" hedge this document carried is gone with it.
+The same part does the C6 sheets' 3.3 V to 5 V job in two gates, so no
+LS245 and no pullups remain anywhere in the set.
 
 One correction that came from the instrument rather than the compiler:
 both sheets put the console's video on the scope's CH1. It is on CH3.
