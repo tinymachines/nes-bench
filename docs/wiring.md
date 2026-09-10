@@ -222,6 +222,17 @@ the scripted latch index; the pulse a millisecond long.
   series with ONE lead of the power adapter's cable to the console's
   DC jack (the NES-001's adapter is AC, and a contact in one lead
   switches either). Never both leads, never the mains side.
+- **Four jumpers, no breakout.** The header lends this bench exactly
+  four pins: GPIO17, GPIO27, 5V (the relay module's coil) and one GND.
+  Four Dupont leads off the header; a 40-pin breakout buys nothing
+  here and eats board room (decided 2026-09-10).
+- **No ground wire from the Pi to the console.** The Pi's ground
+  reaches the console through the UNO's USB cable and the bridge, and
+  that is the only path there should be. Its two switches touch the
+  console only through an LED (the PC817) and a contact (the relay),
+  which is why they were chosen: a third wire would discard that
+  isolation and close a second loop (Pi, USB, UNO, port, console,
+  wire, Pi). See Grounds.
 
 ## Grounds
 
