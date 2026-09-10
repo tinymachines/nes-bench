@@ -7,9 +7,11 @@
 `docs/package.json` says what is in it and what goes in the title block.
 `tools/sheetframe.py` draws the frame. Everything on a content sheet is
 derived: the parts list from `tools/parts.py`, the wiring list from
-`tools/netlist.py`, the build sequence from `tools/bringup.py`. The only
-authored text in the package is the intro paragraphs in the JSON and the
-schematics themselves.
+`tools/netlist.py`, the build sequence from `tools/bringup.py`, the pin
+map and the chip sheets from `tools/cheatsheet.py`. The only authored
+text in the package is the intro paragraphs in the JSON, the schematics
+themselves, and what each chip's pins do on the part, which is the
+datasheet's and lives in one place in that tool.
 
 The PDF is assembled by `rsvg-convert`, which takes several SVGs and
 writes them as pages of one document at exactly 0.75 pt per unit, so an
@@ -77,6 +79,8 @@ def sheet_cover(p, cfg, spec):
              paper.get(s.get("page", cfg.get("page", "ansi-b")), "?"),
              {"schematic": "schematic", "wiring": "derived from the schematic",
               "parts": "derived from the schematic", "steps": "derived from the bring-up tool",
+              "pinmap": "derived from the schematic, the lab log and the bring-up tool",
+              "chip": "pins from the schematic; purposes authored from the datasheet",
               "cover": "this sheet"}[s["kind"]]]
             for i, s in enumerate(sheets)]
     drawn = p.table((x, cy + 10, w * 0.86, h - (cy - y) - 24),
@@ -186,8 +190,60 @@ def sheet_steps(p, cfg, spec):
     p.footer("generated from tools/bringup.py, which is also the tool that runs these steps")
 
 
+def sheet_pinmap(p, cfg, spec):
+    """The two breakouts pin by pin and the head's jumpers: the rows
+    tools/cheatsheet.py writes as markdown, drawn as three tables. The
+    controller port runs the width of the sheet; the two short ones sit
+    side by side under it, which is what makes three fit on a letter."""
+    cs = load("cheatsheet", "cheatsheet.py")
+    p.header(cfg["project"], spec["title"])
+    x, y, w, h = p.body_box(top_pad=44)
+    tables = cs.pinmap(spec.get("sheet", "bench-v1b"))
+    gap = 24
+    boxes = [(x, w, 118)] + [(x, (w - gap) / 2, 56), (x + (w + gap) / 2, (w - gap) / 2, 56)]
+    cy_row = y
+    bottoms = []
+    for k, ((title, note, headers, rows), (bx, bw, chars)) in enumerate(zip(tables, boxes)):
+        cy = cy_row
+        p.text(bx, cy + 6, title, "tmf-h2")
+        cy += 14
+        for line in sf.wrap(note, chars):
+            cy += 15
+            p.text(bx, cy, line, "tmf-body")
+        cy += 10
+        widths = {5: [0.06, 0.10, 0.14, 0.14, 0.56], 3: [0.20, 0.40, 0.40],
+                  4: [0.14, 0.12, 0.37, 0.37]}[len(headers)]
+        drawn = p.table((bx, cy, bw, y + h - cy), headers, rows, widths=widths, mono=(0, 1), strict=True)
+        # Three short tables on one sheet: a row that does not fit is a
+        # layout mistake, not a reason for a second sheet.
+        assert drawn == len(rows), f"pinmap: {title!r} fits {drawn} of {len(rows)} rows"
+        bottoms.append(cy + 21 + 19 * len(rows))
+        if k == 0:
+            cy_row = bottoms[0] + 22
+    p.footer("generated from tools/cheatsheet.py: the schematic, the lab log and tools/bringup.py's lead table")
+
+
+def sheet_chip(p, cfg, spec):
+    """One chip, every pin of the package: the datasheet's purpose beside
+    what the schematic wires it to."""
+    cs = load("cheatsheet", "cheatsheet.py")
+    ref, part, what, headers, rows = cs.chip_sheet(spec["ref"], spec.get("sheet", "bench-v1b"))
+    p.header(cfg["project"], spec["title"])
+    x, y, w, h = p.body_box(top_pad=44)
+    p.text(x, y + 6, f"{ref}: {part}", "tmf-h2")
+    cy = y + 12
+    for line in sf.wrap(what, 118):
+        cy += 15
+        p.text(x, cy, line, "tmf-body")
+    cy += 12
+    drawn = p.table((x, cy, w, y + h - cy), headers, rows, widths=[0.05, 0.09, 0.44, 0.42], mono=(0, 1),
+                    strict=True)
+    assert drawn == len(rows), f"chip {ref}: fits {drawn} of {len(rows)} pins on a {p.size} sheet"
+    p.footer("pin purposes authored from the datasheet in tools/cheatsheet.py; the bench column is read out of the schematic")
+
+
 KINDS = {"cover": sheet_cover, "schematic": sheet_schematic, "wiring": sheet_wiring,
-         "parts": sheet_parts, "steps": sheet_steps}
+         "parts": sheet_parts, "steps": sheet_steps, "pinmap": sheet_pinmap, "chip": sheet_chip}
 
 
 def render(cfg, specs, out):

@@ -327,6 +327,23 @@ def S(sid, stage, title, do, check, photos=(), replaces=None, needs=()):
     return dict(id=sid, stage=stage, title=title, do=do, check=check, photos=list(photos), replaces=replaces, needs=list(needs))
 
 
+# The breakout leads of the cut controller cable, rung out 2026-09-09
+# with the cable OUT of the console (docs/procedures/2026-09-08-sitting-2.md).
+# Both halves of the cut carry the same five colours because they are the
+# same cable. Pins 6 and 7 are not carried. This is the one place these
+# colours are written: the step text below and the cheat sheet
+# (tools/cheatsheet.py) both read it.
+LEADS = [(1, "GND", "yellow"), (2, "CLK", "blue"), (3, "OUT0", "black"),
+         (4, "D0", "green"), (5, "+5V", "red")]
+LEADS_WORDS = ", ".join(f"{c} {n}" for _p, n, c in LEADS)
+
+# The power and reset breakout, the third connector on the breadboard:
+# five ways straight through, colour for colour with the power module's
+# own harness (same procedure, photograph 06-breakout-map-power-reset.jpg).
+# What each way DOES is step 6.2's question and is not written here.
+POWER_RESET_LEADS = [(1, "brown"), (2, "red"), (3, "orange"), (4, "yellow"), (5, "white")]
+POWER_RESET_WORDS = ", ".join(f"{p} {c}" for p, c in POWER_RESET_LEADS)
+
 STEPS = [
     S("0.1", "Instruments", "The scope answers, and says what it is",
       ["Power the scope and put it on the LAN.",
@@ -379,7 +396,7 @@ STEPS = [
     S("3.1", "The console side", "U1 and U2 on the board, links on H..A, the pattern on QH",
       ["Console OFF. Build only the console-facing half on the breadboard:",
        "The supply is the UNO's own 5 V pin, fed by its USB from the Pi, and NOT the console's pin 7. v1b is one 5 V domain (the schematic's first sheet says so), and the console shares only ground: its pin 1 to the UNO's GND. That is also the only 5 V available, because the breakout does not bring pin 7 out.",
-       "Leads, from step 1.1's rung-out map: yellow GND, blue CLK, black OUT0, green D0, red +5V. Use the marks on the leads, not the port pin numbers, and not the published pinout.",
+       f"Leads, from step 1.1's rung-out map: {LEADS_WORDS}. Use the marks on the leads, not the port pin numbers, and not the published pinout.",
        "  74HCT04 (U1): pin 14 to the UNO's 5V, pin 7 to GND, pin 1 from the BLACK lead (OUT0).",
        "  74HC165 (U2): pin 16 to the UNO's 5V, pin 8 to GND, pin 15 (/CE) to GND, pin 10 (DS) to GND, pin 1 (/PL) from U1 pin 2, pin 2 (CP) from the BLUE lead (CLK), pin 9 (QH) to the GREEN lead (D0).",
        "The YELLOW lead is the ground the UNO shares with the console. Nothing goes on the RED lead: it is the console's own 5 V and this bridge runs from the UNO's.",
@@ -398,7 +415,7 @@ STEPS = [
       photos=["04-uno-and-595.jpg"]),
     S("4.2", "The UNO side", "The original pad polled by the bridge at 5 V",
       ["This is the PAD HALF of the cut controller cable, the one that does NOT beep to the console's board header, with the pad on the end of it.",
-       "Its leads carry the same colours as the plug half, because it is the same cable: yellow GND, blue CLK, black OUT0, green D0, red +5V.",
+       f"Its leads carry the same colours as the plug half, because it is the same cable: {LEADS_WORDS}.",
        "  yellow to GND, RED to the UNO's 5V (the pad's supply comes from the bridge here, and red IS the supply lead on this cable), black (OUT0) to UNO D6, blue (CLK) to UNO D7, green (D0) to UNO D8.",
        "Console still off. The bridge drives this half; the console drives the other.",
        "You will be asked to hold buttons; the bridge's own poll should follow them."],
@@ -427,7 +444,7 @@ STEPS = [
       "trigger_reaches_scope",
       photos=["06-trigger-cable.jpg"]),
     S("6.2", "The head's hands", "The reset optocoupler pulses the console",
-      ["Console on. Find the reset button's two pads; meter which is ground and which is pulled up.",
+      [f"Console on. Find the reset button's two pads; meter which is ground and which is pulled up. The power and reset breakout is five ways straight through, colour for colour ({POWER_RESET_WORDS}); which way is which pad is what this step finds out.",
        "PC817 module: OUT to the pulled-up pad, its GND to the ground pad, VCC unconnected, and the Pi's GPIO17 to INPUT + with INPUT - to the Pi's GND."],
       "reset_pulse",
       photos=["06-reset-pads.jpg", "06-breakout-map-power-reset.jpg"]),

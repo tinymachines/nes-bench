@@ -798,7 +798,6 @@
 <path class="w" stroke="#7a3fbf" opacity="0.85" d="M1110 484 Q1261 479 1360 364"/>
 <circle cx="1248" cy="452" r="9" fill="#ffffff" stroke="#7a3fbf" stroke-width="1.6"/>
 <text class="wn" x="1248.2" y="455.5" text-anchor="middle">21</text>
-<path class="w" stroke="#d02b2b" opacity="0.9" d="M108 382 L108 622"/>
 <path class="w" stroke="#d02b2b" opacity="0.9" d="M278 328 L278 196"/>
 <path class="w" stroke="#d02b2b" opacity="0.9" d="M538 328 L538 196"/>
 <path class="w" stroke="#d02b2b" opacity="0.9" d="M1660 334 L1660 622"/>
@@ -814,7 +813,7 @@
 <path class="w" stroke="#1b64c8" opacity="0.9" d="M1360 424 L1360 596"/>
 <path class="w" stroke="#1b64c8" opacity="0.9" d="M928 328 L928 222"/>
 <path class="w" stroke="#1b64c8" opacity="0.9" d="M1032 484 L1032 596"/>
-<text class="h1" x="60.0" y="732.0" text-anchor="start">21 numbered jumpers, and 16 short wires to the rails</text>
+<text class="h1" x="60.0" y="732.0" text-anchor="start">21 numbered jumpers, and 15 short wires to the rails</text>
 <text class="h2" x="60.0" y="754.0" text-anchor="start">Every one of these is read out of the schematic. Red stubs go to the nearest + rail, blue stubs to the nearest - rail; they are not numbered because they are all the same instruction.</text>
 <circle cx="69" cy="780" r="9" fill="#ffffff" stroke="#7a3fbf" stroke-width="1.6"/>
 <text class="wn" x="69.0" y="784.0" text-anchor="middle">1</text>

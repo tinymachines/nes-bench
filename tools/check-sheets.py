@@ -87,6 +87,29 @@ def check_v1b():
         bad += 1
     if not bad:
         print(f"check-sheets: {len(doc)} UNO pins on the v1b sheet agree with docs/bench-v1b-uno.md")
+    # v1b runs from the UNO's 5 V and the console shares only ground:
+    # that is what bench-v1b-uno.md says and what every build step wires
+    # (the RED lead stays off the board). Until 2026-09-10 the sheet drew
+    # the console's supply pin on the bridge's +5V net anyway, which the
+    # wiring list then told a builder to join: two regulators in
+    # parallel, one of them behind the Pi's USB fuse. The cheat sheet's
+    # derived column is what showed it.
+    nl = __import__("loadmod").load(ROOT / "tools" / "netlist.py", "netlist")
+    sheets, _off = nl.collect()
+    for name, ports in (("bench-v1b", 1), ("bench-v2b", 2)):
+        supply = [n for n in sheets[name]
+                  if n["part"] == "console controller port" and n["pinname"] == "+5V"]
+        if len(supply) != ports:
+            print(f"  the {name} sheet's console ports have {len(supply)} supply pins; expected {ports}")
+            bad += 1
+            continue
+        joined = [n["ref"] for n in supply if n["net"] == "+5V"]
+        if joined:
+            print(f"  the {name} sheet joins the console's +5V pin ({', '.join(joined)}) to the bridge's "
+                  f"+5V net: the UNO bridges run from the UNO's 5 V only")
+            bad += 1
+        else:
+            print(f"check-sheets: {name} leaves the console's supply ({ports} port(s)) off the bridge's +5V net")
     return bad
 
 

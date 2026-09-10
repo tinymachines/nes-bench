@@ -322,9 +322,15 @@ class Page:
                  f'viewBox="0 {top:g} {sw:g} {sh:g}" preserveAspectRatio="xMidYMid meet">{inner}</svg>')
         return scale
 
-    def table(self, box, headers, rows, widths=None, mono=()):
+    def table(self, box, headers, rows, widths=None, mono=(), strict=False):
         """A table that stops at the bottom of the box and says how many
-        rows it could not fit, rather than drawing over the title block."""
+        rows it could not fit, rather than drawing over the title block.
+
+        `strict` refuses a cell whose text would run into the next
+        column, by an estimate of its width (DejaVu at 12 px: about 7.2
+        px per mono character, 6.6 per sans). SVG text does not clip, so
+        an overlong cell prints on top of its neighbour and reads as
+        neither; the first pin-map sheet did exactly that."""
         x, y, w, h = box
         n = len(headers)
         widths = widths or [1.0 / n] * n
@@ -332,6 +338,14 @@ class Page:
         for fr in widths:
             xs.append(acc)
             acc += w * fr
+        if strict:
+            for r in rows:
+                for i, cell in enumerate(r[:n]):
+                    est = len(cell) * (7.2 if i in mono else 6.6) + 12
+                    if est > w * widths[i]:
+                        raise AssertionError(
+                            f"table cell {cell!r} needs about {est:.0f} px and column "
+                            f"{headers[i]!r} is {w * widths[i]:.0f}: shorten it or widen the column")
         lh = 19
         self.add(f'<rect class="tmf-band" x="{x}" y="{y}" width="{w}" height="{lh+2}"/>')
         for i, hd in enumerate(headers):

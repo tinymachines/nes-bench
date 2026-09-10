@@ -422,6 +422,50 @@ Two of them refused the board and so exited 1, the third only wrote a
 note and so exited 0, and nothing scripting the three could tell a proof
 from a pass. A mutation run is not asking whether the board is good.
 
+## M10: the cheat sheet, and what deriving it found. DONE 2026-09-10
+
+Four sheets added to the v1b package, and `docs/cheat-sheet.md` as the
+same rows in markdown for a phone at the bench: the controller port as
+pin, signal, NES harness colour, breakout lead and where the lead goes on
+the bridge; the power and reset breakout; the head's four jumpers with
+their header positions; and one sheet per chip (U1, U2, U3) listing every
+pin of the package with the datasheet's purpose beside what the
+schematic wires it to. `tools/cheatsheet.py` joins them: pins and nets
+from the netlist, harness colours from the lab log's step 1.1, breakout
+leads from a table in `tools/bringup.py` that the build steps now print
+from too (they used to carry the five colours as prose, three times).
+The pin purposes are the one authored thing, kept in that file, and the
+join refuses a pin the schematic names differently from the datasheet
+table; `MUTATE=1` swaps two names and must be caught.
+
+**The derived column caught a wiring error the wiring list had been
+printing since v1b was drawn.** The console port symbol put the
+console's 5 V (pin 5) on the bridge's `+5V` net on every sheet, which is
+right for the C6 sheets, whose register runs from it, and wrong for the
+UNO sheets, which run from the UNO's own 5 V and share only ground with
+the console (`bench-v1b-uno.md`, build step 3.1: the RED lead stays off
+the board). The wiring list, derived from the sheet, said to join them:
+the console's regulator in parallel with the Pi's USB 5 V through the
+UNO. `console_port` now takes the supply net, the UNO sheets pass a
+no-connect, and `check-sheets.py` refuses a UNO sheet whose console
+supply pin lands on `+5V`; it went red on the old sheet before the fix.
+
+That changed v2b's netlist (J1-5 and J3-5 are no longer on +5V), so the
+recorded routing was stale: applied to the new netlist it left five
+clearance violations, +5V tracks running into two pads that are now
+nothing's, and `make-pcb.py` refused it, which is the recording doing
+its job. Re-routed with the same freerouting 2.1.0: **493 track
+segments, 6 vias, 0 unconnected, 0 clearance violations**, the MUTATE
+proof still red, silkscreen still clean. M8's 506 and 7 were the first
+routing's figures. The board has still never been made.
+
+Two table things learned drawing the sheets: SVG text does not clip, so
+an overlong cell prints on top of its neighbour and reads as neither
+(the first pin-map sheet did it), and `sheetframe.table` now takes
+`strict=True` and refuses a cell whose estimated width exceeds its
+column; and three short tables fit a letter sheet only with the two
+short ones side by side.
+
 ## The order, and why
 
 M2 before everything. Every later step reads the netlist, so the netlist

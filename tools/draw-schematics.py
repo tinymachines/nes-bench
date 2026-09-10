@@ -366,7 +366,7 @@ class Sheet:
 
 
 # --------------------------------------------------------------- shared parts
-def console_port(sh, x, y, ref, nets):
+def console_port(sh, x, y, ref, nets, supply="+5V"):
     """The NES-001 controller port, numbered as the pin numbers moulded
     into THIS console's housing.
 
@@ -379,11 +379,20 @@ def console_port(sh, x, y, ref, nets):
     The published table is a published table; this is the board.
 
     What sits on pins 6 and 7 on the console side is unknown, because
-    nothing reaches them through the cable to measure with."""
+    nothing reaches them through the cable to measure with.
+
+    `supply` is the net the console's 5 V lands on. The C6 sheets run
+    their register from it. v1b passes "NC": that bridge runs from the
+    UNO's own 5 V and shares only ground with the console, so the RED
+    lead stays off the board (bench-v1b-uno.md, build step 3.1). The
+    sheet used to draw it on +5V regardless, which put two regulators
+    in parallel on the wiring list; check-sheets.py now refuses that."""
+    used = supply != "NC"
     return sh.chip(x, y, 130, ref, "console controller port", [], [
         (1, "GND", "GND"), (2, "CLK", nets["clk"]), (3, "OUT0", nets["out0"]),
-        (4, "D0", nets["d0"]), (5, "+5V", "+5V"), (6, "n/c", "NC"), (7, "n/c", "NC")], conn=True,
-        extra="MEASURED 2026-09-09: supply on 5, 6 and 7 not carried")
+        (4, "D0", nets["d0"]), (5, "+5V", supply), (6, "n/c", "NC"), (7, "n/c", "NC")], conn=True,
+        extra="MEASURED 2026-09-09: supply on 5, 6 and 7 not carried"
+              + ("" if used else "; pin 5 not used here"))
 
 
 def pad_socket(sh, x, y, ref, latch, clk, d0, vcc="3V3"):
@@ -486,7 +495,7 @@ Q_NETS = ["Q_A", "Q_B", "Q_SEL", "Q_START", "Q_UP", "Q_DOWN", "Q_LEFT", "Q_RIGHT
 def _v1b_body_1(sh):
     band = "THE CONSOLE PORT, THE INVERTER AND THE REGISTER, ALL AT +5V"
     console_port(sh, *sh.slot(0, 0, label=band), "J1",
-                 {"clk": "CON_CLK", "out0": "CON_OUT0", "d0": "CON_D0"})
+                 {"clk": "CON_CLK", "out0": "CON_OUT0", "d0": "CON_D0"}, supply="NC")
     x, y = sh.slot(0, 1)
     sh.chip(x, y, 130, "U1", "74HCT04  at +5V",
             [(1, "1A", "CON_OUT0"), (14, "VCC", "+5V"), (7, "GND", "GND")],
@@ -636,7 +645,7 @@ Q2_NETS = ["Q2A", "Q2B", "Q2SEL", "Q2START", "Q2UP", "Q2DOWN", "Q2LEFT", "Q2RIGH
 def _v2b_body_1(sh):
     band = "PORT 1: THE CONSOLE PORT, THE INVERTER AND ITS REGISTER, ALL AT +5V"
     console_port(sh, *sh.slot(0, 0, label=band), "J1",
-                 {"clk": "CON1_CLK", "out0": "CON1_OUT0", "d0": "CON1_D0"})
+                 {"clk": "CON1_CLK", "out0": "CON1_OUT0", "d0": "CON1_D0"}, supply="NC")
     x, y = sh.slot(0, 1)
     sh.chip(x, y, 130, "U1", "74HCT04  at +5V",
             [(1, "1A", "CON1_OUT0"), (3, "2A", "CON2_OUT0"), (14, "VCC", "+5V"), (7, "GND", "GND")],
@@ -657,7 +666,7 @@ def _v2b_body_1(sh):
 def _v2b_body_2(sh):
     band = "PORT 2: THE SECOND CONSOLE PORT AND ITS REGISTER, ALL AT +5V"
     console_port(sh, *sh.slot(0, 0, label=band), "J3",
-                 {"clk": "CON2_CLK", "out0": "CON2_OUT0", "d0": "CON2_D0"})
+                 {"clk": "CON2_CLK", "out0": "CON2_OUT0", "d0": "CON2_D0"}, supply="NC")
     hct165(sh, *sh.slot(0, 1), "U6", "/PL2", "CON2_CLK", "CON2_D0",
            part="74HC165  at +5V", inputs=Q2_NETS)
     band2 = "DECOUPLING, AND WHY THE REGISTERS ARE WRITTEN THE WAY THEY ARE"

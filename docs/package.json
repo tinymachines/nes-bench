@@ -7,9 +7,9 @@
   "page": "ansi-a",
   "title": "NES controller-port bridge, v1b",
   "intro": [
-    "The bench drives an unmodified NES-001 through its controller port and records what the console does about it. This package is the v1b build: an Arduino UNO between a Raspberry Pi and the console, everything on one 5 V rail.",
-    "Nothing here is placed or typed by hand. The schematic's arrangement is authored and its coordinates come from the parts' own measured sizes; the parts list and the wiring list are read back out of that same file, so a part or a connection cannot be on a sheet and missing from a list. A sheet that would print its smallest text below 5 pt is refused rather than shrunk, which is why two sheets here are ANSI B and the v2b bridge, one drawing of eleven parts, is not in this package at all: it gets its own, split the way this one is, before it is built.",
-    "Widths and levels marked AUTHORED have not been measured. Everything marked MEASURED carries the date it was taken and is in docs/lab-notebook.md with the record it came from."
+    "The bench drives an unmodified NES-001 through its controller port and records what the console does about it. This package is the v1b build: an Arduino UNO between a Raspberry Pi and the console, everything on one 5 V rail, the UNO's; the console shares only ground.",
+    "Nothing here is placed or typed by hand. The schematic's arrangement is authored and its coordinates come from the parts' own sizes; the parts list, the wiring list, the pin map and the chip sheets are read back out of that file, the lab log and the bring-up tool. A sheet whose smallest text would print below 5 pt is refused rather than shrunk, which is why two sheets are ANSI B.",
+    "AUTHORED means not yet measured. MEASURED carries its date and its record in docs/lab-notebook.md."
   ],
   "sheets": [
     {
@@ -33,6 +33,11 @@
       "page": "ansi-b"
     },
     {
+      "kind": "pinmap",
+      "sheet": "bench-v1b",
+      "title": "Pin, NES harness, breakout: the two breakouts and the head's jumpers"
+    },
+    {
       "kind": "wiring",
       "sheet": "bench-v1b",
       "title": "Wiring list, v1b"
@@ -43,6 +48,24 @@
       "only": [
         "bench-v1b"
       ]
+    },
+    {
+      "kind": "chip",
+      "ref": "U1",
+      "sheet": "bench-v1b",
+      "title": "Chip sheet: U1, 74HCT04 hex inverter"
+    },
+    {
+      "kind": "chip",
+      "ref": "U2",
+      "sheet": "bench-v1b",
+      "title": "Chip sheet: U2, 74HC165 shift register, the pad"
+    },
+    {
+      "kind": "chip",
+      "ref": "U3",
+      "sheet": "bench-v1b",
+      "title": "Chip sheet: U3, 74HC595 output register"
     },
     {
       "kind": "steps",

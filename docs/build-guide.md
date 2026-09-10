@@ -277,7 +277,7 @@ Photographs:
 
 ### 6.2  The reset optocoupler pulses the console
 
-- Console on. Find the reset button's two pads; meter which is ground and which is pulled up.
+- Console on. Find the reset button's two pads; meter which is ground and which is pulled up. The power and reset breakout is five ways straight through, colour for colour (1 brown, 2 red, 3 orange, 4 yellow, 5 white); which way is which pad is what this step finds out.
 - PC817 module: OUT to the pulled-up pad, its GND to the ground pad, VCC unconnected, and the Pi's GPIO17 to INPUT + with INPUT - to the Pi's GND.
 
 Then it records which reset pad is ground and checks the pulse resets the console.

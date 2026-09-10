@@ -16,6 +16,13 @@ and it is what sitting 3 onward is about. This board is the second
 build, and ordering it now is a lead-time decision rather than a
 readiness one: it arrives while v1b is still being brought up.
 
+**Re-routed 2026-09-10 evening, before any order.** The cheat sheet's
+derived wiring showed the console ports' 5 V pins on the board's +5V
+net, which would have paralleled the console's regulator with the UNO's
+USB supply. Both pins are no-connects now, the routing was redone and
+recorded, and the checks below pass on the new board. Make the set fresh
+as the steps say; a set made before this note is the wrong board.
+
 **Two things about v2b are open and neither is fixed by a board.** Its L
 line has six fields where three tools require exactly four, and its
 CSYNC interrupt load is arithmetic rather than a measurement. Both are
