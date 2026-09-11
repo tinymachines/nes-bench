@@ -466,6 +466,33 @@ an overlong cell prints on top of its neighbour and reads as neither
 column; and three short tables fit a letter sheet only with the two
 short ones side by side.
 
+## M11: the wiring diagram. DONE 2026-09-10
+
+The breadboard sheet's twenty-one curved jumpers were hard to follow at
+the bench, so the same wiring is drawn a second way and that drawing is
+now sheet 4 of the v1b package, with the breadboard sheet after it for
+the holes. `tools/wiring-diagram.py`: each chip as its package from
+above (notch left, pin 1 bottom left, the pin names running up inside
+the body along their pins), the parts in the breadboard's left-to-right
+order, and a channel router with one track per net: a net on top edges
+runs in the top channel, on bottom edges in the bottom channel, and a
+net on both gets a track in each and one vertical through a gap between
+parts, its own column in that gap. Shortest span nearest the row. Rails
+along the top and bottom, supply pins straight to them. A dot is a
+junction and a crossing is nothing, which is the whole reason for right
+angles.
+
+Two things it asserts, both of which fired while it was written: every
+pin the schematic wires is drawn, and every pin drawn is on the
+schematic. The second found that v1b's inverter had five inputs on the
+package and not on the sheet, where a note said to ground them; they
+are pins on the sheet now, wired to GND, with the five spare outputs as
+declared no-connects, so the wiring list tells the builder to tie them.
+
+The package's 5 pt floor refused the first cut (9.5 px type at 62%);
+the row was tightened and the type raised rather than the page changed.
+The cover's intro lost a line for the fourteenth index row.
+
 ## The order, and why
 
 M2 before everything. Every later step reads the netlist, so the netlist

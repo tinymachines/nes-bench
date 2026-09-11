@@ -1,0 +1,435 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2188 876" width="2188" height="876" role="img" aria-label="Bridge v1b wiring diagram">
+<style>
+ text{font-family:ui-sans-serif,'DejaVu Sans',sans-serif;fill:#222}
+ .title{font-size:24px;font-weight:700}
+ .sub{font-size:13px;fill:#555}
+ .ref{font-size:14px;font-weight:700}
+ .note{font-size:12px;fill:#555}
+ .pin{font-family:ui-monospace,'DejaVu Sans Mono',monospace;font-size:11.5px}
+ .pinno{font-family:ui-monospace,'DejaVu Sans Mono',monospace;font-size:11.5px;fill:#666}
+ .net{font-family:ui-monospace,'DejaVu Sans Mono',monospace;font-size:12px;font-weight:700;paint-order:stroke;stroke:#fff;stroke-width:3px;stroke-linejoin:round}
+ .rail{font-family:ui-monospace,'DejaVu Sans Mono',monospace;font-size:11px;font-weight:700}
+ .lead{font-size:11.5px;font-style:italic;fill:#555}
+ .body{fill:#f4f2ea;stroke:#222;stroke-width:1.6}
+ .hdr{fill:#eef2f7;stroke:#222;stroke-width:1.4}
+ .cap{fill:#fff;stroke:#222;stroke-width:1.2}
+ .stub{stroke:#222;stroke-width:1.6}
+ .wire{fill:none;stroke-width:2.2;stroke-linejoin:miter}
+ .railline{fill:none;stroke-width:3}
+ .notch{fill:#fff;stroke:#222;stroke-width:1.2}
+</style>
+<rect x="0" y="0" width="2188" height="876" fill="#ffffff"/>
+<g class="sheet-heading" data-height="60">
+<text class="title" x="24.0" y="30.0" text-anchor="start">Bridge v1b: every wire, at right angles, on the packages as they sit</text>
+<text class="sub" x="24.0" y="46.0" text-anchor="start">Notch left, pin 1 bottom left, numbered as the package is. One track and one colour per net, named at its left end; a dot is a junction, a crossing is nothing. Every wire is read out of the schematic.</text>
+</g>
+<line class="railline" x1="40.0" y1="122.0" x2="2138.0" y2="122.0" stroke="#d02b2b"/>
+<text class="rail" x="2144.0" y="126.0" text-anchor="start">+5V</text>
+<line class="railline" x1="40.0" y1="806.0" x2="2138.0" y2="806.0" stroke="#d02b2b"/>
+<text class="rail" x="2144.0" y="810.0" text-anchor="start">+5V</text>
+<line class="railline" x1="40.0" y1="122.0" x2="40.0" y2="806.0" stroke="#d02b2b"/>
+<line class="railline" x1="54.0" y1="144.0" x2="2138.0" y2="144.0" stroke="#1b64c8"/>
+<text class="rail" x="2144.0" y="148.0" text-anchor="start">GND</text>
+<line class="railline" x1="54.0" y1="784.0" x2="2138.0" y2="784.0" stroke="#1b64c8"/>
+<text class="rail" x="2144.0" y="788.0" text-anchor="start">GND</text>
+<line class="railline" x1="54.0" y1="144.0" x2="54.0" y2="784.0" stroke="#1b64c8"/>
+<text class="note" x="36.0" y="114.0" text-anchor="start">rails joined end to end, as on the board</text>
+<rect class="hdr" x="70" y="409" width="164" height="170" rx="4"/>
+<text class="ref" x="152.0" y="492.0" text-anchor="middle">J1 console cable</text>
+<text class="note" x="152.0" y="507.0" text-anchor="middle">the plug half, into port 1</text>
+<line class="stub" x1="92.0" y1="409.0" x2="92.0" y2="391.0"/>
+<text class="pin" x="95.5" y="421.0" text-anchor="end" transform="rotate(-90 95.5 421.0)">GND</text>
+<text class="lead" x="107.0" y="421.0" text-anchor="end" transform="rotate(-90 107.0 421.0)">1 yellow</text>
+<line class="stub" x1="122.0" y1="409.0" x2="122.0" y2="391.0"/>
+<text class="pin" x="125.5" y="421.0" text-anchor="end" transform="rotate(-90 125.5 421.0)">CLK</text>
+<text class="lead" x="137.0" y="421.0" text-anchor="end" transform="rotate(-90 137.0 421.0)">2 blue</text>
+<line class="stub" x1="152.0" y1="409.0" x2="152.0" y2="391.0"/>
+<text class="pin" x="155.5" y="421.0" text-anchor="end" transform="rotate(-90 155.5 421.0)">OUT0</text>
+<text class="lead" x="167.0" y="421.0" text-anchor="end" transform="rotate(-90 167.0 421.0)">3 black</text>
+<line class="stub" x1="182.0" y1="409.0" x2="182.0" y2="391.0"/>
+<text class="pin" x="185.5" y="421.0" text-anchor="end" transform="rotate(-90 185.5 421.0)">D0</text>
+<text class="lead" x="197.0" y="421.0" text-anchor="end" transform="rotate(-90 197.0 421.0)">4 green</text>
+<line class="stub" x1="212.0" y1="409.0" x2="212.0" y2="391.0"/>
+<text class="pin" x="215.5" y="421.0" text-anchor="end" transform="rotate(-90 215.5 421.0)">+5V</text>
+<text class="lead" x="227.0" y="421.0" text-anchor="end" transform="rotate(-90 227.0 421.0)">5 red</text>
+<line class="stub" x1="207.0" y1="378.0" x2="217.0" y2="388.0"/>
+<line class="stub" x1="207.0" y1="388.0" x2="217.0" y2="378.0"/>
+<rect class="body" x="366" y="409" width="184" height="170" rx="4"/>
+<circle class="notch" cx="366" cy="494.0" r="9"/>
+<rect x="356" y="484.0" width="10" height="20" fill="#fff"/>
+<text class="ref" x="458.0" y="492.0" text-anchor="middle">U1 74HCT04</text>
+<text class="note" x="458.0" y="507.0" text-anchor="middle">inverter</text>
+<line class="stub" x1="386.0" y1="579.0" x2="386.0" y2="597.0"/>
+<text class="pinno" x="390.0" y="593.0" text-anchor="start">1</text>
+<text class="pin" x="389.5" y="567.0" text-anchor="start" transform="rotate(-90 389.5 567.0)">1A</text>
+<line class="stub" x1="386.0" y1="409.0" x2="386.0" y2="391.0"/>
+<text class="pinno" x="390.0" y="403.0" text-anchor="start">14</text>
+<text class="pin" x="389.5" y="421.0" text-anchor="end" transform="rotate(-90 389.5 421.0)">VCC</text>
+<line class="stub" x1="410.0" y1="579.0" x2="410.0" y2="597.0"/>
+<text class="pinno" x="414.0" y="593.0" text-anchor="start">2</text>
+<text class="pin" x="413.5" y="567.0" text-anchor="start" transform="rotate(-90 413.5 567.0)">1Y</text>
+<line class="stub" x1="410.0" y1="409.0" x2="410.0" y2="391.0"/>
+<text class="pinno" x="414.0" y="403.0" text-anchor="start">13</text>
+<text class="pin" x="413.5" y="421.0" text-anchor="end" transform="rotate(-90 413.5 421.0)">6A</text>
+<line class="stub" x1="434.0" y1="579.0" x2="434.0" y2="597.0"/>
+<text class="pinno" x="438.0" y="593.0" text-anchor="start">3</text>
+<text class="pin" x="437.5" y="567.0" text-anchor="start" transform="rotate(-90 437.5 567.0)">2A</text>
+<line class="stub" x1="434.0" y1="409.0" x2="434.0" y2="391.0"/>
+<text class="pinno" x="438.0" y="403.0" text-anchor="start">12</text>
+<text class="pin" x="437.5" y="421.0" text-anchor="end" transform="rotate(-90 437.5 421.0)">6Y</text>
+<line class="stub" x1="458.0" y1="579.0" x2="458.0" y2="597.0"/>
+<text class="pinno" x="462.0" y="593.0" text-anchor="start">4</text>
+<text class="pin" x="461.5" y="567.0" text-anchor="start" transform="rotate(-90 461.5 567.0)">2Y</text>
+<line class="stub" x1="458.0" y1="409.0" x2="458.0" y2="391.0"/>
+<text class="pinno" x="462.0" y="403.0" text-anchor="start">11</text>
+<text class="pin" x="461.5" y="421.0" text-anchor="end" transform="rotate(-90 461.5 421.0)">5A</text>
+<line class="stub" x1="482.0" y1="579.0" x2="482.0" y2="597.0"/>
+<text class="pinno" x="486.0" y="593.0" text-anchor="start">5</text>
+<text class="pin" x="485.5" y="567.0" text-anchor="start" transform="rotate(-90 485.5 567.0)">3A</text>
+<line class="stub" x1="482.0" y1="409.0" x2="482.0" y2="391.0"/>
+<text class="pinno" x="486.0" y="403.0" text-anchor="start">10</text>
+<text class="pin" x="485.5" y="421.0" text-anchor="end" transform="rotate(-90 485.5 421.0)">5Y</text>
+<line class="stub" x1="506.0" y1="579.0" x2="506.0" y2="597.0"/>
+<text class="pinno" x="510.0" y="593.0" text-anchor="start">6</text>
+<text class="pin" x="509.5" y="567.0" text-anchor="start" transform="rotate(-90 509.5 567.0)">3Y</text>
+<line class="stub" x1="506.0" y1="409.0" x2="506.0" y2="391.0"/>
+<text class="pinno" x="510.0" y="403.0" text-anchor="start">9</text>
+<text class="pin" x="509.5" y="421.0" text-anchor="end" transform="rotate(-90 509.5 421.0)">4A</text>
+<line class="stub" x1="530.0" y1="579.0" x2="530.0" y2="597.0"/>
+<text class="pinno" x="534.0" y="593.0" text-anchor="start">7</text>
+<text class="pin" x="533.5" y="567.0" text-anchor="start" transform="rotate(-90 533.5 567.0)">GND</text>
+<line class="stub" x1="530.0" y1="409.0" x2="530.0" y2="391.0"/>
+<text class="pinno" x="534.0" y="403.0" text-anchor="start">8</text>
+<text class="pin" x="533.5" y="421.0" text-anchor="end" transform="rotate(-90 533.5 421.0)">4Y</text>
+<line class="stub" x1="453.0" y1="600.0" x2="463.0" y2="610.0"/>
+<line class="stub" x1="453.0" y1="610.0" x2="463.0" y2="600.0"/>
+<line class="stub" x1="501.0" y1="600.0" x2="511.0" y2="610.0"/>
+<line class="stub" x1="501.0" y1="610.0" x2="511.0" y2="600.0"/>
+<line class="stub" x1="525.0" y1="378.0" x2="535.0" y2="388.0"/>
+<line class="stub" x1="525.0" y1="388.0" x2="535.0" y2="378.0"/>
+<line class="stub" x1="477.0" y1="378.0" x2="487.0" y2="388.0"/>
+<line class="stub" x1="477.0" y1="388.0" x2="487.0" y2="378.0"/>
+<line class="stub" x1="429.0" y1="378.0" x2="439.0" y2="388.0"/>
+<line class="stub" x1="429.0" y1="388.0" x2="439.0" y2="378.0"/>
+<rect class="body" x="682" y="409" width="208" height="170" rx="4"/>
+<circle class="notch" cx="682" cy="494.0" r="9"/>
+<rect x="672" y="484.0" width="10" height="20" fill="#fff"/>
+<text class="ref" x="786.0" y="492.0" text-anchor="middle">U2 74HC165</text>
+<text class="note" x="786.0" y="507.0" text-anchor="middle">the pad the console reads</text>
+<line class="stub" x1="702.0" y1="579.0" x2="702.0" y2="597.0"/>
+<text class="pinno" x="706.0" y="593.0" text-anchor="start">1</text>
+<text class="pin" x="705.5" y="567.0" text-anchor="start" transform="rotate(-90 705.5 567.0)">/PL</text>
+<line class="stub" x1="702.0" y1="409.0" x2="702.0" y2="391.0"/>
+<text class="pinno" x="706.0" y="403.0" text-anchor="start">16</text>
+<text class="pin" x="705.5" y="421.0" text-anchor="end" transform="rotate(-90 705.5 421.0)">VCC</text>
+<line class="stub" x1="726.0" y1="579.0" x2="726.0" y2="597.0"/>
+<text class="pinno" x="730.0" y="593.0" text-anchor="start">2</text>
+<text class="pin" x="729.5" y="567.0" text-anchor="start" transform="rotate(-90 729.5 567.0)">CP</text>
+<line class="stub" x1="726.0" y1="409.0" x2="726.0" y2="391.0"/>
+<text class="pinno" x="730.0" y="403.0" text-anchor="start">15</text>
+<text class="pin" x="729.5" y="421.0" text-anchor="end" transform="rotate(-90 729.5 421.0)">/CE</text>
+<line class="stub" x1="750.0" y1="579.0" x2="750.0" y2="597.0"/>
+<text class="pinno" x="754.0" y="593.0" text-anchor="start">3</text>
+<text class="pin" x="753.5" y="567.0" text-anchor="start" transform="rotate(-90 753.5 567.0)">E</text>
+<line class="stub" x1="750.0" y1="409.0" x2="750.0" y2="391.0"/>
+<text class="pinno" x="754.0" y="403.0" text-anchor="start">14</text>
+<text class="pin" x="753.5" y="421.0" text-anchor="end" transform="rotate(-90 753.5 421.0)">D</text>
+<line class="stub" x1="774.0" y1="579.0" x2="774.0" y2="597.0"/>
+<text class="pinno" x="778.0" y="593.0" text-anchor="start">4</text>
+<text class="pin" x="777.5" y="567.0" text-anchor="start" transform="rotate(-90 777.5 567.0)">F</text>
+<line class="stub" x1="774.0" y1="409.0" x2="774.0" y2="391.0"/>
+<text class="pinno" x="778.0" y="403.0" text-anchor="start">13</text>
+<text class="pin" x="777.5" y="421.0" text-anchor="end" transform="rotate(-90 777.5 421.0)">C</text>
+<line class="stub" x1="798.0" y1="579.0" x2="798.0" y2="597.0"/>
+<text class="pinno" x="802.0" y="593.0" text-anchor="start">5</text>
+<text class="pin" x="801.5" y="567.0" text-anchor="start" transform="rotate(-90 801.5 567.0)">G</text>
+<line class="stub" x1="798.0" y1="409.0" x2="798.0" y2="391.0"/>
+<text class="pinno" x="802.0" y="403.0" text-anchor="start">12</text>
+<text class="pin" x="801.5" y="421.0" text-anchor="end" transform="rotate(-90 801.5 421.0)">B</text>
+<line class="stub" x1="822.0" y1="579.0" x2="822.0" y2="597.0"/>
+<text class="pinno" x="826.0" y="593.0" text-anchor="start">6</text>
+<text class="pin" x="825.5" y="567.0" text-anchor="start" transform="rotate(-90 825.5 567.0)">H</text>
+<line class="stub" x1="822.0" y1="409.0" x2="822.0" y2="391.0"/>
+<text class="pinno" x="826.0" y="403.0" text-anchor="start">11</text>
+<text class="pin" x="825.5" y="421.0" text-anchor="end" transform="rotate(-90 825.5 421.0)">A</text>
+<line class="stub" x1="846.0" y1="579.0" x2="846.0" y2="597.0"/>
+<text class="pinno" x="850.0" y="593.0" text-anchor="start">7</text>
+<text class="pin" x="849.5" y="567.0" text-anchor="start" transform="rotate(-90 849.5 567.0)">/QH</text>
+<line class="stub" x1="846.0" y1="409.0" x2="846.0" y2="391.0"/>
+<text class="pinno" x="850.0" y="403.0" text-anchor="start">10</text>
+<text class="pin" x="849.5" y="421.0" text-anchor="end" transform="rotate(-90 849.5 421.0)">DS</text>
+<line class="stub" x1="870.0" y1="579.0" x2="870.0" y2="597.0"/>
+<text class="pinno" x="874.0" y="593.0" text-anchor="start">8</text>
+<text class="pin" x="873.5" y="567.0" text-anchor="start" transform="rotate(-90 873.5 567.0)">GND</text>
+<line class="stub" x1="870.0" y1="409.0" x2="870.0" y2="391.0"/>
+<text class="pinno" x="874.0" y="403.0" text-anchor="start">9</text>
+<text class="pin" x="873.5" y="421.0" text-anchor="end" transform="rotate(-90 873.5 421.0)">QH</text>
+<line class="stub" x1="841.0" y1="600.0" x2="851.0" y2="610.0"/>
+<line class="stub" x1="841.0" y1="610.0" x2="851.0" y2="600.0"/>
+<rect class="body" x="1022" y="409" width="208" height="170" rx="4"/>
+<circle class="notch" cx="1022" cy="494.0" r="9"/>
+<rect x="1012" y="484.0" width="10" height="20" fill="#fff"/>
+<text class="ref" x="1126.0" y="492.0" text-anchor="middle">U3 74HC595</text>
+<text class="note" x="1126.0" y="507.0" text-anchor="middle">the byte the UNO writes</text>
+<line class="stub" x1="1042.0" y1="579.0" x2="1042.0" y2="597.0"/>
+<text class="pinno" x="1046.0" y="593.0" text-anchor="start">1</text>
+<text class="pin" x="1045.5" y="567.0" text-anchor="start" transform="rotate(-90 1045.5 567.0)">QB</text>
+<line class="stub" x1="1042.0" y1="409.0" x2="1042.0" y2="391.0"/>
+<text class="pinno" x="1046.0" y="403.0" text-anchor="start">16</text>
+<text class="pin" x="1045.5" y="421.0" text-anchor="end" transform="rotate(-90 1045.5 421.0)">VCC</text>
+<line class="stub" x1="1066.0" y1="579.0" x2="1066.0" y2="597.0"/>
+<text class="pinno" x="1070.0" y="593.0" text-anchor="start">2</text>
+<text class="pin" x="1069.5" y="567.0" text-anchor="start" transform="rotate(-90 1069.5 567.0)">QC</text>
+<line class="stub" x1="1066.0" y1="409.0" x2="1066.0" y2="391.0"/>
+<text class="pinno" x="1070.0" y="403.0" text-anchor="start">15</text>
+<text class="pin" x="1069.5" y="421.0" text-anchor="end" transform="rotate(-90 1069.5 421.0)">QA</text>
+<line class="stub" x1="1090.0" y1="579.0" x2="1090.0" y2="597.0"/>
+<text class="pinno" x="1094.0" y="593.0" text-anchor="start">3</text>
+<text class="pin" x="1093.5" y="567.0" text-anchor="start" transform="rotate(-90 1093.5 567.0)">QD</text>
+<line class="stub" x1="1090.0" y1="409.0" x2="1090.0" y2="391.0"/>
+<text class="pinno" x="1094.0" y="403.0" text-anchor="start">14</text>
+<text class="pin" x="1093.5" y="421.0" text-anchor="end" transform="rotate(-90 1093.5 421.0)">SER</text>
+<line class="stub" x1="1114.0" y1="579.0" x2="1114.0" y2="597.0"/>
+<text class="pinno" x="1118.0" y="593.0" text-anchor="start">4</text>
+<text class="pin" x="1117.5" y="567.0" text-anchor="start" transform="rotate(-90 1117.5 567.0)">QE</text>
+<line class="stub" x1="1114.0" y1="409.0" x2="1114.0" y2="391.0"/>
+<text class="pinno" x="1118.0" y="403.0" text-anchor="start">13</text>
+<text class="pin" x="1117.5" y="421.0" text-anchor="end" transform="rotate(-90 1117.5 421.0)">/OE</text>
+<line class="stub" x1="1138.0" y1="579.0" x2="1138.0" y2="597.0"/>
+<text class="pinno" x="1142.0" y="593.0" text-anchor="start">5</text>
+<text class="pin" x="1141.5" y="567.0" text-anchor="start" transform="rotate(-90 1141.5 567.0)">QF</text>
+<line class="stub" x1="1138.0" y1="409.0" x2="1138.0" y2="391.0"/>
+<text class="pinno" x="1142.0" y="403.0" text-anchor="start">12</text>
+<text class="pin" x="1141.5" y="421.0" text-anchor="end" transform="rotate(-90 1141.5 421.0)">RCLK</text>
+<line class="stub" x1="1162.0" y1="579.0" x2="1162.0" y2="597.0"/>
+<text class="pinno" x="1166.0" y="593.0" text-anchor="start">6</text>
+<text class="pin" x="1165.5" y="567.0" text-anchor="start" transform="rotate(-90 1165.5 567.0)">QG</text>
+<line class="stub" x1="1162.0" y1="409.0" x2="1162.0" y2="391.0"/>
+<text class="pinno" x="1166.0" y="403.0" text-anchor="start">11</text>
+<text class="pin" x="1165.5" y="421.0" text-anchor="end" transform="rotate(-90 1165.5 421.0)">SRCLK</text>
+<line class="stub" x1="1186.0" y1="579.0" x2="1186.0" y2="597.0"/>
+<text class="pinno" x="1190.0" y="593.0" text-anchor="start">7</text>
+<text class="pin" x="1189.5" y="567.0" text-anchor="start" transform="rotate(-90 1189.5 567.0)">QH</text>
+<line class="stub" x1="1186.0" y1="409.0" x2="1186.0" y2="391.0"/>
+<text class="pinno" x="1190.0" y="403.0" text-anchor="start">10</text>
+<text class="pin" x="1189.5" y="421.0" text-anchor="end" transform="rotate(-90 1189.5 421.0)">/SRCLR</text>
+<line class="stub" x1="1210.0" y1="579.0" x2="1210.0" y2="597.0"/>
+<text class="pinno" x="1214.0" y="593.0" text-anchor="start">8</text>
+<text class="pin" x="1213.5" y="567.0" text-anchor="start" transform="rotate(-90 1213.5 567.0)">GND</text>
+<line class="stub" x1="1210.0" y1="409.0" x2="1210.0" y2="391.0"/>
+<text class="pinno" x="1214.0" y="403.0" text-anchor="start">9</text>
+<text class="pin" x="1213.5" y="421.0" text-anchor="end" transform="rotate(-90 1213.5 421.0)">QH'</text>
+<line class="stub" x1="1205.0" y1="378.0" x2="1215.0" y2="388.0"/>
+<line class="stub" x1="1205.0" y1="388.0" x2="1215.0" y2="378.0"/>
+<rect class="hdr" x="1362" y="409" width="284" height="170" rx="4"/>
+<text class="ref" x="1504.0" y="492.0" text-anchor="middle">A1 Arduino UNO</text>
+<text class="note" x="1504.0" y="507.0" text-anchor="middle">5 V logic</text>
+<line class="stub" x1="1384.0" y1="409.0" x2="1384.0" y2="391.0"/>
+<text class="pin" x="1387.5" y="421.0" text-anchor="end" transform="rotate(-90 1387.5 421.0)">D13 SCK</text>
+<line class="stub" x1="1414.0" y1="409.0" x2="1414.0" y2="391.0"/>
+<text class="pin" x="1417.5" y="421.0" text-anchor="end" transform="rotate(-90 1417.5 421.0)">D11 MOSI</text>
+<line class="stub" x1="1444.0" y1="409.0" x2="1444.0" y2="391.0"/>
+<text class="pin" x="1447.5" y="421.0" text-anchor="end" transform="rotate(-90 1447.5 421.0)">D10</text>
+<line class="stub" x1="1474.0" y1="409.0" x2="1474.0" y2="391.0"/>
+<text class="pin" x="1477.5" y="421.0" text-anchor="end" transform="rotate(-90 1477.5 421.0)">D8</text>
+<line class="stub" x1="1504.0" y1="409.0" x2="1504.0" y2="391.0"/>
+<text class="pin" x="1507.5" y="421.0" text-anchor="end" transform="rotate(-90 1507.5 421.0)">D7</text>
+<line class="stub" x1="1534.0" y1="409.0" x2="1534.0" y2="391.0"/>
+<text class="pin" x="1537.5" y="421.0" text-anchor="end" transform="rotate(-90 1537.5 421.0)">D6</text>
+<line class="stub" x1="1564.0" y1="409.0" x2="1564.0" y2="391.0"/>
+<text class="pin" x="1567.5" y="421.0" text-anchor="end" transform="rotate(-90 1567.5 421.0)">D5 T1</text>
+<line class="stub" x1="1594.0" y1="409.0" x2="1594.0" y2="391.0"/>
+<text class="pin" x="1597.5" y="421.0" text-anchor="end" transform="rotate(-90 1597.5 421.0)">D3</text>
+<line class="stub" x1="1624.0" y1="409.0" x2="1624.0" y2="391.0"/>
+<text class="pin" x="1627.5" y="421.0" text-anchor="end" transform="rotate(-90 1627.5 421.0)">D2 INT0</text>
+<line class="stub" x1="1384.0" y1="579.0" x2="1384.0" y2="597.0"/>
+<text class="pin" x="1387.5" y="567.0" text-anchor="start" transform="rotate(-90 1387.5 567.0)">5V</text>
+<line class="stub" x1="1414.0" y1="579.0" x2="1414.0" y2="597.0"/>
+<text class="pin" x="1417.5" y="567.0" text-anchor="start" transform="rotate(-90 1417.5 567.0)">GND</text>
+<line class="stub" x1="1444.0" y1="579.0" x2="1444.0" y2="597.0"/>
+<text class="pin" x="1447.5" y="567.0" text-anchor="start" transform="rotate(-90 1447.5 567.0)">USB-B</text>
+<line class="stub" x1="1474.0" y1="579.0" x2="1474.0" y2="597.0"/>
+<text class="pin" x="1477.5" y="567.0" text-anchor="start" transform="rotate(-90 1477.5 567.0)">D0, D1</text>
+<rect class="hdr" x="1778" y="409" width="44" height="170" rx="4"/>
+<text class="ref" x="1800.0" y="492.0" text-anchor="middle">R1 100R</text>
+<text class="note" x="1800.0" y="507.0" text-anchor="middle">trigger</text>
+<line class="stub" x1="1800.0" y1="409.0" x2="1800.0" y2="391.0"/>
+<text class="pin" x="1803.5" y="421.0" text-anchor="end" transform="rotate(-90 1803.5 421.0)">1</text>
+<line class="stub" x1="1800.0" y1="579.0" x2="1800.0" y2="597.0"/>
+<text class="pin" x="1803.5" y="567.0" text-anchor="start" transform="rotate(-90 1803.5 567.0)">2</text>
+<rect class="hdr" x="1954" y="409" width="164" height="170" rx="4"/>
+<text class="ref" x="2036.0" y="492.0" text-anchor="middle">J2 pad cable</text>
+<text class="note" x="2036.0" y="507.0" text-anchor="middle">the pad half</text>
+<line class="stub" x1="1976.0" y1="409.0" x2="1976.0" y2="391.0"/>
+<text class="pin" x="1979.5" y="421.0" text-anchor="end" transform="rotate(-90 1979.5 421.0)">GND</text>
+<text class="lead" x="1991.0" y="421.0" text-anchor="end" transform="rotate(-90 1991.0 421.0)">1 yellow</text>
+<line class="stub" x1="2006.0" y1="409.0" x2="2006.0" y2="391.0"/>
+<text class="pin" x="2009.5" y="421.0" text-anchor="end" transform="rotate(-90 2009.5 421.0)">CLK</text>
+<text class="lead" x="2021.0" y="421.0" text-anchor="end" transform="rotate(-90 2021.0 421.0)">2 blue</text>
+<line class="stub" x1="2036.0" y1="409.0" x2="2036.0" y2="391.0"/>
+<text class="pin" x="2039.5" y="421.0" text-anchor="end" transform="rotate(-90 2039.5 421.0)">OUT0</text>
+<text class="lead" x="2051.0" y="421.0" text-anchor="end" transform="rotate(-90 2051.0 421.0)">3 black</text>
+<line class="stub" x1="2066.0" y1="409.0" x2="2066.0" y2="391.0"/>
+<text class="pin" x="2069.5" y="421.0" text-anchor="end" transform="rotate(-90 2069.5 421.0)">D0</text>
+<text class="lead" x="2081.0" y="421.0" text-anchor="end" transform="rotate(-90 2081.0 421.0)">4 green</text>
+<line class="stub" x1="2096.0" y1="409.0" x2="2096.0" y2="391.0"/>
+<text class="pin" x="2099.5" y="421.0" text-anchor="end" transform="rotate(-90 2099.5 421.0)">+5V</text>
+<text class="lead" x="2111.0" y="421.0" text-anchor="end" transform="rotate(-90 2111.0 421.0)">5 red</text>
+<line class="stub" x1="580.0" y1="784.0" x2="580.0" y2="806.0"/>
+<rect class="cap" x="575" y="789.0" width="10" height="12"/>
+<text class="note" x="589.0" y="799.0" text-anchor="start">C1 100nF</text>
+<line class="stub" x1="920.0" y1="784.0" x2="920.0" y2="806.0"/>
+<rect class="cap" x="915" y="789.0" width="10" height="12"/>
+<text class="note" x="929.0" y="799.0" text-anchor="start">C2 100nF</text>
+<line class="stub" x1="1260.0" y1="784.0" x2="1260.0" y2="806.0"/>
+<rect class="cap" x="1255" y="789.0" width="10" height="12"/>
+<text class="note" x="1269.0" y="799.0" text-anchor="start">C3 100nF</text>
+<line class="wire" x1="386.0" y1="391.0" x2="386.0" y2="122.0" stroke="#d02b2b"/>
+<circle cx="386.0" cy="122.0" r="3.4" fill="#d02b2b"/>
+<line class="wire" x1="702.0" y1="391.0" x2="702.0" y2="122.0" stroke="#d02b2b"/>
+<circle cx="702.0" cy="122.0" r="3.4" fill="#d02b2b"/>
+<line class="wire" x1="2096.0" y1="391.0" x2="2096.0" y2="122.0" stroke="#d02b2b"/>
+<circle cx="2096.0" cy="122.0" r="3.4" fill="#d02b2b"/>
+<line class="wire" x1="1384.0" y1="597.0" x2="1384.0" y2="806.0" stroke="#d02b2b"/>
+<circle cx="1384.0" cy="806.0" r="3.4" fill="#d02b2b"/>
+<line class="wire" x1="1186.0" y1="391.0" x2="1186.0" y2="122.0" stroke="#d02b2b"/>
+<circle cx="1186.0" cy="122.0" r="3.4" fill="#d02b2b"/>
+<line class="wire" x1="1042.0" y1="391.0" x2="1042.0" y2="122.0" stroke="#d02b2b"/>
+<circle cx="1042.0" cy="122.0" r="3.4" fill="#d02b2b"/>
+<line class="wire" x1="92.0" y1="391.0" x2="92.0" y2="144.0" stroke="#1b64c8"/>
+<circle cx="92.0" cy="144.0" r="3.4" fill="#1b64c8"/>
+<line class="wire" x1="434.0" y1="597.0" x2="434.0" y2="784.0" stroke="#1b64c8"/>
+<circle cx="434.0" cy="784.0" r="3.4" fill="#1b64c8"/>
+<line class="wire" x1="482.0" y1="597.0" x2="482.0" y2="784.0" stroke="#1b64c8"/>
+<circle cx="482.0" cy="784.0" r="3.4" fill="#1b64c8"/>
+<line class="wire" x1="506.0" y1="391.0" x2="506.0" y2="144.0" stroke="#1b64c8"/>
+<circle cx="506.0" cy="144.0" r="3.4" fill="#1b64c8"/>
+<line class="wire" x1="458.0" y1="391.0" x2="458.0" y2="144.0" stroke="#1b64c8"/>
+<circle cx="458.0" cy="144.0" r="3.4" fill="#1b64c8"/>
+<line class="wire" x1="410.0" y1="391.0" x2="410.0" y2="144.0" stroke="#1b64c8"/>
+<circle cx="410.0" cy="144.0" r="3.4" fill="#1b64c8"/>
+<line class="wire" x1="530.0" y1="597.0" x2="530.0" y2="784.0" stroke="#1b64c8"/>
+<circle cx="530.0" cy="784.0" r="3.4" fill="#1b64c8"/>
+<line class="wire" x1="726.0" y1="391.0" x2="726.0" y2="144.0" stroke="#1b64c8"/>
+<circle cx="726.0" cy="144.0" r="3.4" fill="#1b64c8"/>
+<line class="wire" x1="846.0" y1="391.0" x2="846.0" y2="144.0" stroke="#1b64c8"/>
+<circle cx="846.0" cy="144.0" r="3.4" fill="#1b64c8"/>
+<line class="wire" x1="870.0" y1="597.0" x2="870.0" y2="784.0" stroke="#1b64c8"/>
+<circle cx="870.0" cy="784.0" r="3.4" fill="#1b64c8"/>
+<line class="wire" x1="1976.0" y1="391.0" x2="1976.0" y2="144.0" stroke="#1b64c8"/>
+<circle cx="1976.0" cy="144.0" r="3.4" fill="#1b64c8"/>
+<line class="wire" x1="1414.0" y1="597.0" x2="1414.0" y2="784.0" stroke="#1b64c8"/>
+<circle cx="1414.0" cy="784.0" r="3.4" fill="#1b64c8"/>
+<line class="wire" x1="1114.0" y1="391.0" x2="1114.0" y2="144.0" stroke="#1b64c8"/>
+<circle cx="1114.0" cy="144.0" r="3.4" fill="#1b64c8"/>
+<line class="wire" x1="1210.0" y1="597.0" x2="1210.0" y2="784.0" stroke="#1b64c8"/>
+<circle cx="1210.0" cy="784.0" r="3.4" fill="#1b64c8"/>
+<line class="wire" x1="122.0" y1="167.0" x2="1624.0" y2="167.0" stroke="#0f8f9e"/>
+<line class="wire" x1="122.0" y1="391.0" x2="122.0" y2="167.0" stroke="#0f8f9e"/>
+<line class="wire" x1="1624.0" y1="391.0" x2="1624.0" y2="167.0" stroke="#0f8f9e"/>
+<circle cx="1296.0" cy="167.0" r="3.4" fill="#0f8f9e"/>
+<text class="net" x="126.0" y="164.0" text-anchor="start">CON_CLK</text>
+<line class="wire" x1="726.0" y1="761.0" x2="1296.0" y2="761.0" stroke="#0f8f9e"/>
+<line class="wire" x1="726.0" y1="597.0" x2="726.0" y2="761.0" stroke="#0f8f9e"/>
+<text class="net" x="730.0" y="772.0" text-anchor="start">CON_CLK</text>
+<line class="wire" x1="1296.0" y1="167.0" x2="1296.0" y2="761.0" stroke="#0f8f9e"/>
+<line class="wire" x1="152.0" y1="182.0" x2="1564.0" y2="182.0" stroke="#8d1f5e"/>
+<line class="wire" x1="152.0" y1="391.0" x2="152.0" y2="182.0" stroke="#8d1f5e"/>
+<line class="wire" x1="1564.0" y1="391.0" x2="1564.0" y2="182.0" stroke="#8d1f5e"/>
+<circle cx="616.0" cy="182.0" r="3.4" fill="#8d1f5e"/>
+<text class="net" x="156.0" y="179.0" text-anchor="start">CON_OUT0</text>
+<line class="wire" x1="386.0" y1="671.0" x2="616.0" y2="671.0" stroke="#8d1f5e"/>
+<line class="wire" x1="386.0" y1="597.0" x2="386.0" y2="671.0" stroke="#8d1f5e"/>
+<text class="net" x="390.0" y="682.0" text-anchor="start">CON_OUT0</text>
+<line class="wire" x1="616.0" y1="182.0" x2="616.0" y2="671.0" stroke="#8d1f5e"/>
+<line class="wire" x1="182.0" y1="197.0" x2="870.0" y2="197.0" stroke="#b5651d"/>
+<line class="wire" x1="182.0" y1="391.0" x2="182.0" y2="197.0" stroke="#b5651d"/>
+<line class="wire" x1="870.0" y1="391.0" x2="870.0" y2="197.0" stroke="#b5651d"/>
+<text class="net" x="186.0" y="194.0" text-anchor="start">CON_D0</text>
+<line class="wire" x1="410.0" y1="716.0" x2="702.0" y2="716.0" stroke="#7a3fbf"/>
+<line class="wire" x1="410.0" y1="597.0" x2="410.0" y2="716.0" stroke="#7a3fbf"/>
+<line class="wire" x1="702.0" y1="597.0" x2="702.0" y2="716.0" stroke="#7a3fbf"/>
+<text class="net" x="414.0" y="727.0" text-anchor="start">/PL</text>
+<line class="wire" x1="956.0" y1="362.0" x2="1066.0" y2="362.0" stroke="#e65100"/>
+<line class="wire" x1="1066.0" y1="391.0" x2="1066.0" y2="362.0" stroke="#e65100"/>
+<text class="net" x="960.0" y="359.0" text-anchor="start">Q_A</text>
+<line class="wire" x1="822.0" y1="611.0" x2="956.0" y2="611.0" stroke="#e65100"/>
+<line class="wire" x1="822.0" y1="597.0" x2="822.0" y2="611.0" stroke="#e65100"/>
+<text class="net" x="826.0" y="622.0" text-anchor="start">Q_A</text>
+<line class="wire" x1="956.0" y1="362.0" x2="956.0" y2="611.0" stroke="#e65100"/>
+<line class="wire" x1="798.0" y1="686.0" x2="1042.0" y2="686.0" stroke="#4527a0"/>
+<line class="wire" x1="798.0" y1="597.0" x2="798.0" y2="686.0" stroke="#4527a0"/>
+<line class="wire" x1="1042.0" y1="597.0" x2="1042.0" y2="686.0" stroke="#4527a0"/>
+<text class="net" x="802.0" y="697.0" text-anchor="start">Q_B</text>
+<line class="wire" x1="774.0" y1="731.0" x2="1066.0" y2="731.0" stroke="#ad1457"/>
+<line class="wire" x1="774.0" y1="597.0" x2="774.0" y2="731.0" stroke="#ad1457"/>
+<line class="wire" x1="1066.0" y1="597.0" x2="1066.0" y2="731.0" stroke="#ad1457"/>
+<text class="net" x="778.0" y="742.0" text-anchor="start">Q_SEL</text>
+<line class="wire" x1="750.0" y1="746.0" x2="1090.0" y2="746.0" stroke="#558b2f"/>
+<line class="wire" x1="750.0" y1="597.0" x2="750.0" y2="746.0" stroke="#558b2f"/>
+<line class="wire" x1="1090.0" y1="597.0" x2="1090.0" y2="746.0" stroke="#558b2f"/>
+<text class="net" x="754.0" y="757.0" text-anchor="start">Q_START</text>
+<line class="wire" x1="750.0" y1="302.0" x2="969.0" y2="302.0" stroke="#ef6c00"/>
+<line class="wire" x1="750.0" y1="391.0" x2="750.0" y2="302.0" stroke="#ef6c00"/>
+<text class="net" x="754.0" y="299.0" text-anchor="start">Q_UP</text>
+<line class="wire" x1="969.0" y1="626.0" x2="1114.0" y2="626.0" stroke="#ef6c00"/>
+<line class="wire" x1="1114.0" y1="597.0" x2="1114.0" y2="626.0" stroke="#ef6c00"/>
+<text class="net" x="973.0" y="637.0" text-anchor="start">Q_UP</text>
+<line class="wire" x1="969.0" y1="302.0" x2="969.0" y2="626.0" stroke="#ef6c00"/>
+<line class="wire" x1="774.0" y1="347.0" x2="943.0" y2="347.0" stroke="#2e7d32"/>
+<line class="wire" x1="774.0" y1="391.0" x2="774.0" y2="347.0" stroke="#2e7d32"/>
+<text class="net" x="778.0" y="344.0" text-anchor="start">Q_DOWN</text>
+<line class="wire" x1="943.0" y1="656.0" x2="1138.0" y2="656.0" stroke="#2e7d32"/>
+<line class="wire" x1="1138.0" y1="597.0" x2="1138.0" y2="656.0" stroke="#2e7d32"/>
+<text class="net" x="947.0" y="667.0" text-anchor="start">Q_DOWN</text>
+<line class="wire" x1="943.0" y1="347.0" x2="943.0" y2="656.0" stroke="#2e7d32"/>
+<line class="wire" x1="798.0" y1="332.0" x2="982.0" y2="332.0" stroke="#6d4c41"/>
+<line class="wire" x1="798.0" y1="391.0" x2="798.0" y2="332.0" stroke="#6d4c41"/>
+<text class="net" x="802.0" y="329.0" text-anchor="start">Q_LEFT</text>
+<line class="wire" x1="982.0" y1="641.0" x2="1162.0" y2="641.0" stroke="#6d4c41"/>
+<line class="wire" x1="1162.0" y1="597.0" x2="1162.0" y2="641.0" stroke="#6d4c41"/>
+<text class="net" x="986.0" y="652.0" text-anchor="start">Q_LEFT</text>
+<line class="wire" x1="982.0" y1="332.0" x2="982.0" y2="641.0" stroke="#6d4c41"/>
+<line class="wire" x1="822.0" y1="377.0" x2="930.0" y2="377.0" stroke="#0277bd"/>
+<line class="wire" x1="822.0" y1="391.0" x2="822.0" y2="377.0" stroke="#0277bd"/>
+<text class="net" x="826.0" y="374.0" text-anchor="start">Q_RIGHT</text>
+<line class="wire" x1="930.0" y1="701.0" x2="1186.0" y2="701.0" stroke="#0277bd"/>
+<line class="wire" x1="1186.0" y1="597.0" x2="1186.0" y2="701.0" stroke="#0277bd"/>
+<text class="net" x="934.0" y="712.0" text-anchor="start">Q_RIGHT</text>
+<line class="wire" x1="930.0" y1="377.0" x2="930.0" y2="701.0" stroke="#0277bd"/>
+<line class="wire" x1="1504.0" y1="242.0" x2="2006.0" y2="242.0" stroke="#5b5bd6"/>
+<line class="wire" x1="2006.0" y1="391.0" x2="2006.0" y2="242.0" stroke="#5b5bd6"/>
+<line class="wire" x1="1504.0" y1="391.0" x2="1504.0" y2="242.0" stroke="#5b5bd6"/>
+<text class="net" x="1508.0" y="239.0" text-anchor="start">PAD_CLK</text>
+<line class="wire" x1="1534.0" y1="227.0" x2="2036.0" y2="227.0" stroke="#00796b"/>
+<line class="wire" x1="2036.0" y1="391.0" x2="2036.0" y2="227.0" stroke="#00796b"/>
+<line class="wire" x1="1534.0" y1="391.0" x2="1534.0" y2="227.0" stroke="#00796b"/>
+<text class="net" x="1538.0" y="224.0" text-anchor="start">PAD_LATCH</text>
+<line class="wire" x1="1474.0" y1="212.0" x2="2066.0" y2="212.0" stroke="#c2185b"/>
+<line class="wire" x1="2066.0" y1="391.0" x2="2066.0" y2="212.0" stroke="#c2185b"/>
+<line class="wire" x1="1474.0" y1="391.0" x2="1474.0" y2="212.0" stroke="#c2185b"/>
+<text class="net" x="1478.0" y="209.0" text-anchor="start">PAD_D0</text>
+<line class="wire" x1="1162.0" y1="287.0" x2="1384.0" y2="287.0" stroke="#00838f"/>
+<line class="wire" x1="1384.0" y1="391.0" x2="1384.0" y2="287.0" stroke="#00838f"/>
+<line class="wire" x1="1162.0" y1="391.0" x2="1162.0" y2="287.0" stroke="#00838f"/>
+<text class="net" x="1166.0" y="284.0" text-anchor="start">SCK</text>
+<line class="wire" x1="1090.0" y1="257.0" x2="1414.0" y2="257.0" stroke="#3f6f2a"/>
+<line class="wire" x1="1414.0" y1="391.0" x2="1414.0" y2="257.0" stroke="#3f6f2a"/>
+<line class="wire" x1="1090.0" y1="391.0" x2="1090.0" y2="257.0" stroke="#3f6f2a"/>
+<text class="net" x="1094.0" y="254.0" text-anchor="start">MOSI</text>
+<line class="wire" x1="1138.0" y1="272.0" x2="1444.0" y2="272.0" stroke="#283593"/>
+<line class="wire" x1="1444.0" y1="391.0" x2="1444.0" y2="272.0" stroke="#283593"/>
+<line class="wire" x1="1138.0" y1="391.0" x2="1138.0" y2="272.0" stroke="#283593"/>
+<text class="net" x="1142.0" y="269.0" text-anchor="start">RCLK</text>
+<line class="wire" x1="1594.0" y1="317.0" x2="1800.0" y2="317.0" stroke="#9e9d24"/>
+<line class="wire" x1="1594.0" y1="391.0" x2="1594.0" y2="317.0" stroke="#9e9d24"/>
+<line class="wire" x1="1800.0" y1="391.0" x2="1800.0" y2="317.0" stroke="#9e9d24"/>
+<text class="net" x="1598.0" y="314.0" text-anchor="start">TRIG</text>
+<line class="wire" x1="1444.0" y1="597.0" x2="1444.0" y2="623.0" stroke="#444"/>
+<text class="net" x="1438.0" y="627.0" text-anchor="end">PI_USB: USB to the Pi</text>
+<line class="wire" x1="1474.0" y1="597.0" x2="1474.0" y2="641.0" stroke="#444"/>
+<text class="net" x="1468.0" y="645.0" text-anchor="end">serial: 115200 to the Pi</text>
+<line class="wire" x1="1800.0" y1="597.0" x2="1800.0" y2="623.0" stroke="#444"/>
+<text class="net" x="1794.0" y="627.0" text-anchor="end">EXT_TRIG: scope EXT TRIG</text>
+<text class="note" x="2164" y="860" text-anchor="end">19 nets on tracks, 7 of them crossing the row; 26 supply pins on the rails. drawn by tools/wiring-diagram.py</text>
+</svg>

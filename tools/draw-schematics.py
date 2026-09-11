@@ -497,9 +497,14 @@ def _v1b_body_1(sh):
     console_port(sh, *sh.slot(0, 0, label=band), "J1",
                  {"clk": "CON_CLK", "out0": "CON_OUT0", "d0": "CON_D0"}, supply="NC")
     x, y = sh.slot(0, 1)
+    # The five spare inputs are on the sheet as pins, not as a note:
+    # a CMOS input left floating oscillates, and a wiring list derived
+    # from a note does not tell a builder to tie anything.
     sh.chip(x, y, 130, "U1", "74HCT04  at +5V",
-            [(1, "1A", "CON_OUT0"), (14, "VCC", "+5V"), (7, "GND", "GND")],
-            [(2, "1Y", "/PL")], extra="2.0 V threshold: safe on NMOS OUT0")
+            [(1, "1A", "CON_OUT0"), (3, "2A", "GND"), (5, "3A", "GND"), (9, "4A", "GND"),
+             (11, "5A", "GND"), (13, "6A", "GND"), (14, "VCC", "+5V"), (7, "GND", "GND")],
+            [(2, "1Y", "/PL"), (4, "2Y", "NC"), (6, "3Y", "NC"), (8, "4Y", "NC"), (10, "5Y", "NC"),
+             (12, "6Y", "NC")], extra="2.0 V threshold: safe on NMOS OUT0")
     hct165(sh, *sh.slot(0, 2), "U2", "/PL", "CON_CLK", "CON_D0",
            part="74HC165  at +5V (the TI bag)", inputs=Q_NETS)
     band2 = "DECOUPLING, AND WHAT THE CONSOLE ACTUALLY DOES"

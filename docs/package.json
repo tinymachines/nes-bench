@@ -7,8 +7,8 @@
   "page": "ansi-a",
   "title": "NES controller-port bridge, v1b",
   "intro": [
-    "The bench drives an unmodified NES-001 through its controller port and records what the console does about it. This package is the v1b build: an Arduino UNO between a Raspberry Pi and the console, everything on one 5 V rail, the UNO's; the console shares only ground.",
-    "Nothing here is placed or typed by hand. The schematic's arrangement is authored and its coordinates come from the parts' own sizes; the parts list, the wiring list, the pin map and the chip sheets are read back out of that file, the lab log and the bring-up tool. A sheet whose smallest text would print below 5 pt is refused rather than shrunk, which is why two sheets are ANSI B.",
+    "The bench drives an unmodified NES-001 through its controller port and records what it does. This package is the v1b build: an Arduino UNO between a Raspberry Pi and the console, on one 5 V rail.",
+    "Nothing is placed or typed by hand: the schematic's coordinates come from the parts' own sizes, and every list and diagram here is read back out of it, the lab log and the bring-up tool. Three sheets are ANSI B: their type would print below 5 pt on letter, and the package refuses that.",
     "AUTHORED means not yet measured. MEASURED carries its date and its record in docs/lab-notebook.md."
   ],
   "sheets": [
@@ -28,8 +28,14 @@
     },
     {
       "kind": "schematic",
+      "svg": "wiring-v1b.svg",
+      "page": "ansi-b",
+      "title": "Wiring diagram: every wire at right angles on the packages"
+    },
+    {
+      "kind": "schematic",
       "svg": "breadboard-v1b.svg",
-      "title": "Breadboard layout and every jumper",
+      "title": "Breadboard: which hole each part and jumper goes in",
       "page": "ansi-b"
     },
     {

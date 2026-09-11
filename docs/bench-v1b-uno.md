@@ -91,6 +91,23 @@ tools need nothing beyond the serial speed.
   mutated run reports one clock per latch instead of eight, so the
   8-per-latch gate is red.
 
+## The wiring, drawn to build from
+
+![v1b wiring diagram: every wire at right angles on the packages as they sit](wiring-v1b.svg)
+
+Each chip is its package seen from above, notch left, pin 1 bottom
+left, numbered as the package is; every wire is horizontal or vertical,
+one track and one colour per net, named at its left end, a dot where
+wires join and nothing where they merely cross. Drawn by
+`tools/wiring-diagram.py` from the same netlist as the wiring list, so
+it cannot show a wire the schematic lacks or lack one it has, and the
+tool refuses to draw a pin the schematic does not know. It replaced the
+breadboard picture as the sheet to build from on 2026-09-10: that
+picture still says which hole each part goes in (`breadboard-v1b.svg`),
+and its curved jumpers are what this one straightens out. The same
+day the inverter's five spare inputs went onto the schematic as pins
+tied to GND rather than a note, so the wiring list now says to tie them.
+
 ## Build order (replaces v1's)
 
 1. Meter the harness (unchanged).

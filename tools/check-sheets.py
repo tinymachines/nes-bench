@@ -206,13 +206,14 @@ def main():
     # The committed SVGs are what the generator writes.
     n_sheets = 0
     with tempfile.TemporaryDirectory() as d:
-        for gen in ("draw-schematics.py", "breadboard.py"):
+        for gen in ("draw-schematics.py", "breadboard.py", "wiring-diagram.py"):
             subprocess.run([sys.executable, str(ROOT / "tools" / gen), d], check=True, capture_output=True)
         for p in sorted(Path(d).glob("*.svg")):
             n_sheets += 1
             committed = ROOT / "docs" / p.name
             if not committed.exists() or committed.read_bytes() != p.read_bytes():
-                gen = "breadboard.py" if p.name.startswith("breadboard") else "draw-schematics.py"
+                gen = ("breadboard.py" if p.name.startswith("breadboard") else
+                       "wiring-diagram.py" if p.name.startswith("wiring") else "draw-schematics.py")
                 print(f"  docs/{p.name} is not what {gen} writes: regenerate it")
                 bad += 1
     if not n_sheets:

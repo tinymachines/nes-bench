@@ -805,6 +805,11 @@
 <path class="w" stroke="#d02b2b" opacity="0.9" d="M1006 328 L1006 196"/>
 <path class="w" stroke="#d02b2b" opacity="0.9" d="M850 328 L850 196"/>
 <path class="w" stroke="#1b64c8" opacity="0.9" d="M108 262 L108 596"/>
+<path class="w" stroke="#1b64c8" opacity="0.9" d="M330 484 L330 596"/>
+<path class="w" stroke="#1b64c8" opacity="0.9" d="M382 484 L382 596"/>
+<path class="w" stroke="#1b64c8" opacity="0.9" d="M408 328 L408 222"/>
+<path class="w" stroke="#1b64c8" opacity="0.9" d="M356 328 L356 222"/>
+<path class="w" stroke="#1b64c8" opacity="0.9" d="M304 328 L304 222"/>
 <path class="w" stroke="#1b64c8" opacity="0.9" d="M434 484 L434 596"/>
 <path class="w" stroke="#1b64c8" opacity="0.9" d="M564 328 L564 222"/>
 <path class="w" stroke="#1b64c8" opacity="0.9" d="M694 328 L694 222"/>
@@ -813,7 +818,7 @@
 <path class="w" stroke="#1b64c8" opacity="0.9" d="M1360 424 L1360 596"/>
 <path class="w" stroke="#1b64c8" opacity="0.9" d="M928 328 L928 222"/>
 <path class="w" stroke="#1b64c8" opacity="0.9" d="M1032 484 L1032 596"/>
-<text class="h1" x="60.0" y="732.0" text-anchor="start">21 numbered jumpers, and 15 short wires to the rails</text>
+<text class="h1" x="60.0" y="732.0" text-anchor="start">21 numbered jumpers, and 20 short wires to the rails</text>
 <text class="h2" x="60.0" y="754.0" text-anchor="start">Every one of these is read out of the schematic. Red stubs go to the nearest + rail, blue stubs to the nearest - rail; they are not numbered because they are all the same instruction.</text>
 <circle cx="69" cy="780" r="9" fill="#ffffff" stroke="#7a3fbf" stroke-width="1.6"/>
 <text class="wn" x="69.0" y="784.0" text-anchor="middle">1</text>

@@ -102,8 +102,8 @@ def sheet_schematic(p, cfg, spec):
     if p._dropped_sub:
         ix, iy, iw, _ih = p._inner
         p.text(ix + 8, top + 16, p._dropped_sub, "tmf-body")
-    p.footer(f'{spec["svg"]}  {p.size}  placed at {scale*100:.0f}%  '
-             f'drawn by tools/draw-schematics.py')
+    gen = {"breadboard": "breadboard.py", "wiring": "wiring-diagram.py"}.get(spec["svg"].split("-")[0], "draw-schematics.py")
+    p.footer(f'{spec["svg"]}  {p.size}  placed at {scale*100:.0f}%  drawn by tools/{gen}')
 
 
 def paginate(p, spec, rows, box, headers, widths, mono):

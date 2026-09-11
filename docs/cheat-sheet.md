@@ -54,17 +54,17 @@ Hex inverter, six independent gates. HCT inputs switch at TTL levels (high from 
 |---|---|---|---|
 | 1 | 1A | gate 1 input | CON_OUT0: J1-3, A1 D5 (T1) |
 | 2 | 1Y | gate 1 output, the inverse of 1A | /PL: U2-1 |
-| 3 | 2A | gate 2 input | not on the schematic: tie to GND |
-| 4 | 2Y | gate 2 output | not on the schematic: leave open |
-| 5 | 3A | gate 3 input | not on the schematic: tie to GND |
-| 6 | 3Y | gate 3 output | not on the schematic: leave open |
+| 3 | 2A | gate 2 input | the GND rail |
+| 4 | 2Y | gate 2 output | no connection |
+| 5 | 3A | gate 3 input | the GND rail |
+| 6 | 3Y | gate 3 output | no connection |
 | 7 | GND | ground | the GND rail |
-| 8 | 4Y | gate 4 output | not on the schematic: leave open |
-| 9 | 4A | gate 4 input | not on the schematic: tie to GND |
-| 10 | 5Y | gate 5 output | not on the schematic: leave open |
-| 11 | 5A | gate 5 input | not on the schematic: tie to GND |
-| 12 | 6Y | gate 6 output | not on the schematic: leave open |
-| 13 | 6A | gate 6 input | not on the schematic: tie to GND |
+| 8 | 4Y | gate 4 output | no connection |
+| 9 | 4A | gate 4 input | the GND rail |
+| 10 | 5Y | gate 5 output | no connection |
+| 11 | 5A | gate 5 input | the GND rail |
+| 12 | 6Y | gate 6 output | no connection |
+| 13 | 6A | gate 6 input | the GND rail |
 | 14 | VCC | supply, 4.5 to 5.5 V; 100 nF to GND at the pin | the +5V rail |
 
 ## U2: 74HC165  at +5V (the TI bag)
