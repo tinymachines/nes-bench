@@ -46,32 +46,26 @@ Added 2026-09-08, when the bench got a Raspberry Pi as its home base
 with the Uno plugged into it.
 
 `serial-bridge.py` runs on the Pi and puts that serial port on the LAN.
-It is standard library only and nothing is installed to use it, which is
-not laziness: this Pi resolves DNS through DNSCrypt resolvers on another
-subnet, so from the bench network it can reach neither apt nor GitHub.
-That is a deliberate part of its setup, so the tooling goes to the port
-rather than the other way round.
-
-Start it as a transient system unit, which outlives the login:
+It is standard library only. Since 2026-09-11 it runs as a real systemd
+unit from the Pi's own checkout of this repository (`~/nes-bench`),
+enabled, so it is there after a reboot:
 
 ```
-sudo systemd-run --unit=serial-bridge --collect \
-  -p StandardOutput=append:/var/log/sbridge.log \
-  -p StandardError=append:/var/log/sbridge.log \
-  -p Restart=always -p RestartSec=1 \
-  python3 /home/bisenbek/serial-bridge.py --port /dev/ttyACM0 --baud 115200 --listen 0.0.0.0:6545
+bash head/serial-bridge-install.sh            # on the Pi, from the checkout
 ```
 
-**Not from `/tmp`.** It was put there first and was gone the next day: the Pi
-had rebooted and `/tmp` went with it, so the bridge was simply absent with no
-error anywhere to say why. The copy lives in the home directory now. The unit
-is still transient, so a reboot ends it too, but then the command above is one
-line and the script is where it was left.
+which writes `/etc/systemd/system/serial-bridge.service` (port
+`/dev/ttyACM0`, 115200, listening on 6545), enables and starts it. Re-run
+after a `git pull` to restart on new code.
 
-A **user** unit is the wrong choice and was tried first: without lingering
-enabled the user manager stops when the last ssh session closes and takes
-the service with it, which presents as a bridge that works while you are
-watching and is gone when you come back.
+Before that it was a transient `systemd-run` unit started by hand from a
+copy of the script in the home directory, twice lost: once because the
+copy was in `/tmp` and a reboot took it, once because the transient unit
+does not survive a reboot either. A **user** unit was tried before that
+and is the wrong choice: without lingering enabled the user manager
+stops when the last ssh session closes and takes the service with it,
+which presents as a bridge that works while you are watching and is
+gone when you come back.
 
 Then, from the workstation, one port serves both jobs:
 
@@ -90,12 +84,13 @@ when they go, so every connection gets the same reset a local open would
 have given it. Holding the port open across connections would work for
 the tools and quietly fail for flashing.
 
-**The Pi's clock is months out and will stay that way.** It cannot resolve
-names, so it cannot reach a time server; `uptime -s` reported a boot in May
-while the workstation said September. Nothing in the bench depends on it, and
-this is why: every timestamp in the log is written by `tools/bringup.py` on the
-workstation, and the scope's own record carries its time. Do not add anything
-that timestamps on the Pi without noticing this first.
+**The Pi's clock was months out until 2026-09-11**, because its resolver
+still pointed at a gateway network that no longer existed, so it could
+reach neither a time server nor apt nor GitHub (`scripts/pi-net-cleanup.sh`
+is what fixed it, and says what it found). It syncs now. The rule that
+came out of that period still holds: every timestamp in the log is
+written by `tools/bringup.py` on the workstation, and the scope's own
+record carries its time, so nothing here depends on the Pi's clock.
 
 This split is the one the plan describes: the Pi holds the hardware, the
 workstation holds the model, the log and the record.
