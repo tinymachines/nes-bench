@@ -44,13 +44,20 @@ LOWER = "FGHIJ"
 
 # ------------------------------------------------------------- AUTHORED
 # Where things sit. This is the part no netlist can tell you.
+#
+# AS BUILT, read off the photographs of 2026-09-11 (docs/as-built-v1b.md):
+# the three chips went in with their notch toward the HIGHER column
+# numbers, so pin 1 is in the lower half at each chip's highest column.
+# "notch" says which way; the hole rule below follows it. Columns were
+# counted from the printed 10, 20 and 30 marks and are believed to
+# within one column; step 3.1 is what proves them.
 CHIPS = {
-    "U1": {"col": 4, "pins": 14, "label": "74HCT04", "note": "inverter"},
-    "U2": {"col": 14, "pins": 16, "label": "74HC165", "note": "the pad the console reads"},
-    "U3": {"col": 26, "pins": 16, "label": "74HC595", "note": "the byte the UNO writes"},
+    "U1": {"col": 9, "pins": 14, "notch": "right", "label": "74HCT04", "note": "inverter"},
+    "U2": {"col": 17, "pins": 16, "notch": "right", "label": "74HC165", "note": "the pad the console reads"},
+    "U3": {"col": 26, "pins": 16, "notch": "right", "label": "74HC595", "note": "the byte the UNO writes"},
 }
-# Decoupling: rail to rail, next to the chip it belongs to.
-CAPS = {"C1": 8, "C2": 19, "C3": 31}
+# Decoupling: rail to rail, in the empty column beside each chip.
+CAPS = {"C1": 16, "C2": 25, "C3": 34}
 # The trigger resistor, out of the way at the end of the board.
 RES = {"R1": (36, 38)}
 # The cut cable's lead colours, which are the ones in your hand. Pin
@@ -94,11 +101,18 @@ def cy(row):
 
 
 def dip_hole(ref, pin):
-    """Which column and half a package pin lands in. Notch to the left,
-    pin 1 bottom-left, counting anticlockwise."""
+    """Which column and half a package pin lands in, counting
+    anticlockwise from pin 1 as the package does. Notch to the left: pin
+    1 bottom-left, the first half runs left to right along the lower
+    row. Notch to the right (the chip turned round): pin 1 bottom-RIGHT,
+    the first half runs right to left along the lower row, the second
+    half left to right along the upper row."""
     c = CHIPS[ref]
     n, c0 = c["pins"], c["col"]
-    if pin <= n // 2:
+    h = n // 2
+    if c.get("notch", "left") == "right":
+        return (c0 + h - pin, "lower") if pin <= h else (c0 + pin - h - 1, "upper")
+    if pin <= h:
         return c0 + (pin - 1), "lower"
     return c0 + (n - pin), "upper"
 
@@ -142,11 +156,16 @@ class Draw:
             y = cy("F") if half == "lower" else cy("E")
             self.add(f'<rect class="leg" x="{cx(col)-4}" y="{y-7}" width="8" height="14" rx="2"/>')
         self.add(f'<rect class="dip" x="{x0}" y="{yt}" width="{x1-x0}" height="{yb-yt}" rx="3"/>')
-        self.add(f'<path class="dip" d="M{x0} {(yt+yb)/2-11} a11 11 0 0 0 0 22" fill="#111"/>')
+        right = c.get("notch", "left") == "right"
+        if right:
+            self.add(f'<path class="dip" d="M{x1} {(yt+yb)/2-11} a11 11 0 0 1 0 22" fill="#111"/>')
+        else:
+            self.add(f'<path class="dip" d="M{x0} {(yt+yb)/2-11} a11 11 0 0 0 0 22" fill="#111"/>')
         self.text((x0 + x1) / 2, (yt + yb) / 2 - 2, f"{ref}  {c['label']}", "dipt", "middle")
         self.text((x0 + x1) / 2, (yt + yb) / 2 + 14, c["note"], "dips", "middle")
-        self.add(f'<circle cx="{x0+13}" cy="{yb-9}" r="3" fill="#ffffff"/>')
-        self.text(cx(c0), cy("J") + 36, f"{ref} pin 1", "col", "middle")
+        pin1_col, _ = dip_hole(ref, 1)
+        self.add(f'<circle cx="{cx(pin1_col)}" cy="{yb-9}" r="3" fill="#ffffff"/>')
+        self.text(cx(pin1_col), cy("J") + 36, f"{ref} pin 1", "col", "middle")
 
 
 # Where an off-board thing's terminals sit. Order is the order they are
@@ -210,12 +229,23 @@ def main():
     # every wire if it is wrong, so it is asserted against pins whose
     # position is known from the packages: a 16-pin part has VCC at 16,
     # top-left, and GND at 8, bottom-right.
-    assert dip_hole("U2", 16) == (CHIPS["U2"]["col"], "upper"), dip_hole("U2", 16)
-    assert dip_hole("U2", 8) == (CHIPS["U2"]["col"] + 7, "lower"), dip_hole("U2", 8)
-    assert dip_hole("U1", 14) == (CHIPS["U1"]["col"], "upper"), dip_hole("U1", 14)
-    assert dip_hole("U1", 7) == (CHIPS["U1"]["col"] + 6, "lower"), dip_hole("U1", 7)
+    # Notch right, as built: VCC (16) upper at the HIGHEST column, GND
+    # (8) lower at the lowest; pin 1 lower at the highest.
+    for ref, n in (("U2", 16), ("U1", 14)):
+        c0, h = CHIPS[ref]["col"], n // 2
+        assert CHIPS[ref]["notch"] == "right"
+        assert dip_hole(ref, 1) == (c0 + h - 1, "lower"), dip_hole(ref, 1)
+        assert dip_hole(ref, h) == (c0, "lower"), dip_hole(ref, h)
+        assert dip_hole(ref, h + 1) == (c0, "upper"), dip_hole(ref, h + 1)
+        assert dip_hole(ref, n) == (c0 + h - 1, "upper"), dip_hole(ref, n)
+    # And the rule for a chip the other way round, which nothing on this
+    # board uses now but the drawing still has to get right.
+    CHIPS["_t"] = {"col": 1, "pins": 16, "notch": "left"}
+    assert dip_hole("_t", 1) == (1, "lower") and dip_hole("_t", 8) == (8, "lower")
+    assert dip_hole("_t", 9) == (8, "upper") and dip_hole("_t", 16) == (1, "upper")
+    del CHIPS["_t"]
     if a.check:
-        print("breadboard: the pin-to-hole rule holds for both package sizes")
+        print("breadboard: the pin-to-hole rule holds for both package sizes and both notch directions")
         return 0
 
     nets = nl.nets_of(nodes)
@@ -231,9 +261,8 @@ def main():
 
     d = Draw()
     d.text(60, 60, "Bridge v1b on the breadboard: where everything goes", "h1")
-    d.text(60, 84, "Placement is a choice, and it is written down in tools/breadboard.py. Every wire is read out of the "
-                   "schematic by tools/netlist.py, so this cannot show a connection the schematic does not have, "
-                   "or miss one that it does.", "h2")
+    d.text(60, 84, "Placement is the board as built on 2026-09-11, read off its photographs: notches toward the high columns, "
+                   "pin 1 lower right. Every wire is read out of the schematic, so this cannot show a connection it does not have.", "h2")
     d.board()
     for ref in CHIPS:
         d.chip(ref)

@@ -342,6 +342,12 @@ LEADS_WORDS = ", ".join(f"{c} {n}" for _p, n, c in LEADS)
 # own harness (same procedure, photograph 06-breakout-map-power-reset.jpg).
 # What each way DOES is step 6.2's question and is not written here.
 POWER_RESET_LEADS = [(1, "brown"), (2, "red"), (3, "orange"), (4, "yellow"), (5, "white")]
+
+# The ribbon from the UNO's digital header, read off the header in the
+# photographs of 2026-09-11 (docs/as-built-v1b.md). Nine wires on
+# exactly the nine pins the schematic uses; nothing on 4, 9 or 12.
+RIBBON = [("D2", "blue"), ("D3", "green"), ("D5", "yellow"), ("D6", "orange"), ("D7", "red"),
+          ("D8", "brown"), ("D10", "black"), ("D11", "white"), ("D13", "grey")]
 POWER_RESET_WORDS = ", ".join(f"{p} {c}" for p, c in POWER_RESET_LEADS)
 
 STEPS = [

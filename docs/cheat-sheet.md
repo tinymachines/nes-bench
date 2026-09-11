@@ -46,6 +46,22 @@ Four Dupont leads off the Pi's header, no breakout (2026-09-10). Header position
 | 5V | 2 | relay module VCC | the coil's supply |
 | GND | 6 | PC817 IN-, relay GND | the one ground lent |
 
+## The UNO ribbon
+
+Nine Dupont wires from the UNO's digital header, colour per pin as read off the header (2026-09-11). The net and the far end come from the schematic.
+
+| UNO pin | colour | net | to |
+|---|---|---|---|
+| D2 | blue | CON_CLK | J1-2, U2-2 |
+| D3 | green | TRIG | R1-1 |
+| D5 | yellow | CON_OUT0 | J1-3, U1-1 |
+| D6 | orange | PAD_LATCH | J2-3 |
+| D7 | red | PAD_CLK | J2-2 |
+| D8 | brown | PAD_D0 | J2-4 |
+| D10 | black | RCLK | U3-12 |
+| D11 | white | MOSI | U3-14 |
+| D13 | grey | SCK | U3-11 |
+
 ## U1: 74HCT04  at +5V
 
 Hex inverter, six independent gates. HCT inputs switch at TTL levels (high from 2.0 V), which is why it sits on the console's NMOS OUT0 line: OUT0 high loads the register, so its inversion is the 165's active-low load. One gate is used. The other five inputs are CMOS and must not float: tie each spare A input to GND and leave its Y open.

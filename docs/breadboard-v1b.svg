@@ -24,7 +24,7 @@
 </style>
 <rect width="1900" height="980" fill="#ffffff"/>
 <text class="h1" x="60.0" y="60.0" text-anchor="start">Bridge v1b on the breadboard: where everything goes</text>
-<text class="h2" x="60.0" y="84.0" text-anchor="start">Placement is a choice, and it is written down in tools/breadboard.py. Every wire is read out of the schematic by tools/netlist.py, so this cannot show a connection the schematic does not have, or miss one that it does.</text>
+<text class="h2" x="60.0" y="84.0" text-anchor="start">Placement is the board as built on 2026-09-11, read off its photographs: notches toward the high columns, pin 1 lower right. Every wire is read out of the schematic, so this cannot show a connection it does not have.</text>
 <rect class="bb" x="174" y="158" width="1066" height="502" rx="8"/>
 <rect class="chan" x="174" y="393.0" width="1066" height="26"/>
 <line class="railp" x1="188" y1="196" x2="1226" y2="196"/>
@@ -603,70 +603,70 @@
 <text class="col" x="980.0" y="556.0" text-anchor="middle">31</text>
 <text class="col" x="1110.0" y="264.0" text-anchor="middle">36</text>
 <text class="col" x="1110.0" y="556.0" text-anchor="middle">36</text>
-<rect class="leg" x="274" y="425" width="8" height="14" rx="2"/>
-<rect class="leg" x="300" y="425" width="8" height="14" rx="2"/>
-<rect class="leg" x="326" y="425" width="8" height="14" rx="2"/>
-<rect class="leg" x="352" y="425" width="8" height="14" rx="2"/>
-<rect class="leg" x="378" y="425" width="8" height="14" rx="2"/>
-<rect class="leg" x="404" y="425" width="8" height="14" rx="2"/>
-<rect class="leg" x="430" y="425" width="8" height="14" rx="2"/>
-<rect class="leg" x="430" y="373" width="8" height="14" rx="2"/>
-<rect class="leg" x="404" y="373" width="8" height="14" rx="2"/>
-<rect class="leg" x="378" y="373" width="8" height="14" rx="2"/>
-<rect class="leg" x="352" y="373" width="8" height="14" rx="2"/>
-<rect class="leg" x="326" y="373" width="8" height="14" rx="2"/>
-<rect class="leg" x="300" y="373" width="8" height="14" rx="2"/>
-<rect class="leg" x="274" y="373" width="8" height="14" rx="2"/>
-<rect class="dip" x="263.0" y="371" width="186.0" height="70" rx="3"/>
-<path class="dip" d="M263.0 395.0 a11 11 0 0 0 0 22" fill="#111"/>
-<text class="dipt" x="356.0" y="404.0" text-anchor="middle">U1  74HCT04</text>
-<text class="dips" x="356.0" y="420.0" text-anchor="middle">inverter</text>
-<circle cx="276.0" cy="432" r="3" fill="#ffffff"/>
-<text class="col" x="278.0" y="572.0" text-anchor="middle">U1 pin 1</text>
-<rect class="leg" x="534" y="425" width="8" height="14" rx="2"/>
 <rect class="leg" x="560" y="425" width="8" height="14" rx="2"/>
-<rect class="leg" x="586" y="425" width="8" height="14" rx="2"/>
-<rect class="leg" x="612" y="425" width="8" height="14" rx="2"/>
-<rect class="leg" x="638" y="425" width="8" height="14" rx="2"/>
-<rect class="leg" x="664" y="425" width="8" height="14" rx="2"/>
-<rect class="leg" x="690" y="425" width="8" height="14" rx="2"/>
-<rect class="leg" x="716" y="425" width="8" height="14" rx="2"/>
-<rect class="leg" x="716" y="373" width="8" height="14" rx="2"/>
-<rect class="leg" x="690" y="373" width="8" height="14" rx="2"/>
-<rect class="leg" x="664" y="373" width="8" height="14" rx="2"/>
-<rect class="leg" x="638" y="373" width="8" height="14" rx="2"/>
-<rect class="leg" x="612" y="373" width="8" height="14" rx="2"/>
-<rect class="leg" x="586" y="373" width="8" height="14" rx="2"/>
-<rect class="leg" x="560" y="373" width="8" height="14" rx="2"/>
+<rect class="leg" x="534" y="425" width="8" height="14" rx="2"/>
+<rect class="leg" x="508" y="425" width="8" height="14" rx="2"/>
+<rect class="leg" x="482" y="425" width="8" height="14" rx="2"/>
+<rect class="leg" x="456" y="425" width="8" height="14" rx="2"/>
+<rect class="leg" x="430" y="425" width="8" height="14" rx="2"/>
+<rect class="leg" x="404" y="425" width="8" height="14" rx="2"/>
+<rect class="leg" x="404" y="373" width="8" height="14" rx="2"/>
+<rect class="leg" x="430" y="373" width="8" height="14" rx="2"/>
+<rect class="leg" x="456" y="373" width="8" height="14" rx="2"/>
+<rect class="leg" x="482" y="373" width="8" height="14" rx="2"/>
+<rect class="leg" x="508" y="373" width="8" height="14" rx="2"/>
 <rect class="leg" x="534" y="373" width="8" height="14" rx="2"/>
-<rect class="dip" x="523.0" y="371" width="212.0" height="70" rx="3"/>
-<path class="dip" d="M523.0 395.0 a11 11 0 0 0 0 22" fill="#111"/>
-<text class="dipt" x="629.0" y="404.0" text-anchor="middle">U2  74HC165</text>
-<text class="dips" x="629.0" y="420.0" text-anchor="middle">the pad the console reads</text>
-<circle cx="536.0" cy="432" r="3" fill="#ffffff"/>
-<text class="col" x="538.0" y="572.0" text-anchor="middle">U2 pin 1</text>
-<rect class="leg" x="846" y="425" width="8" height="14" rx="2"/>
-<rect class="leg" x="872" y="425" width="8" height="14" rx="2"/>
-<rect class="leg" x="898" y="425" width="8" height="14" rx="2"/>
-<rect class="leg" x="924" y="425" width="8" height="14" rx="2"/>
-<rect class="leg" x="950" y="425" width="8" height="14" rx="2"/>
-<rect class="leg" x="976" y="425" width="8" height="14" rx="2"/>
-<rect class="leg" x="1002" y="425" width="8" height="14" rx="2"/>
+<rect class="leg" x="560" y="373" width="8" height="14" rx="2"/>
+<rect class="dip" x="393.0" y="371" width="186.0" height="70" rx="3"/>
+<path class="dip" d="M579.0 395.0 a11 11 0 0 1 0 22" fill="#111"/>
+<text class="dipt" x="486.0" y="404.0" text-anchor="middle">U1  74HCT04</text>
+<text class="dips" x="486.0" y="420.0" text-anchor="middle">inverter</text>
+<circle cx="564" cy="432" r="3" fill="#ffffff"/>
+<text class="col" x="564.0" y="572.0" text-anchor="middle">U1 pin 1</text>
+<rect class="leg" x="794" y="425" width="8" height="14" rx="2"/>
+<rect class="leg" x="768" y="425" width="8" height="14" rx="2"/>
+<rect class="leg" x="742" y="425" width="8" height="14" rx="2"/>
+<rect class="leg" x="716" y="425" width="8" height="14" rx="2"/>
+<rect class="leg" x="690" y="425" width="8" height="14" rx="2"/>
+<rect class="leg" x="664" y="425" width="8" height="14" rx="2"/>
+<rect class="leg" x="638" y="425" width="8" height="14" rx="2"/>
+<rect class="leg" x="612" y="425" width="8" height="14" rx="2"/>
+<rect class="leg" x="612" y="373" width="8" height="14" rx="2"/>
+<rect class="leg" x="638" y="373" width="8" height="14" rx="2"/>
+<rect class="leg" x="664" y="373" width="8" height="14" rx="2"/>
+<rect class="leg" x="690" y="373" width="8" height="14" rx="2"/>
+<rect class="leg" x="716" y="373" width="8" height="14" rx="2"/>
+<rect class="leg" x="742" y="373" width="8" height="14" rx="2"/>
+<rect class="leg" x="768" y="373" width="8" height="14" rx="2"/>
+<rect class="leg" x="794" y="373" width="8" height="14" rx="2"/>
+<rect class="dip" x="601.0" y="371" width="212.0" height="70" rx="3"/>
+<path class="dip" d="M813.0 395.0 a11 11 0 0 1 0 22" fill="#111"/>
+<text class="dipt" x="707.0" y="404.0" text-anchor="middle">U2  74HC165</text>
+<text class="dips" x="707.0" y="420.0" text-anchor="middle">the pad the console reads</text>
+<circle cx="798" cy="432" r="3" fill="#ffffff"/>
+<text class="col" x="798.0" y="572.0" text-anchor="middle">U2 pin 1</text>
 <rect class="leg" x="1028" y="425" width="8" height="14" rx="2"/>
-<rect class="leg" x="1028" y="373" width="8" height="14" rx="2"/>
-<rect class="leg" x="1002" y="373" width="8" height="14" rx="2"/>
-<rect class="leg" x="976" y="373" width="8" height="14" rx="2"/>
-<rect class="leg" x="950" y="373" width="8" height="14" rx="2"/>
-<rect class="leg" x="924" y="373" width="8" height="14" rx="2"/>
-<rect class="leg" x="898" y="373" width="8" height="14" rx="2"/>
-<rect class="leg" x="872" y="373" width="8" height="14" rx="2"/>
+<rect class="leg" x="1002" y="425" width="8" height="14" rx="2"/>
+<rect class="leg" x="976" y="425" width="8" height="14" rx="2"/>
+<rect class="leg" x="950" y="425" width="8" height="14" rx="2"/>
+<rect class="leg" x="924" y="425" width="8" height="14" rx="2"/>
+<rect class="leg" x="898" y="425" width="8" height="14" rx="2"/>
+<rect class="leg" x="872" y="425" width="8" height="14" rx="2"/>
+<rect class="leg" x="846" y="425" width="8" height="14" rx="2"/>
 <rect class="leg" x="846" y="373" width="8" height="14" rx="2"/>
+<rect class="leg" x="872" y="373" width="8" height="14" rx="2"/>
+<rect class="leg" x="898" y="373" width="8" height="14" rx="2"/>
+<rect class="leg" x="924" y="373" width="8" height="14" rx="2"/>
+<rect class="leg" x="950" y="373" width="8" height="14" rx="2"/>
+<rect class="leg" x="976" y="373" width="8" height="14" rx="2"/>
+<rect class="leg" x="1002" y="373" width="8" height="14" rx="2"/>
+<rect class="leg" x="1028" y="373" width="8" height="14" rx="2"/>
 <rect class="dip" x="835.0" y="371" width="212.0" height="70" rx="3"/>
-<path class="dip" d="M835.0 395.0 a11 11 0 0 0 0 22" fill="#111"/>
+<path class="dip" d="M1047.0 395.0 a11 11 0 0 1 0 22" fill="#111"/>
 <text class="dipt" x="941.0" y="404.0" text-anchor="middle">U3  74HC595</text>
 <text class="dips" x="941.0" y="420.0" text-anchor="middle">the byte the UNO writes</text>
-<circle cx="848.0" cy="432" r="3" fill="#ffffff"/>
-<text class="col" x="850.0" y="572.0" text-anchor="middle">U3 pin 1</text>
+<circle cx="1032" cy="432" r="3" fill="#ffffff"/>
+<text class="col" x="1032.0" y="572.0" text-anchor="middle">U3 pin 1</text>
 <rect class="term" x="12" y="216" width="104" height="208" rx="5"/>
 <text class="kb" x="16.0" y="232.0" text-anchor="start">J1  console cable</text>
 <text class="col" x="16.0" y="246.0" text-anchor="start">the plug half, into port 1</text>
@@ -726,36 +726,36 @@
 <text class="termt" x="1672.0" y="338.0" text-anchor="start">+5V</text>
 <circle cx="1660" cy="364" r="4" fill="#333"/>
 <text class="termt" x="1672.0" y="368.0" text-anchor="start">n/c</text>
-<rect class="pass" x="373" y="600" width="18" height="18" rx="3"/>
-<text class="col" x="396.0" y="613.0" text-anchor="start">C1 100nF</text>
-<rect class="pass" x="659" y="600" width="18" height="18" rx="3"/>
-<text class="col" x="682.0" y="613.0" text-anchor="start">C2 100nF</text>
-<rect class="pass" x="971" y="600" width="18" height="18" rx="3"/>
-<text class="col" x="994.0" y="613.0" text-anchor="start">C3 100nF</text>
+<rect class="pass" x="581" y="600" width="18" height="18" rx="3"/>
+<text class="col" x="604.0" y="613.0" text-anchor="start">C1 100nF</text>
+<rect class="pass" x="815" y="600" width="18" height="18" rx="3"/>
+<text class="col" x="838.0" y="613.0" text-anchor="start">C2 100nF</text>
+<rect class="pass" x="1049" y="600" width="18" height="18" rx="3"/>
+<text class="col" x="1072.0" y="613.0" text-anchor="start">C3 100nF</text>
 <rect class="pass" x="1110" y="477" width="52" height="14" rx="3"/>
 <text class="col" x="1136.0" y="472.0" text-anchor="middle">R1 100R</text>
 <text class="col" x="1174.0" y="462.0" text-anchor="start">to the scope EXT TRIG</text>
-<path class="w" stroke="#7a3fbf" opacity="0.85" d="M304 484 Q421 535 538 484"/>
-<circle cx="421" cy="510" r="9" fill="#ffffff" stroke="#7a3fbf" stroke-width="1.6"/>
-<text class="wn" x="421.0" y="513.7" text-anchor="middle">1</text>
-<path class="w" stroke="#1b64c8" opacity="0.85" d="M108 292 Q378 288 564 484"/>
-<circle cx="357" cy="338" r="9" fill="#ffffff" stroke="#1b64c8" stroke-width="1.6"/>
-<text class="wn" x="357.1" y="341.8" text-anchor="middle">2</text>
-<path class="w" stroke="#1b64c8" opacity="0.85" d="M564 484 Q986 537 1360 334"/>
-<circle cx="974" cy="473" r="9" fill="#ffffff" stroke="#1b64c8" stroke-width="1.6"/>
-<text class="wn" x="974.0" y="476.9" text-anchor="middle">3</text>
-<path class="w" stroke="#1f9c53" opacity="0.85" d="M108 352 Q409 210 720 328"/>
-<circle cx="411" cy="275" r="9" fill="#ffffff" stroke="#1f9c53" stroke-width="1.6"/>
-<text class="wn" x="411.5" y="279.0" text-anchor="middle">4</text>
-<path class="w" stroke="#222222" opacity="0.85" d="M108 322 Q157 440 278 484"/>
-<circle cx="175" cy="422" r="9" fill="#ffffff" stroke="#222222" stroke-width="1.6"/>
-<text class="wn" x="175.2" y="425.7" text-anchor="middle">5</text>
-<path class="w" stroke="#222222" opacity="0.85" d="M278 484 Q798 266 1360 304"/>
-<circle cx="808" cy="330" r="9" fill="#ffffff" stroke="#222222" stroke-width="1.6"/>
-<text class="wn" x="808.3" y="333.9" text-anchor="middle">6</text>
-<path class="w" stroke="#0f8f9e" opacity="0.85" d="M902 328 Q1149 387 1360 244"/>
-<circle cx="1140" cy="336" r="9" fill="#ffffff" stroke="#0f8f9e" stroke-width="1.6"/>
-<text class="wn" x="1140.2" y="340.4" text-anchor="middle">7</text>
+<path class="w" stroke="#7a3fbf" opacity="0.85" d="M538 484 Q668 541 798 484"/>
+<circle cx="668" cy="513" r="9" fill="#ffffff" stroke="#7a3fbf" stroke-width="1.6"/>
+<text class="wn" x="668.0" y="516.6" text-anchor="middle">1</text>
+<path class="w" stroke="#1b64c8" opacity="0.85" d="M108 292 Q476 263 772 484"/>
+<circle cx="458" cy="326" r="9" fill="#ffffff" stroke="#1b64c8" stroke-width="1.6"/>
+<text class="wn" x="458.1" y="329.6" text-anchor="middle">2</text>
+<path class="w" stroke="#1b64c8" opacity="0.85" d="M772 484 Q1098 535 1360 334"/>
+<circle cx="1082" cy="472" r="9" fill="#ffffff" stroke="#1b64c8" stroke-width="1.6"/>
+<text class="wn" x="1082.1" y="476.0" text-anchor="middle">3</text>
+<path class="w" stroke="#1f9c53" opacity="0.85" d="M108 352 Q357 228 616 328"/>
+<circle cx="359" cy="284" r="9" fill="#ffffff" stroke="#1f9c53" stroke-width="1.6"/>
+<text class="wn" x="359.4" y="288.1" text-anchor="middle">4</text>
+<path class="w" stroke="#222222" opacity="0.85" d="M108 322 Q300 503 564 484"/>
+<circle cx="318" cy="453" r="9" fill="#ffffff" stroke="#222222" stroke-width="1.6"/>
+<text class="wn" x="318.2" y="457.2" text-anchor="middle">5</text>
+<path class="w" stroke="#222222" opacity="0.85" d="M564 484 Q933 267 1360 304"/>
+<circle cx="948" cy="331" r="9" fill="#ffffff" stroke="#222222" stroke-width="1.6"/>
+<text class="wn" x="947.7" y="334.6" text-anchor="middle">6</text>
+<path class="w" stroke="#0f8f9e" opacity="0.85" d="M980 328 Q1188 370 1360 244"/>
+<circle cx="1179" cy="328" r="9" fill="#ffffff" stroke="#0f8f9e" stroke-width="1.6"/>
+<text class="wn" x="1179.2" y="331.8" text-anchor="middle">7</text>
 <path class="w" stroke="#1b64c8" opacity="0.85" d="M1360 514 Q1451 313 1660 244"/>
 <circle cx="1480" cy="346" r="9" fill="#ffffff" stroke="#1b64c8" stroke-width="1.6"/>
 <text class="wn" x="1480.3" y="350.0" text-anchor="middle">8</text>
@@ -765,82 +765,82 @@
 <path class="w" stroke="#222222" opacity="0.85" d="M1360 484 Q1464 313 1660 274"/>
 <circle cx="1487" cy="346" r="9" fill="#ffffff" stroke="#222222" stroke-width="1.6"/>
 <text class="wn" x="1486.9" y="350.0" text-anchor="middle">10</text>
-<path class="w" stroke="#b5651d" opacity="0.85" d="M668 484 Q806 452 876 328"/>
-<circle cx="789" cy="429" r="9" fill="#ffffff" stroke="#b5651d" stroke-width="1.6"/>
-<text class="wn" x="789.2" y="432.9" text-anchor="middle">11</text>
-<path class="w" stroke="#8d1f5e" opacity="0.85" d="M642 484 Q746 438 850 484"/>
-<circle cx="746" cy="461" r="9" fill="#ffffff" stroke="#8d1f5e" stroke-width="1.6"/>
-<text class="wn" x="746.0" y="465.1" text-anchor="middle">12</text>
-<path class="w" stroke="#3f6f2a" opacity="0.85" d="M616 328 Q751 480 954 484"/>
-<circle cx="768" cy="443" r="9" fill="#ffffff" stroke="#3f6f2a" stroke-width="1.6"/>
-<text class="wn" x="767.8" y="447.2" text-anchor="middle">13</text>
-<path class="w" stroke="#5b5bd6" opacity="0.85" d="M642 328 Q845 332 980 484"/>
-<circle cx="828" cy="369" r="9" fill="#ffffff" stroke="#5b5bd6" stroke-width="1.6"/>
-<text class="wn" x="828.2" y="372.8" text-anchor="middle">14</text>
-<path class="w" stroke="#a8471f" opacity="0.85" d="M668 328 Q803 480 1006 484"/>
-<circle cx="820" cy="443" r="9" fill="#ffffff" stroke="#a8471f" stroke-width="1.6"/>
-<text class="wn" x="819.8" y="447.2" text-anchor="middle">15</text>
-<path class="w" stroke="#1f7a8c" opacity="0.85" d="M616 484 Q746 427 876 484"/>
-<circle cx="746" cy="455" r="9" fill="#ffffff" stroke="#1f7a8c" stroke-width="1.6"/>
-<text class="wn" x="746.0" y="459.4" text-anchor="middle">16</text>
-<path class="w" stroke="#7d4a1f" opacity="0.85" d="M590 484 Q746 553 902 484"/>
-<circle cx="746" cy="518" r="9" fill="#ffffff" stroke="#7d4a1f" stroke-width="1.6"/>
-<text class="wn" x="746.0" y="522.3" text-anchor="middle">17</text>
-<path class="w" stroke="#4a4a9c" opacity="0.85" d="M590 328 Q793 332 928 484"/>
-<circle cx="776" cy="369" r="9" fill="#ffffff" stroke="#4a4a9c" stroke-width="1.6"/>
-<text class="wn" x="776.2" y="372.8" text-anchor="middle">18</text>
-<path class="w" stroke="#96206a" opacity="0.85" d="M954 328 Q1169 390 1360 274"/>
-<circle cx="1163" cy="346" r="9" fill="#ffffff" stroke="#96206a" stroke-width="1.6"/>
-<text class="wn" x="1162.9" y="349.7" text-anchor="middle">19</text>
-<path class="w" stroke="#2f7d4f" opacity="0.85" d="M980 328 Q1145 187 1360 214"/>
-<circle cx="1157" cy="229" r="9" fill="#ffffff" stroke="#2f7d4f" stroke-width="1.6"/>
-<text class="wn" x="1157.5" y="233.2" text-anchor="middle">20</text>
+<path class="w" stroke="#b5651d" opacity="0.85" d="M668 484 Q871 480 1006 328"/>
+<circle cx="854" cy="443" r="9" fill="#ffffff" stroke="#b5651d" stroke-width="1.6"/>
+<text class="wn" x="854.2" y="447.2" text-anchor="middle">11</text>
+<path class="w" stroke="#8d1f5e" opacity="0.85" d="M694 484 Q863 410 1032 484"/>
+<circle cx="863" cy="447" r="9" fill="#ffffff" stroke="#8d1f5e" stroke-width="1.6"/>
+<text class="wn" x="863.0" y="450.8" text-anchor="middle">12</text>
+<path class="w" stroke="#3f6f2a" opacity="0.85" d="M720 328 Q790 452 928 484"/>
+<circle cx="807" cy="429" r="9" fill="#ffffff" stroke="#3f6f2a" stroke-width="1.6"/>
+<text class="wn" x="806.8" y="432.9" text-anchor="middle">13</text>
+<path class="w" stroke="#5b5bd6" opacity="0.85" d="M694 328 Q832 360 902 484"/>
+<circle cx="815" cy="383" r="9" fill="#ffffff" stroke="#5b5bd6" stroke-width="1.6"/>
+<text class="wn" x="815.2" y="387.1" text-anchor="middle">14</text>
+<path class="w" stroke="#a8471f" opacity="0.85" d="M668 328 Q738 452 876 484"/>
+<circle cx="755" cy="429" r="9" fill="#ffffff" stroke="#a8471f" stroke-width="1.6"/>
+<text class="wn" x="754.8" y="432.9" text-anchor="middle">15</text>
+<path class="w" stroke="#1f7a8c" opacity="0.85" d="M720 484 Q863 421 1006 484"/>
+<circle cx="863" cy="453" r="9" fill="#ffffff" stroke="#1f7a8c" stroke-width="1.6"/>
+<text class="wn" x="863.0" y="456.5" text-anchor="middle">16</text>
+<path class="w" stroke="#7d4a1f" opacity="0.85" d="M746 484 Q863 535 980 484"/>
+<circle cx="863" cy="510" r="9" fill="#ffffff" stroke="#7d4a1f" stroke-width="1.6"/>
+<text class="wn" x="863.0" y="513.7" text-anchor="middle">17</text>
+<path class="w" stroke="#4a4a9c" opacity="0.85" d="M746 328 Q884 360 954 484"/>
+<circle cx="867" cy="383" r="9" fill="#ffffff" stroke="#4a4a9c" stroke-width="1.6"/>
+<text class="wn" x="867.2" y="387.1" text-anchor="middle">18</text>
+<path class="w" stroke="#96206a" opacity="0.85" d="M928 328 Q1156 396 1360 274"/>
+<circle cx="1150" cy="349" r="9" fill="#ffffff" stroke="#96206a" stroke-width="1.6"/>
+<text class="wn" x="1149.9" y="352.5" text-anchor="middle">19</text>
+<path class="w" stroke="#2f7d4f" opacity="0.85" d="M902 328 Q1106 170 1360 214"/>
+<circle cx="1118" cy="221" r="9" fill="#ffffff" stroke="#2f7d4f" stroke-width="1.6"/>
+<text class="wn" x="1118.5" y="224.6" text-anchor="middle">20</text>
 <path class="w" stroke="#7a3fbf" opacity="0.85" d="M1110 484 Q1261 479 1360 364"/>
 <circle cx="1248" cy="452" r="9" fill="#ffffff" stroke="#7a3fbf" stroke-width="1.6"/>
 <text class="wn" x="1248.2" y="455.5" text-anchor="middle">21</text>
-<path class="w" stroke="#d02b2b" opacity="0.9" d="M278 328 L278 196"/>
-<path class="w" stroke="#d02b2b" opacity="0.9" d="M538 328 L538 196"/>
+<path class="w" stroke="#d02b2b" opacity="0.9" d="M564 328 L564 196"/>
+<path class="w" stroke="#d02b2b" opacity="0.9" d="M798 328 L798 196"/>
 <path class="w" stroke="#d02b2b" opacity="0.9" d="M1660 334 L1660 622"/>
 <path class="w" stroke="#d02b2b" opacity="0.9" d="M1360 394 L1360 622"/>
-<path class="w" stroke="#d02b2b" opacity="0.9" d="M1006 328 L1006 196"/>
-<path class="w" stroke="#d02b2b" opacity="0.9" d="M850 328 L850 196"/>
+<path class="w" stroke="#d02b2b" opacity="0.9" d="M876 328 L876 196"/>
+<path class="w" stroke="#d02b2b" opacity="0.9" d="M1032 328 L1032 196"/>
 <path class="w" stroke="#1b64c8" opacity="0.9" d="M108 262 L108 596"/>
-<path class="w" stroke="#1b64c8" opacity="0.9" d="M330 484 L330 596"/>
-<path class="w" stroke="#1b64c8" opacity="0.9" d="M382 484 L382 596"/>
-<path class="w" stroke="#1b64c8" opacity="0.9" d="M408 328 L408 222"/>
-<path class="w" stroke="#1b64c8" opacity="0.9" d="M356 328 L356 222"/>
-<path class="w" stroke="#1b64c8" opacity="0.9" d="M304 328 L304 222"/>
-<path class="w" stroke="#1b64c8" opacity="0.9" d="M434 484 L434 596"/>
-<path class="w" stroke="#1b64c8" opacity="0.9" d="M564 328 L564 222"/>
-<path class="w" stroke="#1b64c8" opacity="0.9" d="M694 328 L694 222"/>
-<path class="w" stroke="#1b64c8" opacity="0.9" d="M720 484 L720 596"/>
+<path class="w" stroke="#1b64c8" opacity="0.9" d="M512 484 L512 596"/>
+<path class="w" stroke="#1b64c8" opacity="0.9" d="M460 484 L460 596"/>
+<path class="w" stroke="#1b64c8" opacity="0.9" d="M434 328 L434 222"/>
+<path class="w" stroke="#1b64c8" opacity="0.9" d="M486 328 L486 222"/>
+<path class="w" stroke="#1b64c8" opacity="0.9" d="M538 328 L538 222"/>
+<path class="w" stroke="#1b64c8" opacity="0.9" d="M408 484 L408 596"/>
+<path class="w" stroke="#1b64c8" opacity="0.9" d="M772 328 L772 222"/>
+<path class="w" stroke="#1b64c8" opacity="0.9" d="M642 328 L642 222"/>
+<path class="w" stroke="#1b64c8" opacity="0.9" d="M616 484 L616 596"/>
 <path class="w" stroke="#1b64c8" opacity="0.9" d="M1660 214 L1660 596"/>
 <path class="w" stroke="#1b64c8" opacity="0.9" d="M1360 424 L1360 596"/>
-<path class="w" stroke="#1b64c8" opacity="0.9" d="M928 328 L928 222"/>
-<path class="w" stroke="#1b64c8" opacity="0.9" d="M1032 484 L1032 596"/>
+<path class="w" stroke="#1b64c8" opacity="0.9" d="M954 328 L954 222"/>
+<path class="w" stroke="#1b64c8" opacity="0.9" d="M850 484 L850 596"/>
 <text class="h1" x="60.0" y="732.0" text-anchor="start">21 numbered jumpers, and 20 short wires to the rails</text>
 <text class="h2" x="60.0" y="754.0" text-anchor="start">Every one of these is read out of the schematic. Red stubs go to the nearest + rail, blue stubs to the nearest - rail; they are not numbered because they are all the same instruction.</text>
 <circle cx="69" cy="780" r="9" fill="#ffffff" stroke="#7a3fbf" stroke-width="1.6"/>
 <text class="wn" x="69.0" y="784.0" text-anchor="middle">1</text>
-<text class="k" x="86.0" y="784.0" text-anchor="start">/PL:  U1-2 (col 5 row H)  to  U2-1 (col 14 row H)</text>
+<text class="k" x="86.0" y="784.0" text-anchor="start">/PL:  U1-2 (col 14 row H)  to  U2-1 (col 24 row H)</text>
 <circle cx="69" cy="799" r="9" fill="#ffffff" stroke="#1b64c8" stroke-width="1.6"/>
 <text class="wn" x="69.0" y="803.0" text-anchor="middle">2</text>
-<text class="k" x="86.0" y="803.0" text-anchor="start">CON_CLK, the blue lead:  J1 CLK  to  U2-2 (col 15 row H)</text>
+<text class="k" x="86.0" y="803.0" text-anchor="start">CON_CLK, the blue lead:  J1 CLK  to  U2-2 (col 23 row H)</text>
 <circle cx="69" cy="818" r="9" fill="#ffffff" stroke="#1b64c8" stroke-width="1.6"/>
 <text class="wn" x="69.0" y="822.0" text-anchor="middle">3</text>
-<text class="k" x="86.0" y="822.0" text-anchor="start">CON_CLK, the blue lead:  U2-2 (col 15 row H)  to  A1 D2 (INT0)</text>
+<text class="k" x="86.0" y="822.0" text-anchor="start">CON_CLK, the blue lead:  U2-2 (col 23 row H)  to  A1 D2 (INT0)</text>
 <circle cx="69" cy="837" r="9" fill="#ffffff" stroke="#1f9c53" stroke-width="1.6"/>
 <text class="wn" x="69.0" y="841.0" text-anchor="middle">4</text>
-<text class="k" x="86.0" y="841.0" text-anchor="start">CON_D0, the green lead:  J1 D0  to  U2-9 (col 21 row C)</text>
+<text class="k" x="86.0" y="841.0" text-anchor="start">CON_D0, the green lead:  J1 D0  to  U2-9 (col 17 row C)</text>
 <circle cx="69" cy="856" r="9" fill="#ffffff" stroke="#222222" stroke-width="1.6"/>
 <text class="wn" x="69.0" y="860.0" text-anchor="middle">5</text>
-<text class="k" x="86.0" y="860.0" text-anchor="start">CON_OUT0, the black lead:  J1 OUT0  to  U1-1 (col 4 row H)</text>
+<text class="k" x="86.0" y="860.0" text-anchor="start">CON_OUT0, the black lead:  J1 OUT0  to  U1-1 (col 15 row H)</text>
 <circle cx="69" cy="875" r="9" fill="#ffffff" stroke="#222222" stroke-width="1.6"/>
 <text class="wn" x="69.0" y="879.0" text-anchor="middle">6</text>
-<text class="k" x="86.0" y="879.0" text-anchor="start">CON_OUT0, the black lead:  U1-1 (col 4 row H)  to  A1 D5 (T1)</text>
+<text class="k" x="86.0" y="879.0" text-anchor="start">CON_OUT0, the black lead:  U1-1 (col 15 row H)  to  A1 D5 (T1)</text>
 <circle cx="69" cy="894" r="9" fill="#ffffff" stroke="#0f8f9e" stroke-width="1.6"/>
 <text class="wn" x="69.0" y="898.0" text-anchor="middle">7</text>
-<text class="k" x="86.0" y="898.0" text-anchor="start">MOSI:  U3-14 (col 28 row C)  to  A1 D11 MOSI</text>
+<text class="k" x="86.0" y="898.0" text-anchor="start">MOSI:  U3-14 (col 31 row C)  to  A1 D11 MOSI</text>
 <circle cx="669" cy="780" r="9" fill="#ffffff" stroke="#1b64c8" stroke-width="1.6"/>
 <text class="wn" x="669.0" y="784.0" text-anchor="middle">8</text>
 <text class="k" x="686.0" y="784.0" text-anchor="start">PAD_CLK, the blue lead:  A1 D7  to  J2 CLK</text>
@@ -852,34 +852,34 @@
 <text class="k" x="686.0" y="822.0" text-anchor="start">PAD_LATCH, the black lead:  A1 D6  to  J2 OUT0</text>
 <circle cx="669" cy="837" r="9" fill="#ffffff" stroke="#b5651d" stroke-width="1.6"/>
 <text class="wn" x="669.0" y="841.0" text-anchor="middle">11</text>
-<text class="k" x="686.0" y="841.0" text-anchor="start">Q_A:  U2-6 (col 19 row H)  to  U3-15 (col 27 row C)</text>
+<text class="k" x="686.0" y="841.0" text-anchor="start">Q_A:  U2-6 (col 19 row H)  to  U3-15 (col 32 row C)</text>
 <circle cx="669" cy="856" r="9" fill="#ffffff" stroke="#8d1f5e" stroke-width="1.6"/>
 <text class="wn" x="669.0" y="860.0" text-anchor="middle">12</text>
-<text class="k" x="686.0" y="860.0" text-anchor="start">Q_B:  U2-5 (col 18 row H)  to  U3-1 (col 26 row H)</text>
+<text class="k" x="686.0" y="860.0" text-anchor="start">Q_B:  U2-5 (col 20 row H)  to  U3-1 (col 33 row H)</text>
 <circle cx="669" cy="875" r="9" fill="#ffffff" stroke="#3f6f2a" stroke-width="1.6"/>
 <text class="wn" x="669.0" y="879.0" text-anchor="middle">13</text>
-<text class="k" x="686.0" y="879.0" text-anchor="start">Q_DOWN:  U2-13 (col 17 row C)  to  U3-5 (col 30 row H)</text>
+<text class="k" x="686.0" y="879.0" text-anchor="start">Q_DOWN:  U2-13 (col 21 row C)  to  U3-5 (col 29 row H)</text>
 <circle cx="669" cy="894" r="9" fill="#ffffff" stroke="#5b5bd6" stroke-width="1.6"/>
 <text class="wn" x="669.0" y="898.0" text-anchor="middle">14</text>
-<text class="k" x="686.0" y="898.0" text-anchor="start">Q_LEFT:  U2-12 (col 18 row C)  to  U3-6 (col 31 row H)</text>
+<text class="k" x="686.0" y="898.0" text-anchor="start">Q_LEFT:  U2-12 (col 20 row C)  to  U3-6 (col 28 row H)</text>
 <circle cx="1269" cy="780" r="9" fill="#ffffff" stroke="#a8471f" stroke-width="1.6"/>
 <text class="wn" x="1269.0" y="784.0" text-anchor="middle">15</text>
-<text class="k" x="1286.0" y="784.0" text-anchor="start">Q_RIGHT:  U2-11 (col 19 row C)  to  U3-7 (col 32 row H)</text>
+<text class="k" x="1286.0" y="784.0" text-anchor="start">Q_RIGHT:  U2-11 (col 19 row C)  to  U3-7 (col 27 row H)</text>
 <circle cx="1269" cy="799" r="9" fill="#ffffff" stroke="#1f7a8c" stroke-width="1.6"/>
 <text class="wn" x="1269.0" y="803.0" text-anchor="middle">16</text>
-<text class="k" x="1286.0" y="803.0" text-anchor="start">Q_SEL:  U2-4 (col 17 row H)  to  U3-2 (col 27 row H)</text>
+<text class="k" x="1286.0" y="803.0" text-anchor="start">Q_SEL:  U2-4 (col 21 row H)  to  U3-2 (col 32 row H)</text>
 <circle cx="1269" cy="818" r="9" fill="#ffffff" stroke="#7d4a1f" stroke-width="1.6"/>
 <text class="wn" x="1269.0" y="822.0" text-anchor="middle">17</text>
-<text class="k" x="1286.0" y="822.0" text-anchor="start">Q_START:  U2-3 (col 16 row H)  to  U3-3 (col 28 row H)</text>
+<text class="k" x="1286.0" y="822.0" text-anchor="start">Q_START:  U2-3 (col 22 row H)  to  U3-3 (col 31 row H)</text>
 <circle cx="1269" cy="837" r="9" fill="#ffffff" stroke="#4a4a9c" stroke-width="1.6"/>
 <text class="wn" x="1269.0" y="841.0" text-anchor="middle">18</text>
-<text class="k" x="1286.0" y="841.0" text-anchor="start">Q_UP:  U2-14 (col 16 row C)  to  U3-4 (col 29 row H)</text>
+<text class="k" x="1286.0" y="841.0" text-anchor="start">Q_UP:  U2-14 (col 22 row C)  to  U3-4 (col 30 row H)</text>
 <circle cx="1269" cy="856" r="9" fill="#ffffff" stroke="#96206a" stroke-width="1.6"/>
 <text class="wn" x="1269.0" y="860.0" text-anchor="middle">19</text>
-<text class="k" x="1286.0" y="860.0" text-anchor="start">RCLK:  U3-12 (col 30 row C)  to  A1 D10</text>
+<text class="k" x="1286.0" y="860.0" text-anchor="start">RCLK:  U3-12 (col 29 row C)  to  A1 D10</text>
 <circle cx="1269" cy="875" r="9" fill="#ffffff" stroke="#2f7d4f" stroke-width="1.6"/>
 <text class="wn" x="1269.0" y="879.0" text-anchor="middle">20</text>
-<text class="k" x="1286.0" y="879.0" text-anchor="start">SCK:  U3-11 (col 31 row C)  to  A1 D13 SCK</text>
+<text class="k" x="1286.0" y="879.0" text-anchor="start">SCK:  U3-11 (col 28 row C)  to  A1 D13 SCK</text>
 <circle cx="1269" cy="894" r="9" fill="#ffffff" stroke="#7a3fbf" stroke-width="1.6"/>
 <text class="wn" x="1269.0" y="898.0" text-anchor="middle">21</text>
 <text class="k" x="1286.0" y="898.0" text-anchor="start">TRIG:  R1 col 36 row H  to  A1 D3</text>

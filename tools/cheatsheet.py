@@ -207,13 +207,24 @@ def pinmap(sheet="bench-v1b"):
            "(docs/lab/06-breakout-map-power-reset.jpg). What each way does is step 6.2's "
            "question: which pad is ground and which is pulled up.",
            ["pin", "NES harness", "breakout lead"], prows)
+    # The UNO ribbon: colour per pin from the bring-up tool's table, the
+    # net and its far end from the schematic.
+    uno = {n["pinname"].split()[0]: n for n in nodes if n["ref"] == "A1"}
+    rrows = []
+    for pin, colour in bu.RIBBON:
+        n = uno.get(pin)
+        rrows.append([pin, colour, n["net"] if n else "?", other_ends(nl, nets, n["net"], "A1") if n else "not on the schematic"])
+    rib = ("The UNO ribbon",
+           "Nine Dupont wires from the UNO's digital header, colour per pin as read off the header "
+           "(2026-09-11). The net and the far end come from the schematic.",
+           ["UNO pin", "colour", "net", "to"], rrows)
     hrows = [[bcm, str(pos), to, role] for bcm, pos, to, role in PI_HEADER]
     head = ("The head's four jumpers",
             "Four Dupont leads off the Pi's header, no breakout (2026-09-10). Header positions "
             "are the Pi's own numbering. No wire from here to the console: the Pi's ground "
             "reaches it through the UNO's USB cable only.",
             ["Pi pin", "pos.", "to", "role"], hrows)
-    return [con, pwr, head]
+    return [con, pwr, head, rib]
 
 
 def chip_sheet(ref, sheet="bench-v1b"):

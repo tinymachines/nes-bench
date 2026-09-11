@@ -2,7 +2,7 @@
   "org": "tinymachines",
   "project": "nes-bench",
   "docno": "TM-NESB-001",
-  "rev": "A",
+  "rev": "B",
   "drawn": "bisenbek",
   "page": "ansi-a",
   "title": "NES controller-port bridge, v1b",
@@ -41,7 +41,7 @@
     {
       "kind": "pinmap",
       "sheet": "bench-v1b",
-      "title": "Pin, NES harness, breakout: the two breakouts and the head's jumpers"
+      "title": "Pin map: breakouts, head jumpers, UNO ribbon"
     },
     {
       "kind": "wiring",
@@ -59,19 +59,19 @@
       "kind": "chip",
       "ref": "U1",
       "sheet": "bench-v1b",
-      "title": "Chip sheet: U1, 74HCT04 hex inverter"
+      "title": "U1, 74HCT04 hex inverter"
     },
     {
       "kind": "chip",
       "ref": "U2",
       "sheet": "bench-v1b",
-      "title": "Chip sheet: U2, 74HC165 shift register, the pad"
+      "title": "U2, 74HC165 shift register, the pad"
     },
     {
       "kind": "chip",
       "ref": "U3",
       "sheet": "bench-v1b",
-      "title": "Chip sheet: U3, 74HC595 output register"
+      "title": "U3, 74HC595 output register"
     },
     {
       "kind": "steps",
@@ -105,6 +105,11 @@
       "A",
       "2026-09-10",
       "two letter sheets, coordinates derived not typed"
+    ],
+    [
+      "B",
+      "2026-09-11",
+      "as-built placement, wiring diagram, pin map, chip sheets"
     ]
   ]
 }

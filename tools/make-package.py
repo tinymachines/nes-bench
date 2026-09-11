@@ -67,8 +67,7 @@ def sheet_cover(p, cfg, spec):
         for line in sf.wrap(para, 104):
             p.text(x, cy, line, "tmf-body")
             cy += 18
-        cy += 12
-    cy += 10
+        cy += 6
     p.text(x, cy, "Sheets", "tmf-h2")
     paper = {"ansi-a": "letter", "ansi-b": "ANSI B", "a4": "A4", "a3": "A3"}
     # The index lists the sheets the package actually has, which is not
@@ -79,8 +78,8 @@ def sheet_cover(p, cfg, spec):
              paper.get(s.get("page", cfg.get("page", "ansi-b")), "?"),
              {"schematic": "schematic", "wiring": "derived from the schematic",
               "parts": "derived from the schematic", "steps": "derived from the bring-up tool",
-              "pinmap": "derived from the schematic, the lab log and the bring-up tool",
-              "chip": "pins from the schematic; purposes authored from the datasheet",
+              "pinmap": "schematic, lab log, bring-up tool",
+              "chip": "schematic pins, datasheet purposes",
               "cover": "this sheet"}[s["kind"]]]
             for i, s in enumerate(sheets)]
     drawn = p.table((x, cy + 10, w * 0.86, h - (cy - y) - 24),
@@ -191,36 +190,60 @@ def sheet_steps(p, cfg, spec):
 
 
 def sheet_pinmap(p, cfg, spec):
-    """The two breakouts pin by pin and the head's jumpers: the rows
-    tools/cheatsheet.py writes as markdown, drawn as three tables. The
-    controller port runs the width of the sheet; the two short ones sit
-    side by side under it, which is what makes three fit on a letter."""
+    """The breakouts pin by pin, the head's jumpers and the UNO ribbon:
+    the tables tools/cheatsheet.py writes as markdown. The first runs
+    the width of the sheet, the next two sit side by side, the rest run
+    full width; a table that does not fit carries on to another sheet
+    through the same `from`/`_left` mechanism the wiring list uses."""
     cs = load("cheatsheet", "cheatsheet.py")
-    p.header(cfg["project"], spec["title"])
+    p.header(cfg["project"], spec["title"] + ("  (continued)" if spec.get("from") else ""))
     x, y, w, h = p.body_box(top_pad=44)
     tables = cs.pinmap(spec.get("sheet", "bench-v1b"))
     gap = 24
-    boxes = [(x, w, 118)] + [(x, (w - gap) / 2, 56), (x + (w + gap) / 2, (w - gap) / 2, 56)]
-    cy_row = y
-    bottoms = []
-    for k, ((title, note, headers, rows), (bx, bw, chars)) in enumerate(zip(tables, boxes)):
-        cy = cy_row
+    half = (w - gap) / 2
+
+    def layout(k):
+        """(x, width, wrap chars) for table k; 1 and 2 share a row."""
+        if k == 1: return x, half, 56
+        if k == 2: return x + half + gap, half, 56
+        return x, w, 118
+
+    def widths_for(headers):
+        if headers[0] == "UNO pin": return [0.08, 0.10, 0.14, 0.68]
+        return {5: [0.06, 0.10, 0.14, 0.14, 0.56], 3: [0.20, 0.40, 0.40], 4: [0.14, 0.12, 0.37, 0.37]}[len(headers)]
+
+    def height(k):
+        title, note, headers, rows = tables[k]
+        return 14 + 15 * len(sf.wrap(note, layout(k)[2])) + 10 + 21 + 19 * len(rows)
+
+    def draw(k, top):
+        title, note, headers, rows = tables[k]
+        bx, bw, chars = layout(k)
+        cy = top
         p.text(bx, cy + 6, title, "tmf-h2")
         cy += 14
         for line in sf.wrap(note, chars):
             cy += 15
             p.text(bx, cy, line, "tmf-body")
         cy += 10
-        widths = {5: [0.06, 0.10, 0.14, 0.14, 0.56], 3: [0.20, 0.40, 0.40],
-                  4: [0.14, 0.12, 0.37, 0.37]}[len(headers)]
-        drawn = p.table((bx, cy, bw, y + h - cy), headers, rows, widths=widths, mono=(0, 1), strict=True)
-        # Three short tables on one sheet: a row that does not fit is a
-        # layout mistake, not a reason for a second sheet.
+        drawn = p.table((bx, cy, bw, y + h - cy), headers, rows, widths=widths_for(headers), mono=(0, 1), strict=True)
         assert drawn == len(rows), f"pinmap: {title!r} fits {drawn} of {len(rows)} rows"
-        bottoms.append(cy + 21 + 19 * len(rows))
-        if k == 0:
-            cy_row = bottoms[0] + 22
-    p.footer("generated from tools/cheatsheet.py: the schematic, the lab log and tools/bringup.py's lead table")
+        return cy + 21 + 19 * len(rows)
+
+    k = spec.get("from", 0)
+    top, drawn_here = y, 0
+    while k < len(tables):
+        unit = [1, 2] if k == 1 else [k]
+        need = max(height(j) for j in unit)
+        if top + need > y + h:
+            break
+        top = max(draw(j, top) for j in unit) + 22
+        k += len(unit)
+        drawn_here += len(unit)
+    assert drawn_here, "pinmap: a table alone does not fit a sheet"
+    spec["_drawn_here"] = drawn_here
+    spec["_left"] = len(tables) - spec.get("from", 0) - drawn_here
+    p.footer("generated from tools/cheatsheet.py: the schematic, the lab log and tools/bringup.py's lead and ribbon tables")
 
 
 def sheet_chip(p, cfg, spec):
