@@ -43,6 +43,10 @@ sudo cp -a /etc/resolv.conf "$B/resolv.conf"
 [ -f ~/.npmrc ] && cp -a ~/.npmrc "$B/npmrc"
 echo "== resolver back to NetworkManager"
 sudo chattr -i /etc/resolv.conf
+# NetworkManager'"'"'s default rc-manager (symlink) leaves a REGULAR
+# /etc/resolv.conf alone, which is why the first run of this script
+# cleared the flag and changed nothing: the file has to be the symlink.
+sudo ln -sf /run/NetworkManager/resolv.conf /etc/resolv.conf
 sudo nmcli general reload dns-rc
 sleep 1; cat /etc/resolv.conf
 echo "== proxies removed"
@@ -50,6 +54,11 @@ sudo rm -f /etc/apt/apt.conf.d/95proxies
 [ -f ~/.npmrc ] && sed -i "/^proxy=/d;/^https-proxy=/d" ~/.npmrc
 echo "== dnsmasq re-reads its upstreams"
 systemctl is-active dnsmasq >/dev/null 2>&1 && sudo systemctl restart dnsmasq || true
+# With DNS dead the clock could not sync either, and a clock months
+# behind makes every certificate "not yet valid" and apt refuse every
+# release file. timesyncd recovers on its own once names resolve.
+echo "== clock"
+sudo systemctl restart systemd-timesyncd; sleep 5; date -u; timedatectl show -p NTPSynchronized
 echo "== verify"
 getent hosts deb.debian.org | head -1
 curl -sSI --max-time 10 https://deb.debian.org/ | head -1
