@@ -163,7 +163,7 @@ diff a/em28xx-reg.h b/em28xx-reg.h
  
 diff a/em28xx-video.c b/em28xx-video.c
 --- a/em28xx-video.c	2026-09-11 20:22:08.970654089 -0400
-+++ b/em28xx-video.c	2026-09-11 20:22:09.004653941 -0400
++++ b/em28xx-video.c	2026-09-11 22:10:16.672632028 -0400
 @@ -1147,7 +1147,7 @@
  		v4l2->decoder_pads[EM2828X_PAD_VID_OUT].flags = MEDIA_PAD_FL_SOURCE;
  		v4l2->decoder_pads[EM2828X_PAD_VID_OUT].sig_type = PAD_SIGNAL_DV;
@@ -173,7 +173,29 @@ diff a/em28xx-video.c b/em28xx-video.c
  		v4l2->decoder->name = "em2828x_builtin";
  		v4l2->decoder->function = MEDIA_ENT_F_ATV_DECODER;
  
-@@ -2721,7 +2721,7 @@
+@@ -1718,6 +1718,21 @@
+ static int vidioc_querystd(struct file *file, void *priv, v4l2_std_id *norm)
+ {
+ 	struct em28xx *dev = video_drvdata(file);
++	struct em28xx_v4l2 *v4l2 = dev->v4l2;
++
++	/*
++	 * The built-in decoder cannot tell us what it locked to. Answer
++	 * with the standard in force rather than "all of them": a caller
++	 * that feeds the answer back to S_STD (v4l2-ctl does, before it
++	 * streams) would otherwise set a mask with the 625-line bit in
++	 * it, this driver would program 576-line geometry with a
++	 * 480/576 vertical scaler, and every NTSC field would arrive as
++	 * 200 lines instead of 240 (measured 2026-09-11 on the Roxio).
++	 */
++	if (dev->board.decoder == EM28XX_BUILTIN) {
++		*norm = (v4l2->norm == (v4l2_std_id)-1) ? V4L2_STD_UNKNOWN : v4l2->norm;
++		return 0;
++	}
+ 
+ 	v4l2_device_call_all(&dev->v4l2->v4l2_dev, 0, video, querystd, norm);
+ 
+@@ -2721,7 +2736,7 @@
  
  	mutex_lock(&dev->lock);
  

@@ -104,4 +104,6 @@ takes the console's composite video and needs the driver in
 `roxio-em28xx/` (its README has the story, the recipe and the limit:
 400 of 480 lines). A C-Media USB sound card is ALSA card 3 for audio.
 Neither is a head verb yet; that is the next step once the camera is
-aimed at the board.
+aimed at the board. `tools/eyes.py pair` and `compare` put the grabber
+beside the scope: the same composite recorded both ways, decoded both
+ways, and scored on the console's pixel grid.
