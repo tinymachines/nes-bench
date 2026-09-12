@@ -144,18 +144,52 @@ Start at latch 200 held three latches):
   the trace also located). Nothing in the ladder's own oracles had this
   sequence. This is what T0 is for, and it paid on the first cartridge.
 
-**T1: the die runs the console's program.** `RecordedBus` in
-`v6502-sim`, and `replay-recorded` in `v6502-pins`: a `.pins` and
-`.stim` in, rung 0 run under them, its frames compared field by field
-with the console's by the comparison the crate already has. Gate:
-bit-exact at the pins from reset to the title screen's first poll on
-the test cartridge; on the bench's own cartridge the first differing
-half-cycle named, with the instruction that was executing. Expected
-candidates, to be confirmed or cleared rather than assumed: decimal
-mode, which the 2A03 core lacks and the die has; the unofficial
-opcodes; the RDY sample points around sprite DMA. MUTATE: one data bit
-flipped in the recording must be reported at its half-cycle, and a
-recording with its `.stim` withheld must refuse to run.
+**T1: the die runs the console's program. DONE 2026-09-12** (`6502` @
+4646f3f: `v6502_sim::recorded::RecordedBus`, `rung0_recorded`,
+`run_recorded`, `v6502-pins/examples/replay-recorded`, and
+`tests/recorded.rs`; `nes` @ 513bf39 for the two things the die found
+in the tool). Usage:
+
+    cargo run --release -p v6502-pins --example replay-recorded -- <name.pins> [half-cycles]
+
+The gates, as run:
+
+- The pin golden, all 289 traces, replays through the recorded bus with
+  the loads WITHHELD (every byte after h=0 from the record): identical.
+  `MUTATE=1` flips one recorded write and the bus refuses at that
+  half-cycle. A record naming no `.stim` is refused (exit 2). Rung 0
+  runs at about 33,000 half-cycles a second on a record: two seconds a
+  NES frame, as expected.
+- The test cartridge: bit-exact from reset through ALL TWELVE frames of
+  its record (714,732 half-cycles, 356,095 reads and 1,271 writes held
+  to it), past the first poll the gate asked for. Two things had to be
+  fixed for that, both in the tool and the cartridge, neither in the
+  die: the trace's stimulus lines were written at the frame where a
+  level first showed, which is one half-cycle late for the pin crate's
+  driver (the die found it at the first NMI); and the cartridge never
+  set its stack pointer, which powers on at $BD on the 2A03 die and $FD
+  on the 6502 die, so the two parted at the first NMI's push. Every
+  real program has `LDX #$FF; TXS`; now so does ours (the pad
+  cartridge's prediction for the part moved from 596 to 597 polls over
+  600 frames, nines unchanged; the flashcart copy must be re-exported).
+- The bench's own cartridge: the first differing half-cycle named, with
+  the instruction. Rung 0 agrees for 294,364 half-cycles (frame 5) and
+  parts where the first sprite DMA releases the core: the die resumes
+  its held fetch of $C096 one cycle before the record does. With every
+  RDY rise driven one half-cycle later (`RDY_RISE_SHIFT=1`, an
+  experiment knob in the example, not a rule) it agrees for 591,074
+  (frame 10) and parts at an NMI that fell in the last cycle of a taken
+  `BEQ` at $813F: the die finishes the next instruction (`LDA $20`)
+  first, which is the taken-branch interrupt delay the part is known
+  for, and the console's rung takes the NMI at once.
+
+So the plan's expected candidates sorted themselves: not decimal mode,
+not the unofficial opcodes, but the input sample points, twice. Both
+are rung 3 questions (the 2A03 rung's core is the 6502's rung 3), both
+now have the die's answer on a real program, and both are open items:
+the branch delay is a rule to add to `v6502-micro` under a test against
+rung 0; the DMA release phase is how the 2A03 rung reports its hold as
+a pin level, to be held to the 2A03 die in the 2a03 repository.
 
 **T2: the stack's instruments, fed a console.** A `LOAD` door in
 `halfwave` and in the site's wasm machine that takes a recorded bus

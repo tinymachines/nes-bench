@@ -53,6 +53,27 @@ entry is the one that raised it, with its date.
   recorder that ends in an ALU write to X or Y, so the selector's
   staleness is measured rather than patched around.
 
+- **Rung 3 takes an NMI that falls in the last cycle of a taken branch
+  at once; the die waits one instruction (2026-09-12).** Found by the
+  bench's cartridge record replayed on rung 0 (`trace-plan.md`, T1):
+  h=591,074, `BEQ` at $813F, then `LDA $20`. Closes with: a test in
+  `v6502-micro` that drives an NMI edge at every half-cycle around a
+  taken branch (page crossed and not) on rung 0 beside rung 3, red
+  before the rule and green after, MUTATE red; then the 2a03 and nes
+  pins bumped and the cartridge record replayed further.
+- **The 2A03 rung's DMA release is reported one half-cycle before the
+  die resumes (2026-09-12).** At the first sprite DMA of the
+  cartridge's record the die resumes its held fetch a cycle before the
+  record does; with every RDY rise a half-cycle later the two agree
+  through five more frames. Which is early, the reported level or the
+  die, is a 2A03 question: closes with the 2A03 rung's reported hold
+  held to the 2A03 die's own golden at the release edge, and the
+  `RDY_RISE_SHIFT` knob retired.
+- **The flashcart's pad cartridge is stale (2026-09-12).** The test
+  cartridge now sets its stack pointer at reset; its prediction for the
+  part is 597 polls over 600 frames, not 596. Re-export with
+  `export-testrom` and reflash before sitting 5's compare-logs.
+
 ## The grabber and its driver
 
 - **A kernel update on the Pi silently removes `/dev/video2`
