@@ -156,3 +156,34 @@ That is what the trace is for. A commercial cartridge is a program no
 context was written for, and the first one found a defect in the fast
 rung that a golden as wide as every node could not see, because a
 golden is only as wide as the programs it ran.
+
+## The die as witness
+
+The trace's next step ran the record back through the switch-level
+6502 in the 6502 repository: a bus that answers every read from the
+record itself and holds every write to it, the transistors doing the
+rest, and the two compared at the pins every half-cycle. With the
+family's test cartridge the die agreed with the console over all
+twelve frames of its record. With this cartridge it agreed until the
+first sprite DMA released the CPU, and that difference was the record
+carrying the hold as the 2A03's pins show it, where the 2A03 feeds its
+core one cycle later; with the core's own level the die agreed to the
+end.
+
+Then the console, with its fast CPU corrected to poll a taken branch as
+the die does, jammed on this cartridge's menu: NMI off, the main loop
+waiting on a sprite-zero hit that never came. The die on that record
+agreed with it to the last half-cycle, which put the CPU beyond
+suspicion, and a dump of the work RAM against the bytes the record's
+DMA carried named the fault: the 2A03 rung's sprite DMA read through
+the held CPU's bus, whose memo answers the CPU's quiet re-asks, so a
+page the DMA had read before came back as it was then. A game that
+never reads its sprite buffer kept its first frame's sprites for good.
+Fixed, with a test of two DMAs on a bus, the title screen has Mario on
+the ground, and the small sprite the earlier three-way comparison saw
+on the underline, which neither eye had, is gone: it was this.
+
+Three defects in one evening, none of them in the transistors, each
+found because a real program was run on a model that refuses to fill
+in what it does not know.
+

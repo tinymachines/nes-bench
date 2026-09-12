@@ -23,9 +23,11 @@ entry is the one that raised it, with its date.
 - **The model's frame is a frame, the part's is a moment
   (2026-09-12).** The three-way used frame 180 from power-on with no
   input; the model's title showed a small sprite on the underline that
-  neither eye had at its instant. Harmless on a static screen, wrong
-  on any animated one. Closes with C2's trigger, which ties the
-  model's frame to a latch.
+  neither eye had at its instant. That sprite turned out to be the
+  2A03 rung's stale sprite DMA (below, done), not a moment's
+  difference; the moment question stands and closes with C2's trigger,
+  which ties the model's frame to a latch. The three-way should be
+  rerun on the fixed model.
 - **The chip repositories' suites were run as they run by default
   (2026-09-12).** 2c02 gave 16 tests and 2a03 14 on the pin bump; the
   golden tests skip without their files unless required. Rerun both
@@ -53,22 +55,23 @@ entry is the one that raised it, with its date.
   recorder that ends in an ALU write to X or Y, so the selector's
   staleness is measured rather than patched around.
 
-- **Rung 3 takes an NMI that falls in the last cycle of a taken branch
-  at once; the die waits one instruction (2026-09-12).** Found by the
-  bench's cartridge record replayed on rung 0 (`trace-plan.md`, T1):
-  h=591,074, `BEQ` at $813F, then `LDA $20`. Closes with: a test in
-  `v6502-micro` that drives an NMI edge at every half-cycle around a
-  taken branch (page crossed and not) on rung 0 beside rung 3, red
-  before the rule and green after, MUTATE red; then the 2a03 and nes
-  pins bumped and the cartridge record replayed further.
-- **The 2A03 rung's DMA release is reported one half-cycle before the
-  die resumes (2026-09-12).** At the first sprite DMA of the
-  cartridge's record the die resumes its held fetch a cycle before the
-  record does; with every RDY rise a half-cycle later the two agree
-  through five more frames. Which is early, the reported level or the
-  die, is a 2A03 question: closes with the 2A03 rung's reported hold
-  held to the 2A03 die's own golden at the release edge, and the
-  `RDY_RISE_SHIFT` knob retired.
+- ~~**Rung 3 takes an NMI that falls in the last cycle of a taken branch
+  at once; the die waits one instruction (2026-09-12).**~~ DONE
+  2026-09-12, `6502` @ 9b3ad9a (`tests/branch_interrupt.rs`, PROBE=1
+  for the table, `MUTATE_BRANCH=1` red).
+- ~~**The 2A03 rung's DMA release is reported one half-cycle before the
+  die resumes (2026-09-12).**~~ ANSWERED 2026-09-12: the record's RDY
+  was the pin's account; the 2A03 feeds its core one cycle later
+  (`2a03` `rung.rs`, measured on its die), and a bare 6502 released as
+  the pin shows it goes straight on. The trace now writes the core's
+  level (`nes` `CpuStep::core_rdy`); the replay's `RDY_RISE_SHIFT` is
+  an experiment knob again.
+- ~~**The 2A03 rung's sprite DMA copied the page as it was last read
+  (2026-09-12).**~~ DONE 2026-09-12, `2a03` @ 54295cc: the DMA's reads
+  went through the held core's memo. Found by rung 0 agreeing with a
+  record whose game had jammed; `tests/stalls.rs` two DMAs on a bus,
+  `MUTATE_DMA_MEMO=1` red. The three-way comparison's stray sprite on
+  the underline was this.
 - **The flashcart's pad cartridge is stale (2026-09-12).** The test
   cartridge now sets its stack pointer at reset; its prediction for the
   part is 597 polls over 600 frames, not 596. Re-export with

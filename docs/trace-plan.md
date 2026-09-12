@@ -184,12 +184,47 @@ The gates, as run:
   for, and the console's rung takes the NMI at once.
 
 So the plan's expected candidates sorted themselves: not decimal mode,
-not the unofficial opcodes, but the input sample points, twice. Both
-are rung 3 questions (the 2A03 rung's core is the 6502's rung 3), both
-now have the die's answer on a real program, and both are open items:
-the branch delay is a rule to add to `v6502-micro` under a test against
-rung 0; the DMA release phase is how the 2A03 rung reports its hold as
-a pin level, to be held to the 2A03 die in the 2a03 repository.
+not the unofficial opcodes, but the input sample points, twice, and
+both closed the same night:
+
+- The taken-branch delay is now rung 3's rule (`6502` @ 9b3ad9a,
+  `tests/branch_interrupt.rs`: an edge at every half-cycle around a
+  branch taken on its page, not taken, and taken across a page, NMI and
+  IRQ, rung 0 beside rung 3; only the on-page taken branch differs, and
+  only for the two edges of its second cycle; `MUTATE_BRANCH=1` red).
+- The DMA release phase was the record's RDY being the 2A03 rung's
+  account of the hold at the PINS, where the 2A03 die re-runs its held
+  read with RDY already high and feeds its core one cycle later; a bare
+  6502 released as the pin shows it goes straight on. The console's
+  trace now carries RDY as the 2A03 feeds its core (`nes`:
+  `CpuStep::core_rdy`, in the record and the stimulus alike; the
+  package has no RDY pin), and the knob is an experiment again.
+
+And with rung 3 polling as the die does, the cartridge's menu jammed:
+NMI off from frame 9, the main loop waiting on a sprite-0 hit at $8504
+that never came, while rung 0 on the new record agreed with it to the
+last half-cycle, which put the CPU beyond suspicion. The trace's RAM
+dump (`RAM=<path>`) against the record's DMA bytes named it: the 2A03
+rung's sprite DMA read through the held core's bus, whose memo answers
+the core's quiet re-asks, so every address a DMA had read before came
+back as it was THEN. A game that never reads its sprite buffer kept its
+first frame's sprites for good; this one's sprite 0 stayed at its
+power-on row. Fixed in `2a03` @ 54295cc (`Rung::world_read`;
+`tests/stalls.rs`, two DMAs with the page rewritten between, ON A BUS,
+because on the rung's own image the wrapper is not in the path and the
+case passed before the fix; `MUTATE_DMA_MEMO=1` red). The title screen
+now has Mario on the ground where the earlier three-way comparison saw
+a stray sprite on the underline: the same bug.
+
+MEASURED 2026-09-12, after all three (`nes` @ 77c9118): the
+switch-level 6502 agrees with the console's 300-frame record of the
+cartridge over all 17,868,314 half-cycles with no knob (8,843,686
+reads and 90,471 writes held to the record, 148,683 reads answered
+under RDY low, about 28,500 half-cycles a second). One more half-cycle
+had to be learned on the way: the rung feeds its core AFTER the step
+that decides a hold, so the level a step records is in force from the
+next step and belongs in frame h + 1; written into frame h the die was
+held one cycle early at every DMA.
 
 **T2: the stack's instruments, fed a console.** A `LOAD` door in
 `halfwave` and in the site's wasm machine that takes a recorded bus
