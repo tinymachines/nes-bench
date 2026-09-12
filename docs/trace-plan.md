@@ -78,8 +78,9 @@ Three files per run, beside each other:
 
 ## Milestones
 
-**T0: a console run is a file. DONE 2026-09-12** (`nes` @ the commit
-after 5ecc62d, `crates/nes-console/examples/trace.rs`). Usage:
+**T0: a console run is a file. DONE 2026-09-12** (`nes` @ 8eb30ee,
+`crates/nes-console/examples/trace.rs`; the 6502 fix it found is
+6df896a there, and 2a03 @ 43581c3 and nes pin it). Usage:
 
     cargo run --release -p nes-console --example trace -- \
         <rom.nes> <name> [frames] [script.txt] [out_dir]
