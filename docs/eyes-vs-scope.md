@@ -137,3 +137,46 @@ What this is for: the grabber is a second opinion on the same signal.
 Where the two agree, both are probably right. Where they differ on a
 flat colour, the JSON names the colour and the block, and the question
 goes to the console with a probe rather than to either decoder.
+
+## Three ways, with the cartridge in the model (MEASURED 2026-09-12, `title1`)
+
+The cartridge came off the reader the same day (`card-plan.md`; the
+dump's checksum is the database's own, `D26EFD78`), and the console
+gained its board, mapper 66, so the model could run the same bytes.
+`eyes.py compare title1 --model <the dump> --frames 180` renders the
+model's title screen through the same decoder chain as the scope
+record and scores it against both eyes.
+
+![The decoder and the grabber on the title screen](lab/eyes-compare-title.png)
+
+![The model, the decoder and the grabber on the title screen](lab/eyes-threeway-title.png)
+
+The two eyes first, on the title: flat blocks agree to 0.57 of 255,
+hue to 0.7 degrees median on 16,606 saturated pixels, saturation
+within 6 percent, luma correlation 0.99. That is the grabber's
+calibration, and it is tighter than the moving game gave.
+
+Then the model against each:
+
+| | flat blocks, mean abs difference | hue median, saturated pixels | luma correlation |
+|---|---|---|---|
+| model against decoder | 0.67 of 255 | 12.6 degrees | 0.95 |
+| model against grabber | 1.26 of 255 | 14.1 degrees | 0.95 |
+
+The flat blocks agree, because most of a title screen is black. The
+hue does not. The logo's brown is (148, 92, 0) in the model, (132, 73,
+0) off the scope and (121, 69, 0) off the grabber; the lettering's
+cyan is (59, 200, 251) in the model against (45, 200, 205) and
+(67, 202, 202). Where the two eyes, two different decoders on the one
+signal, agree to a degree, the model sits twelve to fourteen degrees
+away on the same colours: bluer in the cyan, warmer in the brown.
+
+So the odd one out is the model's side of the picture chain, not the
+console and not either eye. The picture work (N6) had recorded hue
+misses on a synthetic roundtrip and attributed them to the card model's
+filter; this is the first time the part itself has been on the other
+side of the comparison, and it says the same thing about the model's
+hue with two witnesses. What it does not say yet is where in the chain:
+the encoder's palette phase, the burst phase the model synthesises, or
+the decoder's reading of its own synthesis. That is the next question,
+and it now has a measurement to be answered against.

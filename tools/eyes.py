@@ -36,6 +36,7 @@ which colour and where, so the question can be taken to the console.
 """
 import argparse
 import json
+import os
 import socket
 import subprocess
 import sys
@@ -241,6 +242,62 @@ def hue_sat(img):
     return h, sat
 
 
+def model_grid(a, name):
+    """The model's decoded frame of `--model rom.nes` after `--frames`
+    frames from power-on, no input: nes-console's run-rom with
+    DECODED=<ppm> writes the same 2048 x 240 grid the real path decodes
+    to, through the same ntsc-crt chain. Returned on the console grid."""
+    nes = Path(a.nes).resolve()
+    runner = nes / "target/release/examples/run-rom"
+    if not runner.exists():
+        sys.exit(f"{runner} is not built: cargo build --release -p nes-console --example run-rom (in {nes})")
+    out = CAPS / f"{name}-model-decoded.ppm"
+    r = subprocess.run([str(runner), a.model, str(a.frames), str(CAPS / f"{name}-model-palette.ppm")],
+                       env={**os.environ, "DECODED": str(out)}, capture_output=True, text=True, cwd=nes)
+    if r.returncode != 0:
+        print(r.stdout, r.stderr)
+        sys.exit("run-rom failed")
+    img = np.asarray(Image.open(out).convert("RGB")).astype(np.float64)
+    grid = img.reshape(NES_H, NES_W, img.shape[1] // NES_W, 3).mean(axis=2)
+    Image.fromarray(grid.astype(np.uint8)).resize((NES_W * 3, NES_H * 3), Image.NEAREST).save(CAPS / f"{name}-model.png")
+    return grid
+
+
+def score(dec, grab):
+    """The figures `compare` reports for one pair of pictures on the console grid."""
+    diff = np.abs(dec - grab)
+    mad = diff.reshape(-1, 3).mean(axis=0)
+    ly, lg = luma(dec), luma(grab)
+    B = 16
+    flat, worst = [], []
+    for by in range(0, NES_H, B):
+        for bx in range(0, NES_W, B):
+            d, g = dec[by:by + B, bx:bx + B], grab[by:by + B, bx:bx + B]
+            if luma(d).std() < 6 and luma(g).std() < 6:
+                md, mg = d.reshape(-1, 3).mean(axis=0), g.reshape(-1, 3).mean(axis=0)
+                e = float(np.abs(md - mg).mean())
+                flat.append(e)
+                worst.append((e, bx, by, [round(v) for v in md], [round(v) for v in mg]))
+    worst.sort(reverse=True)
+    hd, sd = hue_sat(dec); hg, sg = hue_sat(grab)
+    satmask = (sd > 0.35) & (sg > 0.35) & (ly > 40) & (lg > 40)
+    if satmask.any():
+        dh = (hd[satmask] - hg[satmask] + 180) % 360 - 180
+        hue_mean, hue_med, nsat = float(dh.mean()), float(np.median(dh)), int(satmask.sum())
+        sat_ratio = float(np.median(sg[satmask] / np.maximum(sd[satmask], 1e-6)))
+    else:
+        hue_mean = hue_med = sat_ratio = float("nan"); nsat = 0
+    return {
+        "mean_abs_diff_rgb": [round(float(v), 2) for v in mad],
+        "luma_corr": round(corr(ly, lg), 4),
+        "flat_blocks": len(flat), "flat_block_mean_abs_diff": round(float(np.mean(flat)), 2) if flat else None,
+        "flat_blocks_worst": [{"x": bx, "y": by, "abs_diff": round(e, 1), "a_rgb": md, "b_rgb": mg}
+                              for e, bx, by, md, mg in worst[:10]],
+        "saturated_pixels": nsat, "hue_diff_deg_mean": round(hue_mean, 2), "hue_diff_deg_median": round(hue_med, 2),
+        "b_over_a_saturation": round(sat_ratio, 3),
+    }, diff
+
+
 def compare(a):
     name = a.name
     u8, toml = CAPS / f"{name}.u8", CAPS / f"{name}.toml"
@@ -335,6 +392,34 @@ def compare(a):
     for w in report["flat_blocks_worst"]:
         print(f"  ({w['x']:3d},{w['y']:3d})  |diff| {w['abs_diff']:5.1f}   {w['decoder_rgb']}  vs  {w['grabber_rgb']}")
     print(f"wrote captures/{name}-compare.png and .json")
+    if a.model:
+        model = model_grid(a, name)
+        # The model's frame is on the console grid already; the console's
+        # picture may sit a few rows off it (the decoder's first line),
+        # so it is aligned to the decoder the way the grabber was.
+        three = {}
+        for label, other in (("decoder", dec), ("grabber", grab)):
+            rep, _ = score(model, other)
+            three[label] = rep
+            print(f"model vs {label}: flat blocks {rep['flat_blocks']} mean |diff| {rep['flat_block_mean_abs_diff']}, "
+                  f"hue median {rep['hue_diff_deg_median']} deg on {rep['saturated_pixels']} px, luma corr {rep['luma_corr']}")
+            for w in rep["flat_blocks_worst"][:5]:
+                print(f"    ({w['x']:3d},{w['y']:3d}) |diff| {w['abs_diff']:5.1f}  model {w['a_rgb']}  vs  {w['b_rgb']}")
+        report["model"] = {"rom": a.model, "frames": a.frames, "against": three}
+        (CAPS / f"{name}-compare.json").write_text(json.dumps(report, indent=1) + "\n")
+        S = 2
+        panel = Image.new("RGB", (NES_W * S * 3 + 40, NES_H * S + 40), "white")
+        dr = ImageDraw.Draw(panel)
+        for i, (img, label) in enumerate([(model, f"model ({Path(a.model).name}, frame {a.frames})"),
+                                          (dec, "decoder (scope record)"), (grab, "grabber (Roxio)")]):
+            im = Image.fromarray(img.astype(np.uint8)).resize((NES_W * S, NES_H * S), Image.NEAREST)
+            panel.paste(im, (10 + i * (NES_W * S + 10), 30))
+            dr.text((10 + i * (NES_W * S + 10), 10), label, fill="black")
+        dr.text((10, NES_H * S + 32 - 4),
+                f"model vs decoder: flat |diff| {three['decoder']['flat_block_mean_abs_diff']}, hue {three['decoder']['hue_diff_deg_median']} deg;   "
+                f"model vs grabber: flat |diff| {three['grabber']['flat_block_mean_abs_diff']}, hue {three['grabber']['hue_diff_deg_median']} deg", fill="black")
+        panel.save(CAPS / f"{name}-threeway.png")
+        print(f"wrote captures/{name}-threeway.png")
     return 0
 
 
@@ -344,6 +429,9 @@ def main():
     p = sub.add_parser("pair"); p.add_argument("name"); p.add_argument("--scope", required=True); p.add_argument("--pi", required=True)
     p.add_argument("--frames", type=int, default=8); p.add_argument("--device", default="/dev/video2")
     c = sub.add_parser("compare"); c.add_argument("name"); c.add_argument("--ntsc-crt", default=str(ROOT.parent / "ntsc-crt"))
+    c.add_argument("--model", help="an iNES file: the model's frame joins the comparison (three-way)")
+    c.add_argument("--frames", type=int, default=180, help="frames from power-on to the model's frame, no input")
+    c.add_argument("--nes", default=str(ROOT.parent / "nes"), help="the nes checkout with run-rom built")
     a = ap.parse_args()
     return pair(a) if a.cmd == "pair" else compare(a)
 

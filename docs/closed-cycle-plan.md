@@ -77,6 +77,14 @@ each pair reported, and the first flat block where the model differs
 from both eyes named. Needs the card plan's first pull. MUTATE: the
 model fed a different ROM must fail the flat-block agreement.
 
+**C0: DONE 2026-09-12.** The cartridge dumped and its checksum the
+database's; the console given mapper 66 (nes-bus v0.1.2, ntsc-crt
+v0.2.9, the chip repositories moved with them); the three pictures on
+the console grid in `eyes-vs-scope.md`. The finding: the two eyes agree
+to a degree of hue and the model sits twelve to fourteen degrees off
+both on the saturated colours. The mutation stated above is not yet
+run: the tool has no `--expect-fail` and it should, before C1.
+
 **C1, the hand recorded with pictures.** Sittings 3 and 4 (the
 register and the pad on the bridge), the head owning the UNO's port
 (the bring-up bridge's unit stops when the head's starts;
