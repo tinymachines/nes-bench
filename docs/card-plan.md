@@ -80,6 +80,14 @@ has not been checked.
 - ROMs never enter a repository. The dump store is `/mnt/tm/nes-dumps`
   on the workstation, beside the scope captures already banked there.
 
+## Done so far (2026-09-12)
+
+Steps 1 to 3, and the refresh of step 5: the card is labelled `OSCR`, a
+Genesys microSD reader is on the Pi, the udev rule is installed and
+exercised both ways, and the 45 files are on the card, read back
+identical. `tools/oscr-card.py` is not written yet; the refresh was done
+by hand with the checks the tool will carry.
+
 ## The order
 
 1. The card gets its label during the prep that is happening now.
