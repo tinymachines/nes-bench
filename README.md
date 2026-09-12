@@ -45,6 +45,9 @@ register's job, as it is in the pad.
 - `docs/card-plan.md`: the reader's SD card on the Pi through a USB
   reader, so the database goes on and dumps come off over ssh; the
   label, the mount, the tool and its refusals, written before building.
+- `docs/cartridge.md`: the bench's cartridge from the reader to the
+  model, why the reader guessed wrong, the dump that matched its
+  database, and the mapper-66 board the model grew to run it.
 - `docs/eyes-vs-scope.md`: the Roxio grabber's picture against the
   decoded scope record of the same composite, one tool for both captures
   and the score (`tools/eyes.py`).
