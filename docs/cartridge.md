@@ -102,3 +102,57 @@ a cartridge read correctly, verified against the checksum the reader
 itself keys on, and a board added to the model so it runs the bytes the
 console runs. The measurement it produced, the model's hue against the
 part with two witnesses, is the bench doing the job it exists for.
+
+## The first trace, and the tile it found
+
+With the cartridge in the model, the next step of the plan was to make
+a console run into files the 6502 stack reads: the CPU at its pins
+every half-cycle in the pin crate's own format, the input pins as a
+stimulus file, and an events file for what the console knows and the
+pins do not (frame ends, every latch of the pad with its byte and its
+reads, every PPU register write with its dot and line, every write into
+ROM space, every NMI edge). The tool is the console's `trace` example;
+the trace plan on this site records its gates and how they were run.
+
+The first run of the family's cartridge was three hundred frames with
+Start pressed at the two-hundredth latch. The events file showed the
+multicart's menu flipping its CHR bank twice a frame to animate, the
+bank switch to the Super Mario Bros. program on Start, and sprite DMA
+as it looks at the pins: two hundred and fifty-six writes to $2004
+after every write to $4014. The last frame was the title screen, with
+one tile wrong.
+
+![The model's title screen with one wrong tile](lab/cart-trace-gwme.png)
+
+`1 PLAYER GWME`. The events file located the write: the byte sent to
+$2007 for that tile was $20, the letter W, where the ROM's string, read
+out of CHR-ROM through $2007 a moment earlier, carried $0A, the letter
+A. The pins walked it back: the byte came from an `LDA ($00),Y` whose
+pointer and index crossed a page, and the CPU read the un-carried
+address, $0300, and never did the fixed-up read at $0400 where the A
+had been stored. Five instructions reproduced it on the 6502
+repository's own lockstep of the switch-level chip beside the fast
+rung: after `INY`, the fast rung chose its variant of the next
+instruction by asking Y as stored, one instruction stale, because the
+result of the increment was still in the ALU's hold register and lands
+one half-cycle later. The switch-level chip has no such question to
+ask; the carry falls out of the transistors with the right Y.
+
+None of the ladder's own oracles had this sequence: the pin golden's
+opcode traces set their registers by loads, and the instruction test
+ROMs never pair an index increment with a crossing form. The fix is in
+the 6502 repository with twenty-two register-then-crossing pairs, in
+both directions, held to the switch-level chip, and a mutation that
+asks the stored register and goes red on the nine that matter. A first
+version of that fix passed a one-sided test (every case in it crossed)
+and jammed this cartridge's menu by frame nine; the same trace, run at
+the two revisions and diffed line by line, named the half-cycle, and
+five instructions reproduced that too. Rebuilt on the second, the same
+run reads:
+
+![The same frame after the fix](lab/cart-trace-game.png)
+
+That is what the trace is for. A commercial cartridge is a program no
+context was written for, and the first one found a defect in the fast
+rung that a golden as wide as every node could not see, because a
+golden is only as wide as the programs it ran.

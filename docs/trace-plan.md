@@ -78,13 +78,70 @@ Three files per run, beside each other:
 
 ## Milestones
 
-**T0: a console run is a file.** `nes-console`'s `trace` example: a
-ROM, a bench script (`SET`, `AT n hh`), a window by latch index, and
-the three files out. Gate: the `.pins` parses with the pin crate's own
-parser; the latch count and the clocks per latch equal `pad-log.rs`'s
-on the same script; the events file's $4016 bits, assembled per latch,
-equal the script's byte at that latch. MUTATE: the script shifted by
-one latch must change the assembled bytes.
+**T0: a console run is a file. DONE 2026-09-12** (`nes` @ the commit
+after 5ecc62d, `crates/nes-console/examples/trace.rs`). Usage:
+
+    cargo run --release -p nes-console --example trace -- \
+        <rom.nes> <name> [frames] [script.txt] [out_dir]
+
+The script's `SET hh` and `AT n hh` lines are honoured by latch index,
+as `pad-log.rs` honours them; `PICTURES=n` sets how many trailing
+frames are written as PPM. Out: `<name>.pins`, `<name>.stim`,
+`<name>.events.json` and the pictures. One thing changed from the plan
+above: there is no window by latch. The pin format runs from `h = 0`
+and its parser refuses a trace that starts anywhere else, so a window
+needs the machine's state at its first half-cycle, which is T2's
+`LOAD` door and not a text file's business. A whole run it is, and
+the size is what it is (MEASURED 2026-09-12: 1.69 MB of `.pins` per
+NES frame, 59,561 CPU half-cycles per frame; 300 frames of the
+family's cartridge came to 507 MB, written in 10 s).
+
+The gates, as run:
+
+- The `.pins` and the `.stim` are parsed back by the pin crate's own
+  `parse_trace` and `parse_stim` before either is written, and the
+  frames read back are held to the frames recorded by the crate's
+  `compare`. A file that does not round-trip is refused.
+- Latches are derived from the pins alone (a write to $4016 whose D0
+  falls, on the clk0-high frame where the contract puts a write's
+  byte), the reads per latch from the pins alone (reads of $4016 on the
+  clk0-low frames), and both are held to the board's own poll log,
+  which is what `pad-log.rs` prints: a count or a clocks figure that
+  differs is refused. On the test cartridge over 12 frames with `SET
+  00 / AT 3 01 / AT 6 08`: 9 latches, 8 reads each, both instruments
+  agree, and `pad-log.rs` on the same script prints the same 8 closed
+  polls.
+- The byte the eight reads spell (bit 0 first, as the register shifts)
+  is held to the SCRIPT's byte at that latch index, not to the board:
+  the script is the oracle. `MUTATE=1` reads the script one latch late
+  and went red on 3 of the 9 latches (the ones where the byte changes).
+
+What the family's cartridge showed on its first trace (300 frames,
+Start at latch 200 held three latches):
+
+- The multicart's menu polls the pad from frame 10; Start is bit 3 (the
+  first run pressed bit 4, which is Up, and the menu ignored it, which
+  is a fact about scripts: a wrong byte is honoured exactly).
+- The menu flips its CHR bank twice a frame ($BF02 <- $10, $BF03 <-
+  $11, the bus-conflict AND leaving the PRG bank at 1) to animate, and
+  on Start writes $BF00 <- $00 at frame 213: PRG bank 0, the SMB
+  program. Sprite DMA is visible at the pins as 256 writes to $2004
+  after every $4014 (60,160 of the run's 72,628 PPU writes).
+- **The title screen had one wrong tile: `1 PLAYER GWME`.** The
+  events file located the $2007 write ($20 where the ROM's string, read
+  through $2007 out of CHR-ROM, carried $0A); the pins walked it back to
+  an `LDA ($00),Y` at $8EB9 that read the un-carried address $0300 and
+  never did the fixed-up read at $0400, where the $0A had been stored
+  at h=14,366,205. Five instructions reproduced it on the 6502 repo's
+  `diverge` (rung 0 beside rung 3): after `INY`, rung 3's selector
+  asked the stored Y, one instruction stale, because the result was
+  still in the hold register and lands through the seam. Fixed in the
+  6502 repo (`Datapath::index_after`, `tests/seam.rs`: twenty-two
+  register-then-crossing pairs in both directions held to rung 0,
+  `MUTATE_SEAM=1` red on the nine ALU cases; a first version of the
+  fix passed a one-sided test and jammed this cartridge's menu, which
+  the trace also located). Nothing in the ladder's own oracles had this
+  sequence. This is what T0 is for, and it paid on the first cartridge.
 
 **T1: the die runs the console's program.** `RecordedBus` in
 `v6502-sim`, and `replay-recorded` in `v6502-pins`: a `.pins` and

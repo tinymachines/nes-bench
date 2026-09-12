@@ -36,6 +36,23 @@ entry is the one that raised it, with its date.
   the console moved to 5ecc62d (mapper 66, new pins) and the record is
   older. `board-nes.py --board` in the public checkout, then deploy.
 
+- **The console's CPU runs the fixed rung 3 only once the pins move
+  (2026-09-12).** The 2a03 and nes repositories pin `v6502-micro` and
+  `v6502-pins` at 89ae24f, one commit before the seam fix
+  (`trace-plan.md`, T0). Closes with: both pins bumped, the console
+  rebuilt, and the cartridge trace rerun showing `GAME`.
+- **The trace is a whole run (2026-09-12).** 1.69 MB per frame, from
+  reset, because the pin format starts at h=0. A window needs T2's
+  `LOAD` door; until then a long run is a large file under `/mnt/tm`.
+- **The 6502's own oracles never paired an index increment with a
+  crossing form (2026-09-12).** The pin golden's 256-opcode traces set
+  registers by loads; blargg's instruction tests pass without the
+  sequence. `tests/seam.rs` now holds twenty-two pairs, all authored, in both
+  directions after a one-sided first version let a wrong fix through.
+  What would close it properly: a recorded context in the table's
+  recorder that ends in an ALU write to X or Y, so the selector's
+  staleness is measured rather than patched around.
+
 ## The grabber and its driver
 
 - **A kernel update on the Pi silently removes `/dev/video2`
