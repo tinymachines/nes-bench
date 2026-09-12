@@ -94,3 +94,14 @@ record carries its time, so nothing here depends on the Pi's clock.
 
 This split is the one the plan describes: the Pi holds the hardware, the
 workstation holds the model, the log and the record.
+
+## Eyes: the camera and the composite grabber
+
+Two capture devices are on the Pi as of 2026-09-11: a Logitech QuickCam
+Pro 9000 on `/dev/video0` (a frame with `v4l2-ctl --stream-to`, or
+`ffmpeg -f v4l2`), and a Roxio Video Capture USB on `/dev/video2`, which
+takes the console's composite video and needs the driver in
+`roxio-em28xx/` (its README has the story, the recipe and the limit:
+400 of 480 lines). A C-Media USB sound card is ALSA card 3 for audio.
+Neither is a head verb yet; that is the next step once the camera is
+aimed at the board.

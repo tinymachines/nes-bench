@@ -1,0 +1,7 @@
+# Out-of-tree build of the mainline em28xx against the running kernel,
+# with the Roxio Video Capture USB (EM2980) added. See README.md.
+obj-m := em28xx.o em28xx-v4l.o em28xx-alsa.o
+em28xx-objs := em28xx-core.o em28xx-i2c.o em28xx-cards.o em28xx-camera.o
+em28xx-v4l-objs := em28xx-video.o em28xx-vbi.o
+em28xx-alsa-objs := em28xx-audio.o
+ccflags-y := -DCONFIG_VIDEO_EM28XX_V4L2 -DCONFIG_VIDEO_EM28XX_ALSA -I$(src)/inc

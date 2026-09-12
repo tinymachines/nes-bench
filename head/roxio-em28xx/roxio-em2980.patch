@@ -1,0 +1,184 @@
+diff a/em28xx-audio.c b/em28xx-audio.c
+--- a/em28xx-audio.c	2026-09-11 20:22:08.970654089 -0400
++++ b/em28xx-audio.c	2026-09-11 20:22:09.003653946 -0400
+@@ -750,7 +750,7 @@
+ 	if (!dev->adev.transfer_buffer)
+ 		return -ENOMEM;
+ 
+-	dev->adev.urb = kzalloc_objs(*dev->adev.urb, num_urb);
++	dev->adev.urb = kcalloc(num_urb, sizeof(*dev->adev.urb), GFP_KERNEL);
+ 	if (!dev->adev.urb) {
+ 		kfree(dev->adev.transfer_buffer);
+ 		return -ENOMEM;
+diff a/em28xx-cards.c b/em28xx-cards.c
+--- a/em28xx-cards.c	2026-09-11 20:22:08.970654089 -0400
++++ b/em28xx-cards.c	2026-09-11 20:22:09.007653928 -0400
+@@ -2699,6 +2699,29 @@
+ 			.amux     = EM28XX_AMUX_LINE_IN,
+ 		} },
+ 	},
++	/* 1b80:e31d Roxio Video Capture USB (Roxio Easy VHS to DVD)
++	 * Empia marked EM2980, chip id 146, built-in video decoder,
++	 * USB audio class for sound. Composite and S-Video inputs.
++	 * Measured 2026-09-11: the decoder delivers 200 active lines per
++	 * field (400 of 480), so the bottom of the picture is cut.
++	 */
++	[EM2980_BOARD_ROXIO_VIDEO_CAPTURE_USB] = {
++		.name         = "Roxio Video Capture USB",
++		.vchannels    = 2,
++		.tuner_type   = TUNER_ABSENT,
++		.has_dvb      = 0,
++		.decoder      = EM28XX_BUILTIN,
++		.i2c_speed    = EM28XX_I2C_CLK_WAIT_ENABLE | EM28XX_I2C_FREQ_400_KHZ,
++		.input           = { {
++			.type     = EM28XX_VMUX_COMPOSITE,
++			.vmux     = EM2828X_COMPOSITE,
++			.amux     = EM28XX_AMUX_LINE_IN,
++		}, {
++			.type     = EM28XX_VMUX_SVIDEO,
++			.vmux     = EM2828X_SVIDEO,
++			.amux     = EM28XX_AMUX_LINE_IN,
++		} },
++	},
+ 	[EM2828X_BOARD_HAUPPAUGE_USB_LIVE2] = {
+ 		.name         = "Hauppauge USB Live2",
+ 		.vchannels    = 2,
+@@ -2968,6 +2991,8 @@
+ 			.driver_info = EM2874_BOARD_HAUPPAUGE_USB_QUADHD },
+ 	{ USB_DEVICE(0x2040, 0xc220),
+ 			.driver_info = EM2828X_BOARD_HAUPPAUGE_USB_LIVE2 },
++	{ USB_DEVICE(0x1b80, 0xe31d),
++			.driver_info = EM2980_BOARD_ROXIO_VIDEO_CAPTURE_USB },
+ 	{ USB_DEVICE(0xeb1a, 0x8286),
+ 			.driver_info = EM28281_BOARD_STARTECH_SVID2USB232 },
+ 	{ USB_DEVICE(0x2040, 0x0360),
+@@ -3716,7 +3741,7 @@
+ #ifdef CONFIG_MEDIA_CONTROLLER
+ 	struct media_device *mdev;
+ 
+-	mdev = kzalloc_obj(*mdev);
++	mdev = kzalloc(sizeof(*mdev), GFP_KERNEL);
+ 	if (!mdev)
+ 		return -ENOMEM;
+ 
+@@ -3889,6 +3914,11 @@
+ 			dev->wait_after_write = 0;
+ 			dev->eeprom_addrwidth_16bit = 1;
+ 			break;
++		case CHIP_ID_EM2980:
++			chip_name = "em2980";
++			dev->wait_after_write = 0;
++			dev->eeprom_addrwidth_16bit = 1;
++			break;
+ 		case CHIP_ID_EM2883:
+ 			chip_name = "em2882/3";
+ 			dev->wait_after_write = 0;
+@@ -4157,7 +4187,7 @@
+ 	}
+ 
+ 	/* allocate memory for our device state and initialize it */
+-	dev = kzalloc_obj(*dev);
++	dev = kzalloc(sizeof(*dev), GFP_KERNEL);
+ 	if (!dev) {
+ 		retval = -ENOMEM;
+ 		goto err;
+@@ -4288,7 +4318,13 @@
+ 		goto err_free;
+ 
+ 	if (usb_xfer_mode < 0) {
+-		if (dev->is_webcam)
++		/*
++		 * The Roxio's isoc endpoint delivers only the top sixth of
++		 * each frame at any alternate setting (measured 2026-09-11:
++		 * 78 of 480 lines); bulk delivers whole fields.
++		 */
++		if (dev->is_webcam ||
++		    dev->model == EM2980_BOARD_ROXIO_VIDEO_CAPTURE_USB)
+ 			try_bulk = 1;
+ 		else
+ 			try_bulk = 0;
+diff a/em28xx-dvb.c b/em28xx-dvb.c
+--- a/em28xx-dvb.c	2026-09-11 20:22:08.970654089 -0400
++++ b/em28xx-dvb.c	2026-09-11 20:22:09.003653946 -0400
+@@ -1713,7 +1713,7 @@
+ 
+ 	dev_info(&dev->intf->dev, "Binding DVB extension\n");
+ 
+-	dvb = kzalloc_obj(*dvb);
++	dvb = kzalloc(sizeof(*dvb), GFP_KERNEL);
+ 	if (!dvb)
+ 		return -ENOMEM;
+ 
+diff a/em28xx.h b/em28xx.h
+--- a/em28xx.h	2026-09-11 20:22:08.964654115 -0400
++++ b/em28xx.h	2026-09-11 20:22:09.004653941 -0400
+@@ -23,7 +23,7 @@
+ #include <linux/mutex.h>
+ #include <linux/kref.h>
+ #include <linux/videodev2.h>
+-#include <linux/device-id/usb.h>
++#include <linux/mod_devicetable.h>
+ 
+ #include <media/videobuf2-v4l2.h>
+ #include <media/videobuf2-vmalloc.h>
+@@ -151,6 +151,7 @@
+ #define EM2828X_BOARD_HAUPPAUGE_975_V2            111
+ #define EM28178_BOARD_PCTV_461E_V3                112
+ #define EM28281_BOARD_STARTECH_SVID2USB232        113
++#define EM2980_BOARD_ROXIO_VIDEO_CAPTURE_USB      114
+ 
+ /* Limits minimum and default number of buffers */
+ #define EM28XX_MIN_BUF 4
+diff a/em28xx-input.c b/em28xx-input.c
+--- a/em28xx-input.c	2026-09-11 20:22:08.964654115 -0400
++++ b/em28xx-input.c	2026-09-11 20:22:09.002653950 -0400
+@@ -724,7 +724,7 @@
+ 
+ 	dev_info(&dev->intf->dev, "Registering input extension\n");
+ 
+-	ir = kzalloc_obj(*ir);
++	ir = kzalloc(sizeof(*ir), GFP_KERNEL);
+ 	if (!ir)
+ 		goto ref_put;
+ 	rc = rc_allocate_device(RC_DRIVER_SCANCODE);
+@@ -765,7 +765,7 @@
+ 			goto error;
+ 		}
+ 
+-		ir->i2c_client = kzalloc_obj(*ir->i2c_client);
++		ir->i2c_client = kzalloc(sizeof(*ir->i2c_client), GFP_KERNEL);
+ 		if (!ir->i2c_client)
+ 			goto error;
+ 		ir->i2c_client->adapter = &ir->dev->i2c_adap[dev->def_i2c_bus];
+diff a/em28xx-reg.h b/em28xx-reg.h
+--- a/em28xx-reg.h	2026-09-11 20:22:08.964654115 -0400
++++ b/em28xx-reg.h	2026-09-11 20:22:09.004653941 -0400
+@@ -284,6 +284,7 @@
+ 	CHIP_ID_EM28174 = 113,
+ 	CHIP_ID_EM28178 = 114,
+ 	CHIP_ID_EM28281 = 145,
++	CHIP_ID_EM2980 = 146,	/* marked EM2980; Roxio Video Capture USB, built-in decoder */
+ 	CHIP_ID_EM2828X = 148,
+ };
+ 
+diff a/em28xx-video.c b/em28xx-video.c
+--- a/em28xx-video.c	2026-09-11 20:22:08.970654089 -0400
++++ b/em28xx-video.c	2026-09-11 20:22:09.004653941 -0400
+@@ -1147,7 +1147,7 @@
+ 		v4l2->decoder_pads[EM2828X_PAD_VID_OUT].flags = MEDIA_PAD_FL_SOURCE;
+ 		v4l2->decoder_pads[EM2828X_PAD_VID_OUT].sig_type = PAD_SIGNAL_DV;
+ 
+-		v4l2->decoder = kzalloc_obj(*v4l2->decoder);
++		v4l2->decoder = kzalloc(sizeof(*v4l2->decoder), GFP_KERNEL);
+ 		v4l2->decoder->name = "em2828x_builtin";
+ 		v4l2->decoder->function = MEDIA_ENT_F_ATV_DECODER;
+ 
+@@ -2721,7 +2721,7 @@
+ 
+ 	mutex_lock(&dev->lock);
+ 
+-	v4l2 = kzalloc_obj(*v4l2);
++	v4l2 = kzalloc(sizeof(*v4l2), GFP_KERNEL);
+ 	if (!v4l2) {
+ 		mutex_unlock(&dev->lock);
+ 		return -ENOMEM;
