@@ -2,11 +2,12 @@
  "_about": [
   "Named close-ups of the breadboard for the BRIO in its fixed mount (baseline 2026-09-13). 'at' is the spot in the zoom-100 frame the view is aimed at.",
   "MEASURED: a zoom-Z crop is centred at x = 960 + (pan/36000)*960*(1-100/Z), y = 540 - (tilt/36000)*540*(1-100/Z) in the 1920x1080 zoom-100 frame; pan and tilt step by 3600. Checked by locating four calibration crops in the whole frame, each within a pixel.",
-  "If the camera is moved, these are wrong: re-take the board frame, re-aim, and cut a new baseline."
+  "If the camera is moved, these are wrong: re-take the board frame, re-aim, and cut a new baseline.",
+  "RE-AIMED 2026-09-13 18:55 EDT after the camera was repositioned: each view's old close-up was located in the new board frame by normalised cross-correlation and its aim moved to where it landed (a shift of about 148 px right and 15 px down at the frame's centre, not uniform across it). Exposure left to the camera since the room light changed."
  ],
  "camera": {
   "focus": 20,
-  "exposure": 333,
+  "exposure": "auto",
   "gain": 0,
   "wb": "auto",
   "size": "1920x1080"
@@ -14,218 +15,218 @@
  "views": {
   "grey-mid": {
    "zoom": 500,
-   "pan": 0,
+   "pan": 7200,
    "tilt": -3600,
    "at": [
-    980,
+    1104,
     600
    ]
   },
   "header": {
    "zoom": 500,
-   "pan": 14400,
+   "pan": 21600,
    "tilt": 32400,
    "at": [
-    1300,
-    150
+    1400,
+    168
    ]
   },
   "j1-cap": {
    "zoom": 500,
-   "pan": 21600,
-   "tilt": -7200,
+   "pan": 28800,
+   "tilt": -10800,
    "at": [
-    1430,
-    640
+    1578,
+    655
    ]
   },
   "left-cap": {
    "zoom": 500,
-   "pan": -10800,
+   "pan": -3600,
    "tilt": -14400,
    "at": [
-    740,
-    700
+    876,
+    728
    ]
   },
   "left-greys": {
    "zoom": 500,
-   "pan": -7200,
+   "pan": 0,
    "tilt": 14400,
    "at": [
-    820,
+    944,
     380
    ]
   },
   "left-links": {
    "zoom": 500,
-   "pan": -7200,
+   "pan": 0,
    "tilt": -25200,
    "at": [
-    780,
+    952,
     860
    ]
   },
   "right-link": {
    "zoom": 500,
-   "pan": 21600,
+   "pan": 28800,
    "tilt": -28800,
    "at": [
-    1440,
-    870
+    1576,
+    900
    ]
   },
   "strip-bottom": {
    "zoom": 500,
-   "pan": 3600,
+   "pan": 10800,
    "tilt": 21600,
    "at": [
-    1050,
-    290
+    1176,
+    296
    ]
   },
   "strip-top": {
    "zoom": 500,
-   "pan": 3600,
-   "tilt": 28800,
+   "pan": 10800,
+   "tilt": 25200,
    "at": [
-    1000,
-    180
+    1176,
+    228
    ]
   },
   "u1-ends-bottom": {
    "zoom": 500,
-   "pan": 14400,
-   "tilt": 10800,
+   "pan": 21600,
+   "tilt": 7200,
    "at": [
-    1240,
-    420
+    1388,
+    435
    ]
   },
   "u1-ends-top": {
    "zoom": 500,
-   "pan": 14400,
-   "tilt": 21600,
+   "pan": 21600,
+   "tilt": 18000,
    "at": [
-    1240,
-    290
+    1388,
+    305
    ]
   },
   "u1-left": {
    "zoom": 500,
-   "pan": 7200,
+   "pan": 14400,
    "tilt": 14400,
    "at": [
-    1150,
-    370
+    1256,
+    380
    ]
   },
   "u1-rail": {
    "zoom": 500,
-   "pan": 18000,
+   "pan": 25200,
    "tilt": 14400,
    "at": [
-    1380,
-    350
+    1488,
+    384
    ]
   },
   "u1-top": {
    "zoom": 500,
-   "pan": 14400,
+   "pan": 21600,
    "tilt": 21600,
    "at": [
-    1230,
-    300
+    1404,
+    296
    ]
   },
   "u2-bottom": {
    "zoom": 500,
-   "pan": 14400,
+   "pan": 21600,
    "tilt": -3600,
    "at": [
-    1270,
-    580
+    1412,
+    600
    ]
   },
   "u2-ends-bottom": {
    "zoom": 500,
-   "pan": 14400,
-   "tilt": -3600,
+   "pan": 21600,
+   "tilt": -7200,
    "at": [
-    1243,
-    600
+    1391,
+    615
    ]
   },
   "u2-ends-top": {
    "zoom": 500,
-   "pan": 14400,
-   "tilt": 7200,
+   "pan": 21600,
+   "tilt": 3600,
    "at": [
-    1243,
-    468
+    1391,
+    483
    ]
   },
   "u2-rail": {
    "zoom": 500,
-   "pan": 21600,
+   "pan": 28800,
    "tilt": 0,
    "at": [
-    1400,
-    520
+    1548,
+    535
    ]
   },
   "u2-top": {
    "zoom": 500,
-   "pan": 10800,
+   "pan": 18000,
    "tilt": 3600,
    "at": [
-    1170,
-    480
+    1332,
+    512
    ]
   },
   "u3-bottom": {
    "zoom": 500,
-   "pan": 14400,
+   "pan": 21600,
    "tilt": -25200,
    "at": [
-    1300,
-    830
+    1420,
+    860
    ]
   },
   "u3-ends-bottom": {
    "zoom": 500,
-   "pan": 14400,
+   "pan": 21600,
    "tilt": -25200,
    "at": [
-    1252,
-    845
+    1400,
+    860
    ]
   },
   "u3-ends-top": {
    "zoom": 500,
-   "pan": 14400,
+   "pan": 21600,
    "tilt": -14400,
    "at": [
-    1252,
-    698
+    1400,
+    713
    ]
   },
   "u3-rail": {
    "zoom": 500,
-   "pan": 21600,
+   "pan": 28800,
    "tilt": -18000,
    "at": [
-    1400,
-    760
+    1576,
+    772
    ]
   },
   "u3-top": {
    "zoom": 500,
-   "pan": 10800,
+   "pan": 18000,
    "tilt": -14400,
    "at": [
-    1200,
-    720
+    1336,
+    728
    ]
   }
  }

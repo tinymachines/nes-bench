@@ -151,3 +151,26 @@ What the baseline shows, against the v1b sheet (the pin-by-pin state is
 - Seen: two yellow ceramic capacitors across the rails where the plan
   has one 100 nF beside each chip; the red link that carries GND;
   the power and reset breakout's housing parked on the right board.
+
+## Second baseline, 18:50: the camera moved, a splitter added, the room dark
+
+The BRIO was repositioned and fastened again; a composite splitter now
+feeds the scope and the grabber together, and the grabber shows the
+console running (the multicart's game), so the splitter passes video
+and sync. The room's light had changed: the frame at the old manual
+exposure was dark, and exposures above the frame time turned out to be
+clamped at 1080p (1000 and 2000 read back and did not brighten, with or
+without the dynamic frame rate), so the presets and the timed grabs now
+leave exposure to the camera. Focus re-swept: 20 again.
+
+The board sits about 148 px right and 15 px down in the new frame, not
+uniformly (the camera turned as well as moved), so each named view was
+re-aimed by finding its 15:40 close-up in the new board frame; two
+views (`j1-cap`, `u2-rail`) did not match well enough and keep their
+shifted aim. The set was re-taken (`captures/views-20260913T184548`)
+and every view lands within 20 px of its aim at zoom 100, inside the
+pan and tilt step. Read against the 15:40 set, view by view, the
+wiring is the same: the four checks of the baseline stand, nothing
+moved, nothing added on the sheet's nets. In this light the close-ups
+are noisier than at 15:40; the bench lamp back on would restore the
+first baseline's legibility.

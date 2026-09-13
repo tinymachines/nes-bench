@@ -14,7 +14,7 @@ entry is the one that raised it, with its date.
   reader's dump against crc32 `21091B99`, the screens seen cycling on
   the grabber, and the first strip read off a grabbed frame, which is
   `tools/cal.py grab` (C1's first tool).
-- **C1 to C4: not started.**
+- **C1: machine side built (`tools/cal.py`, self-test green, mutation red), part side OPEN:** scope records of the palette screen per variant with the cart in the console, then grabber frames. **C2 to C4: not started.**
 
 ## Model side
 

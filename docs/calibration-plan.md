@@ -153,7 +153,29 @@ the CRC above, the auto-cycle and Select seen on the grabber, and the
 first strip read off a grabbed frame: `tools/cal.py grab`, which is
 C1's first tool and not yet written.
 
-**C1: colour.** Screen 1 through the scope and `capture-score`'s
+**C1: colour. MACHINE SIDE BUILT 2026-09-13, PART SIDE OPEN.**
+`tools/cal.py` exists (`nes-bench` @ 4cbd14b): `grab` finds the console's
+grid in a grabber frame from the strip's own structure (every offset
+that reads a strip, then the one whose band best matches the ideal
+strip drawn from the bits read, because the decode smears every edge
+and a step's energy ties), reads the strip by the manifest's rectangles,
+refuses a frame that does not read, and scores the flat regions of the
+screen against the model's decoded picture of the same screen and
+variant; `scope` decodes a record, reads its strip, and runs
+`capture-score` to the same frame; `model` measures the frame offset
+(MEASURED: a strip that reads c is the model's frame c + 3 from
+power-on). `selftest` reads the model's eight screens and the same
+pictures re-sampled to the grabber's geometry at offsets the tool is
+not told, JPEG-compressed: all found within a sample; the decode path
+puts the strip one row above the manifest (the comb's line delay) and
+the finder follows the picture; `MUTATE=1`, half a block off, is red on
+all sixteen. The scorer's own synthetic roundtrip on the palette screen
+(`capture-score cal.nes 250` and `310`: variants 0 and 1, emphasis 0
+and 1) reads all eight patches of a page within the N6 tolerances, the
+green run before any capture. What remains is the part: the cartridge
+in the console, a scope record of the palette screen per variant, and
+`cal.py scope` on each; then the grabber's frames through `cal.py
+grab`. Screen 1 through the scope and `capture-score`'s
 regions, and through the grabber and `eyes.py`'s path, against the
 model. Gate: all 64 entries scored at each luma with the margin rule,
 the table of differences dated in `docs/calibration.md`; the eight
