@@ -99,7 +99,9 @@ workstation holds the model, the log and the record.
 
 Two capture devices are on the Pi as of 2026-09-11: a Logitech QuickCam
 Pro 9000 on `/dev/video0` (a frame with `v4l2-ctl --stream-to`, or
-`ffmpeg -f v4l2`), and a Roxio Video Capture USB on `/dev/video2`, which
+`ffmpeg -f v4l2`), and a Roxio Video Capture USB (`/dev/video2` when this
+was written; the stable name is `/dev/v4l/by-id/usb-1b80_Roxio_Video_Capture_USB_*-video-index0`,
+and the tools use it), which
 takes the console's composite video and needs the driver in
 `roxio-em28xx/` (its README has the story, the recipe and the limit:
 400 of 480 lines). A C-Media USB sound card is ALSA card 3 for audio.
@@ -107,3 +109,21 @@ Neither is a head verb yet; that is the next step once the camera is
 aimed at the board. `tools/eyes.py pair` and `compare` put the grabber
 beside the scope: the same composite recorded both ways, decoded both
 ways, and scored on the console's pixel grid.
+
+## The eye on the board (added 2026-09-13)
+
+A Logitech BRIO on an arm over the breadboard, on the Pi's USB 2 hub
+(so 1080p, not the 4K it can do on USB 3), at
+`/dev/v4l/by-id/usb-046d_Logitech_BRIO_*-video-index0`. Plugging it in
+moved the grabber from `/dev/video2` to `/dev/video0`, which is why every
+tool now names a device by its by-id path. `tools/eye.py` on the
+workstation drives it over ssh: `grab NAME [--preset board|column|chips]`
+applies the settings (all UVC controls through `v4l2-ctl`), lets the
+sensor settle, keeps one frame as `captures/NAME.jpg` and writes every
+control as the camera reported it back into `captures/NAME.toml`;
+`sweep NAME` steps the lens and scores the chip column's sharpness;
+`show` prints the controls. The measured defaults (the tool's header):
+focus 25 manual, exposure 333 manual at gain 0, auto white balance
+(about 3200 K under the bench light), zoom 100 for the whole board,
+160 with one degree of pan for the chip column, 300 for one chip.
+

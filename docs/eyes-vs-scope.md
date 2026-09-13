@@ -16,7 +16,9 @@ page is the setup, the pictures, and what the first comparison said.
   to the grabber's yellow input. The 75 ohm load sits on whichever end
   is terminated, so the scope's input is as it was when those captures
   were scored.
-- **The grabber**: a Roxio Video Capture USB stick on the Pi, `/dev/video2`
+- **The grabber**: a Roxio Video Capture USB stick on the Pi (its stable
+  name under `/dev/v4l/by-id`; it was `/dev/video2` until a camera took
+  the low numbers)
   through a driver built for it (below). Composite in, 720 by 480 frames
   out, in colour.
 - **The scope**: a Rigol DS1054Z on the bench LAN, 12 million points

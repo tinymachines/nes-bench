@@ -116,7 +116,10 @@ entry is the one that raised it, with its date.
   head is not started. Closes at C1 with `Conflicts=` between the two
   units and the head carrying a `bridge` word for the bring-up tool's
   questions.
-- **The camera is not aimed at the board (2026-09-11).** Every frame
+- ~~**The camera is not aimed at the board (2026-09-11).**~~ DONE
+  2026-09-13: a Logitech BRIO on an arm over the breadboard, `tools/eye.py`
+  with measured defaults and three framings (`head/README.md`). The
+  QuickCam is gone. Was: every frame
   so far is the windows. Aim it, grab a frame, then the head's `PHOTO`
   word.
 - **Nothing is on the sound card's input (2026-09-11).** The C-Media
@@ -133,6 +136,17 @@ entry is the one that raised it, with its date.
   and the two breakouts sit is not recorded. Once sitting 3 fixes
   them, put their columns into `tools/breadboard.py` so the sheet is
   the board.
+
+- **The console shows the menu's SMB logo with garbled tiles
+  (2026-09-13).** A grabber frame taken while the new eye was being set
+  up: the DUCK HUNT letters and the ® are drawn right, the SUPER MARIO
+  BROS logo box is filled with wrong pattern-table tiles. The menu flips
+  its CHR bank twice a frame for the animation ($BF02/$BF03), so a CHR
+  bank line or a cartridge-connector contact is the first suspect; the
+  model draws the logo right from the same bytes. Closes with: reseat
+  the cartridge and grab again; if it stays, the scope on the CHR bank
+  bit of the mapper latch, and a second grab after the OSCR reader has
+  had the cartridge (its dump was clean, so the ROM is not it).
 
 ## The card and the reader
 

@@ -7,7 +7,8 @@ decode of the same composite signal.
 
 `pair` takes both at once: the scope (CH3, the composite) is set up as
 ntsc-crt's scope-capture.py sets it (12 Mpt, 5 ms/div, its setup saved
-and restored), the Pi's grabber (/dev/video2, the Roxio) is asked for
+and restored), the Pi's grabber (the Roxio, by its stable name under
+/dev/v4l/by-id: the /dev/videoN numbers move when a camera is plugged in) is asked for
 `--frames` frames through ffmpeg, and the scope is STOPped the moment
 those frames are in, so its record's last 240 ms end within a fraction
 of a second of the last grabber frame. A static screen (a title) makes
@@ -427,7 +428,8 @@ def main():
     ap = argparse.ArgumentParser()
     sub = ap.add_subparsers(dest="cmd", required=True)
     p = sub.add_parser("pair"); p.add_argument("name"); p.add_argument("--scope", required=True); p.add_argument("--pi", required=True)
-    p.add_argument("--frames", type=int, default=8); p.add_argument("--device", default="/dev/video2")
+    p.add_argument("--frames", type=int, default=8); p.add_argument("--device", default="/dev/v4l/by-id/usb-1b80_Roxio_Video_Capture_USB_11111111111111111111-video-index0",
+                   help="the grabber on the Pi, by its stable name (the /dev/videoN numbers move when a camera is plugged in)")
     c = sub.add_parser("compare"); c.add_argument("name"); c.add_argument("--ntsc-crt", default=str(ROOT.parent / "ntsc-crt"))
     c.add_argument("--model", help="an iNES file: the model's frame joins the comparison (three-way)")
     c.add_argument("--frames", type=int, default=180, help="frames from power-on to the model's frame, no input")
