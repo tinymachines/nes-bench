@@ -226,13 +226,47 @@ that decides a hold, so the level a step records is in force from the
 next step and belongs in frame h + 1; written into frame h the die was
 held one cycle early at every DMA.
 
-**T2: the stack's instruments, fed a console.** A `LOAD` door in
-`halfwave` and in the site's wasm machine that takes a recorded bus
-and a stimulus instead of a program; the Trace page's `?trace=` and the
-Halfshot page's, so a window of a console run is shown by the pages as
-they are; `check-halfshot.mjs` on an export of it. Gate: the halfshot
-of the test cartridge's first poll validates cold, and its rows show
-the pad's eight bits on the data bus at the eight reads of $4016.
+**T2: the stack's instruments, fed a console. DONE 2026-09-13** (`6502`
+repository: `v6502_pins::Window` and the `.window` text, `cut_window`,
+`rung0_window`, `run_window`, `Bus::half_step`, halfwave's `WINDOW`,
+`Machine.fromWindow`, the Halfshot page's and the Trace page's
+`?window=`, `tools/check-halfshot.mjs`'s record group,
+`web/_window-test.html`). The `LOAD` door became a WINDOW: a piece of a
+record with the machine standing at its first half-cycle (the four
+planes, the half-cycle, the last fetch, as halfwave's own `STATE` words),
+the frames, the inputs in force, and the shadow of memory, one text
+file, cut by `replay-recorded --window A B out.window` after rung 0 has
+run the record to A. The service stands in one with `WINDOW <name>`, the
+wasm machine with `Machine.fromWindow(text)` (one bus enum behind the
+one machine, so every page method works), and the pages with
+`?window=name`. The bus follows the chip's own half-cycle count through
+a hook every other bus ignores, so history, the service and the pages
+needed no driver; a rewind inside a window is a restore to its origin
+and a run forward, because a record is read and never rolled back.
+
+The gates, as run (MEASURED 2026-09-13):
+
+- A window cut from every golden trace with room for one restores and
+  agrees with itself to its end; a flipped window frame is refused
+  (`MUTATE=1`). Workspace green with the goldens required.
+- The two windows shipped at `6502.tinymachines.ai/windows/` are the
+  family's test cartridge's first pad poll and its seventh (`SET 00`,
+  `AT 6 08`): 356 half-cycles each, a window ends on a phi2 frame.
+- `_window-test.html`: the wasm machine steps the seventh poll's window
+  to its end, agrees with the record at every half-cycle, refuses
+  nothing, counts eight reads of $4016 whose D0 bits spell $08, and a
+  rewind inside the window lands on the frame the forward run showed.
+- The Halfshot page's export of both windows validates cold: every
+  frame held to the window's record (a flipped byte in the export is
+  caught by name), no program, the head segment labelled "cut inside an
+  instruction". The export's eight reads of $4016 carry the pad's bits
+  on the data bus. Three things the page had to learn: a window's
+  frames start at the origin, not 0; only RAM reads back what was
+  written (a strobe to $4016 is not a byte); and a seek past the
+  window's end used to loop forever.
+- halfwave's `WINDOW padpoll6 / STEP 300 / ROWS` returns 300 rows whose
+  data column shows the same eight reads and bits, the chip agreeing
+  with the record at the end (`differs: null`, `refusal: null`).
 
 **T3: the console's overlays.** What the 6502 pages have no column
 for: the stack page ($0100 to $01FF from the shadow RAM, with S), the
