@@ -33,6 +33,9 @@ BRIO="/dev/v4l/by-id/usb-046d_Logitech_BRIO_1C8D6975-video-index0"
 GRABBER="/dev/v4l/by-id/usb-1b80_Roxio_Video_Capture_USB_11111111111111111111-video-index0"
 SIDE="/dev/v4l/by-id/usb-046d_0990_08DF0A45-video-index0"   # QuickCam Pro 9000, added 2026-09-13
 EYE_PRESET="${EYE_PRESET:-board}"
+# The zone the frames are stamped in: TZ if set, else what the cron
+# installer recorded in $CAPTURES/.tz, else the Pi's own clock.
+if [ -z "${TZ:-}" ] && [ -r "$CAPTURES/.tz" ]; then export TZ="$(cat "$CAPTURES/.tz")"; fi
 
 case "$EYE_PRESET" in
   board)  ZOOM=100; PAN=0 ;;

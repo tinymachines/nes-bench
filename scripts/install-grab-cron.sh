@@ -18,7 +18,11 @@ set -eu
 HERE="$(cd "$(dirname "$0")" && pwd)"
 TAG="# nes-bench grab"
 TZ_PREFIX=""
-if [ "${1:-}" = "--tz" ]; then TZ_PREFIX="TZ=${2:?--tz needs a zone} "; shift 2; fi
+if [ "${1:-}" = "--tz" ]; then
+  TZ_PREFIX="TZ=${2:?--tz needs a zone} "
+  mkdir -p "${CAPTURES:-$HOME/captures}" && printf '%s\n' "$2" > "${CAPTURES:-$HOME/captures}/.tz"
+  shift 2
+fi
 LINE="*/5 * * * * ${TZ_PREFIX}$HERE/grab.sh all >/dev/null 2>&1 $TAG"
 current="$(crontab -l 2>/dev/null | grep -v "$TAG" || true)"
 if [ "${1:-}" = "--remove" ]; then
