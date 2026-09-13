@@ -127,3 +127,15 @@ focus 25 manual, exposure 333 manual at gain 0, auto white balance
 (about 3200 K under the bench light), zoom 100 for the whole board,
 160 with one degree of pan for the chip column, 300 for one chip.
 
+Both eyes also run on a timer. `scripts/grab.sh board|screen|all` on the
+Pi files one frame of each under `~/captures/YYYY/MM/DD/<stamp>_<type>.jpg`
+(the board frame the way the `board` preset takes it, the screen frame
+off the grabber), one lock over both cameras so a hand-run grab and the
+timer's do not fail each other, and a line per frame in
+`~/captures/grab.log`. `scripts/install-grab-cron.sh --tz America/New_York`
+put it on the crontab every five minutes (2026-09-13; the Pi's own clock
+is on London time, so the zone is on the cron line and the log line
+carries the offset). `scripts/pull-captures.sh <pi> [days]` brings the
+day's frames to the workstation under `captures/pi/` and names the newest
+of each: the frame a QA pass of the wiring reads.
+

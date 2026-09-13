@@ -147,6 +147,11 @@ entry is the one that raised it, with its date.
   the cartridge and grab again; if it stays, the scope on the CHR bank
   bit of the mapper latch, and a second grab after the OSCR reader has
   had the cartridge (its dump was clean, so the ROM is not it).
+  Seen once: the timed screen frame at 12:02 the same day draws the
+  logo right, with nothing touched between, so it is intermittent, and
+  the five-minute screen frames are now the watch for it (a garbled
+  frame in `captures/pi/` with a good one either side is the evidence
+  to bring to the scope).
 
 ## The card and the reader
 
