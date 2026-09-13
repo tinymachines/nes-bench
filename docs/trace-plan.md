@@ -268,14 +268,43 @@ The gates, as run (MEASURED 2026-09-13):
   data column shows the same eight reads and bits, the chip agreeing
   with the record at the end (`differs: null`, `refusal: null`).
 
-**T3: the console's overlays.** What the 6502 pages have no column
-for: the stack page ($0100 to $01FF from the shadow RAM, with S), the
-pad column (latch index, bit number, the byte so far), the PPU column
-(register, dot, scanline) and the decoded frame of the window beside
-the strip. Either a console trace page in the 6502 site or the Trace
-page reading the events file; decided when T2 shows which is less
-code. Gate: the byte read back off the bus bits at latch n equals the
-script's byte at n, on the page.
+**T3: the console's overlays. DONE 2026-09-13** (`nes` @ 5214e36: the
+trace writes `<name>.overlay`; `6502`: the window carries the console's
+lines, the Halfshot page shows them, `web/_halfshot-window-test.html`
+holds them). Decided as T2 showed: the Halfshot page, which already
+stood in a window with a strip, a plate and a memory window, gained the
+console rather than a page of its own. The console's trace tool writes
+its events as text beside the record, one line per event with the
+half-cycle as the line's second field (`latch`, `read`, `ppu`, `cart`,
+`nmi`, an anchor `dot` every 256 half-cycles of where that half-cycle
+falls in the PPU's frame, `alignment` and `picture` with `-` for a
+half-cycle); the window cutter copies the lines inside a window without
+knowing what they mean, and the page reads them. Under the plate, inside
+a window:
+
+- The picture of the frame being drawn through the window (a P6 PPM the
+  window names, decoded onto a canvas; the frame index is the one the
+  events count, so the pictures are asked for by `FRAMES_PPM=2,8` for
+  the polls in frames 2 and 8, not 3 and 9, which the first cut got
+  wrong).
+- The pad column: the latch in force with its index and the script's
+  byte, the reads of $4016 since it, the bit this read returned and its
+  bit number, the byte the bits so far spell (bit 0 first), and at the
+  eighth read whether it is the latch's byte read back.
+- The PPU column: frame, line and dot counted by the alignment from the
+  window's anchor (never converted, always counted), the last register
+  write with its own frame, line and dot, and the last NMI edge.
+- The stack page, $0100 to $01FF from memory as it stood at the frame,
+  S marked and the live entries above it emphasised.
+
+The gate, as run (MEASURED 2026-09-13): `_halfshot-window-test.html`
+boots the page in an iframe on the seventh poll's window, walks the
+eight frames that read $4016, holds each bit to the data bus's D0, and
+at the eighth read the byte spelled on the page is the latch's, $08,
+and the page says so; the PPU column places the last read at frame 8,
+line 243, dot 95 (vertical blank, where the test cartridge's handler
+polls); the stack page marks S at $01FC; the picture drawn is frame 8.
+Both windows' exports still validate cold.
 
 **T4: against the part.** The same latch index on both sides: the
 bridge's log line (latch, byte, clocks) against the events file's
