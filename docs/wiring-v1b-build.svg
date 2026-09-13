@@ -26,7 +26,7 @@
 </style>
 <rect x="0" y="0" width="2188" height="1137" fill="#ffffff"/>
 <g class="sheet-heading" data-height="60">
-<text class="title" x="24.0" y="30.0" text-anchor="start">Bridge v1b as built, read 2026-09-13 14:30 EDT: grounds, +5 V and the J1 console side</text>
+<text class="title" x="24.0" y="30.0" text-anchor="start">Bridge v1b as built, read 2026-09-13 14:50 EDT: grounds, +5 V and the J1 console side</text>
 <text class="sub" x="24.0" y="46.0" text-anchor="start">Grey: built and seen in the right hole. A ring and a number: needs a check, the note under the rails says what. Full colour: not built yet, or not part of this pass.</text>
 </g>
 <line class="railline" x1="40.0" y1="122.0" x2="2138.0" y2="122.0" stroke="#d02b2b"/>
@@ -475,8 +475,8 @@
 <text class="tag" x="53.0" y="455.0" text-anchor="middle">1</text>
 <text class="checkhead" x="24.0" y="864.0" text-anchor="start">Needs a check (12)</text>
 <text class="checknote" x="24.0" y="885.0" text-anchor="start">1. Rails: the two red links between the left and right boards are one colour and cross at the left end; they read + to + and GND to GND. The orange (+) and brown (GND) feeds into the middle board's rail read right. Meter + to + before power: a swap reverses every chip.</text>
-<text class="checknote" x="24.0" y="902.0" text-anchor="start">2. U2-8 GND: the grey wire's tip is in pin 7's row (/QH), one hole above pin 8. Move it one hole toward the chip's end.</text>
-<text class="checknote" x="24.0" y="919.0" text-anchor="start">3. U2-10 DS: no wire. It needs a stub to GND (the one there earlier is gone).</text>
+<text class="checknote" x="24.0" y="902.0" text-anchor="start">2. U2-8 GND: reported fixed at 14:45; the camera at 14:50 still shows the grey wire's tip in pin 7's row (/QH), one hole above pin 8. Move it one hole toward the chip's end.</text>
+<text class="checknote" x="24.0" y="919.0" text-anchor="start">3. U2-10 DS: reported fixed at 14:45; the camera at 14:50 still shows no wire on pin 10's row. It needs a stub to GND.</text>
 <text class="checknote" x="24.0" y="936.0" text-anchor="start">4. U1-7 GND: the grey tip reads between pin 6 (3Y, an output) and pin 7. Seat it in pin 7's row, the chip's end.</text>
 <text class="checknote" x="24.0" y="953.0" text-anchor="start">5. J1-3 OUT0 (black): now reads on U1-1; at 12:40 it read on pin 2. Beep OUT0 to U1-1.</text>
 <text class="checknote" x="24.0" y="970.0" text-anchor="start">6. U1-1: the stub from the UNO side lands one column below the ribbon's yellow (D5), on the green (D3, TRIG). Move it up one hole.</text>
@@ -486,6 +486,6 @@
 <text class="checknote" x="24.0" y="1038.0" text-anchor="start">10. U2-9 QH: see the J1-4 note.</text>
 <text class="checknote" x="24.0" y="1055.0" text-anchor="start">11. A1 5V to the + rail: the feed is off the top of the camera's view. Meter it.</text>
 <text class="checknote" x="24.0" y="1072.0" text-anchor="start">12. A1 GND to the GND rail: off the top of the camera's view. Meter it.</text>
-<text class="note" x="24.0" y="1093.0" text-anchor="start">No 100 nF decoupling capacitors are fitted yet (C1 to C3).</text>
+<text class="note" x="24.0" y="1093.0" text-anchor="start">No 100 nF decoupling capacitors are fitted yet (C1 to C3). U1's and U3's pin-1 notches face up, the way the wiring expects; U2's is under the blue lead, so check it faces up too.</text>
 <text class="note" x="2164" y="1121" text-anchor="end">19 nets on tracks, 7 of them crossing the row; 26 supply pins on the rails. drawn by tools/wiring-diagram.py</text>
 </svg>

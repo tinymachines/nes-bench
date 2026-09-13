@@ -2,13 +2,13 @@
   "org": "tinymachines",
   "project": "nes-bench",
   "docno": "TM-NESB-001",
-  "rev": "B",
+  "rev": "C",
   "drawn": "bisenbek",
   "page": "ansi-a",
   "title": "NES controller-port bridge, v1b",
   "intro": [
     "The bench drives an unmodified NES-001 through its controller port and records what it does. This package is the v1b build: an Arduino UNO between a Raspberry Pi and the console, on one 5 V rail.",
-    "Nothing is placed or typed by hand: the schematic's coordinates come from the parts' own sizes, and every list and diagram here is read back out of it, the lab log and the bring-up tool. Three sheets are ANSI B: their type would print below 5 pt on letter, and the package refuses that.",
+    "Nothing is placed or typed by hand: the schematic's coordinates come from the parts' own sizes, and every list and diagram here is read back out of it, the lab log and the bring-up tool. Four sheets are ANSI B: their type would print below 5 pt on letter, and the package refuses that.",
     "AUTHORED means not yet measured. MEASURED carries its date and its record in docs/lab-notebook.md."
   ],
   "sheets": [
@@ -31,6 +31,12 @@
       "svg": "wiring-v1b.svg",
       "page": "ansi-b",
       "title": "Wiring diagram: every wire at right angles on the packages"
+    },
+    {
+      "kind": "schematic",
+      "svg": "wiring-v1b-build.svg",
+      "page": "ansi-b",
+      "title": "Wiring diagram as built: grey is done, a ring needs a check"
     },
     {
       "kind": "schematic",
@@ -110,6 +116,11 @@
       "B",
       "2026-09-11",
       "as-built placement, wiring diagram, pin map, chip sheets"
+    ],
+    [
+      "C",
+      "2026-09-13",
+      "as-built wiring sheet: what is built, what needs a check"
     ]
   ]
 }

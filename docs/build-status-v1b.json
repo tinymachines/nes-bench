@@ -6,37 +6,102 @@
     "Drawn by tools/wiring-diagram.py into docs/wiring-v1b-build.svg; a key that names no pin on the sheet stops the tool.",
     "The camera sits off to one side, so a housing or a chip leg lands a fraction of a hole away in the picture: a one-hole call is a question for a meter."
   ],
-  "read": "2026-09-13 14:30 EDT",
+  "read": "2026-09-13 14:50 EDT",
   "scope": "grounds, +5 V and the J1 console side",
   "pins": {
-    "U1.3":  {"state": "done"},
-    "U1.5":  {"state": "done"},
-    "U1.9":  {"state": "done"},
-    "U1.11": {"state": "done"},
-    "U1.13": {"state": "done"},
-    "U1.14": {"state": "done"},
-    "U2.15": {"state": "done"},
-    "U2.16": {"state": "done"},
-    "U3.8":  {"state": "done"},
-    "U3.10": {"state": "done"},
-    "U3.13": {"state": "done"},
-    "U3.16": {"state": "done"},
-    "J1.1":  {"state": "done"},
-    "J1.2":  {"state": "done"},
-    "U2.2":  {"state": "done"},
-
-    "U2.8":  {"state": "check", "note": "U2-8 GND: the grey wire's tip is in pin 7's row (/QH), one hole above pin 8. Move it one hole toward the chip's end."},
-    "U2.10": {"state": "check", "note": "U2-10 DS: no wire. It needs a stub to GND (the one there earlier is gone)."},
-    "U1.7":  {"state": "check", "note": "U1-7 GND: the grey tip reads between pin 6 (3Y, an output) and pin 7. Seat it in pin 7's row, the chip's end."},
-    "J1.3":  {"state": "check", "note": "J1-3 OUT0 (black): now reads on U1-1; at 12:40 it read on pin 2. Beep OUT0 to U1-1."},
-    "U1.1":  {"state": "check", "note": "U1-1: the stub from the UNO side lands one column below the ribbon's yellow (D5), on the green (D3, TRIG). Move it up one hole."},
-    "A1.D5 (T1)": {"state": "check", "note": "A1 D5 to U1-1: nothing on the yellow's column; see the U1-1 note."},
-    "A1.D2 (INT0)": {"state": "check", "note": "A1 D2 to U2-2: the brown link runs from the blue's column to U2-2's column. Reads right; beep D2 to U2-2."},
-    "J1.4":  {"state": "check", "note": "J1-4 D0 (green): the housing covers the rows of U2-9 and U2-10 and leans to pin 9. Beep D0 to U2-9, and not to U2-10."},
-    "U2.9":  {"state": "check", "note": "U2-9 QH: see the J1-4 note."},
-    "A1.5V": {"state": "check", "note": "A1 5V to the + rail: the feed is off the top of the camera's view. Meter it."},
-    "A1.GND": {"state": "check", "note": "A1 GND to the GND rail: off the top of the camera's view. Meter it."}
+    "U1.3": {
+      "state": "done"
+    },
+    "U1.5": {
+      "state": "done"
+    },
+    "U1.9": {
+      "state": "done"
+    },
+    "U1.11": {
+      "state": "done"
+    },
+    "U1.13": {
+      "state": "done"
+    },
+    "U1.14": {
+      "state": "done"
+    },
+    "U2.15": {
+      "state": "done"
+    },
+    "U2.16": {
+      "state": "done"
+    },
+    "U3.8": {
+      "state": "done"
+    },
+    "U3.10": {
+      "state": "done"
+    },
+    "U3.13": {
+      "state": "done"
+    },
+    "U3.16": {
+      "state": "done"
+    },
+    "J1.1": {
+      "state": "done"
+    },
+    "J1.2": {
+      "state": "done"
+    },
+    "U2.2": {
+      "state": "done"
+    },
+    "U2.8": {
+      "state": "check",
+      "note": "U2-8 GND: reported fixed at 14:45; the camera at 14:50 still shows the grey wire's tip in pin 7's row (/QH), one hole above pin 8. Move it one hole toward the chip's end."
+    },
+    "U2.10": {
+      "state": "check",
+      "note": "U2-10 DS: reported fixed at 14:45; the camera at 14:50 still shows no wire on pin 10's row. It needs a stub to GND."
+    },
+    "U1.7": {
+      "state": "check",
+      "note": "U1-7 GND: the grey tip reads between pin 6 (3Y, an output) and pin 7. Seat it in pin 7's row, the chip's end."
+    },
+    "J1.3": {
+      "state": "check",
+      "note": "J1-3 OUT0 (black): now reads on U1-1; at 12:40 it read on pin 2. Beep OUT0 to U1-1."
+    },
+    "U1.1": {
+      "state": "check",
+      "note": "U1-1: the stub from the UNO side lands one column below the ribbon's yellow (D5), on the green (D3, TRIG). Move it up one hole."
+    },
+    "A1.D5 (T1)": {
+      "state": "check",
+      "note": "A1 D5 to U1-1: nothing on the yellow's column; see the U1-1 note."
+    },
+    "A1.D2 (INT0)": {
+      "state": "check",
+      "note": "A1 D2 to U2-2: the brown link runs from the blue's column to U2-2's column. Reads right; beep D2 to U2-2."
+    },
+    "J1.4": {
+      "state": "check",
+      "note": "J1-4 D0 (green): the housing covers the rows of U2-9 and U2-10 and leans to pin 9. Beep D0 to U2-9, and not to U2-10."
+    },
+    "U2.9": {
+      "state": "check",
+      "note": "U2-9 QH: see the J1-4 note."
+    },
+    "A1.5V": {
+      "state": "check",
+      "note": "A1 5V to the + rail: the feed is off the top of the camera's view. Meter it."
+    },
+    "A1.GND": {
+      "state": "check",
+      "note": "A1 GND to the GND rail: off the top of the camera's view. Meter it."
+    }
   },
-  "rails": {"state": "check", "note": "Rails: the two red links between the left and right boards are one colour and cross at the left end; they read + to + and GND to GND. The orange (+) and brown (GND) feeds into the middle board's rail read right. Meter + to + before power: a swap reverses every chip."},
-  "not_seen": "No 100 nF decoupling capacitors are fitted yet (C1 to C3)."
+  "rails": {
+    "state": "check",
+    "note": "Rails: the two red links between the left and right boards are one colour and cross at the left end; they read + to + and GND to GND. The orange (+) and brown (GND) feeds into the middle board's rail read right. Meter + to + before power: a swap reverses every chip."
+  },
+  "not_seen": "No 100 nF decoupling capacitors are fitted yet (C1 to C3). U1's and U3's pin-1 notches face up, the way the wiring expects; U2's is under the blue lead, so check it faces up too."
 }
