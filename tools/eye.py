@@ -33,6 +33,15 @@ balance, manual exposure 333), `column` (zoom 160, pan one degree right:
 the three chips, the ribbon, the jumpers and the rail wires in one
 frame, row numbers legible) and `chips` (zoom 300: one chip and its
 pins). Pan and tilt step in whole degrees on this camera.
+EXPOSURE, re-measured 2026-09-13 evening when the room light changed:
+a manual exposure is clamped to the frame time at 1080p (values above
+about 333 read back but do not brighten the frame, with or without
+exposure_dynamic_framerate), so in a dim room only gain or the camera's
+own auto exposure recovers the level (auto: mean 113 against 47 at the
+clamp; gain 128 at the clamp: 137, sharper but noisier). The presets
+now leave exposure to the camera (auto, aperture priority), which also
+survives the light changing between timed frames; --exposure N --gain G
+still sets both by hand when a measurement wants them held.
 BASELINE 2026-09-13, the camera fixed in its mount: focus 20 (the sweep
 peaked there twice), and docs/eye-views.json names a zoom-500 close-up
 of every landing on the board. `grab NAME --view VIEW` takes one;
@@ -55,9 +64,9 @@ CAPS = ROOT / "captures"
 DEVICE = "/dev/v4l/by-id/usb-046d_Logitech_BRIO_1C8D6975-video-index0"
 
 PRESETS = {
-    "board": dict(focus=20, exposure=333, gain=0, zoom=100, pan=0, tilt=0, wb="auto"),
-    "chips": dict(focus=20, exposure=333, gain=0, zoom=300, pan=0, tilt=0, wb="auto"),
-    "column": dict(focus=20, exposure=333, gain=0, zoom=160, pan=3600, tilt=0, wb="auto"),
+    "board": dict(focus=20, exposure="auto", gain=0, zoom=100, pan=0, tilt=0, wb="auto"),
+    "chips": dict(focus=20, exposure="auto", gain=0, zoom=300, pan=0, tilt=0, wb="auto"),
+    "column": dict(focus=20, exposure="auto", gain=0, zoom=160, pan=3600, tilt=0, wb="auto"),
 }
 
 CONTROLS = ["brightness", "contrast", "saturation", "white_balance_automatic", "white_balance_temperature",
