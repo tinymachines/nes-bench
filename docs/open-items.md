@@ -12,7 +12,16 @@ entry is the one that raised it, with its date.
   14.1 degrees off them on the saturated colours (`eyes-vs-scope.md`).
   RERUN 2026-09-13 on the model with its CPU and sprite DMA corrected:
   12.61 and 14.1, the same to the second decimal, so the hue is the
-  picture chain's and nothing upstream of it.
+  picture chain's and nothing upstream of it. LOCATED 2026-09-13
+  (`eyes-vs-scope.md`, "Where the hue lives"): the part's analogue
+  output under the eyes session's load, the level-dependent slew the
+  wiki calls differential phase distortion, not the decoder (signal
+  and decoded stages differ alike), not the table or the die (every
+  hue speaks the table on the switch-level 2C02), not hue 12 (the
+  same screen recorded earlier sits within four degrees). Closes
+  with: the bars cartridge captured under the eyes' load and with the
+  scope alone, and the wiki's voltage-dependent RC stage in the
+  encoder with its constant fitted per load, MUTATE red.
   Where in the chain: the encoder's palette phase
   (`ntsc-source-nes`), the burst the model synthesises, or the decoder
   reading its own synthesis. Closes with: one flat colour encoded and

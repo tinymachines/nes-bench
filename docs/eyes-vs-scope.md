@@ -191,3 +191,70 @@ hue with two witnesses. What it does not say yet is where in the chain:
 the encoder's palette phase, the burst phase the model synthesises, or
 the decoder's reading of its own synthesis. That is the next question,
 and it now has a measurement to be answered against.
+
+## Where the hue lives (MEASURED 2026-09-13)
+
+The question the three-way left open was which stage of the model's
+picture chain owes the twelve to fourteen degrees. The answer came from
+measuring the same colour at two stages, then asking the die, then
+asking a second record of the same screen.
+
+**The signal stage, not the decoder.** `hue-stage` (in the ntsc-crt
+repository, `crates/ntsc-source-cap/examples/hue-stage.rs`) takes a
+flat region of a real capture and the same colour through the encoder
+and measures both twice: the chroma phase against the burst, projected
+straight off the composite samples with no decoder in the way, and the
+hue through the one decoder. On `title1` the logo's brown ($17) differs
+by 1.8 degrees at the signal and 3.1 through the decoder; the
+lettering's cyan ($2c) by 14.4 at the signal and 15.2 through the
+decoder. The decoder adds nothing: whatever it is, it is already in the
+signal.
+
+**Not the die, and not the table.** The switch-level 2C02's DAC gate had
+held the transcribed level table sample for sample, but the standard
+world's palette carries hues 1, 2, 4, 6, 7, 8 and 10: the die had never
+been shown a hue-12 pixel. A world of one colour for each hue 1 to 12
+at luma 2 (`every_hue_speaks_the_transcribed_table` in the 2c02
+repository, `crates/v2c02-dots/tests/dac.rs`) puts every hue in front of
+the DAC: zero mismatches on 7,680 samples for each, hue 12's wave on
+the die `111111000000`, the table's `111111000000`. The digital chain
+of the model is the die's.
+
+**Not hue 12 either.** The same menu screen recorded on 2026-09-02
+(`smbdh-a`, 125 MSa/s, the scope alone on the output) puts the cyan at
+4.2 degrees from the table and the brown at 4.2, one constant; the SMB
+title record puts its sky ($22) at 1.1 and its logo at 0.9; Duck Hunt's
+sky ($21) at 3.5 and its grass ($29) at 2.4. Every hue measured on the
+part sits within about four degrees of the table, except the cyan of
+the `title1` record, and there the brown sits at two.
+
+**The part's output under load.** Folding the real waves by subcarrier
+phase shows what the model's square waves are not: on the part, the
+rise takes about six phases and the fall about three, the low level
+sits a tenth of a volt under the table's, and the cyan's plateau at
+1.05 V is rounded where the brown's at 0.80 V is not. That is the
+2C02's known differential phase distortion (nesdev, "NTSC video"): the
+PPU's output impedance depends on the level, the board's capacitance
+slows the higher edges, and the effective hue rotates with the
+voltage, brighter colours more. The wiki models it as an RC lowpass
+whose time constant follows the voltage; applied to the model's waves
+it rotates row 2 by 14.7 degrees at its `amount` 4 (the cyan's 14.4),
+but row 1 by 7.5 where the brown measured 1.8, and it rotates every hue
+of a row alike, as the measurements do. What the `title1` session had
+that the earlier records did not is the grabber on the same output as
+the probe: a different load on the part's output stage, a stronger and
+more nonlinear slew than one constant fits.
+
+So the stage is the part's analogue output under the load of the eyes
+session, downstream of the DAC, which the model does not have at all;
+the decoder, the encoder's table and the die are cleared. The three-way
+median of 12.6 degrees is the cyan lettering's share of the saturated
+pixels under that load. What closes it is a capture of the family's
+bars cartridge under the eyes' load and again with the scope alone,
+all twelve hues at four rows each, and the wiki's stage in the encoder
+with its one constant fitted per load and a mutation that goes red.
+
+Sources for the mechanism: the nesdev wiki's
+[NTSC video](https://www.nesdev.org/wiki/NTSC_video) page (the
+differential phase distortion section and its filter).
+
