@@ -105,16 +105,53 @@ the hue stage was.
 
 ## Milestones
 
-**C0: the cartridge exists and runs on both sides.** `cal_program()`
-and `cal_chr()` in `testrom.rs`; `export-testrom cal` writes the ROM
-and the manifest; `run-rom` renders every screen; the strip reads back
-from the model's own frame by the manifest's rectangles alone. Gates:
-the manifest's rectangles, read off the rendered frame, give the
-screen id and frame number the generator wrote (every screen, ten
-frames each); `MUTATE=1` shifts the reader one tile and must misread.
-The ROM flashes to the cart, the reader dumps it, the CRC matches the
-export's. The auto-cycle and the pad selection both work on the part,
-seen on the grabber.
+**C0: the cartridge exists and runs on both sides. MACHINE SIDE DONE
+2026-09-13** (`nes` @ 35cfe6e: `crates/nes-console/src/cal.rs`, its
+test `tests/cal.rs`, `export-testrom cal`, `cal-screens`). What was
+planned as `cal_program()` in `testrom.rs` became its own module with
+a small label-resolving assembler, because eight screens, a timer, a
+pad-driven menu and a ninety-tile strip are too much program to write
+as bare bytes and keep honest. Two things the build decided:
+
+- The strip is three rows of fifteen blocks, each two tiles square,
+  not one row: the NMI's blanking budget is the limit (the PPU writes
+  measured by counting at about 1,700 of the 2,270 cycles), so the
+  main loop builds the tiles and the palette for the next frame and
+  the NMI only copies them. The price is a two-frame latency from the
+  blanking that polls the pad to the frame whose strip echoes it,
+  identical on the part and the model, and stated in the manifest.
+- The strip costs one colour (palette 3, colour 3, white on every
+  screen) and the backdrop is black on every screen, so a screen has
+  eleven colours of its own. The palette screen therefore shows eight
+  64-by-80-dot patches a page over seven pages, and the bars screen
+  eleven hues a variant over eight variants, every hue at every luma
+  across them; both are in the manifest per variant.
+
+The gates, as run: the five tests of `tests/cal.rs` are green (the
+strip reads from the first drawn frame and counts by one; Select steps
+all eight screens and every manifest region holds its entry or its
+pattern dot for dot; the timer steps screen 0 to 1 at 240 frames and
+the palette screen's variant at 60; the pad byte echoes two frames
+after the blanking that polled it and the pad screen's field turns
+green the same frame), and `MUTATE=1`, the reader one tile right,
+goes red on the four that read a strip. The eight screens were looked
+at through the family's own decode (`cal-screens`).
+
+The files (MEASURED 2026-09-13, exported from `nes` @ 35cfe6e):
+
+| file | bytes | sha256 | body crc32 |
+|---|---|---|---|
+| `cal.nes` | 40976 | `4b9d92ebc78ccccce55f150fe237e845b5a27a46c7a28a5fbbe6188a9c8ef6b2` | `21091B99` |
+| `cal.json` | the manifest beside it, 8 screens, 69 regions, 12 strip fields | in `roms/SHA256SUMS` | |
+
+In `roms/` here and on the Pi (`sha256sum -c SHA256SUMS`), and served
+at `tinymachines.ai/nes/cal.nes` with `/nes/cal.json` beside it.
+
+**C0, the part's side: OPEN.** The ROM onto the flashcart (or the
+physical cart, `docs/build-the-cal-cart.md`), the reader's dump against
+the CRC above, the auto-cycle and Select seen on the grabber, and the
+first strip read off a grabbed frame: `tools/cal.py grab`, which is
+C1's first tool and not yet written.
 
 **C1: colour.** Screen 1 through the scope and `capture-score`'s
 regions, and through the grabber and `eyes.py`'s path, against the

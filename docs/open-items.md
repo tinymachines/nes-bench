@@ -7,11 +7,14 @@ entry is the one that raised it, with its date.
 
 ## The calibration cartridge (plan 2026-09-13)
 
-- **C0 to C4 of `calibration-plan.md`: not started.** One cartridge
-  designed to be measured off the part and the model through the same
-  tool: a self-naming frame strip, palette, gratings, edges, dot crawl,
-  the pad's echo. C0 (the cartridge, the manifest, the strip reader)
-  is the next build.
+- **C0 of `calibration-plan.md`: machine side DONE 2026-09-13 (`nes` @
+  35cfe6e), part side OPEN.** `cal.nes` and its manifest are in
+  `roms/`, on the Pi and served. Open: the ROM onto the flashcart or
+  the physical cart (the tutorial is `build-the-cal-cart.md`), the
+  reader's dump against crc32 `21091B99`, the screens seen cycling on
+  the grabber, and the first strip read off a grabbed frame, which is
+  `tools/cal.py grab` (C1's first tool).
+- **C1 to C4: not started.**
 
 ## Model side
 
