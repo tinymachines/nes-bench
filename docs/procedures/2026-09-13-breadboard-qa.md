@@ -65,3 +65,66 @@ Not judged: the ten-way ribbon from the Pi into the left board (columns
 about 44 to 53) and the UNO ribbon's header at the top of the left
 board are not on the v1b breadboard sheet, which has the Pi on four
 jumpers to the relay and PC817 modules only.
+
+## Second pass, 12:40 to 12:55, after the reboot: grounds, +5 V and the J1 side
+
+The BRIO's arm had moved (refocused: the sweep peaks at 20, 25 is
+within noise, the presets keep 25) and a second eye is on the timer
+(`side`: a QuickCam low on the console side). The board is three
+breadboards side by side: the left one carrying the rail the supply
+lands on, a middle one whose left rail is fed from it, and the right
+one with the three chips. Read off zoom-200 and zoom-300 frames.
+
+Right, with the confidence the eye can give:
+
+- Left board rail: + is the column by the red line, GND the column by
+  the black line. The two red links leave it from + (column 60) and
+  GND (column 58) and land on the right board's rail + (outer, by the
+  red line) and GND (inner, by the blue line) respectively, as traced
+  along the bottom of the frame. Both links are red, so a meter is the
+  proof.
+- Orange (+) and brown (GND) stubs at the left rail's columns 51 and 52
+  feed the middle board's left rail, + to the column by the pink line,
+  GND to the column by the blue line.
+- The five grey ground wires all start in the middle board's GND
+  column: HCT04 pins 3, 5 and 7, the 595's pin 8, and the 165's wire
+  (still on pin 7, finding 1 of the first pass, unchanged).
+- Right board rail stubs unchanged and right, except the 165's DS stub
+  (pin 10, column 19) which is gone: see the J1 findings.
+- J1 yellow (GND) sits in the right board's GND column at about
+  column 16: right.
+- Three empty two-way probe headers, one across each rail pair.
+
+Not seen: what feeds the left board's rail (the top of the left board
+is outside every frame).
+
+J1 findings, worth a hand check each, most likely wrong first:
+
+7. **Green (D0) is on the 165's pin 10 row (DS), one hole above pin 9
+   (QH), and the DS ground stub that was there is gone.** D0 must be on
+   the bottom pin (column 18) and DS back to GND. As it stands the
+   console reads the shift register's serial INPUT, and that input is
+   driven by the console.
+8. **Black (OUT0) reads on the HCT04's second row from the top (pin 2,
+   1Y, the inverter's output), not the top row (pin 1, 1A).** If so the
+   console drives the inverter's output. Pin 1 is the top hole of the
+   left side, column 34, the end with the dot.
+9. **A short grey stub joins the HCT04's pin-1 column (34) to the
+   middle-board column where the UNO ribbon's BLUE wire (D2, CON_CLK)
+   lands.** The plan has pin 1 fed by the ribbon's YELLOW (D5,
+   CON_OUT0), two positions further up the header. Move the stub's
+   middle-board end two holes up, to the yellow's column.
+10. **The brown diagonal from the middle board to the 165's top-left:**
+    its lower end reads on the top or second row (pin 1 /PL or pin 2
+    CP); its upper end reads one to two columns below the ribbon's blue,
+    where nothing else is. If it is the D2-to-CP link (jumper 3), both
+    ends want the blue's column and pin 2.
+11. Blue (CLK) reads on the 165's pin 2 (CP) in the zoom-200 frame and
+    on pin 1 in the zoom-300 frame: one hole of doubt. CP is the second
+    hole from the top end.
+
+The eye's limit, stated once more: at this camera angle a lead's
+housing and a chip's legs sit off their holes by a fraction of a pitch,
+so every one-column call above is a question for a meter, not a
+verdict. Six continuity beeps settle the J1 side: OUT0 to U1-1, U1-2
+to U2-1, CLK to U2-2, D0 to U2-9, U2-10 to GND, U1-1 to UNO D5.
