@@ -7,8 +7,9 @@
 #
 # Runs ON THE PI (the cameras are on its hub). Writes
 #   $CAPTURES/YYYY/MM/DD/<YYYYMMDD>T<HHMMSS>_<TYPE>.jpg
-# with CAPTURES defaulting to ~/captures, and one line per frame to
-# $CAPTURES/grab.log. The cron line scripts/install-grab-cron.sh installs
+# with CAPTURES defaulting to ~/captures, the stamp in the zone TZ names
+# (the Pi's own if unset; the log line carries the offset), and one line
+# per frame to $CAPTURES/grab.log. The cron line scripts/install-grab-cron.sh installs
 # calls this every five minutes. Every device is named by its stable
 # /dev/v4l/by-id path, because the /dev/videoN numbers move whenever a
 # camera is plugged in.
@@ -43,7 +44,7 @@ day="$CAPTURES/$(date +%Y/%m/%d)"
 mkdir -p "$day"
 log="$CAPTURES/grab.log"
 
-note() { echo "$(date +%Y-%m-%dT%H:%M:%S) $*" | tee -a "$log"; }
+note() { echo "$(date +%Y-%m-%dT%H:%M:%S%z) $*" | tee -a "$log"; }
 
 grab_board() {
   local out="$day/${now}_board.jpg"
