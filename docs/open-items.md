@@ -5,6 +5,14 @@ and what closes it. Dated when added; struck through with the date and
 the commit when done. Measurements do not live here; a number in an
 entry is the one that raised it, with its date.
 
+## The calibration cartridge (plan 2026-09-13)
+
+- **C0 to C4 of `calibration-plan.md`: not started.** One cartridge
+  designed to be measured off the part and the model through the same
+  tool: a self-naming frame strip, palette, gratings, edges, dot crawl,
+  the pad's echo. C0 (the cartridge, the manifest, the strip reader)
+  is the next build.
+
 ## Model side
 
 - **The model's hue against the part (2026-09-12).** On the title
