@@ -85,10 +85,12 @@ entry is the one that raised it, with its date.
   record whose game had jammed; `tests/stalls.rs` two DMAs on a bus,
   `MUTATE_DMA_MEMO=1` red. The three-way comparison's stray sprite on
   the underline was this.
-- **The flashcart's pad cartridge is stale (2026-09-12).** The test
-  cartridge now sets its stack pointer at reset; its prediction for the
-  part is 597 polls over 600 frames, not 596. Re-export with
-  `export-testrom` and reflash before sitting 5's compare-logs.
+- ~~**The flashcart's pad cartridge is stale (2026-09-12).**~~
+  RE-EXPORTED 2026-09-13 (`docs/procedures/2026-09-13-pad-cartridge-for-the-flashcart.md`):
+  `pad.nes` crc `599C4188`, 597 polls over 600 frames, in `roms/`, on
+  the Pi and served at `/nes/pad.nes` with its hash recorded. Writing
+  the card is yours; the checksum in the procedure says which
+  cartridge the card holds.
 
 ## The grabber and its driver
 
