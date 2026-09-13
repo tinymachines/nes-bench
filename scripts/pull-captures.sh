@@ -19,7 +19,7 @@ for i in $(seq 0 $((DAYS - 1))); do
   rsync -aq --ignore-existing "$PI:captures/$d/" "$DEST/$d/" 2>/dev/null || true
 done
 rsync -aq "$PI:captures/grab.log" "$DEST/grab.log" 2>/dev/null || true
-for t in board screen; do
+for t in board screen side; do
   f=$(find "$DEST" -name "*_$t.jpg" | sort | tail -1)
   echo "$t: ${f:-none}"
 done

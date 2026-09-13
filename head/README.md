@@ -130,7 +130,10 @@ focus 25 manual, exposure 333 manual at gain 0, auto white balance
 Both eyes also run on a timer. `scripts/grab.sh board|screen|all` on the
 Pi files one frame of each under `~/captures/YYYY/MM/DD/<stamp>_<type>.jpg`
 (the board frame the way the `board` preset takes it, the screen frame
-off the grabber), one lock over both cameras so a hand-run grab and the
+off the grabber, and since the same afternoon a `side` frame from the
+second eye, a QuickCam Pro 9000 set low on the console side looking
+across the board, which shows what stands proud of it: housings,
+headers, which row a lead is in), one lock over both cameras so a hand-run grab and the
 timer's do not fail each other, and a line per frame in
 `~/captures/grab.log`. `scripts/install-grab-cron.sh --tz America/New_York`
 put it on the crontab every five minutes (2026-09-13; the Pi's own clock

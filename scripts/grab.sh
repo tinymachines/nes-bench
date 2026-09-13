@@ -3,7 +3,8 @@
 #
 #   scripts/grab.sh board            # the BRIO over the breadboard
 #   scripts/grab.sh screen           # the console's picture, off the grabber
-#   scripts/grab.sh all              # both, board first
+#   scripts/grab.sh side             # the second eye: the QuickCam low across the board
+#   scripts/grab.sh all              # all three, board first
 #
 # Runs ON THE PI (the cameras are on its hub). Writes
 #   $CAPTURES/YYYY/MM/DD/<YYYYMMDD>T<HHMMSS>_<TYPE>.jpg
@@ -30,6 +31,7 @@ TYPE="${1:-all}"
 CAPTURES="${CAPTURES:-$HOME/captures}"
 BRIO="/dev/v4l/by-id/usb-046d_Logitech_BRIO_1C8D6975-video-index0"
 GRABBER="/dev/v4l/by-id/usb-1b80_Roxio_Video_Capture_USB_11111111111111111111-video-index0"
+SIDE="/dev/v4l/by-id/usb-046d_0990_08DF0A45-video-index0"   # QuickCam Pro 9000, added 2026-09-13
 EYE_PRESET="${EYE_PRESET:-board}"
 
 case "$EYE_PRESET" in
@@ -76,6 +78,19 @@ grab_screen() {
   fi
 }
 
+grab_side() {
+  local out="$day/${now}_side.jpg"
+  if [ ! -e "$SIDE" ]; then note "side: no camera at $SIDE"; return 1; fi
+  v4l2-ctl -d "$SIDE" --set-fmt-video=width=1600,height=1200,pixelformat=MJPG >/dev/null 2>&1
+  sleep 0.4
+  if v4l2-ctl -d "$SIDE" --stream-mmap --stream-skip=15 --stream-count=1 --stream-to="$out" >/dev/null 2>&1 \
+     && [ -s "$out" ]; then
+    note "side: $out ($(stat -c %s "$out") bytes)"
+  else
+    rm -f "$out"; note "side: the QuickCam gave no frame"; return 1
+  fi
+}
+
 exec 9>"$CAPTURES/.grab.lock"
 if ! flock -w 50 9; then note "$TYPE: another grab held the cameras for 50 s; skipped"; exit 1; fi
 
@@ -83,7 +98,8 @@ rc=0
 case "$TYPE" in
   board)  grab_board || rc=1 ;;
   screen) grab_screen || rc=1 ;;
-  all)    grab_board || rc=1; grab_screen || rc=1 ;;
-  *) echo "grab.sh: board, screen or all, not $TYPE" >&2; exit 2 ;;
+  side)   grab_side || rc=1 ;;
+  all)    grab_board || rc=1; grab_screen || rc=1; grab_side || rc=1 ;;
+  *) echo "grab.sh: board, screen, side or all, not $TYPE" >&2; exit 2 ;;
 esac
 exit $rc
