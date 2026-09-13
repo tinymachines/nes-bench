@@ -95,6 +95,12 @@ tools need nothing beyond the serial speed.
 
 ![v1b wiring diagram: every wire at right angles on the packages as they sit](wiring-v1b.svg)
 
+The same drawing with the build's state on it, from `docs/build-status-v1b.json`
+(dated, read off the bench's eye): grey is built and seen right, a ringed number
+needs a check and the note under the rails says what, full colour is not built yet.
+
+![v1b as built: grey done, ringed needs a check](wiring-v1b-build.svg)
+
 Each chip is its package seen from above, notch left, pin 1 bottom
 left, numbered as the package is; every wire is horizontal or vertical,
 one track and one colour per net, named at its left end, a dot where
