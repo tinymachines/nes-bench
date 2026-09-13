@@ -171,6 +171,17 @@ cyan is (59, 200, 251) in the model against (45, 200, 205) and
 signal, agree to a degree, the model sits twelve to fourteen degrees
 away on the same colours: bluer in the cyan, warmer in the brown.
 
+RERUN 2026-09-13, on the model with its CPU and its sprite DMA corrected
+(the cartridge page tells that story): the same command, the same
+captures. Model against decoder flat blocks 0.66 of 255, hue median
+12.61 degrees, luma correlation 0.95; model against grabber 1.25 of
+255, 14.1 degrees, 0.95. The same numbers to the second decimal, so the
+hue is not the CPU's and not the DMA's. What changed is the frame
+itself: the small sprite the first run showed on the underline, which
+neither eye had at its instant, is gone (it was the stale sprite page
+the DMA copied), and the animated figure stands where the console's
+does. The three-panel picture above is the rerun's.
+
 So the odd one out is the model's side of the picture chain, not the
 console and not either eye. The picture work (N6) had recorded hue
 misses on a synthetic roundtrip and attributed them to the card model's

@@ -10,6 +10,9 @@ entry is the one that raised it, with its date.
 - **The model's hue against the part (2026-09-12).** On the title
   screen the two eyes agree to 0.7 degrees and the model sits 12.6 and
   14.1 degrees off them on the saturated colours (`eyes-vs-scope.md`).
+  RERUN 2026-09-13 on the model with its CPU and sprite DMA corrected:
+  12.61 and 14.1, the same to the second decimal, so the hue is the
+  picture chain's and nothing upstream of it.
   Where in the chain: the encoder's palette phase
   (`ntsc-source-nes`), the burst the model synthesises, or the decoder
   reading its own synthesis. Closes with: one flat colour encoded and
@@ -26,8 +29,9 @@ entry is the one that raised it, with its date.
   neither eye had at its instant. That sprite turned out to be the
   2A03 rung's stale sprite DMA (below, done), not a moment's
   difference; the moment question stands and closes with C2's trigger,
-  which ties the model's frame to a latch. The three-way should be
-  rerun on the fixed model.
+  which ties the model's frame to a latch. RERUN 2026-09-13 on the
+  fixed model: the sprite is gone and the figure stands where the
+  console's does; the numbers did not move.
 - **The chip repositories' suites were run as they run by default
   (2026-09-12).** 2c02 gave 16 tests and 2a03 14 on the pin bump; the
   golden tests skip without their files unless required. Rerun both
