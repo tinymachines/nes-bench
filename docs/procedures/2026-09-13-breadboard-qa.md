@@ -128,3 +128,26 @@ housing and a chip's legs sit off their holes by a fraction of a pitch,
 so every one-column call above is a question for a meter, not a
 verdict. Six continuity beeps settle the J1 side: OUT0 to U1-1, U1-2
 to U2-1, CLK to U2-2, D0 to U2-9, U2-10 to GND, U1-1 to UNO D5.
+
+## Baseline, 15:40: the camera fixed, the wiring as left
+
+The BRIO is fastened in place. Focus re-swept: 20 (twice). A board frame
+taken ten minutes later sits within one pixel of the baseline frame, so
+the named close-ups in `docs/eye-views.json` stay aimed:
+`tools/eye.py views --pi <pi>` takes all of them into
+`captures/views-<stamp>/`, and a later read is a comparison with this one.
+
+What the baseline shows, against the v1b sheet (the pin-by-pin state is
+`docs/build-status-v1b.json`, drawn as the as-built wiring sheet):
+
+- Done: every ground and supply stub on all three chips, U2's ground
+  moved to pin 8 and DS grounded, U1's pin-7 ground on its end pin, the
+  rails and their links, J1's four leads (GND on the rail, CLK on U2-2,
+  OUT0 on U1-1, D0 on U2-9), and the UNO's D2 to U2-2.
+- Check: the short grey from the UNO strip to U1-1 starts one hole low,
+  on the green (D3) instead of the yellow (D5); U2's and U3's pin-1 marks
+  do not resolve on camera (U1's face the top, as wired); the UNO's 5 V
+  and GND into the rails are off camera.
+- Seen: two yellow ceramic capacitors across the rails where the plan
+  has one 100 nF beside each chip; the red link that carries GND;
+  the power and reset breakout's housing parked on the right board.

@@ -2,7 +2,7 @@
   "org": "tinymachines",
   "project": "nes-bench",
   "docno": "TM-NESB-001",
-  "rev": "C",
+  "rev": "D",
   "drawn": "bisenbek",
   "page": "ansi-a",
   "title": "NES controller-port bridge, v1b",
@@ -121,6 +121,11 @@
       "C",
       "2026-09-13",
       "as-built wiring sheet: what is built, what needs a check"
+    ],
+    [
+      "D",
+      "2026-09-13",
+      "baseline: camera fixed, grounds, +5 V and J1 as built"
     ]
   ]
 }

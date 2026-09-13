@@ -33,11 +33,17 @@ balance, manual exposure 333), `column` (zoom 160, pan one degree right:
 the three chips, the ribbon, the jumpers and the rail wires in one
 frame, row numbers legible) and `chips` (zoom 300: one chip and its
 pins). Pan and tilt step in whole degrees on this camera.
+BASELINE 2026-09-13, the camera fixed in its mount: focus 20 (the sweep
+peaked there twice), and docs/eye-views.json names a zoom-500 close-up
+of every landing on the board. `grab NAME --view VIEW` takes one;
+`views --pi HOST [--only a,b]` takes all of them into captures/views-<stamp>/,
+the set a QA pass of the wiring reads.
 The device is the camera's stable name under /dev/v4l/by-id, because the
 /dev/videoN numbers move whenever a camera is plugged in (the BRIO took
 four of them and moved the grabber).
 """
 import argparse
+import json
 import re
 import subprocess
 import sys
@@ -49,9 +55,9 @@ CAPS = ROOT / "captures"
 DEVICE = "/dev/v4l/by-id/usb-046d_Logitech_BRIO_1C8D6975-video-index0"
 
 PRESETS = {
-    "board": dict(focus=25, exposure=333, gain=0, zoom=100, pan=0, tilt=0, wb="auto"),
-    "chips": dict(focus=25, exposure=333, gain=0, zoom=300, pan=0, tilt=0, wb="auto"),
-    "column": dict(focus=25, exposure=333, gain=0, zoom=160, pan=3600, tilt=0, wb="auto"),
+    "board": dict(focus=20, exposure=333, gain=0, zoom=100, pan=0, tilt=0, wb="auto"),
+    "chips": dict(focus=20, exposure=333, gain=0, zoom=300, pan=0, tilt=0, wb="auto"),
+    "column": dict(focus=20, exposure=333, gain=0, zoom=160, pan=3600, tilt=0, wb="auto"),
 }
 
 CONTROLS = ["brightness", "contrast", "saturation", "white_balance_automatic", "white_balance_temperature",
@@ -105,9 +111,10 @@ def apply_preset(a):
 
 
 def cmd_grab(a):
+    apply_view(a)
     apply_preset(a)
     CAPS.mkdir(exist_ok=True)
-    remote = f"/tmp/eye-{a.name}.jpg"
+    remote = f"/tmp/eye-{a.name.replace('/', '-')}.jpg"
     t0 = time.time()
     rep = ssh(a.pi, settings_script(a) + "\n" + grab_script(a, remote) + "\n" + report_script(), timeout=90)
     subprocess.run(["scp", "-q", "-o", "ConnectTimeout=8", f"{a.pi}:{remote}", str(CAPS / f"{a.name}.jpg")], check=True)
@@ -154,6 +161,36 @@ def cmd_sweep(a):
     print(f"best focus {best[0]} (the scene must hold still through the sweep; a hand in it scores as blur)")
 
 
+VIEWS = ROOT / "docs" / "eye-views.json"
+
+
+def apply_view(a):
+    if getattr(a, "view", None):
+        v = json.loads(VIEWS.read_text())["views"].get(a.view)
+        if v is None:
+            sys.exit(f"no view {a.view!r} in {VIEWS.name}")
+        for k in ("zoom", "pan", "tilt"):
+            if getattr(a, k) is None:
+                setattr(a, k, v[k])
+
+
+def cmd_views(a):
+    views = json.loads(VIEWS.read_text())["views"]
+    names = a.only.split(",") if a.only else sorted(views)
+    stamp = time.strftime("%Y%m%dT%H%M%S")
+    out = CAPS / f"views-{stamp}"
+    out.mkdir(parents=True)
+    for n in names:
+        v = views[n]
+        b = argparse.Namespace(pi=a.pi, name=f"views-{stamp}/{n}", preset="board", focus=None, exposure=None, gain=None,
+                               zoom=v["zoom"], pan=v["pan"], tilt=v["tilt"], wb=None, size="1920x1080", settle=12, view=None)
+        cmd_grab(b)
+    b = argparse.Namespace(pi=a.pi, name=f"views-{stamp}/board", preset="board", focus=None, exposure=None, gain=None,
+                           zoom=None, pan=None, tilt=None, wb=None, size="1920x1080", settle=12, view=None)
+    cmd_grab(b)
+    print(f"{len(names)} views and the board frame in captures/views-{stamp}/")
+
+
 def cmd_show(a):
     print(ssh(a.pi, report_script()))
 
@@ -161,12 +198,15 @@ def cmd_show(a):
 def main():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = p.add_subparsers(dest="cmd", required=True)
-    for name, fn in [("grab", cmd_grab), ("sweep", cmd_sweep), ("show", cmd_show)]:
+    for name, fn in [("grab", cmd_grab), ("sweep", cmd_sweep), ("show", cmd_show), ("views", cmd_views)]:
         c = sub.add_parser(name)
         c.set_defaults(fn=fn)
         c.add_argument("--pi", required=True, help="the Pi, user@host (bench.local.md has the address; never committed)")
-        if name != "show":
+        if name == "views":
+            c.add_argument("--only", help="comma-separated view names; default all")
+        if name not in ("show", "views"):
             c.add_argument("name")
+            c.add_argument("--view", help="a named close-up from docs/eye-views.json")
             c.add_argument("--preset", default="board", choices=sorted(PRESETS))
             c.add_argument("--focus", type=int); c.add_argument("--exposure"); c.add_argument("--gain", type=int)
             c.add_argument("--zoom", type=int); c.add_argument("--pan", type=int); c.add_argument("--tilt", type=int)

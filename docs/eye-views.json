@@ -1,0 +1,232 @@
+{
+ "_about": [
+  "Named close-ups of the breadboard for the BRIO in its fixed mount (baseline 2026-09-13). 'at' is the spot in the zoom-100 frame the view is aimed at.",
+  "MEASURED: a zoom-Z crop is centred at x = 960 + (pan/36000)*960*(1-100/Z), y = 540 - (tilt/36000)*540*(1-100/Z) in the 1920x1080 zoom-100 frame; pan and tilt step by 3600. Checked by locating four calibration crops in the whole frame, each within a pixel.",
+  "If the camera is moved, these are wrong: re-take the board frame, re-aim, and cut a new baseline."
+ ],
+ "camera": {
+  "focus": 20,
+  "exposure": 333,
+  "gain": 0,
+  "wb": "auto",
+  "size": "1920x1080"
+ },
+ "views": {
+  "grey-mid": {
+   "zoom": 500,
+   "pan": 0,
+   "tilt": -3600,
+   "at": [
+    980,
+    600
+   ]
+  },
+  "header": {
+   "zoom": 500,
+   "pan": 14400,
+   "tilt": 32400,
+   "at": [
+    1300,
+    150
+   ]
+  },
+  "j1-cap": {
+   "zoom": 500,
+   "pan": 21600,
+   "tilt": -7200,
+   "at": [
+    1430,
+    640
+   ]
+  },
+  "left-cap": {
+   "zoom": 500,
+   "pan": -10800,
+   "tilt": -14400,
+   "at": [
+    740,
+    700
+   ]
+  },
+  "left-greys": {
+   "zoom": 500,
+   "pan": -7200,
+   "tilt": 14400,
+   "at": [
+    820,
+    380
+   ]
+  },
+  "left-links": {
+   "zoom": 500,
+   "pan": -7200,
+   "tilt": -25200,
+   "at": [
+    780,
+    860
+   ]
+  },
+  "right-link": {
+   "zoom": 500,
+   "pan": 21600,
+   "tilt": -28800,
+   "at": [
+    1440,
+    870
+   ]
+  },
+  "strip-bottom": {
+   "zoom": 500,
+   "pan": 3600,
+   "tilt": 21600,
+   "at": [
+    1050,
+    290
+   ]
+  },
+  "strip-top": {
+   "zoom": 500,
+   "pan": 3600,
+   "tilt": 28800,
+   "at": [
+    1000,
+    180
+   ]
+  },
+  "u1-ends-bottom": {
+   "zoom": 500,
+   "pan": 14400,
+   "tilt": 10800,
+   "at": [
+    1240,
+    420
+   ]
+  },
+  "u1-ends-top": {
+   "zoom": 500,
+   "pan": 14400,
+   "tilt": 21600,
+   "at": [
+    1240,
+    290
+   ]
+  },
+  "u1-left": {
+   "zoom": 500,
+   "pan": 7200,
+   "tilt": 14400,
+   "at": [
+    1150,
+    370
+   ]
+  },
+  "u1-rail": {
+   "zoom": 500,
+   "pan": 18000,
+   "tilt": 14400,
+   "at": [
+    1380,
+    350
+   ]
+  },
+  "u1-top": {
+   "zoom": 500,
+   "pan": 14400,
+   "tilt": 21600,
+   "at": [
+    1230,
+    300
+   ]
+  },
+  "u2-bottom": {
+   "zoom": 500,
+   "pan": 14400,
+   "tilt": -3600,
+   "at": [
+    1270,
+    580
+   ]
+  },
+  "u2-ends-bottom": {
+   "zoom": 500,
+   "pan": 14400,
+   "tilt": -3600,
+   "at": [
+    1243,
+    600
+   ]
+  },
+  "u2-ends-top": {
+   "zoom": 500,
+   "pan": 14400,
+   "tilt": 7200,
+   "at": [
+    1243,
+    468
+   ]
+  },
+  "u2-rail": {
+   "zoom": 500,
+   "pan": 21600,
+   "tilt": 0,
+   "at": [
+    1400,
+    520
+   ]
+  },
+  "u2-top": {
+   "zoom": 500,
+   "pan": 10800,
+   "tilt": 3600,
+   "at": [
+    1170,
+    480
+   ]
+  },
+  "u3-bottom": {
+   "zoom": 500,
+   "pan": 14400,
+   "tilt": -25200,
+   "at": [
+    1300,
+    830
+   ]
+  },
+  "u3-ends-bottom": {
+   "zoom": 500,
+   "pan": 14400,
+   "tilt": -25200,
+   "at": [
+    1252,
+    845
+   ]
+  },
+  "u3-ends-top": {
+   "zoom": 500,
+   "pan": 14400,
+   "tilt": -14400,
+   "at": [
+    1252,
+    698
+   ]
+  },
+  "u3-rail": {
+   "zoom": 500,
+   "pan": 21600,
+   "tilt": -18000,
+   "at": [
+    1400,
+    760
+   ]
+  },
+  "u3-top": {
+   "zoom": 500,
+   "pan": 10800,
+   "tilt": -14400,
+   "at": [
+    1200,
+    720
+   ]
+  }
+ }
+}

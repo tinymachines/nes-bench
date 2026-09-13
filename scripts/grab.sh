@@ -16,7 +16,7 @@
 # camera is plugged in.
 #
 # The board frame is taken the way tools/eye.py's `board` preset takes it
-# (MEASURED 2026-09-13: focus 25, manual exposure 333 at gain 0, auto
+# (MEASURED 2026-09-13, re-swept in the fixed mount: focus 20, manual exposure 333 at gain 0, auto
 # white balance, 1080p MJPG, a dozen frames skipped for the sensor to
 # settle); EYE_PRESET=column zooms to the chip column (160, one degree of
 # pan) and EYE_PRESET=chips to one chip (300). The screen frame is the
@@ -58,7 +58,7 @@ grab_board() {
   v4l2-ctl -d "$BRIO" --set-ctrl=auto_exposure=1 >/dev/null 2>&1
   v4l2-ctl -d "$BRIO" --set-ctrl=exposure_time_absolute=333,gain=0 >/dev/null 2>&1
   v4l2-ctl -d "$BRIO" --set-ctrl=white_balance_automatic=1,power_line_frequency=2 >/dev/null 2>&1
-  v4l2-ctl -d "$BRIO" --set-ctrl=focus_absolute=25,zoom_absolute=$ZOOM,pan_absolute=$PAN,tilt_absolute=0 >/dev/null 2>&1
+  v4l2-ctl -d "$BRIO" --set-ctrl=focus_absolute=20,zoom_absolute=$ZOOM,pan_absolute=$PAN,tilt_absolute=0 >/dev/null 2>&1
   v4l2-ctl -d "$BRIO" --set-fmt-video=width=1920,height=1080,pixelformat=MJPG >/dev/null 2>&1
   sleep 0.4
   if v4l2-ctl -d "$BRIO" --stream-mmap --stream-skip=12 --stream-count=1 --stream-to="$out" >/dev/null 2>&1 \

@@ -281,10 +281,11 @@ def build(status=None):
     # Numbered in the status file's own order, the rails first: the file
     # lists what would do damage before what only needs a look.
     notes = list(dict.fromkeys(v["note"] for v in (status or {}).get("pins", {}).values() if v["state"] == "check"))
-    if status is not None and "rails" in status:
+    rails_check = status is not None and status.get("rails", {}).get("state", "check") == "check"
+    if rails_check:
         notes.insert(0, status["rails"]["note"])
-    extra = [status["not_seen"]] if status is not None and status.get("not_seen") else []
-    H = rail_bot["+5V"] + 70 + ((len(notes) + len(extra)) * NOTE_H + 40 if status is not None else 0)
+    extra = list((status or {}).get("observations", []))
+    H = rail_bot["+5V"] + 70 + ((len(notes) + len(extra) + (1 if extra else 0)) * NOTE_H + 40 if status is not None else 0)
 
     def colour_at(ref, k, c):
         return GREY if state.get((ref, k), {}).get("state") == "done" else c
@@ -321,7 +322,7 @@ def build(status=None):
             d.text(row_right + 26, y + 4, rail, "rail")
         d.line(xl, ys[0], xl, ys[1], "railline", c)
     d.text(LEFT - 34, rail_top["+5V"] - 8, "rails joined end to end, as on the board", "note")
-    if status is not None and "rails" in status:
+    if rails_check:
         rails_ring = (LEFT - 30, (rail_top["+5V"] + rail_bot["+5V"]) / 2)
 
     # Parts.
@@ -446,7 +447,7 @@ def build(status=None):
 
     if status is not None:
         # Rings last, over everything, numbered by the note they point at.
-        if "rails" in status:
+        if rails_check:
             checks.append((*rails_ring, status["rails"]["note"]))
         number = {note: i + 1 for i, note in enumerate(notes)}
         for x, y, note in checks:
@@ -458,8 +459,10 @@ def build(status=None):
         d.text(24, y0, f"Needs a check ({len(notes)})", "checkhead")
         for i, note in enumerate(notes):
             d.text(24, y0 + (i + 1) * NOTE_H + 4, f"{i + 1}. {note}", "checknote")
+        if extra:
+            d.text(24, y0 + (len(notes) + 1) * NOTE_H + 8, "Seen, not on this sheet's nets:", "note")
         for j, line in enumerate(extra):
-            d.text(24, y0 + (len(notes) + j + 1) * NOTE_H + 8, line, "note")
+            d.text(24, y0 + (len(notes) + j + 2) * NOTE_H + 8, f"- {line}", "note")
         unringed = [n for n in notes if n not in {c[2] for c in checks}]
         assert not unringed, f"a check note is on no drawn pin: {unringed}"
 
