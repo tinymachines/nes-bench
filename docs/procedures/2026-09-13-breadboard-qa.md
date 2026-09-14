@@ -187,3 +187,17 @@ measured, 150 right and 22 down, because a wire's edge dents a row's
 profile at half a pitch and the automatic column vote numbered those as
 columns). The junction overlay drawn on this frame puts every ring on
 its hole: `docs/lab/board-junctions-v1b.png`.
+
+## Fourth look, 22:55: the camera locked down again after a USB drop
+
+A second camera plugged into the Pi's hub tripped an over-current, the
+hub's branch re-enumerated and the BRIO fell off the bus for good until
+the user replugged it and locked the mount ("locked down"). It came
+back pulled back and turned: a column is about 17.5 px now against 20,
+the perspective small, the board sitting 3.75 degrees turned in the
+frame. The grid was read afresh under rulers (`docs/board-map.json`,
+anchors every fifth column from 40 to 1 and the hole rows in two bands),
+every named view's aim carried through the measured similarity (scale
+0.926, worst residual 18 px on the fit points, inside a pan step), the
+views re-taken, and the junction overlay redrawn on the new frame: every
+ring on its hole. Focus re-swept: 20. The wiring reads as at 21:20.

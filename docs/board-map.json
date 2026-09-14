@@ -4,100 +4,109 @@
   "MEASURED 2026-09-13 off the 15:40 baseline board frame (eye.py grab b0-all, focus 20, zoom 100), by reading the printed column numbers and the hole rows under pixel rulers: a column's y is quadratic in its number (the camera looks along the board at an angle, so the pitch grows from about 17.6 px at column 35 to 21 px at column 1); a hole row's x drifts linearly with y between the top and bottom readings.",
   "A map is for one camera pose. The frame it was read from is named; a frame from another pose needs its own reading.",
   "chips: as built, read off the eye (docs/as-built-v1b.md, the QA note): pin 1 at the high-column end, pins 1 to n/2 down the side toward the middle board, n/2+1 to n up the side toward the rails.",
-  "RE-READ 2026-09-13 21:23 EDT off b2-all.jpg: the previous map shifted by (150,22) as the prior; each row's holes found as dips and fitted as an even progression (worst residual 7 px); the column anchors shifted by the measured 22 px, not re-read."
+  "RE-READ 2026-09-13 21:23 EDT off b2-all.jpg: the previous map shifted by (150,22) as the prior; each row's holes found as dips and fitted as an even progression (worst residual 7 px); the column anchors shifted by the measured 22 px, not re-read.",
+  "RE-READ 2026-09-13 22:55 EDT off b4-all.jpg under pixel rulers, a fresh reading, not a shift: the camera pulled back (a column is about 17.5 px, the perspective now small) and the board sits turned a little (a row's x moves about 19 px over 500 px of y). Anchors are the printed column numbers' rows and the hole rows in a top and a bottom band."
  ],
- "frame": "captures/b2-all.jpg (re-read 2026-09-13 21:23 EDT, shift 150,22 from the prior; rows re-read, worst 7 px; columns shifted)",
+ "frame": "captures/b4-all.jpg (2026-09-13 22:55 EDT, the camera locked down after the USB drop)",
  "boards": {
   "right": {
    "column_y": {
     "anchors": [
      [
+      40,
+      24
+     ],
+     [
       35,
-      310
+      116
      ],
      [
       30,
-      398
+      212
      ],
      [
       25,
-      486
+      294
      ],
      [
       20,
-      581
+      387
      ],
      [
       15,
-      677
+      471
      ],
      [
       10,
-      774
+      561
+     ],
+     [
+      5,
+      652
      ],
      [
       1,
-      962
+      712
      ]
     ]
    },
    "rows": {
     "middle": {
-     "y_top": 322,
+     "y_top": 100,
      "x_top": [
-      1280,
-      1299,
-      1319,
-      1338,
-      1358
+      1100,
+      1117,
+      1135,
+      1152,
+      1170
      ],
-     "y_bottom": 947,
+     "y_bottom": 600,
      "x_bottom": [
-      1296,
-      1317,
-      1338,
-      1358,
-      1379
+      1081,
+      1099,
+      1116,
+      1134,
+      1151
      ]
     },
     "rails": {
-     "y_top": 322,
+     "y_top": 100,
      "x_top": [
-      1427,
-      1446,
-      1464,
-      1483,
-      1501
+      1236,
+      1254,
+      1271,
+      1289,
+      1306
      ],
-     "y_bottom": 947,
+     "y_bottom": 600,
      "x_bottom": [
-      1439,
-      1460,
-      1480,
-      1501,
-      1521
+      1204,
+      1221,
+      1239,
+      1256,
+      1274
      ]
     }
    },
    "rail_x": {
     "GND": {
-     "y_top": 322,
-     "x_top": 1538,
-     "y_bottom": 947,
-     "x_bottom": 1557
+     "y_top": 100,
+     "x_top": 1350,
+     "y_bottom": 600,
+     "x_bottom": 1330
     },
     "+5V": {
-     "y_top": 322,
-     "x_top": 1555,
-     "y_bottom": 947,
-     "x_bottom": 1571
+     "y_top": 100,
+     "x_top": 1367,
+     "y_bottom": 600,
+     "x_bottom": 1349
     }
    },
    "crop": [
-    1230,
+    1040,
     0,
-    1610,
-    1000
+    1400,
+    760
    ]
   }
  },
