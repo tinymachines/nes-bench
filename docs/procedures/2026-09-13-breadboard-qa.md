@@ -174,3 +174,16 @@ wiring is the same: the four checks of the baseline stand, nothing
 moved, nothing added on the sheet's nets. In this light the close-ups
 are noisier than at 15:40; the bench lamp back on would restore the
 first baseline's legibility.
+
+## Third look, 21:20: the lights on, the grid re-read, the junctions on the photograph
+
+Room light back, the camera's own exposure holding the level (mean 105).
+The named views re-taken; against the 18:50 set every view shifted the
+same few pixels and none stood out, so the wiring is as it was. The
+hole grid was re-read for this pose (`board-overlay.py --recalibrate`:
+each row's five holes found as dips and fitted as an even progression,
+worst 7 px; the column anchors moved by the shift the chip crop
+measured, 150 right and 22 down, because a wire's edge dents a row's
+profile at half a pitch and the automatic column vote numbered those as
+columns). The junction overlay drawn on this frame puts every ring on
+its hole: `docs/lab/board-junctions-v1b.png`.

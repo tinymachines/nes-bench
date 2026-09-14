@@ -80,8 +80,156 @@ def pin_hole(board, chip, pin):
     return col, side, (board.x(side, i, y), y)
 
 
+def dips(profile, minsep=10, depth=10):
+    """Local minima of a luma profile: the holes along a line."""
+    from scipy.ndimage import minimum_filter1d, uniform_filter1d
+    sm = uniform_filter1d(profile, 41)
+    mn = minimum_filter1d(profile, minsep)
+    idx = np.where((profile == mn) & (profile < sm - depth))[0]
+    out = []
+    for i in idx:
+        if out and i - out[-1] < minsep // 2:
+            continue
+        out.append(int(i))
+    return out
+
+
+def snap_progression(found, prior, tol):
+    """Five holes of one row as an even progression: each prior snaps to
+    the nearest dip, a dip taken twice (a hole hidden under a wire) is
+    dropped, and the progression is fitted through what is left, so the
+    hidden hole is placed by its neighbours' pitch. Returns the fitted
+    positions and the worst residual of a kept reading."""
+    prior = np.asarray(prior, dtype=float)
+    near = np.array([min(found, key=lambda f: abs(f - x)) for x in prior], dtype=float)
+    keep = np.ones(len(prior), bool)
+    for i in range(len(prior)):
+        dup = [j for j in range(len(prior)) if near[j] == near[i]]
+        if len(dup) > 1:
+            best = min(dup, key=lambda j: abs(near[j] - prior[j]))
+            for j in dup:
+                keep[j] = j == best
+    keep &= np.abs(near - prior) <= tol
+    if keep.sum() < 3:
+        raise SystemExit(f"REFUSED: only {keep.sum()} of {len(prior)} holes of a row read within {tol} px of the prior")
+    i = np.arange(len(prior))
+    a, b = np.polyfit(i[keep], near[keep], 1)
+    fit = a * i + b
+    return [int(round(v)) for v in fit], float(np.abs(near[keep] - prior[keep]).max()), int(keep.sum())
+
+
+def recalibrate(m, frame: Path, board_name: str, shift, out: Path, tol=8, columns_from_prior=False):
+    """The map re-read for a moved camera: the old map plus a shift is
+    the prior. Each hole row's five holes are found as luma dips in a
+    band and fitted as an even progression (a hole under a wire is
+    interpolated); the column anchors are found where the dips of all
+    ten hole rows agree (a wire across the board dents one row's
+    profile, a hole dents them all). A reading further than `tol` from
+    its prior is dropped; a row with fewer than three kept is refused."""
+    L = np.asarray(Image.open(frame).convert("L"), dtype=float)
+    b = m["boards"][board_name]
+    dx, dy = shift
+    worst = 0.0
+    for side in ("middle", "rails"):
+        r = b["rows"][side]
+        for key, ykey in (("x_top", "y_top"), ("x_bottom", "y_bottom")):
+            y = r[ykey] + dy
+            band = L[y - 30:y + 30, :].mean(axis=0)
+            found = dips(band, minsep=12, depth=8)
+            fit, w, kept = snap_progression(found, [x + dx for x in r[key]], tol)
+            print(f"  {side} {key} at y {y}: {fit} ({kept} of 5 read, worst {w:.0f} px)")
+            worst = max(worst, w)
+            r[key], r[ykey] = fit, int(y)
+    for name, r in b["rail_x"].items():
+        for key, ykey in (("x_top", "y_top"), ("x_bottom", "y_bottom")):
+            y = r[ykey] + dy
+            band = L[y - 30:y + 30, :].mean(axis=0)
+            found = dips(band, minsep=8, depth=6)
+            near = min(found, key=lambda f: abs(f - (r[key] + dx)))
+            if abs(near - (r[key] + dx)) > tol:
+                print(f"  rail {name} {key}: no dip within {tol} px, prior kept")
+                near = r[key] + dx
+            r[key], r[ykey] = int(near), int(y)
+    if columns_from_prior:
+        # The column anchors moved by the measured shift alone: a wire's
+        # edge dents a row's profile at half a pitch and the vote below has
+        # numbered those as columns before now; the rulers' anchors plus
+        # the shift the chip crop measured are the better reading.
+        b["column_y"]["anchors"] = [[col, y + dy] for col, y in b["column_y"]["anchors"]]
+        print(f"  columns: the prior anchors shifted by {dy} px, not re-read")
+        merged = None
+    votes = np.zeros(L.shape[0])
+    for side in ("middle", "rails"):
+        r = b["rows"][side]
+        for i in range(5):
+            x = int(round((r["x_top"][i] + r["x_bottom"][i]) / 2))
+            prof = L[:, x - 3:x + 4].mean(axis=1)
+            # the board sits a little turned in the frame, so one column's
+            # holes fall a few pixels apart across the ten rows: a wide window
+            for yy in dips(prof, minsep=9, depth=8):
+                votes[max(0, yy - 5):yy + 6] += 1
+    cols = [yy for yy in range(6, len(votes) - 6) if votes[yy] >= 5 and votes[yy] == votes[yy - 6:yy + 7].max()]
+    if merged is None:
+        merged = []
+        b["crop"] = [b["crop"][0] + dx, b["crop"][1], b["crop"][2] + dx, b["crop"][3]]
+        stamp = __import__("time").strftime("%Y-%m-%d %H:%M %Z")
+        m["frame"] = f"{frame} (re-read {stamp}, shift {dx},{dy} from the prior; rows re-read, worst {worst:.0f} px; columns shifted)"
+        m["_about"].append(f"RE-READ {stamp} off {frame.name}: the previous map shifted by ({dx},{dy}) as the prior; each row's holes found as dips and fitted as an even progression (worst residual {worst:.0f} px); the column anchors shifted by the measured {dy} px, not re-read.")
+        out.write_text(json.dumps(m, indent=1) + "\n")
+        print(f"wrote {out}: re-read off {frame.name}")
+        return
+    merged = []
+    for yy in cols:
+        if merged and yy - merged[-1] < 8:
+            continue
+        merged.append(yy)
+    # Number the voted columns by walking from the prior anchor that
+    # agrees best, one column per hole, a gap of about two pitches
+    # counting as a missed hole. The anchors become every column found,
+    # not the handful the rulers were read at, and a column the prior
+    # placed near the frame's edge cannot drag the fit.
+    priors = {col: y + dy for col, y in b["column_y"]["anchors"]}
+    best_col = min(priors, key=lambda c: min(abs(f - priors[c]) for f in merged))
+    start = min(merged, key=lambda f: abs(f - priors[best_col]))
+    print(f"  columns: walking from column {best_col} at y {start} ({int(votes[start])} rows agree)")
+    numbered = {start: best_col}
+    for direction in (1, -1):
+        y, col = start, best_col
+        pitch = None
+        while True:
+            nxt = [f for f in merged if (f - y) * direction > 0]
+            if not nxt:
+                break
+            f = min(nxt, key=lambda v: abs(v - y))
+            gap = abs(f - y)
+            if pitch is None:
+                pitch = gap
+            steps = max(1, int(round(gap / pitch)))
+            if steps > 2:
+                break
+            col -= direction * steps  # y grows downward as the column number falls
+            pitch = gap / steps
+            numbered[f] = col
+            y = f
+    new = sorted(([c, int(y)] for y, c in numbered.items() if c >= 1), reverse=True)
+    for col, y in new:
+        if col in priors:
+            worst = max(worst, abs(y - priors[col]))
+    print(f"  columns found: {new[0][0]} to {new[-1][0]} ({len(new)}); against the priors, worst {worst:.0f} px")
+    b["column_y"]["anchors"] = new
+    b["crop"] = [b["crop"][0] + dx, b["crop"][1], b["crop"][2] + dx, b["crop"][3]]
+    stamp = __import__("time").strftime("%Y-%m-%d %H:%M %Z")
+    m["frame"] = f"{frame} (re-read {stamp}, shift {dx},{dy} from the prior, worst residual {worst:.0f} px)"
+    m["_about"].append(f"RE-READ {stamp} off {frame.name}: the previous map shifted by ({dx},{dy}) as the prior; each row's holes found as dips and fitted as an even progression, the column anchors where the dips of all ten hole rows agree (worst residual {worst:.0f} px).")
+    out.write_text(json.dumps(m, indent=1) + "\n")
+    print(f"wrote {out}: re-read off {frame.name}, worst residual {worst:.0f} px")
+
+
 def main():
     ap = argparse.ArgumentParser()
+    ap.add_argument("--recalibrate", nargs=2, type=int, metavar=("DX", "DY"), help="re-read the map off FRAME with this shift from the current map as the prior, and stop")
+    ap.add_argument("--tolerance", type=int, default=8, help="how far a re-read anchor may land from its shifted prior, in pixels")
+    ap.add_argument("--columns-from-prior", action="store_true", help="shift the column anchors by DY instead of re-reading them (the rows are always re-read)")
     ap.add_argument("frame", nargs="?", default=str(ROOT / "captures" / "b0-all.jpg"))
     ap.add_argument("--out", default=str(ROOT / "docs" / "lab" / "board-junctions-v1b.png"))
     ap.add_argument("--status", default=str(ROOT / "docs" / "build-status-v1b.json"))
@@ -89,6 +237,9 @@ def main():
     ap.add_argument("--scale", type=float, default=2.6)
     a = ap.parse_args()
     m = json.loads(Path(a.map).read_text())
+    if a.recalibrate:
+        recalibrate(m, Path(a.frame), "right", a.recalibrate, Path(a.map), tol=a.tolerance, columns_from_prior=a.columns_from_prior)
+        return
     status = json.loads(Path(a.status).read_text())
     nl = load(ROOT / "tools" / "netlist.py", "nl")
     sheets, _ = nl.collect()
