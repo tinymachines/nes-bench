@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2188 1103" width="2188" height="1103" role="img" aria-label="Bridge v1b wiring diagram">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2188 1086" width="2188" height="1086" role="img" aria-label="Bridge v1b wiring diagram">
 <style>
  text{font-family:ui-sans-serif,'DejaVu Sans',sans-serif;fill:#222}
  .title{font-size:24px;font-weight:700}
@@ -24,9 +24,9 @@
  .checknote{font-size:13px;fill:#222}
  .checkhead{font-size:15px;font-weight:700;fill:#d4006f}
 </style>
-<rect x="0" y="0" width="2188" height="1103" fill="#ffffff"/>
+<rect x="0" y="0" width="2188" height="1086" fill="#ffffff"/>
 <g class="sheet-heading" data-height="60">
-<text class="title" x="24.0" y="30.0" text-anchor="start">Bridge v1b as built, read 2026-09-14 12:06 EDT (fifth look): grounds, +5 V, the J1 console side, and the J1 to U3 chain: /PL and the eight Q lines</text>
+<text class="title" x="24.0" y="30.0" text-anchor="start">Bridge v1b as built, read 2026-09-14 13:55 EDT (sixth look): grounds, +5 V, the J1 console side, and the J1 to U3 chain: /PL and the eight Q lines</text>
 <text class="sub" x="24.0" y="46.0" text-anchor="start">Grey: built and seen in the right hole. A ring and a number: needs a check, the note under the rails says what. Full colour: not built yet, or not part of this pass.</text>
 </g>
 <line class="railline" x1="40.0" y1="122.0" x2="2138.0" y2="122.0" stroke="#d02b2b"/>
@@ -382,13 +382,13 @@
 <line class="wire" x1="1114.0" y1="597.0" x2="1114.0" y2="626.0" stroke="#c4c4c4"/>
 <text class="net" x="973.0" y="637.0" text-anchor="start">Q_UP</text>
 <line class="wire" x1="969.0" y1="302.0" x2="969.0" y2="626.0" stroke="#c4c4c4"/>
-<line class="wire" x1="774.0" y1="347.0" x2="943.0" y2="347.0" stroke="#2e7d32"/>
+<line class="wire" x1="774.0" y1="347.0" x2="943.0" y2="347.0" stroke="#c4c4c4"/>
 <line class="wire" x1="774.0" y1="391.0" x2="774.0" y2="347.0" stroke="#c4c4c4"/>
 <text class="net" x="778.0" y="344.0" text-anchor="start">Q_DOWN</text>
-<line class="wire" x1="943.0" y1="656.0" x2="1138.0" y2="656.0" stroke="#2e7d32"/>
-<line class="wire" x1="1138.0" y1="597.0" x2="1138.0" y2="656.0" stroke="#2e7d32"/>
+<line class="wire" x1="943.0" y1="656.0" x2="1138.0" y2="656.0" stroke="#c4c4c4"/>
+<line class="wire" x1="1138.0" y1="597.0" x2="1138.0" y2="656.0" stroke="#c4c4c4"/>
 <text class="net" x="947.0" y="667.0" text-anchor="start">Q_DOWN</text>
-<line class="wire" x1="943.0" y1="347.0" x2="943.0" y2="656.0" stroke="#2e7d32"/>
+<line class="wire" x1="943.0" y1="347.0" x2="943.0" y2="656.0" stroke="#c4c4c4"/>
 <line class="wire" x1="798.0" y1="332.0" x2="982.0" y2="332.0" stroke="#c4c4c4"/>
 <line class="wire" x1="798.0" y1="391.0" x2="798.0" y2="332.0" stroke="#c4c4c4"/>
 <text class="net" x="802.0" y="329.0" text-anchor="start">Q_LEFT</text>
@@ -396,13 +396,13 @@
 <line class="wire" x1="1162.0" y1="597.0" x2="1162.0" y2="641.0" stroke="#c4c4c4"/>
 <text class="net" x="986.0" y="652.0" text-anchor="start">Q_LEFT</text>
 <line class="wire" x1="982.0" y1="332.0" x2="982.0" y2="641.0" stroke="#c4c4c4"/>
-<line class="wire" x1="822.0" y1="377.0" x2="930.0" y2="377.0" stroke="#0277bd"/>
+<line class="wire" x1="822.0" y1="377.0" x2="930.0" y2="377.0" stroke="#c4c4c4"/>
 <line class="wire" x1="822.0" y1="391.0" x2="822.0" y2="377.0" stroke="#c4c4c4"/>
 <text class="net" x="826.0" y="374.0" text-anchor="start">Q_RIGHT</text>
-<line class="wire" x1="930.0" y1="701.0" x2="1186.0" y2="701.0" stroke="#0277bd"/>
-<line class="wire" x1="1186.0" y1="597.0" x2="1186.0" y2="701.0" stroke="#0277bd"/>
+<line class="wire" x1="930.0" y1="701.0" x2="1186.0" y2="701.0" stroke="#c4c4c4"/>
+<line class="wire" x1="1186.0" y1="597.0" x2="1186.0" y2="701.0" stroke="#c4c4c4"/>
 <text class="net" x="934.0" y="712.0" text-anchor="start">Q_RIGHT</text>
-<line class="wire" x1="930.0" y1="377.0" x2="930.0" y2="701.0" stroke="#0277bd"/>
+<line class="wire" x1="930.0" y1="377.0" x2="930.0" y2="701.0" stroke="#c4c4c4"/>
 <line class="wire" x1="1504.0" y1="242.0" x2="2006.0" y2="242.0" stroke="#5b5bd6"/>
 <line class="wire" x1="2006.0" y1="391.0" x2="2006.0" y2="242.0" stroke="#5b5bd6"/>
 <line class="wire" x1="1504.0" y1="391.0" x2="1504.0" y2="242.0" stroke="#5b5bd6"/>
@@ -439,33 +439,26 @@
 <text class="net" x="1794.0" y="627.0" text-anchor="end">EXT_TRIG: scope EXT TRIG</text>
 <circle class="ring" cx="1384.0" cy="597.0" r="10"/>
 <circle cx="1397.0" cy="584.0" r="8.5" fill="#d4006f" stroke="#fff" stroke-width="1.5"/>
-<text class="tag" x="1397.0" y="588.0" text-anchor="middle">4</text>
+<text class="tag" x="1397.0" y="588.0" text-anchor="middle">3</text>
 <circle class="ring" cx="1414.0" cy="597.0" r="10"/>
 <circle cx="1427.0" cy="584.0" r="8.5" fill="#d4006f" stroke="#fff" stroke-width="1.5"/>
-<text class="tag" x="1427.0" y="588.0" text-anchor="middle">4</text>
+<text class="tag" x="1427.0" y="588.0" text-anchor="middle">3</text>
 <circle class="ring" cx="1564.0" cy="391.0" r="10"/>
 <circle cx="1577.0" cy="378.0" r="8.5" fill="#d4006f" stroke="#fff" stroke-width="1.5"/>
-<text class="tag" x="1577.0" y="382.0" text-anchor="middle">3</text>
+<text class="tag" x="1577.0" y="382.0" text-anchor="middle">2</text>
 <circle class="ring" cx="386.0" cy="597.0" r="10"/>
 <circle cx="399.0" cy="584.0" r="8.5" fill="#d4006f" stroke="#fff" stroke-width="1.5"/>
-<text class="tag" x="399.0" y="588.0" text-anchor="middle">2</text>
-<circle class="ring" cx="1138.0" cy="597.0" r="10"/>
-<circle cx="1151.0" cy="584.0" r="8.5" fill="#d4006f" stroke="#fff" stroke-width="1.5"/>
-<text class="tag" x="1151.0" y="588.0" text-anchor="middle">1</text>
-<circle class="ring" cx="1186.0" cy="597.0" r="10"/>
-<circle cx="1199.0" cy="584.0" r="8.5" fill="#d4006f" stroke="#fff" stroke-width="1.5"/>
-<text class="tag" x="1199.0" y="588.0" text-anchor="middle">1</text>
-<text class="checkhead" x="24.0" y="864.0" text-anchor="start">Needs a check (4)</text>
-<text class="checknote" x="24.0" y="885.0" text-anchor="start">1. U3-5 and U3-7: two grey wires sit in column 9 (pin 5, Q_DOWN), rows b and c, and column 7 (pin 7, Q_RIGHT) is empty, seen in two views (u3-top and a close look at focus 20, 28 and 36). Two of the four rails-side lines from U2 are joined on Q_DOWN and Q_RIGHT drives nothing. Move the one that comes from U2-11 (column 20, row i, the lowest of the four on U2's rails side) to any hole of column 7. The greys are one colour, so the eye cannot say which of the two it is: if the wrong one moves, Q_DOWN and Q_RIGHT are swapped, which the SPI loopback of the next batch will show as a swapped pair.</text>
-<text class="checknote" x="24.0" y="902.0" text-anchor="start">2. U1-1: J1's OUT0 is right. A grey from the strip now arrives at the top of U1's column, but its raised end reads between column 34 (pin 1) and column 35 (nothing), and the eye cannot settle it from above. Confirm it is in 34.</text>
-<text class="checknote" x="24.0" y="919.0" text-anchor="start">3. A1 D5: see the U1-1 note; the strip end was in the green's column (D3) at the baseline.</text>
-<text class="checknote" x="24.0" y="936.0" text-anchor="start">4. A1 5V and GND to the rails: the feed is off the top of the camera's view. Meter 5 V between the rails with the UNO on USB.</text>
-<text class="note" x="24.0" y="957.0" text-anchor="start">Seen, not on this sheet's nets:</text>
-<text class="note" x="24.0" y="974.0" text-anchor="start">- The breadboards moved on the desk under the fixed camera during this batch (about 150 px left and 90 px up in the frame); the hole map was re-read, and the eye's views still land on their targets.</text>
-<text class="note" x="24.0" y="991.0" text-anchor="start">- Orientation settled: in the 12:06 views the notch and the pin-1 dot of U1, U2 and U3 all face the high-column end, as the map places them. The round mark at the other end of each is the mould's ejector pin, not pin 1.</text>
-<text class="note" x="24.0" y="1008.0" text-anchor="start">- The six grey Q lines are one colour. The eye confirms where each end lands, not which end pairs with which; the bring-up's SPI loopback (a walking one out of the 595, read back through the 165) is what proves the pairing.</text>
-<text class="note" x="24.0" y="1025.0" text-anchor="start">- Two yellow ceramic capacitors stand across the rails, on the left board near column 49 and on the right board near column 15; the plan puts one 100 nF beside each chip. The value is not readable on camera.</text>
-<text class="note" x="24.0" y="1042.0" text-anchor="start">- The red link on GND is correct but red: a black or blue wire there would stop it being read as +5 V later.</text>
-<text class="note" x="24.0" y="1059.0" text-anchor="start">- The power and reset breakout's five-way housing is parked on the right board's columns 41 to 45; it joins nothing on this sheet.</text>
-<text class="note" x="2164" y="1087" text-anchor="end">19 nets on tracks, 7 of them crossing the row; 26 supply pins on the rails. drawn by tools/wiring-diagram.py</text>
+<text class="tag" x="399.0" y="588.0" text-anchor="middle">1</text>
+<text class="checkhead" x="24.0" y="864.0" text-anchor="start">Needs a check (3)</text>
+<text class="checknote" x="24.0" y="885.0" text-anchor="start">1. U1-1: J1's OUT0 is right. A grey from the strip now arrives at the top of U1's column, but its raised end reads between column 34 (pin 1) and column 35 (nothing), and the eye cannot settle it from above. Confirm it is in 34.</text>
+<text class="checknote" x="24.0" y="902.0" text-anchor="start">2. A1 D5: see the U1-1 note; the strip end was in the green's column (D3) at the baseline.</text>
+<text class="checknote" x="24.0" y="919.0" text-anchor="start">3. A1 5V and GND to the rails: the feed is off the top of the camera's view. Meter 5 V between the rails with the UNO on USB.</text>
+<text class="note" x="24.0" y="940.0" text-anchor="start">Seen, not on this sheet's nets:</text>
+<text class="note" x="24.0" y="957.0" text-anchor="start">- The breadboards moved on the desk under the fixed camera during the fifth look's batch (150 px left, 90 px up) and again during the sixth (126 px down); the hole map followed each time, and the eye's views were re-aimed.</text>
+<text class="note" x="24.0" y="974.0" text-anchor="start">- Orientation settled: in the 12:06 views the notch and the pin-1 dot of U1, U2 and U3 all face the high-column end, as the map places them. The round mark at the other end of each is the mould's ejector pin, not pin 1.</text>
+<text class="note" x="24.0" y="991.0" text-anchor="start">- The six grey Q lines are one colour. The eye confirms where each end lands, not which end pairs with which; the bring-up's SPI loopback (a walking one out of the 595, read back through the 165) is what proves the pairing.</text>
+<text class="note" x="24.0" y="1008.0" text-anchor="start">- Two yellow ceramic capacitors stand across the rails, on the left board near column 49 and on the right board near column 15; the plan puts one 100 nF beside each chip. The value is not readable on camera.</text>
+<text class="note" x="24.0" y="1025.0" text-anchor="start">- The red link on GND is correct but red: a black or blue wire there would stop it being read as +5 V later.</text>
+<text class="note" x="24.0" y="1042.0" text-anchor="start">- The power and reset breakout's five-way housing is parked on the right board's columns 41 to 45; it joins nothing on this sheet.</text>
+<text class="note" x="2164" y="1070" text-anchor="end">19 nets on tracks, 7 of them crossing the row; 26 supply pins on the rails. drawn by tools/wiring-diagram.py</text>
 </svg>

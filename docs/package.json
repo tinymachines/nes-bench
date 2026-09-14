@@ -2,7 +2,7 @@
   "org": "tinymachines",
   "project": "nes-bench",
   "docno": "TM-NESB-001",
-  "rev": "E",
+  "rev": "F",
   "drawn": "bisenbek",
   "page": "ansi-a",
   "title": "NES controller-port bridge, v1b",
@@ -131,6 +131,11 @@
       "E",
       "2026-09-14",
       "/PL and the eight Q lines as built; two checks on U3"
+    ],
+    [
+      "F",
+      "2026-09-14",
+      "the U3 checks closed: one wire per Q pin, the brown seated"
     ]
   ]
 }

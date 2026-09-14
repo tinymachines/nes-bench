@@ -6,103 +6,104 @@
   "chips: as built, read off the eye (docs/as-built-v1b.md, the QA note): pin 1 at the high-column end, pins 1 to n/2 down the side toward the middle board, n/2+1 to n up the side toward the rails.",
   "RE-READ 2026-09-13 21:23 EDT off b2-all.jpg: the previous map shifted by (150,22) as the prior; each row's holes found as dips and fitted as an even progression (worst residual 7 px); the column anchors shifted by the measured 22 px, not re-read.",
   "RE-READ 2026-09-13 22:55 EDT off b4-all.jpg under pixel rulers, a fresh reading, not a shift: the camera pulled back (a column is about 17.5 px, the perspective now small) and the board sits turned a little (a row's x moves about 19 px over 500 px of y). Anchors are the printed column numbers' rows and the hole rows in a top and a bottom band.",
-  "RE-READ 2026-09-14 12:20 EDT off b5-all.jpg: the breadboards had moved on the desk under the fixed camera (about 150 px left and 90 px up in the frame, measured by matching a chip body and two printed numbers between the frames). The hole rows and the rails re-read as luma dips in bands at y 60 and 560 (the tool's bands at the old y would have left the frame), the column anchors from the dips of all ten hole rows voted along each row, numbered from the printed 35 and 30 read under rulers; the pitch is 17.5 px, nearly even, so the perspective is as small as before. The rail columns were then corrected by 13 px: the dip finder had taken the +5V holes for GND (the prior sat between them); read off the u1-top and u3-ends-top views, where the rings must sit on the holes beside the blue and red lines."
+  "RE-READ 2026-09-14 12:20 EDT off b5-all.jpg: the breadboards had moved on the desk under the fixed camera (about 150 px left and 90 px up in the frame, measured by matching a chip body and two printed numbers between the frames). The hole rows and the rails re-read as luma dips in bands at y 60 and 560 (the tool's bands at the old y would have left the frame), the column anchors from the dips of all ten hole rows voted along each row, numbered from the printed 35 and 30 read under rulers; the pitch is 17.5 px, nearly even, so the perspective is as small as before. The rail columns were then corrected by 13 px: the dip finder had taken the +5V holes for GND (the prior sat between them); read off the u1-top and u3-ends-top views, where the rings must sit on the holes beside the blue and red lines.",
+  "SHIFTED 2026-09-14 13:55 EDT off b6-all.jpg: the boards moved again under the fixed camera (4 px left, 126 px down, the three chip bodies and a printed number matched between frames within 10 px; the chip bodies stand proud and read 7 px further than the board, so the printed number and the blue Q_B wire's known hole set the final 7 px); the whole map shifted by that, nothing re-read."
  ],
- "frame": "captures/b5-all.jpg (2026-09-14 12:06 EDT, the boards moved on the desk during the J1 to U3 wiring; the camera itself stayed)",
+ "frame": "captures/b6-all.jpg (2026-09-14 13:55 EDT, the boards moved on the desk again while the U3 wire was moved; the camera stayed)",
  "boards": {
   "right": {
    "column_y": {
     "anchors": [
      [
       35,
-      25
+      151
      ],
      [
       30,
-      116
+      242
      ],
      [
       25,
-      204
+      330
      ],
      [
       20,
-      292
+      418
      ],
      [
       15,
-      380
+      506
      ],
      [
       10,
-      467
+      593
      ],
      [
       5,
-      550
+      676
      ],
      [
       1,
-      620
+      746
      ]
     ]
    },
    "rows": {
     "middle": {
-     "y_top": 60,
+     "y_top": 186,
      "x_top": [
-      944,
-      963,
-      982,
-      1000,
-      1019
+      940,
+      959,
+      978,
+      996,
+      1015
      ],
-     "y_bottom": 560,
+     "y_bottom": 686,
      "x_bottom": [
-      938,
-      955,
-      972,
-      989,
-      1006
+      934,
+      951,
+      968,
+      985,
+      1002
      ]
     },
     "rails": {
-     "y_top": 60,
+     "y_top": 186,
      "x_top": [
-      1080,
-      1099,
-      1119,
-      1138,
-      1158
+      1076,
+      1095,
+      1115,
+      1134,
+      1154
      ],
-     "y_bottom": 560,
+     "y_bottom": 686,
      "x_bottom": [
-      1073,
-      1090,
-      1108,
-      1125,
-      1142
+      1069,
+      1086,
+      1104,
+      1121,
+      1138
      ]
     }
    },
    "rail_x": {
     "GND": {
-     "y_top": 60,
-     "x_top": 1188,
-     "y_bottom": 560,
-     "x_bottom": 1177
+     "y_top": 186,
+     "x_top": 1184,
+     "y_bottom": 686,
+     "x_bottom": 1173
     },
     "+5V": {
-     "y_top": 60,
-     "x_top": 1205,
-     "y_bottom": 560,
-     "x_bottom": 1194
+     "y_top": 186,
+     "x_top": 1201,
+     "y_bottom": 686,
+     "x_bottom": 1190
     }
    },
    "crop": [
-    890,
+    886,
     0,
-    1250,
+    1246,
     760
    ]
   }

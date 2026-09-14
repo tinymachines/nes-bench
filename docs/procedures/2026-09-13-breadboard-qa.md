@@ -245,3 +245,18 @@ the SPI loopback of the next batch shows a swapped pair if the wrong
 one moves. The grey from the strip to U1-1 reads between columns 34 and
 35 and stays a check. The as-built sheet is rev E: 38 pins done, 6 to
 check.
+
+## Sixth look, 13:55: the U3 wire moved, the brown seated
+
+The user moved the second wire off U3-5 and pushed the brown home. The
+boards had moved on the desk again (126 px down, 4 px left: the three
+chip bodies and a printed number matched between frames; the chip
+bodies stand proud and read 7 px further than the board, so the
+printed number and the blue Q_B wire's known hole set the last 7 px),
+so the map was shifted by that, the views re-aimed, and two fresh
+close looks taken with the holes projected onto them. U3's middle side
+now carries one wire per column, 13 down to 7, each bare end seen at
+its hole (10 a, 9 b, 8 c, 7 d); the brown's bare end enters the U2-6
+hole. Both checks closed; the sheet is rev F, 40 pins done, 4 to
+check, all four on the strip side and the rails' feed. Which grey
+moved is not visible, so the Q pairing still rests on the SPI loopback.
