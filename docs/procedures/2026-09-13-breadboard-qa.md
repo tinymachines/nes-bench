@@ -201,3 +201,47 @@ every named view's aim carried through the measured similarity (scale
 0.926, worst residual 18 px on the fit points, inside a pan step), the
 views re-taken, and the junction overlay redrawn on the new frame: every
 ring on its hole. Focus re-swept: 20. The wiring reads as at 21:20.
+
+## Fifth look, 2026-09-14 12:06: the J1 to U3 chain wired
+
+The user's batch: the /PL link and the eight Q lines between the 165
+and the 595. The camera had not moved, but the breadboards had, about
+150 px left and 90 px up in the frame (measured by matching a chip body
+and two printed numbers between the frames), so the hole map was
+re-read off the new board frame: the rows and rails as luma dips in
+bands inside the picture, the columns from the dips of all ten hole
+rows voted along each row and numbered from the printed 35 and 30 under
+rulers. The rail columns then needed a 13 px correction: the dip finder
+had taken the +5V holes for GND, which the ringed close-ups showed at
+once (a ring beside the red line instead of the blue). Every view's aim
+was carried through the shift and the set re-taken.
+
+Reading a wire's end from above has a limit that this batch made
+plain: a Dupont wire's stripped end stands a few millimetres proud of
+the board, and the camera sees it from one side, so a raised end reads
+up to half a pitch from its hole while a seated end reads at it. The
+rule used: a landing is settled where the bare end is seen at the hole
+(the map's rings projected onto the zoom-500 views, so each close-up
+carries its column numbers), and left as a check where it is not. A
+close look at three focus values (20, 28, 36) was taken over U3; 20 is
+right, 36 is blur, so the wire ends are not far enough above the board
+for focus to separate them.
+
+What settled: /PL (teal, U1-2 to U2-1), Q_B (blue, U3-1 to U2-5),
+Q_SEL and Q_START (grey, to U2-4 and U2-3), Q_A (brown, U3-15 to U2-6,
+its end proud of the hole), and the four rails-side lines into U2-11 to
+U2-14, a neat diagonal (23 f, 22 g, 21 h, 20 i). The chips' orientation
+also settled: the notch and the pin-1 dot of all three face the
+high-column end, and the round mark at the far end of each is the
+mould's ejector pin, which is what the earlier look had been unable to
+tell from a dot.
+
+What did not: on U3's middle side the four grey lines from U2's rails
+side land in columns 10, 9, 9 and 8, so pin 5 (Q_DOWN) carries two
+wires and pin 7 (Q_RIGHT) none, seen in two views. The greys are one
+colour, so the eye cannot say which of the two on pin 5 belongs on
+pin 7; the note on the sheet says to move the one from U2-11, and that
+the SPI loopback of the next batch shows a swapped pair if the wrong
+one moves. The grey from the strip to U1-1 reads between columns 34 and
+35 and stays a check. The as-built sheet is rev E: 38 pins done, 6 to
+check.

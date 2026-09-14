@@ -2,7 +2,7 @@
   "org": "tinymachines",
   "project": "nes-bench",
   "docno": "TM-NESB-001",
-  "rev": "D",
+  "rev": "E",
   "drawn": "bisenbek",
   "page": "ansi-a",
   "title": "NES controller-port bridge, v1b",
@@ -126,6 +126,11 @@
       "D",
       "2026-09-13",
       "baseline: camera fixed, grounds, +5 V and J1 as built"
+    ],
+    [
+      "E",
+      "2026-09-14",
+      "/PL and the eight Q lines as built; two checks on U3"
     ]
   ]
 }
