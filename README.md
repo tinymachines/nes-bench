@@ -90,7 +90,7 @@ register's job, as it is in the pad.
 - `head/`: the Pi's daemon, the bench under one script (UDP in, the
   bridge over serial, relays, the scope over SCPI, runs served back over
   HTTP); `docs/script.md` is the script's words, shared with the model.
-- `tools/`: `bench.py` (the workstation's client), `b1-score.py` (a
+- `tools/`: `eye.py` (the camera on the board: grab, sweep, named views), `cal.py` (the calibration cartridge's reader for every eye), `board-overlay.py` (the wiring state drawn on the photograph, from `docs/board-map.json`), `nesprep.py` (an iNES file into the two flash images, tiled), `bench.py` (the workstation's client), `b1-score.py` (a
   run's triggered capture against the model's frame at the same poll,
   through the roundtrip), `b2-align.py` (the alignment class off a
   three-channel capture, the histogram over power-ons, its self-test),

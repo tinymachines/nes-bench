@@ -228,26 +228,49 @@ dumps what the console sees and prints the crc32 it computed, which
 must be the table's. This is the step that is yours; nothing here has
 run on the part yet.
 
-**A physical NROM board.** The iNES file is a header and two ROM
-images end to end:
+**The physical board (the owner's build spec, 2026-09-14).** The board
+is the NES CART PCB "discrete mapper board" v3.3 from the blanks page
+(`cart-blanks.md`): two 32-pin footprints, U3 for CHR and U4 for PRG,
+both taking an SST39SF040 (512 KiB, 5 V parallel flash), programmed in
+an XGecu Pro (the TL866 family, XGpro software, device SST39SF040).
+NROM needs none of the board's logic, so U5 to U7 stay empty; the
+console's lockout is defeated, so the CIC position U2 stays empty too;
+the H/V solder jumper follows the header's mirroring bit, which for
+this file is vertical (the picture never scrolls and uses one
+nametable, so either shows the same thing, but the board and the file
+should agree).
+
+The chip is bigger than the image sixteen times over for PRG and
+sixty-four for CHR, and an NROM board drives only fifteen and thirteen
+of its nineteen address lines, so the image is TILED to fill the chip,
+not padded with zeros: every state of the undriven lines then lands on
+a copy. `tools/nesprep.py` does the split and the tiling and refuses
+the cases that would burn garbage (a header without the magic, a file
+shorter than its header, a region that does not divide the chip, a CHR
+size of zero, which means CHR RAM):
 
 ```bash
-dd if=cal.nes of=cal-prg.bin bs=16 skip=1 count=2048     # bytes 16..32783: 32 KiB, the program ROM
-dd if=cal.nes of=cal-chr.bin bs=16 skip=2049 count=512   # bytes 32784..40975: 8 KiB, the character ROM
-sha256sum cal-prg.bin cal-chr.bin
+python3 tools/nesprep.py roms/cal.nes            # -> roms/cal-flash/prg.bin, chr.bin
+python3 tools/nesprep.py --selftest roms/cal.nes # every copy held to its region; MUTATE=1 red
 ```
 
-The program image goes on the PRG ROM (a 32 KiB part, 27C256-class,
-or a larger one with its upper address lines tied and the image at
-the top so the vectors land at `$FFFA`), the character image on the
-CHR ROM (an 8 KiB part, 27C64-class, or a larger one the same way).
-The cartridge uses one nametable and never scrolls, so the mirroring
-pad can be set either way; the file declares vertical for the model.
-A front-loading console also wants the lockout chip satisfied, which is
-a matter for the board you chose and not for this ROM. When the board
-is in the console, the reader's dump is the proof, as with the
-flashcart: a wrong wire on an address line shows up as a crc32 that is
-not `21091B99` long before it shows up as a screen you can interpret.
+MEASURED 2026-09-13 on the exported `cal.nes`:
+
+| image | copies | bytes | sha256 |
+|---|---|---|---|
+| `prg.bin` (U4) | 16 of 32 KiB | 524288 | `3ca73ce7d67e78412739857f9fe6bccde7e09a03b6ebc5cbe5ab38c771efed94` |
+| `chr.bin` (U3) | 64 of 8 KiB | 524288 | `fb61eb01b3218701270f3924570ec2ebcee758c12f39154f99338f7cf826270d` |
+
+Burning, from the same spec: in XGpro select SST, SST39SF040; seat the
+chip bottom-justified in the ZIF socket, pin 1 toward the lever, the top
+eight positions empty, the arrow on the case matching; read a blank
+chip first and stop if its ID is not the part's (a relabelled fake
+reads wrong here before it fails in the console); load `prg.bin`,
+program, verify; the same for `chr.bin` on the second chip; PRG into
+U4, CHR into U3, the jumper to the mirroring the script printed. Then
+the reader's dump: crc32 `21091B99` is this ROM, and a wrong wire on an
+address line shows up there long before it shows up as a screen you can
+interpret.
 
 ## 9. What comes next
 

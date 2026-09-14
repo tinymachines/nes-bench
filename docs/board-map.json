@@ -1,0 +1,25 @@
+{
+  "_about": [
+    "Where the breadboard's holes are in the eye's frame, so a wiring state can be drawn on a photograph (tools/board-overlay.py).",
+    "MEASURED 2026-09-13 off the 15:40 baseline board frame (eye.py grab b0-all, focus 20, zoom 100), by reading the printed column numbers and the hole rows under pixel rulers: a column's y is quadratic in its number (the camera looks along the board at an angle, so the pitch grows from about 17.6 px at column 35 to 21 px at column 1); a hole row's x drifts linearly with y between the top and bottom readings.",
+    "A map is for one camera pose. The frame it was read from is named; a frame from another pose needs its own reading.",
+    "chips: as built, read off the eye (docs/as-built-v1b.md, the QA note): pin 1 at the high-column end, pins 1 to n/2 down the side toward the middle board, n/2+1 to n up the side toward the rails."
+  ],
+  "frame": "captures/b0-all.jpg (2026-09-13 15:40 EDT)",
+  "boards": {
+    "right": {
+      "column_y": {"anchors": [[35, 288], [30, 376], [25, 464], [20, 559], [15, 655], [10, 752], [1, 940]]},
+      "rows": {
+        "middle": {"y_top": 300, "x_top": [1127, 1146, 1165, 1184, 1203], "y_bottom": 925, "x_bottom": [1144, 1164, 1184, 1205, 1226]},
+        "rails":  {"y_top": 300, "x_top": [1270, 1290, 1310, 1330, 1350], "y_bottom": 925, "x_bottom": [1284, 1305, 1326, 1346, 1368]}
+      },
+      "rail_x": {"GND": {"y_top": 300, "x_top": 1385, "y_bottom": 925, "x_bottom": 1400}, "+5V": {"y_top": 300, "x_top": 1405, "y_bottom": 925, "x_bottom": 1421}},
+      "crop": [1080, 0, 1460, 1000]
+    }
+  },
+  "chips": {
+    "U1": {"board": "right", "columns": [28, 34], "pins": 14},
+    "U2": {"board": "right", "columns": [18, 25], "pins": 16},
+    "U3": {"board": "right", "columns": [6, 13], "pins": 16}
+  }
+}

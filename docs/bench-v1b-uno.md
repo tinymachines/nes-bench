@@ -101,6 +101,14 @@ needs a check and the note under the rails says what, full colour is not built y
 
 ![v1b as built: grey done, ringed needs a check](wiring-v1b-build.svg)
 
+And the same state on the photograph: the eye's frame of the right
+breadboard, every chip pin's landing ringed and named with its net,
+grey, pink and colour as on the sheet (`tools/board-overlay.py`, the
+hole grid read off the frame once in `docs/board-map.json`, one camera
+pose).
+
+![v1b on the board: the photograph with the junctions overlaid](lab/board-junctions-v1b.png)
+
 Each chip is its package seen from above, notch left, pin 1 bottom
 left, numbered as the package is; every wire is horizontal or vertical,
 one track and one colour per net, named at its left end, a dot where

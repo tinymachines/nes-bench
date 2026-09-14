@@ -16,11 +16,13 @@ footprints for a CHR ROM and a PRG ROM, a CIC, three logic parts
 (74'02, 74'161, 74'32) whose rows are marked for which mapper they
 serve (AxROM, UxROM, "all but NROM"), a mirroring jumper marked H and
 V, and a row of letters (B, C, G, N, U) for the mapper families the
-board takes. For the calibration cart this is the board: **NROM needs
-no logic part fitted**, only the two ROMs, the CIC question settled,
-and the mirroring jumper set (the ROM never scrolls and uses one
-nametable, so either setting shows the same picture; the file declares
-vertical for the model).
+board takes. For the calibration cart this is the board (the owner's build spec,
+2026-09-14): **NROM needs no logic part fitted**, so U5 to U7 stay
+empty; the two ROM positions are U3 for CHR and U4 for PRG, each an
+SST39SF040 (512 KiB of 5 V parallel flash) with the image tiled to fill
+it (`tools/nesprep.py`, the tutorial's section 8); the console's
+lockout is defeated, so the CIC position U2 stays empty; the H/V
+jumper follows the file's mirroring bit, vertical.
 
 Between them a board marked NES CART PCB, MAPPER 30, v1.2, with
 74HC139, 74HC377 and 74HC32 and a CHR RAM footprint marked 8 KB, 16 KB
@@ -43,10 +45,9 @@ An adapter from mousebitelabs.com, v3.2, that sits in a TL866-class
 programmer's socket and takes 42-pin (27C322, 27C160, 27C800) and
 40-pin (27C400) EPROMs, with the instruction to place the EPROM against
 the bottom of the socket, and switches for A20, A19 and A18 marked with
-their ON and OFF positions. Those are large parts for banked boards;
-the calibration ROM's two images are 32 KiB and 8 KiB, which are
-27C256-class and 27C64-class parts and sit in the programmer's own
-socket without an adapter.
+their ON and OFF positions. Those are large parts for banked boards; the
+SST39SF040s this cart uses are 32-pin DIPs that sit in the programmer's
+own socket without the adapter.
 
 ## The programmer
 
@@ -58,10 +59,6 @@ two images `dd` splits out of `cal.nes` into the ROMs.
 
 ## What is not known yet
 
-- Which ROM parts will be fitted (EPROM or flash, and their sizes), and
-  so where in a larger part the 32 KiB image goes: at the top, so the
-  vectors land at `$FFFA`.
-- Whether the console is a front loader, which wants the CIC satisfied
-  on the board, or a top loader, which does not.
+- The chips themselves: not on the bench yet (2026-09-13 evening).
 - The reader's dump of the finished cart, whose body crc32 must be
   `21091B99` (MEASURED 2026-09-13 on the exported file).
