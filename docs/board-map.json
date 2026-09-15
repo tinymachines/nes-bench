@@ -11,7 +11,8 @@
   "READ 2026-09-15 08:27 EDT off b11-all.jpg by --read: 1214 hole centres by template correlation; per board, in the camera-y band it names, the two five-row groups and the rail pair as even progressions and the columns walked from the board's last hole with an adaptive pitch, anchors every fifth column. right: rows a-e [396, 419, 442, 465, 488], f-j [546, 569, 592, 615, 638], rails above at [300, 324], columns 1 to 48 (26.0 px a column at 1); middle: rows a-e [889, 913, 937, 961, 985], f-j [724, 747, 770, 793, 816], rails below at [1046, 1069], columns 1 to 52 (24.4 px a column at 1).",
   "A row side is named by what it faces (`middle`: the other board; `rails`: the board's own rail pair) and carries the printed letters of its rows (`letters`), because the two boards face each other rail to rail: on the right board the rails side is a to e, on the middle board it is f to j.",
   "parts: single-row parts as built, read off the eye 2026-09-15: `side`, `columns` [lo, hi], `pins`, and `pin1` (\"hi\" or \"lo\": which end pin 1 is at); a part's pin k sits in the column counted from that end. Where the eye could not settle which column carries which pin, the as-built sheet says so.",
-  "READ 2026-09-15 08:34 EDT off b11-all.jpg by --read: 1214 hole centres by template correlation; per board, in the camera-y band it names, the two five-row groups and the rail pair as even progressions and the columns walked from the board's last hole with an adaptive pitch, anchors every fifth column. right: rows a-e [396, 419, 442, 465, 488], f-j [546, 569, 592, 615, 638], rails above at [300, 324], columns 1 to 48 (26.0 px a column at 1); middle: rows a-e [889, 913, 937, 961, 985], f-j [724, 747, 770, 793, 816], rails below at [1046, 1069], columns 1 to 52 (24.4 px a column at 1)."
+  "READ 2026-09-15 08:34 EDT off b11-all.jpg by --read: 1214 hole centres by template correlation; per board, in the camera-y band it names, the two five-row groups and the rail pair as even progressions and the columns walked from the board's last hole with an adaptive pitch, anchors every fifth column. right: rows a-e [396, 419, 442, 465, 488], f-j [546, 569, 592, 615, 638], rails above at [300, 324], columns 1 to 48 (26.0 px a column at 1); middle: rows a-e [889, 913, 937, 961, 985], f-j [724, 747, 770, 793, 816], rails below at [1046, 1069], columns 1 to 52 (24.4 px a column at 1).",
+  "The five-way housing at the middle board's columns 9 to 13 is the POWER AND RESET BREAKOUT's, joined to nothing (the user, 2026-09-15), not J2; J2, the pad-side housing, is not located yet."
  ],
  "frame": "captures/b11-all.jpg (read 2026-09-15 08:34 EDT by board-overlay.py --read)",
  "boards": {
@@ -276,18 +277,6 @@
   1080
  ],
  "parts": {
-  "J2": {
-   "board": "middle",
-   "side": "rails",
-   "columns": [
-    9,
-    13
-   ],
-   "pins": 5,
-   "pin1": "hi",
-   "note": "the pad-side housing of the cut cable, five ways, its body across the gap between row j and the GND rail row",
-   "row": 4
-  },
   "R1": {
    "board": "middle",
    "side": "rails",

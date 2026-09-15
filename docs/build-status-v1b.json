@@ -189,23 +189,23 @@
     },
     "J2.1": {
       "state": "check",
-      "note": "J2, the pad-side housing of the cut cable: a five-way black housing stands on the middle board across columns 9 to 13 with its body over the gap between row j and the GND rail row; eight leads run into it from below (the pad cable's five and the UNO's white, yellow and orange). Which row its pins are in (j, or the rail rows, which would short them) and which column carries which pin cannot be read from above. Meter: pad cable GND (yellow at the port end) to the GND rail; PAD_CLK, PAD_LATCH and PAD_D0 to the UNO's D7, D6 and D8; the pad's +5 V (red) to the +5V rail; and none of the five to each other."
+      "note": "J2, the pad-side housing: not located. The five-way housing at the middle board's columns 9 to 13 is the power and reset breakout's, joined to nothing. The pad cable and the UNO's D6, D7 and D8 leads run in under the UNO's lead bundle at the frame's right; where they land is under the leads. Say where, or route them where the eye can see, and the sheet will read them."
     },
     "J2.2": {
       "state": "check",
-      "note": "J2, the pad-side housing of the cut cable: a five-way black housing stands on the middle board across columns 9 to 13 with its body over the gap between row j and the GND rail row; eight leads run into it from below (the pad cable's five and the UNO's white, yellow and orange). Which row its pins are in (j, or the rail rows, which would short them) and which column carries which pin cannot be read from above. Meter: pad cable GND (yellow at the port end) to the GND rail; PAD_CLK, PAD_LATCH and PAD_D0 to the UNO's D7, D6 and D8; the pad's +5 V (red) to the +5V rail; and none of the five to each other."
+      "note": "J2, the pad-side housing: not located. The five-way housing at the middle board's columns 9 to 13 is the power and reset breakout's, joined to nothing. The pad cable and the UNO's D6, D7 and D8 leads run in under the UNO's lead bundle at the frame's right; where they land is under the leads. Say where, or route them where the eye can see, and the sheet will read them."
     },
     "J2.3": {
       "state": "check",
-      "note": "J2, the pad-side housing of the cut cable: a five-way black housing stands on the middle board across columns 9 to 13 with its body over the gap between row j and the GND rail row; eight leads run into it from below (the pad cable's five and the UNO's white, yellow and orange). Which row its pins are in (j, or the rail rows, which would short them) and which column carries which pin cannot be read from above. Meter: pad cable GND (yellow at the port end) to the GND rail; PAD_CLK, PAD_LATCH and PAD_D0 to the UNO's D7, D6 and D8; the pad's +5 V (red) to the +5V rail; and none of the five to each other."
+      "note": "J2, the pad-side housing: not located. The five-way housing at the middle board's columns 9 to 13 is the power and reset breakout's, joined to nothing. The pad cable and the UNO's D6, D7 and D8 leads run in under the UNO's lead bundle at the frame's right; where they land is under the leads. Say where, or route them where the eye can see, and the sheet will read them."
     },
     "J2.4": {
       "state": "check",
-      "note": "J2, the pad-side housing of the cut cable: a five-way black housing stands on the middle board across columns 9 to 13 with its body over the gap between row j and the GND rail row; eight leads run into it from below (the pad cable's five and the UNO's white, yellow and orange). Which row its pins are in (j, or the rail rows, which would short them) and which column carries which pin cannot be read from above. Meter: pad cable GND (yellow at the port end) to the GND rail; PAD_CLK, PAD_LATCH and PAD_D0 to the UNO's D7, D6 and D8; the pad's +5 V (red) to the +5V rail; and none of the five to each other."
+      "note": "J2, the pad-side housing: not located. The five-way housing at the middle board's columns 9 to 13 is the power and reset breakout's, joined to nothing. The pad cable and the UNO's D6, D7 and D8 leads run in under the UNO's lead bundle at the frame's right; where they land is under the leads. Say where, or route them where the eye can see, and the sheet will read them."
     },
     "J2.5": {
       "state": "check",
-      "note": "J2, the pad-side housing of the cut cable: a five-way black housing stands on the middle board across columns 9 to 13 with its body over the gap between row j and the GND rail row; eight leads run into it from below (the pad cable's five and the UNO's white, yellow and orange). Which row its pins are in (j, or the rail rows, which would short them) and which column carries which pin cannot be read from above. Meter: pad cable GND (yellow at the port end) to the GND rail; PAD_CLK, PAD_LATCH and PAD_D0 to the UNO's D7, D6 and D8; the pad's +5 V (red) to the +5V rail; and none of the five to each other."
+      "note": "J2, the pad-side housing: not located. The five-way housing at the middle board's columns 9 to 13 is the power and reset breakout's, joined to nothing. The pad cable and the UNO's D6, D7 and D8 leads run in under the UNO's lead bundle at the frame's right; where they land is under the leads. Say where, or route them where the eye can see, and the sheet will read them."
     },
     "R1.1": {
       "state": "check",
@@ -222,7 +222,7 @@
   },
   "observations": [
     "RIG, SECOND POSE: the boards shifted right on the frame; the map re-read automatically (tools/board-overlay.py --read) and every view re-aimed; the rings sit on the holes out to column 50.",
-    "The middle board is mapped (its rows read the other way up: a to e toward the right board, f to j toward its own rails, the pair below). The pad cable and the UNO's three pad leads land in the J2 housing at columns 9 to 13; a 2-by-4 black header stands at its left end (columns 58 to 60, rows f to h) and a 4-way header on its rail rows near columns 50 to 53, both with pin tips up: probe points until the sheet says otherwise.",
+    "The middle board is mapped (its rows read the other way up: a to e toward the right board, f to j toward its own rails, the pair below). The five-way housing at columns 9 to 13 is the power and reset breakout's, parked, joined to nothing (the user, 2026-09-15); a 2-by-4 black header stands at the board's left end (columns 58 to 60, rows f to h) and a 4-way header on its rail rows near columns 50 to 53, both with pin tips up.",
     "The UNO now sits at the frame's top right on a blue screw-terminal shield, its leads running direct: a bundle (purple, blue, cream, red) down over the top rail to U3's rails side and on, a red to the +5V rail at column 5, and white, yellow and orange to the pad's housing on the middle board. The screw shield hides the header's pin labels, so which UNO pin each lead leaves is not readable on camera.",
     "The two-pin black header across the rail rows at column 27 is a probe point for metering the rail voltage (the user, 2026-09-15): its two pins are not joined to each other, and it is not the UNO's feed.",
     "Orientation settled: the notch and the pin-1 dot of U1, U2 and U3 all face the high-column end, as the map places them.",
