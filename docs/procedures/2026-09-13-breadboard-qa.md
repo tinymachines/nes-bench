@@ -347,3 +347,16 @@ the previous look by sensor noise only, which is the point: the eye
 reads the same housings it could not settle, and the meter settles
 them. Recorded as MEASURED on the sheet, rev I. One check remains,
 the UNO's ground into the GND rail row.
+
+## The ground, settled: every pin of the right board done
+
+The UNO's ground reaches the rails through its USB cable from the Pi
+(the user, 2026-09-15), which is what the design says and the reason
+no ground lead is on the board: the UNO's 5 V and ground power all
+three boards' rails; the console's port (J1-1) and the pad (J2-1) are
+on that ground and the console's own 5 V (port pin 5) is not carried,
+so the two supplies meet only at ground; the power and reset breakout
+touches the console only through the PC817's LED and the relay's
+contact, with no wire from the Pi's ground to the bridge or the
+console. The as-built sheet has no checks left on the chip pins: 47
+pins done.
