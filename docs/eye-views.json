@@ -5,7 +5,10 @@
   "If the camera is moved, these are wrong: re-take the board frame, re-aim, and cut a new baseline.",
   "RE-AIMED 2026-09-15 01:15 EDT for the rig: the BRIO on the metal frame, turned 90 degrees; every aim carried through the similarity fitted on the right board's holes between the last desk map and the rig map (scale 1.341, -91.1 degrees, worst residual 20 px), then pan and tilt re-quantised. The close-ups now stand turned 90 degrees against the earlier sets: columns run left to right in them.",
   "RE-AIMED 2026-09-15 01:45 EDT: the boards shifted right on the rig (scale 1.024, 0.1 degrees, t [10.0, 254.0] from the two maps); every aim carried through and re-quantised.",
-  "RE-AIMED 2026-09-15 06:55 EDT by board-overlay.py --read off b10-all.jpg: scale 1.000, -0.0 degrees, shift [0.0, 0.0], worst residual 0 px."
+  "RE-AIMED 2026-09-15 06:55 EDT by board-overlay.py --read off b10-all.jpg: scale 1.000, -0.0 degrees, shift [0.0, 0.0], worst residual 0 px.",
+  "RE-AIMED 2026-09-15 08:27 EDT by board-overlay.py --read off b11-all.jpg: scale 1.001, 0.0 degrees, shift [-2.0, -0.0], worst residual 1 px.",
+  "RE-AIMED 2026-09-15 08:27 EDT by board-overlay.py --read off b11-all.jpg: scale 1.000, 0.0 degrees, shift [0.0, 0.0], worst residual 0 px.",
+  "RE-AIMED 2026-09-15 08:34 EDT by board-overlay.py --read off b11-all.jpg: scale 1.000, 0.0 degrees, shift [0.0, 0.0], worst residual 0 px."
  ],
  "camera": {
   "focus": 25,
@@ -21,7 +24,7 @@
    "tilt": -28800,
    "at": [
     1089,
-    892
+    893
    ]
   },
   "header": {
@@ -29,7 +32,7 @@
    "pan": -18000,
    "tilt": 3600,
    "at": [
-    559,
+    558,
     489
    ]
   },
@@ -48,7 +51,7 @@
    "tilt": -36000,
    "at": [
     1240,
-    1189
+    1190
    ]
   },
   "left-greys": {
@@ -56,8 +59,8 @@
    "pan": -7200,
    "tilt": -36000,
    "at": [
-    800,
-    1083
+    799,
+    1084
    ]
   },
   "left-links": {
@@ -66,7 +69,7 @@
    "tilt": -36000,
    "at": [
     1411,
-    1100
+    1101
    ]
   },
   "right-link": {
@@ -83,8 +86,8 @@
    "pan": -10800,
    "tilt": -21600,
    "at": [
-    709,
-    781
+    708,
+    782
    ]
   },
   "strip-top": {
@@ -92,8 +95,8 @@
    "pan": -14400,
    "tilt": -21600,
    "at": [
-    623,
-    778
+    622,
+    779
    ]
   },
   "u1-ends-bottom": {
@@ -102,7 +105,7 @@
    "tilt": 0,
    "at": [
     897,
-    522
+    523
    ]
   },
   "u1-ends-top": {
@@ -110,7 +113,7 @@
    "pan": -10800,
    "tilt": 3600,
    "at": [
-    733,
+    732,
     513
    ]
   },
@@ -120,7 +123,7 @@
    "tilt": -10800,
    "at": [
     819,
-    685
+    686
    ]
   },
   "u1-rail": {
@@ -137,7 +140,7 @@
    "pan": -10800,
    "tilt": 3600,
    "at": [
-    721,
+    720,
     492
    ]
   },
@@ -156,7 +159,7 @@
    "tilt": 0,
    "at": [
     1126,
-    528
+    529
    ]
   },
   "u2-ends-top": {
@@ -165,7 +168,7 @@
    "tilt": 0,
    "at": [
     958,
-    521
+    522
    ]
   },
   "u2-rail": {
@@ -183,7 +186,7 @@
    "tilt": -3600,
    "at": [
     993,
-    596
+    597
    ]
   },
   "u3-bottom": {
@@ -201,7 +204,7 @@
    "tilt": 0,
    "at": [
     1438,
-    532
+    533
    ]
   },
   "u3-ends-top": {
@@ -210,7 +213,7 @@
    "tilt": 0,
    "at": [
     1252,
-    522
+    523
    ]
   },
   "u3-rail": {
@@ -225,10 +228,10 @@
   "u3-top": {
    "zoom": 500,
    "pan": 14400,
-   "tilt": -3600,
+   "tilt": -7200,
    "at": [
     1267,
-    604
+    605
    ]
   }
  }

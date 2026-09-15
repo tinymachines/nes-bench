@@ -5,20 +5,26 @@
   "A map is for one camera pose. The frame it was read from is named; a frame from another pose needs its own reading.",
   "chips: as built, read off the eye (docs/as-built-v1b.md, the QA note): pin 1 at the high-column end, pins 1 to n/2 down the side toward the middle board, n/2+1 to n up the side toward the rails.",
   "RIG, SECOND POSE 2026-09-15 off b10-all.jpg: the boards shifted right under the fixed camera and the UNO's leads re-run direct. The map is read automatically now: every hole centre in the frame by normalised correlation with a hole template (1201 found), the hole rows as five evenly spaced rows fitted to the centres' y (a to e at [396, 419, 442, 465, 488], f to j at [545, 568, 591, 614, 637], pitch 23.0 px; the rails' hole rows at [300, 324]), the columns walked leftward from the board's last hole (column 1) through the x peaks of the a-to-e and f-to-j bands with an adaptive pitch, a missing peak (under a wire) interpolated; the pitch shrinks from about 24.5 px at column 1 to 23.5 at column 50 (the lens), so the anchors are the walked positions every fifth column and the map interpolates between them. frame_rotate keeps the map's convention: map x = 1080 - camera y, map y = camera x.",
-  "READ 2026-09-15 06:55 EDT off b10-all.jpg by --read: 1201 hole centres by template correlation; rows a-e at camera y [396, 419, 442, 465, 488], f-j at [545, 568, 591, 614, 637], the rails at [300, 324]; the columns walked from the board's last hole with an adaptive pitch (25.0 px at column 1, 23.0 at 45), anchors every fifth column."
+  "READ 2026-09-15 06:55 EDT off b10-all.jpg by --read: 1201 hole centres by template correlation; rows a-e at camera y [396, 419, 442, 465, 488], f-j at [545, 568, 591, 614, 637], the rails at [300, 324]; the columns walked from the board's last hole with an adaptive pitch (25.0 px at column 1, 23.0 at 45), anchors every fifth column.",
+  "BOARDS: each board names the camera-y band it sits in (`band`); --read reads every board in its band. The middle board's rails are the pair below its rows (the boards face each other rail to rail across the frame), and its columns run to 63.",
+  "READ 2026-09-15 08:27 EDT off b11-all.jpg by --read: 1214 hole centres by template correlation; per board, in the camera-y band it names, the two five-row groups and the rail pair as even progressions and the columns walked from the board's last hole with an adaptive pitch, anchors every fifth column. right: rows a-e [396, 419, 442, 465, 488], f-j [546, 569, 592, 615, 638], rails above at [300, 324], columns 1 to 64 (26.0 px a column at 1); middle: rows a-e [889, 913, 937, 961, 985], f-j [724, 747, 770, 793, 816], rails below at [1046, 1069], columns 1 to 64 (24.4 px a column at 1).",
+  "READ 2026-09-15 08:27 EDT off b11-all.jpg by --read: 1214 hole centres by template correlation; per board, in the camera-y band it names, the two five-row groups and the rail pair as even progressions and the columns walked from the board's last hole with an adaptive pitch, anchors every fifth column. right: rows a-e [396, 419, 442, 465, 488], f-j [546, 569, 592, 615, 638], rails above at [300, 324], columns 1 to 48 (26.0 px a column at 1); middle: rows a-e [889, 913, 937, 961, 985], f-j [724, 747, 770, 793, 816], rails below at [1046, 1069], columns 1 to 52 (24.4 px a column at 1).",
+  "A row side is named by what it faces (`middle`: the other board; `rails`: the board's own rail pair) and carries the printed letters of its rows (`letters`), because the two boards face each other rail to rail: on the right board the rails side is a to e, on the middle board it is f to j.",
+  "parts: single-row parts as built, read off the eye 2026-09-15: `side`, `columns` [lo, hi], `pins`, and `pin1` (\"hi\" or \"lo\": which end pin 1 is at); a part's pin k sits in the column counted from that end. Where the eye could not settle which column carries which pin, the as-built sheet says so.",
+  "READ 2026-09-15 08:34 EDT off b11-all.jpg by --read: 1214 hole centres by template correlation; per board, in the camera-y band it names, the two five-row groups and the rail pair as even progressions and the columns walked from the board's last hole with an adaptive pitch, anchors every fifth column. right: rows a-e [396, 419, 442, 465, 488], f-j [546, 569, 592, 615, 638], rails above at [300, 324], columns 1 to 48 (26.0 px a column at 1); middle: rows a-e [889, 913, 937, 961, 985], f-j [724, 747, 770, 793, 816], rails below at [1046, 1069], columns 1 to 52 (24.4 px a column at 1)."
  ],
- "frame": "captures/b10-all.jpg (read 2026-09-15 06:55 EDT by board-overlay.py --read)",
+ "frame": "captures/b11-all.jpg (read 2026-09-15 08:34 EDT by board-overlay.py --read)",
  "boards": {
   "right": {
    "column_y": {
     "anchors": [
      [
-      50,
-      380
+      48,
+      426
      ],
      [
       45,
-      497
+      496
      ],
      [
       40,
@@ -34,7 +40,7 @@
      ],
      [
       25,
-      967
+      966
      ],
      [
       20,
@@ -54,31 +60,31 @@
      ],
      [
       1,
-      1549
+      1550
      ]
     ]
    },
    "rows": {
     "middle": {
-     "y_top": 380,
+     "y_top": 426,
      "x_top": [
-      443,
-      466,
-      489,
-      512,
-      535
+      442,
+      465,
+      488,
+      511,
+      534
      ],
-     "y_bottom": 1549,
+     "y_bottom": 1550,
      "x_bottom": [
-      443,
-      466,
-      489,
-      512,
-      535
+      442,
+      465,
+      488,
+      511,
+      534
      ]
     },
     "rails": {
-     "y_top": 380,
+     "y_top": 426,
      "x_top": [
       592,
       615,
@@ -86,7 +92,7 @@
       661,
       684
      ],
-     "y_bottom": 1549,
+     "y_bottom": 1550,
      "x_bottom": [
       592,
       615,
@@ -98,23 +104,143 @@
    },
    "rail_x": {
     "GND": {
-     "y_top": 380,
+     "y_top": 426,
      "x_top": 756,
-     "y_bottom": 1549,
+     "y_bottom": 1550,
      "x_bottom": 756
     },
     "+5V": {
-     "y_top": 380,
+     "y_top": 426,
      "x_top": 780,
-     "y_bottom": 1549,
+     "y_bottom": 1550,
      "x_bottom": 780
     }
    },
    "crop": [
-    413,
-    350,
+    412,
+    396,
     810,
-    1589
+    1590
+   ],
+   "band": [
+    250,
+    650
+   ]
+  },
+  "middle": {
+   "band": [
+    650,
+    1080
+   ],
+   "column_y": {
+    "anchors": [
+     [
+      52,
+      324
+     ],
+     [
+      50,
+      371
+     ],
+     [
+      45,
+      490
+     ],
+     [
+      40,
+      609
+     ],
+     [
+      35,
+      727
+     ],
+     [
+      30,
+      842
+     ],
+     [
+      25,
+      959
+     ],
+     [
+      20,
+      1073
+     ],
+     [
+      15,
+      1192
+     ],
+     [
+      10,
+      1312
+     ],
+     [
+      5,
+      1434
+     ],
+     [
+      1,
+      1530
+     ]
+    ]
+   },
+   "rows": {
+    "middle": {
+     "y_top": 324,
+     "x_top": [
+      356,
+      333,
+      310,
+      287,
+      264
+     ],
+     "y_bottom": 1530,
+     "x_bottom": [
+      356,
+      333,
+      310,
+      287,
+      264
+     ]
+    },
+    "rails": {
+     "y_top": 324,
+     "x_top": [
+      191,
+      167,
+      143,
+      119,
+      95
+     ],
+     "y_bottom": 1530,
+     "x_bottom": [
+      191,
+      167,
+      143,
+      119,
+      95
+     ]
+    }
+   },
+   "rail_x": {
+    "GND": {
+     "y_top": 324,
+     "x_top": 34,
+     "y_bottom": 1530,
+     "x_bottom": 34
+    },
+    "+5V": {
+     "y_top": 324,
+     "x_top": 11,
+     "y_bottom": 1530,
+     "x_bottom": 11
+    }
+   },
+   "crop": [
+    -19,
+    294,
+    386,
+    1570
    ]
   }
  },
@@ -148,5 +274,31 @@
  "frame_size": [
   1920,
   1080
- ]
+ ],
+ "parts": {
+  "J2": {
+   "board": "middle",
+   "side": "rails",
+   "columns": [
+    9,
+    13
+   ],
+   "pins": 5,
+   "pin1": "hi",
+   "note": "the pad-side housing of the cut cable, five ways, its body across the gap between row j and the GND rail row",
+   "row": 4
+  },
+  "R1": {
+   "board": "middle",
+   "side": "rails",
+   "columns": [
+    47,
+    49
+   ],
+   "pins": 2,
+   "pin1": "lo",
+   "note": "R1 stands over column 49 with a lead down into row f; the green TRIG lead's housing is at column 47, row f",
+   "row": 0
+  }
+ }
 }

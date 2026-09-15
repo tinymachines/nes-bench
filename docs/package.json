@@ -2,7 +2,7 @@
   "org": "tinymachines",
   "project": "nes-bench",
   "docno": "TM-NESB-001",
-  "rev": "I",
+  "rev": "J",
   "drawn": "bisenbek",
   "page": "ansi-a",
   "title": "NES controller-port bridge, v1b",
@@ -151,6 +151,11 @@
       "I",
       "2026-09-15",
       "U1-1 and the SPI pins metered; one check left, the UNO's ground"
+    ],
+    [
+      "J",
+      "2026-09-15",
+      "the middle board mapped: the pad housing and R1 on the sheet"
     ]
   ]
 }

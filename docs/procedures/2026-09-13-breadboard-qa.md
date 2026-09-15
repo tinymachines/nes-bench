@@ -360,3 +360,21 @@ touches the console only through the PC817's LED and the relay's
 contact, with no wire from the Pi's ground to the bridge or the
 console. The as-built sheet has no checks left on the chip pins: 47
 pins done.
+
+## The middle board mapped, 2026-09-15
+
+`board-overlay.py --read` now reads every board the map names, each in
+the camera-y band it sits in: the two five-row groups, the rail pair
+(looked for beyond both groups, the side with more holes winning) and
+the columns walked from the board's last hole. The middle board lies
+the other way up from the right board (a to e toward the right board,
+f to j toward its own rails, the pair below), so a row side is named
+by what it faces and carries its printed letters. The rings sit on the
+holes across the middle board out to column 52 (the rest is under the
+UNO's leads). The map also places single-row parts: J2, the pad-side
+housing, at columns 9 to 13 on the rails side, and R1 at columns 47
+to 49. Both are checks on the sheet for the same reason as before:
+which row and column a housing's pins are in cannot be read from
+above. The overlay draws one panel per board, the middle board above
+the right one as they lie. Rev J: 47 pins done, 7 to check, all seven
+on the middle board's two parts.

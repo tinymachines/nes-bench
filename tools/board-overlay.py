@@ -94,6 +94,19 @@ def pin_hole(board, chip, pin):
     return col, side, (board.x(side, i, y), y)
 
 
+def part_hole(board, part, pin):
+    """A single-row part's pin: the column counted from the pin-1 end
+    along one side, and the outermost hole of that column's strip."""
+    lo, hi = part["columns"]
+    col = hi - (pin - 1) if part.get("pin1", "hi") == "hi" else lo + (pin - 1)
+    side = part["side"]
+    y = board.y(col)
+    # `row`: which hole of the strip the part sits in, 0 next to the other
+    # board to 4 next to the rails; a part not saying sits in the outermost
+    i = part.get("row", 0 if side == "middle" else 4)
+    return col, side, (board.x(side, i, y), y)
+
+
 def dips(profile, minsep=10, depth=10):
     """Local minima of a luma profile: the holes along a line."""
     from scipy.ndimage import minimum_filter1d, uniform_filter1d
@@ -273,6 +286,81 @@ def even_rows(v, lo, hi, n, pitches=np.arange(22.5, 25.5, 0.05)):
     return [int(round(y0 + p * i)) for i in range(n)], p, c
 
 
+def read_board(m, name, xs, ys, L):
+    """One board's rows, rail pair and columns off the hole cloud, inside
+    the camera-y band the map names for it (`band`). The rail pair is
+    looked for beyond both five-row groups and the one with more holes
+    wins; the group next to it is the rails side (rows a to e)."""
+    b = m["boards"][name]
+    lo_y, hi_y = b.get("band", [0, 1080])
+    sel = (xs > 40) & (xs < 1600) & (ys > lo_y) & (ys < hi_y)
+    Y = ys[sel]
+    g1, p1, c1 = even_rows(Y, lo_y + 5, hi_y - 100, 5)
+    cands = []
+    if g1[-1] + 95 < hi_y:
+        cands.append(even_rows(Y, g1[-1] + 45, g1[-1] + 95, 5))
+    top = g1[0] - 45 - 4 * p1
+    if top - 50 > lo_y:
+        cands.append(even_rows(Y, max(lo_y + 2, top - 50), top, 5))
+    g2, p2, c2 = max(cands, key=lambda g: g[2])
+    (ga, pa, ca), (gb, pb, cb) = sorted([(g1, p1, c1), (g2, p2, c2)], key=lambda g: g[0][0])
+    rails = []
+    if ga[0] - 30 > lo_y + 2:
+        rails.append((even_rows(Y, max(lo_y + 2, ga[0] - 160), ga[0] - 30, 2), "above"))
+    if gb[-1] + 30 < hi_y - 2:
+        rails.append((even_rows(Y, gb[-1] + 30, min(hi_y - 2, gb[-1] + 160), 2), "below"))
+    (rl, pr, cr), where = max(rails, key=lambda r: r[0][2])
+    if where == "above":
+        ae, fj, outer, inner = ga, gb, rl[0], rl[1]
+    else:
+        ae, fj, outer, inner = gb, ga, rl[1], rl[0]
+    print(f"  {name}: rows a-e {ae} ({ca if ae is ga else cb} holes), f-j {fj} ({cb if ae is ga else ca} holes), rails {where} at {rl} ({cr} holes)")
+    band = (ys > min(ae[0], fj[0]) - 15) & (ys < max(ae[-1], fj[-1]) + 15) & sel
+    h = np.convolve(np.bincount(xs[band], minlength=2000).astype(float), np.ones(5), "same")
+    px = np.array([i for i in range(40, 1600) if h[i] >= 4 and h[i] == h[i - 14:i + 15].max()], float)
+    x, col, pitch, pos = px.max(), 1, 24.4, {}
+    pos[1] = x
+    missed = 0
+    while col < 70 and x > 50 and missed < 5:
+        exp = x - pitch
+        near = px[abs(px - exp) < 5]
+        if len(near):
+            nx = near[np.argmin(abs(near - exp))]
+            pitch = 0.7 * pitch + 0.3 * (x - nx)
+            missed = 0
+        else:
+            nx = exp
+            missed += 1
+        col += 1
+        x = nx
+        pos[col] = x
+    # the walk ends at the last column a hole was seen in, not the run of
+    # interpolated ones past the board's edge or under a cable
+    while missed:
+        del pos[max(pos)]
+        missed -= 1
+    last = max(pos)
+    anchors = [[c, int(round(pos[c]))] for c in sorted({1, 5, *range(10, last + 1, 5), last}, reverse=True) if c in pos]
+    print(f"  {name}: columns 1 at x {pos[1]:.0f} to {last} at {pos[last]:.0f}; pitch {pos[1] - pos[2]:.1f} px at column 1")
+    b["column_y"]["anchors"] = anchors
+    # Row order is by distance from the rail pair, farthest first, so
+    # index 4 of the rails side is the hole next to the rails and index 0
+    # of the middle side is the hole next to the other board on either
+    # board, whichever way up it lies.
+    rail_x = 1080 - inner
+    mid = sorted((1080 - y for y in fj), key=lambda x: -abs(x - rail_x))
+    rails_x = sorted((1080 - y for y in ae), key=lambda x: -abs(x - rail_x))
+    yt, yb = anchors[0][1], anchors[-1][1]
+    b["rows"] = {"middle": {"y_top": yt, "x_top": mid, "y_bottom": yb, "x_bottom": mid},
+                 "rails": {"y_top": yt, "x_top": rails_x, "y_bottom": yb, "x_bottom": rails_x}}
+    # the inner rail row (next to the board's blue line) is GND, the outer +5V
+    b["rail_x"] = {"GND": {"y_top": yt, "x_top": 1080 - inner, "y_bottom": yb, "x_bottom": 1080 - inner},
+                   "+5V": {"y_top": yt, "x_top": 1080 - outer, "y_bottom": yb, "x_bottom": 1080 - outer}}
+    xs_all = mid + rails_x + [1080 - inner, 1080 - outer]
+    b["crop"] = [min(xs_all) - 30, yt - 30, max(xs_all) + 30, yb + 40]
+    return f"{name}: rows a-e {ae}, f-j {fj}, rails {where} at {rl}, columns 1 to {last} ({pos[1] - pos[2]:.1f} px a column at 1)"
+
+
 def read_map(m, frame: Path, out: Path, views: Path):
     """The map read off a frame of the rig (the camera straight down and
     turned, `frame_rotate` set): every hole found, the ten hole rows and
@@ -286,56 +374,11 @@ def read_map(m, frame: Path, out: Path, views: Path):
     xs, ys = find_holes(L)
     b = m["boards"]["right"]
     old = Board(b)
-    # No prior: the two five-row groups are the best two even fits over
-    # the whole frame (the second found with the first masked out), the
-    # rails side (a to e) is the one nearer the frame's top, where the
-    # rig puts the rails, and the rail pair sits just above it.
-    sel = (xs > 60) & (xs < 1600)
-    Y = ys[sel]
-    g1, p1, c1 = even_rows(Y, 30, 1080 - 100, 5)
-    # The board's other five rows sit across the chip gap, 0.3 inch from
-    # the first: looked for there and only there, or the next board's
-    # rows (as many holes, further away) win the second fit.
-    cands = [even_rows(Y, g1[-1] + 45, g1[-1] + 95, 5)]
-    hi = g1[0] - 45 - 4 * p1
-    if hi > 10:
-        cands.append(even_rows(Y, max(2, hi - 50), hi, 5))
-    g2, p2, c2 = max(cands, key=lambda g: g[2])
-    (ae, pa, ca), (fj, pf, cf) = sorted([(g1, p1, c1), (g2, p2, c2)], key=lambda g: g[0][0])
-    rl, pr, cr = even_rows(Y, max(2, ae[0] - 160), ae[0] - 30, 2)
-    print(f"  rows a-e {ae} (pitch {pa:.1f}, {ca} holes), f-j {fj} (pitch {pf:.1f}, {cf} holes), rails {rl} ({cr} holes)")
-    band = (ys > ae[0] - 15) & (ys < fj[-1] + 15) & sel
-    h = np.convolve(np.bincount(xs[band], minlength=2000).astype(float), np.ones(5), "same")
-    px = np.array([i for i in range(60, 1600) if h[i] >= 4 and h[i] == h[i - 14:i + 15].max()], float)
-    x, col, pitch, pos = px.max(), 1, 24.4, {}
-    pos[1] = x
-    while col < 52 and x > 70:
-        exp = x - pitch
-        near = px[abs(px - exp) < 5]
-        if len(near):
-            nx = near[np.argmin(abs(near - exp))]
-            pitch = 0.7 * pitch + 0.3 * (x - nx)
-        else:
-            nx = exp
-        col += 1
-        x = nx
-        pos[col] = x
-    anchors = [[c, int(round(pos[c]))] for c in (50, 45, 40, 35, 30, 25, 20, 15, 10, 5, 1) if c in pos]
-    print(f"  columns: 1 at x {pos[1]:.0f}, 50 at {pos.get(50, float('nan')):.0f}; pitch {pos[1] - pos[2]:.1f} px at column 1, {pos[45] - pos[46]:.1f} at 45")
-    b["column_y"]["anchors"] = anchors
-    mid = [1080 - y for y in fj[::-1]]
-    rails = [1080 - y for y in ae[::-1]]
-    yt, yb = anchors[0][1], anchors[-1][1]
-    b["rows"] = {"middle": {"y_top": yt, "x_top": mid, "y_bottom": yb, "x_bottom": mid},
-                 "rails": {"y_top": yt, "x_top": rails, "y_bottom": yb, "x_bottom": rails}}
-    # the rail row nearest the board's red line is +5V: the higher camera y of the two is nearer the board
-    b["rail_x"] = {"GND": {"y_top": yt, "x_top": 1080 - rl[1], "y_bottom": yb, "x_bottom": 1080 - rl[1]},
-                   "+5V": {"y_top": yt, "x_top": 1080 - rl[0], "y_bottom": yb, "x_bottom": 1080 - rl[0]}}
-    b["crop"] = [mid[0] - 30, yt - 30, 1080 - rl[0] + 30, yb + 40]
+    reads = [read_board(m, name, xs, ys, L) for name in m["boards"]]
     new = Board(b)
     stamp = __import__("time").strftime("%Y-%m-%d %H:%M %Z")
     m["frame"] = f"{frame} (read {stamp} by board-overlay.py --read)"
-    m["_about"].append(f"READ {stamp} off {frame.name} by --read: {len(xs)} hole centres by template correlation; rows a-e at camera y {ae}, f-j at {fj}, the rails at {rl}; the columns walked from the board's last hole with an adaptive pitch ({pos[1] - pos[2]:.1f} px at column 1, {pos[45] - pos[46]:.1f} at 45), anchors every fifth column.")
+    m["_about"].append(f"READ {stamp} off {frame.name} by --read: {len(xs)} hole centres by template correlation; per board, in the camera-y band it names, the two five-row groups and the rail pair as even progressions and the columns walked from the board's last hole with an adaptive pitch, anchors every fifth column. " + "; ".join(reads) + ".")
     out.write_text(json.dumps(m, indent=1) + "\n")
     print(f"wrote {out}")
     # carry the views' aims through the similarity old -> new (camera frame coordinates)
@@ -396,30 +439,27 @@ def main():
     colour = {net: PALETTE[i % len(PALETTE)] for i, net in enumerate(nets)}
     colour.update(RAIL_COLOUR)
 
-    board_name = "right"
-    board = Board(m["boards"][board_name])
     img = Image.open(a.frame).convert("RGB")
     if m.get("frame_rotate"):
         # The rig's camera is turned so the columns run along the frame's
         # long side; the map is read in the frame turned back, so the
         # conventions below (columns along y) hold for both mounts.
         img = img.rotate(m["frame_rotate"], expand=True)
-    x0, y0, x1, y1 = board.crop
-    crop = img.crop((x0, y0, x1, y1))
-    # Columns left to right like the sheets: the frame's y runs down as the
-    # column number falls, so a rotation of 90 degrees clockwise (PIL's
-    # negative angle) puts column 1 at the left and the high columns (pin
-    # 1 ends) at the right, the middle-board side on top. The first build
-    # rotated the other way and mapped the rings for this one: every ring
-    # sat on a mirrored column, which the photograph made obvious at once.
     S = a.scale
-    W, H = int((y1 - y0) * S), int((x1 - x0) * S)
+    try:
+        font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSansMono-Bold.ttf", 19)
+        small = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 15)
+        title = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 26)
+    except OSError:
+        font = small = title = ImageFont.load_default()
+    W = int(1080 * a.scale)
     # The callouts: every pin the sheet marks as a check gets a number,
     # one number per distinct note (a note that names two pins is one
     # callout on both), and the notes are set below the photograph in
     # that order, so the picture reads like the right-angle sheet.
     notes, callout = [], {}
     on_map = {f"{ref}.{p}" for ref, chip in m["chips"].items() for p in range(1, chip["pins"] + 1)}
+    on_map |= {f"{ref}.{p}" for ref, part in m.get("parts", {}).items() for p in range(1, part["pins"] + 1)}
     checks = [(k, v) for k, v in status["pins"].items() if v.get("state") == "check"]
     # the pins the picture rings first, so the badges count up from 1 on
     # the board; a check on a pin the map does not place (the UNO, the
@@ -455,111 +495,126 @@ def main():
         pins_of = ", ".join(k.replace(".", "-") for k, n in callout.items() if n == i)
         note_lines.append((i, wrap(f"{pins_of}: {text}", W - 90)))
     panel = 40 + sum(27 * len(ls) + 14 for _, ls in note_lines) if note_lines else 0
-    canvas = Image.new("RGB", (W, H + 300 + panel), (250, 248, 240))
-    rot = crop.rotate(-90, expand=True).resize((W, H), Image.LANCZOS)
-    top_pad = 150
-    canvas.paste(rot, (0, top_pad))
-    d = ImageDraw.Draw(canvas)
-    try:
-        font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSansMono-Bold.ttf", 19)
-        small = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 15)
-        title = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 26)
-    except OSError:
-        font = small = title = ImageFont.load_default()
-
-    def to_canvas(px, py):
-        # rotate 90 clockwise about the crop: (x, y) -> (H_crop - y, x) in crop terms
-        cx, cy = px - x0, py - y0
-        return ((y1 - y0 - cy) * S, cx * S + top_pad)
+    boards = {n: Board(b) for n, b in m["boards"].items() if b.get("rows")}
+    placed = 0
+    areas = {}
+    panels = []
 
     def state_of(ref, pin):
         v = status["pins"].get(f"{ref}.{pin}")
         return v["state"] if v else None
 
-    placed = 0
-    areas = {}
-    labels = []  # (x, y, text, colour, above)
-    for ref, chip in m["chips"].items():
-        if chip["board"] != board_name:
-            continue
-        pins = {n["pin"]: n for n in nodes if n["ref"] == ref and n["pin"] is not None}
-        # the chip body: a faint outline over its columns
-        lo, hi = chip["columns"]
-        (bx0, by0) = to_canvas(board.x("middle", 4, board.y(hi)) + 8, board.y(hi) - 9)
-        (bx1, by1) = to_canvas(board.x("rails", 0, board.y(lo)) - 8, board.y(lo) + 9)
-        d.rectangle([min(bx0, bx1), min(by0, by1), max(bx0, bx1), max(by0, by1)], outline=(40, 40, 40), width=2)
-        d.text(((bx0 + bx1) / 2 - 12, (by0 + by1) / 2 - 9), ref, fill=(255, 255, 255), font=font)
-        for pin, n in sorted(pins.items()):
-            net = n["net"]
-            if net in nl.NC:
+    # One canvas per board, its label bands its own, stacked below the
+    # title in the order the boards lie in the frame (the map's x).
+    order = sorted(boards, key=lambda n: boards[n].crop[0])
+    for board_name in order:
+        board = boards[board_name]
+        x0, y0, x1, y1 = board.crop
+        x0, y0 = max(0, x0), max(0, y0)
+        crop = img.crop((x0, y0, x1, y1))
+        W, H = int((y1 - y0) * S), int((x1 - x0) * S)
+        top_pad = 110
+        canvas = Image.new("RGB", (W, H + top_pad + 110), (250, 248, 240))
+        rot = crop.rotate(-90, expand=True).resize((W, H), Image.LANCZOS)
+        canvas.paste(rot, (0, top_pad))
+        d = ImageDraw.Draw(canvas)
+
+        def to_canvas(px, py):
+            cx, cy = px - x0, py - y0
+            return ((y1 - y0 - cy) * S, cx * S + top_pad)
+
+        labels = []
+        items = [(ref, c, pin_hole) for ref, c in m["chips"].items() if c["board"] == board_name]
+        items += [(ref, c, part_hole) for ref, c in m.get("parts", {}).items() if c["board"] == board_name]
+        for ref, c, hole in items:
+            pins = {n["pin"]: n for n in nodes if n["ref"] == ref and n["pin"] is not None}
+            lo, hi = c["columns"]
+            if hole is pin_hole:
+                (bx0, by0) = to_canvas(board.x("middle", 4, board.y(hi)) + 8, board.y(hi) - 9)
+                (bx1, by1) = to_canvas(board.x("rails", 0, board.y(lo)) - 8, board.y(lo) + 9)
+            else:
+                side = c["side"]
+                i0, i1 = (0, 1) if side == "middle" else (3, 4)
+                (bx0, by0) = to_canvas(board.x(side, i0, board.y(hi)) - 8, board.y(hi) - 9)
+                (bx1, by1) = to_canvas(board.x(side, i1, board.y(lo)) + 8, board.y(lo) + 9)
+            d.rectangle([min(bx0, bx1), min(by0, by1), max(bx0, bx1), max(by0, by1)], outline=(40, 40, 40), width=2)
+            d.text(((bx0 + bx1) / 2 - 12, (by0 + by1) / 2 - 9), ref, fill=(255, 255, 255), font=font)
+            for pin, n in sorted(pins.items()):
+                net = n["net"]
+                if net in nl.NC or pin > c["pins"]:
+                    continue
+                col, side, (px, py) = hole(board, c, pin)
+                cx, cy = to_canvas(px, py)
+                st = state_of(ref, pin)
+                col_ = GREY if st == "done" else PINK if st == "check" else colour.get(net, (60, 60, 60))
+                r = 13 if st == "check" else 10
+                d.ellipse([cx - r, cy - r, cx + r, cy + r], outline=col_, width=5 if st == "check" else 3)
+                if net in nl.RAILS:
+                    rx, ry = to_canvas(board.rail_x(net, py), py)
+                    d.line([cx, cy, rx, ry], fill=col_, width=3)
+                    d.ellipse([rx - 6, ry - 6, rx + 6, ry + 6], fill=col_)
+                labels.append((cx, cy, f"{pin} {net}", col_, side == "middle"))
+                k = callout.get(f"{ref}.{pin}")
+                if k:
+                    areas.setdefault(k, []).append((cx, cy, side, board_name))
+                placed += 1
+        for key, v in status["pins"].items():
+            k, at = callout.get(key), v.get("at")
+            if k and at and key not in on_map and at.get("board", "right") == board_name:
+                y = board.y(at["col"])
+                if at["side"] == "rail":
+                    pts = [(*to_canvas(board.rail_x(r, y), y), "rails", board_name) for r in ("GND", "+5V")]
+                else:
+                    pts = [(*to_canvas(board.x(at["side"], 0 if at["side"] == "middle" else 4, y), y), at["side"], board_name)]
+                areas.setdefault(k, []).extend(pts)
+                hollow.discard(k)
+        for k, pts in areas.items():
+            pts = [p for p in pts if p[3] == board_name]
+            if not pts:
                 continue
-            col, side, (px, py) = pin_hole(board, chip, pin)
-            cx, cy = to_canvas(px, py)
-            st = state_of(ref, pin)
-            c = GREY if st == "done" else PINK if st == "check" else colour.get(net, (60, 60, 60))
-            r = 13 if st == "check" else 10
-            d.ellipse([cx - r, cy - r, cx + r, cy + r], outline=c, width=5 if st == "check" else 3)
-            # the wire's other end: a rail pin points to its rail
-            if net in nl.RAILS:
-                rx, ry = to_canvas(board.rail_x(net, py), py)
-                d.line([cx, cy, rx, ry], fill=c, width=3)
-                d.ellipse([rx - 6, ry - 6, rx + 6, ry + 6], fill=c)
-            labels.append((cx, cy, f"{pin} {net}", c, side == "middle"))
-            n = callout.get(f"{ref}.{pin}")
-            if n:
-                areas.setdefault(n, []).append((cx, cy, side))
-            placed += 1
-    # A check the map does not place may say where on the board its note
-    # points ("at": column and side); that spot is circled like a pin's.
-    for key, v in status["pins"].items():
-        n, at = callout.get(key), v.get("at")
-        if n and at and key not in on_map:
-            y = board.y(at["col"])
-            if at["side"] == "rail":
-                pts = [to_canvas(board.rail_x(r, y), y) for r in ("GND", "+5V")]
-                pts = [(x, yy, "rails") for x, yy in pts]
-            else:
-                x = board.x(at["side"], 0 if at["side"] == "middle" else 4, y)
-                pts = [(*to_canvas(x, y), at["side"])]
-            areas.setdefault(n, []).extend(pts)
-            hollow.discard(n)
-    # The area of interest: one heavy red circle round every pin a callout
-    # names (a note that names three neighbours gets one circle round the
-    # three), the badge on its rim toward the board's edge on that side.
-    for n, pts in areas.items():
-        mx, my = sum(p[0] for p in pts) / len(pts), sum(p[1] for p in pts) / len(pts)
-        rr = max(((p[0] - mx) ** 2 + (p[1] - my) ** 2) ** 0.5 for p in pts) + 42
-        d.ellipse([mx - rr, my - rr, mx + rr, my + rr], outline=PINK, width=6)
-        up = pts[0][2] == "middle"
-        bx, by = mx + rr * 0.7, my - rr * 0.7 if up else my + rr * 0.7
-        d.ellipse([bx - 20, by - 20, bx + 20, by + 20], fill=PINK)
-        w = d.textlength(str(n), font=badge_font)
-        d.text((bx - w / 2, by - 13), str(n), fill=(255, 255, 255), font=badge_font)
-    # rails
-    for name in ("GND", "+5V"):
-        ya, yb = board.y(1), board.y(35)
-        xa, xb = to_canvas(board.rail_x(name, ya), ya), to_canvas(board.rail_x(name, yb), yb)
-        d.line([xa, xb], fill=RAIL_COLOUR[name], width=2)
-        d.text((xb[0] + 6, xb[1] - 8), name, fill=RAIL_COLOUR[name], font=font)
-    # labels: above the board for the middle side, below for the rails
-    # side, staggered in two rows so neighbours do not collide
-    for above in (True, False):
-        side = sorted([t for t in labels if t[4] == above], key=lambda t: t[0])
-        for k, (cx, cy, text, c, _) in enumerate(side):
-            w = d.textlength(text, font=font)
-            row = k % 3
-            if above:
-                ty = top_pad - 30 - row * 24
-                d.line([cx, cy - 10, cx, ty + 22], fill=c, width=2)
-            else:
-                ty = top_pad + H + 12 + row * 24
-                d.line([cx, cy + 10, cx, ty - 2], fill=c, width=2)
-            d.text((cx - w / 2, ty), text, fill=c, font=font)
-    d.text((12, 10), f"Bridge v1b on the board: the eye's frame with every chip pin's landing ringed and named. {status['read']}.", fill=(30, 30, 30), font=title)
+            mx, my = sum(p[0] for p in pts) / len(pts), sum(p[1] for p in pts) / len(pts)
+            rr = max(((p[0] - mx) ** 2 + (p[1] - my) ** 2) ** 0.5 for p in pts) + 42
+            d.ellipse([mx - rr, my - rr, mx + rr, my + rr], outline=PINK, width=6)
+            up = pts[0][2] == "middle"
+            bx, by = mx + rr * 0.7, my - rr * 0.7 if up else my + rr * 0.7
+            d.ellipse([bx - 20, by - 20, bx + 20, by + 20], fill=PINK)
+            w = d.textlength(str(k), font=badge_font)
+            d.text((bx - w / 2, by - 13), str(k), fill=(255, 255, 255), font=badge_font)
+        for name in ("GND", "+5V"):
+            ya, yb = board.y(1), board.y(int(board.anchors[0, 0]))
+            xa, xb = to_canvas(board.rail_x(name, ya), ya), to_canvas(board.rail_x(name, yb), yb)
+            d.line([xa, xb], fill=RAIL_COLOUR[name], width=2)
+            d.text((xa[0] + 6, xa[1] - 8), name, fill=RAIL_COLOUR[name], font=font)
+        for above in (True, False):
+            side_l = sorted([t_ for t_ in labels if t_[4] == above], key=lambda t_: t_[0])
+            for kk, (cx, cy, text, c_, _) in enumerate(side_l):
+                w = d.textlength(text, font=font)
+                row = kk % 3
+                if above:
+                    ty = top_pad - 30 - row * 24
+                    d.line([cx, cy - 10, cx, ty + 22], fill=c_, width=2)
+                else:
+                    ty = top_pad + H + 12 + row * 24
+                    d.line([cx, cy + 10, cx, ty - 2], fill=c_, width=2)
+                d.text((cx - w / 2, ty), text, fill=c_, font=font)
+        letters = {s: m["boards"][board_name]["rows"][s].get("letters", "") for s in ("middle", "rails")}
+        d.text((12, 6), f"the {board_name} board (rows {letters['middle']} toward the other board, {letters['rails']} toward its rails)", fill=(90, 90, 90), font=small)
+        panels.append(canvas)
+
+    W = max(c.width for c in panels)
+    H_all = sum(c.height for c in panels)
+    canvas = Image.new("RGB", (W, H_all + 80 + panel), (250, 248, 240))
+    d = ImageDraw.Draw(canvas)
+    y = 80
+    for c in panels:
+        canvas.paste(c, (0, y))
+        y += c.height
+    d.text((12, 10), f"Bridge v1b on the boards: the eye's frame with every chip and part pin's landing ringed and named. {status['read']}.", fill=(30, 30, 30), font=title)
     d.text((12, 44), "Grey: seen in its hole. Red: needs a check (the as-built sheet's note says what). Colour: not built yet. A ring is the outermost hole of the pin's strip; a rail pin points at its rail. "
-                     f"Frame {m['frame']}; the grid read off it under rulers, one camera pose.", fill=(70, 70, 70), font=small)
+                     f"Frame {m['frame']}.", fill=(70, 70, 70), font=small)
+    top_pad, H = 0, H_all
     if note_lines:
-        y = top_pad + H + 115
+        y = H_all + 80 + 30
         d.line([12, y - 12, W - 12, y - 12], fill=(200, 200, 200), width=2)
         d.text((12, y - 6), "The checks, as the as-built sheet notes them (a hollow badge is a pin the map does not place: the UNO's, the console lead's):", fill=(30, 30, 30), font=badge_font)
         y += 26
@@ -576,7 +631,7 @@ def main():
             y += 14
     Path(a.out).parent.mkdir(parents=True, exist_ok=True)
     canvas.save(a.out, optimize=True)
-    print(f"wrote {a.out}: {placed} pins over {len(m['chips'])} chips on the {board_name} board, {len(notes)} callouts, {W}x{H + 300 + panel}")
+    print(f"wrote {a.out}: {placed} pins over {len(m['chips'])} chips and {len(m.get('parts', {}))} parts on {len(panels)} boards, {len(notes)} callouts, {canvas.width}x{canvas.height}")
 
 
 if __name__ == "__main__":

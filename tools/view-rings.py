@@ -29,7 +29,7 @@ bo = load('tools/board-overlay.py')
 import os
 S = Path(os.environ.get('RINGS_OUT', '.'))
 m = json.load(open('docs/board-map.json'))
-board = bo.Board(m['boards']['right'])
+boards = {name: bo.Board(b) for name, b in m['boards'].items() if b.get('rows')}
 views = json.load(open('docs/eye-views.json'))['views']
 vdir = Path(sys.argv[1])
 names = sys.argv[2].split(',')
@@ -39,8 +39,12 @@ font = ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf'
 pins = {}
 for chip, c in m['chips'].items():
     for p in range(1, c['pins'] + 1):
-        col, side, (x, y) = bo.pin_hole(board, c, p)
-        pins[(chip, p)] = (col, side)
+        col, side, (x, y) = bo.pin_hole(boards[c['board']], c, p)
+        pins[(chip, p)] = (c['board'], col, side)
+for part, c in m.get('parts', {}).items():
+    for p in range(1, c['pins'] + 1):
+        col, side, (x, y) = bo.part_hole(boards[c['board']], c, p)
+        pins[(part, p)] = (c['board'], col, side)
 
 for name in names:
     v = views.get(name)
@@ -61,27 +65,28 @@ for name in names:
         if rot == -90:
             x, y = y, 1080 - x  # map (turned frame) back to the camera's frame
         return ((x - cx) * s + 960, (y - cy) * s + 540)
-    for col in range(1, 49):
-        y = board.y(col)
-        for side in ('middle', 'rails'):
-            for i in range(5):
-                x = board.x(side, i, y)
+    for bname, board in boards.items():
+        for col in range(1, int(board.anchors[0, 0]) + 1):
+            y = board.y(col)
+            for side in ('middle', 'rails'):
+                for i in range(5):
+                    x = board.x(side, i, y)
+                    u, w = P(x, y)
+                    if -20 < u < 1940 and -20 < w < 1100:
+                        d.ellipse([u - 9, w - 9, u + 9, w + 9], outline=(255, 0, 0) if col % 5 == 0 else (0, 200, 255), width=2)
+                # column number beside the outermost hole
+                x = board.x(side, 0 if side == 'middle' else 4, y)
                 u, w = P(x, y)
                 if -20 < u < 1940 and -20 < w < 1100:
-                    d.ellipse([u - 9, w - 9, u + 9, w + 9], outline=(255, 0, 0) if col % 5 == 0 else (0, 200, 255), width=2)
-            # column number beside the outermost hole
-            x = board.x(side, 0 if side == 'middle' else 4, y)
-            u, w = P(x, y)
-            if -20 < u < 1940 and -20 < w < 1100:
-                d.text((u - 60 if side == 'middle' else u + 14, w - 12), str(col), fill=(255, 0, 0), font=font)
-        for rail in ('GND', '+5V'):
-            u, w = P(board.rail_x(rail, y), y)
-            if -20 < u < 1940 and -20 < w < 1100:
-                d.ellipse([u - 9, w - 9, u + 9, w + 9], outline=(0, 0, 255) if rail == 'GND' else (255, 0, 0), width=2)
-                if rail == '+5V':
-                    d.text((u - 10, w - 34), str(col), fill=(255, 0, 0), font=font)
-    for (chip, p), (col, side) in pins.items():
-        c = m['chips'][chip]
+                    d.text((u - 60 if side == 'middle' else u + 14, w - 12), str(col), fill=(255, 0, 0), font=font)
+            for rail in ('GND', '+5V'):
+                u, w = P(board.rail_x(rail, y), y)
+                if -20 < u < 1940 and -20 < w < 1100:
+                    d.ellipse([u - 9, w - 9, u + 9, w + 9], outline=(0, 0, 255) if rail == 'GND' else (255, 0, 0), width=2)
+                    if rail == '+5V':
+                        d.text((u - 10, w - 34), str(col), fill=(255, 0, 0), font=font)
+    for (chip, p), (bname, col, side) in pins.items():
+        board = boards[bname]
         y = board.y(col)
         x = board.x(side, 0 if side == 'middle' else 4, y)
         u, w = P(x, y)
