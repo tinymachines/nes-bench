@@ -235,11 +235,11 @@
       "note": "SEEN 2026-09-15 22:30 on the middle board's rails side (rows f to j), with two probe bodies laid on the board as pointers: a blue-banded axial resistor lying from column 27 row f to column 25 row i, a yellow disc capacitor at column 23 with a lead into the GND rail row, a bare link and a brown link between the two sides of the board near columns 24 to 26, and the UNO's blue D2 lead re-routed here from the right board. How these join U2 pin 2 and its ground cannot be traced from above; the walk of single bits is the check, and it needs the CH4 probe back on U2 pin 9 (right board, column 18, rails side): while it lies on the board as a pointer, D0 reads 0 V."
     },
     "C2.1": {
-      "state": "check",
+      "state": "plan",
       "note": "SEEN 2026-09-15 22:30 on the middle board's rails side (rows f to j), with two probe bodies laid on the board as pointers: a blue-banded axial resistor lying from column 27 row f to column 25 row i, a yellow disc capacitor at column 23 with a lead into the GND rail row, a bare link and a brown link between the two sides of the board near columns 24 to 26, and the UNO's blue D2 lead re-routed here from the right board. How these join U2 pin 2 and its ground cannot be traced from above; the walk of single bits is the check, and it needs the CH4 probe back on U2 pin 9 (right board, column 18, rails side): while it lies on the board as a pointer, D0 reads 0 V."
     },
     "C2.2": {
-      "state": "check",
+      "state": "plan",
       "note": "SEEN 2026-09-15 22:30 on the middle board's rails side (rows f to j), with two probe bodies laid on the board as pointers: a blue-banded axial resistor lying from column 27 row f to column 25 row i, a yellow disc capacitor at column 23 with a lead into the GND rail row, a bare link and a brown link between the two sides of the board near columns 24 to 26, and the UNO's blue D2 lead re-routed here from the right board. How these join U2 pin 2 and its ground cannot be traced from above; the walk of single bits is the check, and it needs the CH4 probe back on U2 pin 9 (right board, column 18, rails side): while it lies on the board as a pointer, D0 reads 0 V."
     }
   },
