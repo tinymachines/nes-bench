@@ -399,3 +399,29 @@ carry every bit when the byte has A pressed or several bits pressed,
 and lose a lone middle bit to the Right position. The eye cannot see
 this; a probe on CH1 can: U3 pin 1 (QB) with SET 02, then U2 pin 5 (G)
 with the same, splits the 595 from the 165 in two captures.
+
+## The trigger on CH1, and the same walk after the rewire
+
+Step 6.1 holds: with the trigger lead moved to CH1, TRIG 20 stopped
+the scope. The walk of single bits through the register reads as
+before after the blue was replaced: A and Right alone right, every
+byte with A pressed right, and a lone bit from B to Left shown for a
+sliver at its own position and then LOW from the Right position on.
+The bridge's own per-poll clock counts scatter (a third of the polls
+at eight, the rest from 0 to 16 in pairs that sum to 16) while its
+running totals are exactly eight a latch: the loop reads the latch
+counter and the clock counter at different moments, so clocks of the
+next poll are booked to the last one; that is the firmware's
+bookkeeping, not the console, and the fix is to capture the clock
+count in the latch's own interrupt.
+
+The reading that fits every byte: the falling edge of D0 (a pressed
+bit arriving at the 165's output) puts an extra rising edge on the
+165's clock (CP, U2 pin 2), which shifts the register one place too
+far. A lone bit then shows only until the extra shift (the sliver), and
+the ground on DS arrives one clock early (the LOW from the Right
+position). With A pressed the falling edge happens at the load, when
+CP is inhibited, so those bytes read right; a byte of consecutive
+pressed bits has no falling edge inside the poll. One capture decides
+it: CH1 on U2 pin 2 with 02 held, looking for a glitch at the moment
+D0 falls, about 7 us after the latch.

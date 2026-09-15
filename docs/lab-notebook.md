@@ -17,7 +17,7 @@ Those are in the log, marked, and are not counted below.
 
 ## Where the build stands
 
-6 of 8 attempted steps hold, over 13 attempts.
+7 of 8 attempted steps hold, over 14 attempts.
 
 | step | what it proves | attempts | state |
 |---|---|---|---|
@@ -28,7 +28,7 @@ Those are in the log, marked, and are not counted below.
 | 1.2 | The port's idle levels with the console on | 1 | held |
 | 2.1 | The scope on an original pad's port, a game running | 3 | held |
 | 5.1 | The two halves joined, eight clocks per latch on a game | 1 | did not hold |
-| 6.1 | The trigger reaches the scope | 1 | did not hold |
+| 6.1 | The trigger reaches the scope | 2 | held |
 
 ## Instruments
 
@@ -164,7 +164,11 @@ Photograph pending: `docs/lab/05-console-running.jpg`.
 
 ### 6.1  The trigger reaches the scope
 
-**2026-09-15 15:52:46**: did not hold. the scope did not trigger: check the resistor, the BNC, and EXT TRIG's level (1.5 V, rising)
+**Attempt 1, 2026-09-15 15:52:46**: did not hold. the scope did not trigger: check the resistor, the BNC, and EXT TRIG's level (1.5 V, rising)
+
+Photograph pending: `docs/lab/06-trigger-cable.jpg`.
+
+**Attempt 2, 2026-09-15 17:38:35**: held. TRIG 20 stopped the scope on CH1
 
 Photograph pending: `docs/lab/06-trigger-cable.jpg`.
 

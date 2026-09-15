@@ -23,7 +23,7 @@ observations are written down, is in
 | 2 | The console, measured | done |
 | 3 | The bridge, built | not started |
 | 4 | Joined | stopped at 5.1 |
-| 5 | The head's hands | stopped at 6.1 |
+| 5 | The head's hands | 1 of 3 steps |
 
 ## Before the first sitting
 
@@ -266,7 +266,7 @@ The trigger, the reset optocoupler and the power relay.
 python3 tools/bringup.py --session 5
 ```
 
-### 6.1  The trigger reaches the scope  (did not hold)
+### 6.1  The trigger reaches the scope  (held)
 
 - UNO D3 through a 100 ohm resistor to the scope's CH1 (a probe, or a BNC lead): the DS1054Z has no external trigger input, MEASURED 2026-09-15, the source EXT is refused.
 - CH1 is the master clock's channel later; until the mainboard is probed it is free, and afterwards TRIG and the clock take it by turns.
@@ -277,7 +277,7 @@ Photographs:
 
 - `docs/lab/06-trigger-cable.jpg`  (wanted)
 
-> Last run 2026-09-15 15:52:46: did not hold. the scope did not trigger: check the resistor, the BNC, and EXT TRIG's level (1.5 V, rising)
+> Last run 2026-09-15 17:38:35: held. TRIG 20 stopped the scope on CH1
 
 ### 6.2  The reset optocoupler pulses the console
 
