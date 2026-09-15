@@ -472,7 +472,11 @@ def build(status=None):
             d.text(24, y0 + (len(notes) + 1) * NOTE_H + 8, "Seen, not on this sheet's nets:", "note")
         for j, line in enumerate(extra):
             d.text(24, y0 + (len(notes) + j + 2) * NOTE_H + 8, f"- {line}", "note")
-        unringed = [n for n in notes if n not in {c[2] for c in checks}]
+        # a placement note for a part this sheet draws without pins (the
+        # decoupling bank) has no ring to sit on and is listed all the same
+        drawn_keys = {f"{ref}.{k}" for ref, k in drawn}
+        off_sheet = {v["note"] for key, v in status["pins"].items() if v["state"] == "plan" and key not in drawn_keys}
+        unringed = [n for n in notes if n not in {c[2] for c in checks} and n not in off_sheet]
         assert not unringed, f"a check note is on no drawn pin: {unringed}"
 
     d.add(f'<text class="note" x="{W - 24}" y="{H - 16}" text-anchor="end">'
