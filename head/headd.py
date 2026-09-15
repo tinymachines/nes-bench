@@ -244,6 +244,11 @@ class Scope:
             on += [f":CHANnel{ch}:DISPlay ON", f":CHANnel{ch}:PROBe 1", f":CHANnel{ch}:COUPling DC",
                    f":CHANnel{ch}:BWLimit OFF", f":CHANnel{ch}:SCALe {scale}", f":CHANnel{ch}:OFFSet {offset}"]
         src = "EXT" if source.upper() == "EXT" else f"CHANnel{int(source.upper().lstrip('CHANEL'))}"
+        if src == "EXT":
+            # MEASURED 2026-09-15: the DS1054Z has no external trigger input;
+            # the source command is refused and the old source stays, so an
+            # arm on EXT waits forever on whatever channel was set before.
+            raise ValueError("this scope has no EXT trigger input (DS1054Z): arm on a channel, the bridge's TRIG is on CH1")
         # A logic-level trigger on a channel sits at 2.5 V; EXT TRIG's is 1.5 V.
         level = 1.5 if src == "EXT" else 2.5
         for c in [":STOP", *off, *on,

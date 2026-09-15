@@ -268,8 +268,8 @@ python3 tools/bringup.py --session 5
 
 ### 6.1  The trigger reaches the scope  (did not hold)
 
-- UNO D3 through a 100 ohm resistor to the scope's rear EXT TRIG.
-- Check the EXT TRIG input's rating first; if 5 V is over it, a 2:1 divider after the resistor.
+- UNO D3 through a 100 ohm resistor to the scope's CH1 (a probe, or a BNC lead): the DS1054Z has no external trigger input, MEASURED 2026-09-15, the source EXT is refused.
+- CH1 is the master clock's channel later; until the mainboard is probed it is free, and afterwards TRIG and the clock take it by turns.
 
 Then it arms the scope on EXT TRIG and fires the bridge's trigger at a latch.
 

@@ -445,8 +445,8 @@ STEPS = [
       photos=["05-button-through.jpg"]),
 
     S("6.1", "The head's hands", "The trigger reaches the scope",
-      ["UNO D3 through a 100 ohm resistor to the scope's rear EXT TRIG.",
-       "Check the EXT TRIG input's rating first; if 5 V is over it, a 2:1 divider after the resistor."],
+      ["UNO D3 through a 100 ohm resistor to the scope's CH1 (a probe, or a BNC lead): the DS1054Z has no external trigger input, MEASURED 2026-09-15, the source EXT is refused.",
+       "CH1 is the master clock's channel later; until the mainboard is probed it is free, and afterwards TRIG and the clock take it by turns."],
       "trigger_reaches_scope",
       photos=["06-trigger-cable.jpg"]),
     S("6.2", "The head's hands", "The reset optocoupler pulses the console",
@@ -846,10 +846,10 @@ def check_trigger_reaches_scope(bench, step):
         return "skip", {"why": bench.scope_why}, f"no scope: {bench.scope_why}"
     try:
         sc.save_setup()
-        sc.arm(chs=[1], scale=1.0, offset=-2.0, source="EXT", tb=0.005, depth=12_000_000)
+        sc.arm(chs=[1], scale=1.0, offset=-2.0, source="CH1", tb=0.005, depth=12_000_000)
         bridge_cmd(ser, "RESET")
         bridge_cmd(ser, "TRIG 20")
-        say(f"  {DIM}armed on EXT TRIG, waiting for latch 20...{OFF}")
+        say(f"  {DIM}armed on CH1, waiting for latch 20...{OFF}")
         fired = False
         for _ in range(60):
             if sc.triggered():
@@ -862,8 +862,8 @@ def check_trigger_reaches_scope(bench, step):
         except Exception:  # noqa: BLE001
             pass
     if not fired:
-        return "fail", {}, "the scope did not trigger: check the resistor, the BNC, and EXT TRIG's level (1.5 V, rising)"
-    return "pass", {"trig_at_latch": 20}, "TRIG 20 stopped the scope on EXT TRIG"
+        return "fail", {}, "the scope did not trigger: check the resistor, the lead to CH1, and the level (2.5 V, rising)"
+    return "pass", {"trig_at_latch": 20}, "TRIG 20 stopped the scope on CH1"
 
 
 def check_reset_pulse(bench, step):

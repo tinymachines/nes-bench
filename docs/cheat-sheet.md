@@ -64,15 +64,15 @@ Nine Dupont wires from the UNO's digital header, colour per pin as read off the 
 
 ## The scope: channels and the trigger
 
-As wired 2026-09-15. Probe grounds on the bridge's GND rail, which is the console's ground. CH1 is held for the master clock (the alignment classifier's channel); the trigger takes the rear EXT TRIG input, not a channel, so all four stay signals. Step 6.1 of the bring-up arms the scope on EXT TRIG and fires TRIG at a latch.
+As wired 2026-09-15. Probe grounds on the bridge's GND rail, which is the console's ground. The DS1054Z has no external trigger input (MEASURED 2026-09-15), so the bridge's TRIG takes CH1, the channel held for the master clock until the mainboard is probed. Step 6.1 of the bring-up arms the scope on CH1 and fires TRIG at a latch.
 
 | input | signal | probe on | why |
 |---|---|---|---|
-| CH1 | reserved: the console's master clock | later, on the mainboard | the alignment classifier's channel; do not reuse |
+| CH1 | TRIG | UNO D3 through R1 (100 ohm) | rises at latch T for a millisecond; trigger here, 2.5 V rising (the master clock's channel later, by turns) |
 | CH2 | CON_OUT0 (latch) | U1 pin 1 | one pulse per poll, the poll's start |
 | CH3 | composite video | the console's video out, through the splitter | the picture the poll lands in |
 | CH4 | CON_D0 | U2 pin 9 | the byte the console reads back |
-| EXT TRIG (rear) | TRIG | UNO D3 through R1 (100 ohm) | rises at latch T for a millisecond; level 1.5 V, rising edge |
+| EXT TRIG | none | not on this scope | the DS1054Z has no external trigger input (MEASURED 2026-09-15: source EXT refused) |
 
 ## U1: 74HCT04  at +5V
 

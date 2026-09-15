@@ -209,6 +209,12 @@ ESP32-C6 GPIO7 through 100 ohms to the scope's rear EXT TRIG (BNC, 1 M
 ohm input, trigger level set to 1.5 V, rising edge). A rising edge at
 the scripted latch index; the pulse a millisecond long.
 
+MEASURED 2026-09-15: the DS1054Z on this bench has no external trigger
+input (the SCPI source EXT is refused), so on v1b the trigger goes to
+CH1 through the same resistor, triggered at 2.5 V rising. CH1 was held
+for the console's master clock; until the mainboard is probed it is
+free, and afterwards the two take it by turns.
+
 ## The head: Raspberry Pi 4
 
 - USB to the ESP32 (power and the serial line protocol).
