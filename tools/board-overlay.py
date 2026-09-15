@@ -504,7 +504,6 @@ def main():
         # long side; the map is read in the frame turned back, so the
         # conventions below (columns along y) hold for both mounts.
         img = img.rotate(m["frame_rotate"], expand=True)
-    S = a.scale
     try:
         font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSansMono-Bold.ttf", 19)
         small = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 15)
@@ -550,11 +549,12 @@ def main():
             lines.append(line)
         return lines
 
-    note_lines = []
-    for i, text in enumerate(notes, 1):
-        pins_of = ", ".join(k.replace(".", "-") for k, n in callout.items() if n == i)
-        note_lines.append((i, wrap(f"{pins_of}: {text}", W - 90)))
-    panel = 40 + sum(27 * len(ls) + 14 for _, ls in note_lines) if note_lines else 0
+    def note_panel(W):
+        note_lines = []
+        for i, text in enumerate(notes, 1):
+            pins_of = ", ".join(k.replace(".", "-") for k, n in callout.items() if n == i)
+            note_lines.append((i, wrap(f"{pins_of}: {text}", W - 90)))
+        return note_lines, (40 + sum(27 * len(ls) + 14 for _, ls in note_lines) if note_lines else 0)
     boards = {n: Board(b) for n, b in m["boards"].items() if b.get("rows")}
     placed = 0
     areas = {}
@@ -569,9 +569,35 @@ def main():
     order = sorted(boards, key=lambda n: boards[n].crop[0])
     for board_name in order:
         board = boards[board_name]
-        x0, y0, x1, y1 = board.crop
+        zf = m["boards"][board_name].get("zoomed_frame")
+        if zf:
+            # The board read off a zoomed frame is drawn on that frame: at
+            # the raised camera the zoom-100 frame puts 11 px on a hole, the
+            # zoom-250 frame 28. Every map coordinate is carried into the
+            # zoomed frame by the inverse of `unzoom`.
+            Z, pan, tilt = zf["zoom_pan_tilt"]
+            f_ = 1 - 100 / Z
+            zcx, zcy = 960 + pan / 36000 * 960 * f_, 540 - tilt / 36000 * 540 * f_
+            zs = Z / 100
+
+            def tf(mx, my, zcx=zcx, zcy=zcy, zs=zs):
+                camx, camy = my, 1080 - mx
+                camx, camy = 960 + (camx - zcx) * zs, 540 + (camy - zcy) * zs
+                return 1080 - camy, camx
+            bimg = Image.open(ROOT / zf["frame"]).convert("RGB")
+            if m.get("frame_rotate"):
+                bimg = bimg.rotate(m["frame_rotate"], expand=True)
+            (ax, ay), (bx_, by_) = tf(*board.crop[:2]), tf(*board.crop[2:])
+            x0, y0, x1, y1 = int(min(ax, bx_)), int(min(ay, by_)), int(max(ax, bx_)), int(max(ay, by_))
+            S = a.scale / zs
+        else:
+            tf = lambda mx, my: (mx, my)  # noqa: E731
+            bimg = img
+            x0, y0, x1, y1 = board.crop
+            S = a.scale
         x0, y0 = max(0, x0), max(0, y0)
-        crop = img.crop((x0, y0, x1, y1))
+        x1, y1 = min(bimg.width, x1), min(bimg.height, y1)
+        crop = bimg.crop((x0, y0, x1, y1))
         W, H = int((y1 - y0) * S), int((x1 - x0) * S)
         top_pad = 110
         canvas = Image.new("RGB", (W, H + top_pad + 110), (250, 248, 240))
@@ -580,6 +606,7 @@ def main():
         d = ImageDraw.Draw(canvas)
 
         def to_canvas(px, py):
+            px, py = tf(px, py)
             cx, cy = px - x0, py - y0
             return ((y1 - y0 - cy) * S, cx * S + top_pad)
 
@@ -666,6 +693,7 @@ def main():
 
     W = max(c.width for c in panels)
     H_all = sum(c.height for c in panels)
+    note_lines, panel = note_panel(W)  # wrapped to the width the boards came out at
     canvas = Image.new("RGB", (W, H_all + 80 + panel), (250, 248, 240))
     d = ImageDraw.Draw(canvas)
     y = 80

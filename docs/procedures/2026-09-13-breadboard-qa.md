@@ -511,3 +511,21 @@ ground lead from U2 pin 8 to the rail. The walk stays the check.
 R2 and C4 are on the schematic (sheet 1, band 3) and the cheat sheet
 from this revision, as built by the user; they are checks on the
 as-built sheet until the eye or a meter places them.
+
+## The rig locked, 2026-09-15 night
+
+The BRIO raised about six inches, levelled and taped; the two side
+cameras aimed and velcroed; a bench light over the board. At this
+height the zoom-100 frame puts 11.1 px on a hole, both ways (the
+first raised pose had 9.2 along the rows: a tilt, corrected), and the
+whole backing board is in frame; a zoom-500 close-up puts 53 px on a
+hole. The hole finder does not resolve 11 px holes, so the map is read
+per board off a zoom-250 frame (`--read --zoomed`: the map put into
+zoom-100 coordinates, which every view and overlay uses), each board
+in its own frame and band, columns 1 to 56 on both, and the as-built
+photograph is drawn on those frames. The named views were carried
+through the similarity between the old map and the new (scale 0.484,
+worst residual 8 px) and re-taken: the rings sit on the holes in
+every one. Focus 18. `docs/rig.md` has the dimensions and each
+camera's job and scale; the side eyes' baseline frames are in the lab
+folder.

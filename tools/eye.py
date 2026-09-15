@@ -64,8 +64,8 @@ CAPS = ROOT / "captures"
 DEVICE = "/dev/v4l/by-id/usb-046d_Logitech_BRIO_1C8D6975-video-index0"
 
 PRESETS = {
-    "board": dict(focus=25, exposure="auto", gain=0, zoom=100, pan=0, tilt=0, wb="auto"),
-    "chips": dict(focus=25, exposure="auto", gain=0, zoom=300, pan=0, tilt=0, wb="auto"),
+    "board": dict(focus=18, exposure="auto", gain=0, zoom=100, pan=0, tilt=0, wb="auto"),
+    "chips": dict(focus=18, exposure="auto", gain=0, zoom=300, pan=0, tilt=0, wb="auto"),
     "column": dict(focus=20, exposure="auto", gain=0, zoom=160, pan=3600, tilt=0, wb="auto"),
 }
 

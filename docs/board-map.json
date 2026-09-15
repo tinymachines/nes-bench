@@ -4,247 +4,282 @@
   "MEASURED 2026-09-13 off the 15:40 baseline board frame (eye.py grab b0-all, focus 20, zoom 100), by reading the printed column numbers and the hole rows under pixel rulers: a column's y is quadratic in its number (the camera looks along the board at an angle, so the pitch grows from about 17.6 px at column 35 to 21 px at column 1); a hole row's x drifts linearly with y between the top and bottom readings.",
   "A map is for one camera pose. The frame it was read from is named; a frame from another pose needs its own reading.",
   "chips: as built, read off the eye (docs/as-built-v1b.md, the QA note): pin 1 at the high-column end, pins 1 to n/2 down the side toward the middle board, n/2+1 to n up the side toward the rails.",
-  "RIG, SECOND POSE 2026-09-15 off b10-all.jpg: the boards shifted right under the fixed camera and the UNO's leads re-run direct. The map is read automatically now: every hole centre in the frame by normalised correlation with a hole template (1201 found), the hole rows as five evenly spaced rows fitted to the centres' y (a to e at [396, 419, 442, 465, 488], f to j at [545, 568, 591, 614, 637], pitch 23.0 px; the rails' hole rows at [300, 324]), the columns walked leftward from the board's last hole (column 1) through the x peaks of the a-to-e and f-to-j bands with an adaptive pitch, a missing peak (under a wire) interpolated; the pitch shrinks from about 24.5 px at column 1 to 23.5 at column 50 (the lens), so the anchors are the walked positions every fifth column and the map interpolates between them. frame_rotate keeps the map's convention: map x = 1080 - camera y, map y = camera x.",
-  "READ 2026-09-15 06:55 EDT off b10-all.jpg by --read: 1201 hole centres by template correlation; rows a-e at camera y [396, 419, 442, 465, 488], f-j at [545, 568, 591, 614, 637], the rails at [300, 324]; the columns walked from the board's last hole with an adaptive pitch (25.0 px at column 1, 23.0 at 45), anchors every fifth column.",
   "BOARDS: each board names the camera-y band it sits in (`band`); --read reads every board in its band. The middle board's rails are the pair below its rows (the boards face each other rail to rail across the frame), and its columns run to 63.",
-  "READ 2026-09-15 08:27 EDT off b11-all.jpg by --read: 1214 hole centres by template correlation; per board, in the camera-y band it names, the two five-row groups and the rail pair as even progressions and the columns walked from the board's last hole with an adaptive pitch, anchors every fifth column. right: rows a-e [396, 419, 442, 465, 488], f-j [546, 569, 592, 615, 638], rails above at [300, 324], columns 1 to 64 (26.0 px a column at 1); middle: rows a-e [889, 913, 937, 961, 985], f-j [724, 747, 770, 793, 816], rails below at [1046, 1069], columns 1 to 64 (24.4 px a column at 1).",
-  "READ 2026-09-15 08:27 EDT off b11-all.jpg by --read: 1214 hole centres by template correlation; per board, in the camera-y band it names, the two five-row groups and the rail pair as even progressions and the columns walked from the board's last hole with an adaptive pitch, anchors every fifth column. right: rows a-e [396, 419, 442, 465, 488], f-j [546, 569, 592, 615, 638], rails above at [300, 324], columns 1 to 48 (26.0 px a column at 1); middle: rows a-e [889, 913, 937, 961, 985], f-j [724, 747, 770, 793, 816], rails below at [1046, 1069], columns 1 to 52 (24.4 px a column at 1).",
   "A row side is named by what it faces (`middle`: the other board; `rails`: the board's own rail pair) and carries the printed letters of its rows (`letters`), because the two boards face each other rail to rail: on the right board the rails side is a to e, on the middle board it is f to j.",
   "parts: single-row parts as built, read off the eye 2026-09-15: `side`, `columns` [lo, hi], `pins`, and `pin1` (\"hi\" or \"lo\": which end pin 1 is at); a part's pin k sits in the column counted from that end. Where the eye could not settle which column carries which pin, the as-built sheet says so.",
-  "READ 2026-09-15 08:34 EDT off b11-all.jpg by --read: 1214 hole centres by template correlation; per board, in the camera-y band it names, the two five-row groups and the rail pair as even progressions and the columns walked from the board's last hole with an adaptive pitch, anchors every fifth column. right: rows a-e [396, 419, 442, 465, 488], f-j [546, 569, 592, 615, 638], rails above at [300, 324], columns 1 to 48 (26.0 px a column at 1); middle: rows a-e [889, 913, 937, 961, 985], f-j [724, 747, 770, 793, 816], rails below at [1046, 1069], columns 1 to 52 (24.4 px a column at 1).",
   "The five-way housing at the middle board's columns 9 to 13 is the POWER AND RESET BREAKOUT's, joined to nothing (the user, 2026-09-15), not J2; J2, the pad-side housing, is not located yet.",
-  "READ 2026-09-15 13:16 EDT off b12-all.jpg by --read: 1593 hole centres by template correlation; per board, in the camera-y band it names, the two five-row groups and the rail pair as even progressions and the columns walked from the board's last hole with an adaptive pitch, anchors every fifth column. right: rows a-e [126, 149, 172, 195, 218], f-j [282, 305, 328, 351, 374], rails above at [68, 91], columns 1 to 40 (26.0 px a column at 1); middle: rows a-e [622, 644, 667, 690, 712], f-j [466, 488, 511, 534, 556], rails below at [779, 802], columns 1 to 56 (24.4 px a column at 1).",
-  "A part may give `holes`, one [column, side, row] per pin, where its pins are not one row of one side (a capacitor across a chip's end). PLANNED parts (R2, C4, C2, 2026-09-15) are drawn where they should go; the as-built sheet's state says whether they are."
+  "A part may give `holes`, one [column, side, row] per pin, where its pins are not one row of one side (a capacitor across a chip's end). PLANNED parts (R2, C4, C2, 2026-09-15) are drawn where they should go; the as-built sheet's state says whether they are.",
+  "LOCKED RIG 2026-09-15 15:21 EDT: the BRIO raised and levelled on the frame, 11.1 px a hole at zoom 100 both ways (no foreshortening), focus 18. Each board's map read off a zoom-250 frame (right: captures/b15-z250.jpg at zoom,pan,tilt [250, 0, 7200], band [400, 900]; middle: captures/b15-z250m.jpg at zoom,pan,tilt [250, 0, -21600], band [250, 700]) and put into zoom-100 coordinates. right: rows a-e [555, 578, 600, 622, 645], f-j [726, 749, 772, 795, 818], rails above at [446, 470], columns 1 to 56 (29.0 px a column at 1); middle: rows a-e [487, 512, 537, 562, 587], f-j [295, 320, 346, 371, 396], rails below at [650, 675], columns 1 to 56 (26.0 px a column at 1)."
  ],
- "frame": "captures/b12-all.jpg (read 2026-09-15 13:16 EDT by board-overlay.py --read)",
+ "frame": "captures/b15-all.jpg (2026-09-15 night, the rig locked: BRIO levelled and velcroed, the bench light on; each board read off its own zoom-250 frame)",
  "boards": {
   "right": {
    "column_y": {
     "anchors": [
      [
+      56,
+      600
+     ],
+     [
+      55,
+      612
+     ],
+     [
+      50,
+      668
+     ],
+     [
+      45,
+      724
+     ],
+     [
       40,
-      510
+      780
      ],
      [
       35,
-      620
+      835
      ],
      [
       30,
-      732
+      890
      ],
      [
       25,
-      842
+      945
      ],
      [
       20,
-      955
+      998
      ],
      [
       15,
-      1064
+      1054
      ],
      [
       10,
-      1177
+      1111
      ],
      [
       5,
-      1296
+      1168
      ],
      [
       1,
-      1393
+      1214
      ]
     ]
    },
    "rows": {
     "middle": {
-     "y_top": 510,
+     "y_top": 600,
      "x_top": [
-      706,
-      729,
-      752,
-      775,
-      798
+      494,
+      503,
+      512,
+      521,
+      530
      ],
-     "y_bottom": 1393,
+     "y_bottom": 1214,
      "x_bottom": [
-      706,
-      729,
-      752,
-      775,
-      798
+      494,
+      503,
+      512,
+      521,
+      530
      ],
      "letters": "f-j"
     },
     "rails": {
-     "y_top": 510,
+     "y_top": 600,
      "x_top": [
-      862,
-      885,
-      908,
-      931,
-      954
+      563,
+      572,
+      581,
+      590,
+      599
      ],
-     "y_bottom": 1393,
+     "y_bottom": 1214,
      "x_bottom": [
-      862,
-      885,
-      908,
-      931,
-      954
+      563,
+      572,
+      581,
+      590,
+      599
      ],
      "letters": "a-e"
     }
    },
    "rail_x": {
     "GND": {
-     "y_top": 510,
-     "x_top": 989,
-     "y_bottom": 1393,
-     "x_bottom": 989
+     "y_top": 600,
+     "x_top": 633,
+     "y_bottom": 1214,
+     "x_bottom": 633
     },
     "+5V": {
-     "y_top": 510,
-     "x_top": 1012,
-     "y_bottom": 1393,
-     "x_bottom": 1012
+     "y_top": 600,
+     "x_top": 642,
+     "y_bottom": 1214,
+     "x_bottom": 642
     }
    },
    "crop": [
-    676,
-    480,
-    1042,
-    1433
+    481,
+    588,
+    654,
+    1229
    ],
    "band": [
-    30,
-    430
-   ]
+    400,
+    900
+   ],
+   "zoomed_frame": {
+    "frame": "captures/b15-z250.jpg",
+    "zoom_pan_tilt": [
+     250,
+     0,
+     7200
+    ],
+    "band": [
+     400,
+     900
+    ]
+   }
   },
   "middle": {
    "band": [
-    430,
-    820
+    250,
+    700
    ],
    "column_y": {
     "anchors": [
      [
       56,
-      177
+      602
      ],
      [
       55,
-      199
+      613
      ],
      [
       50,
-      305
+      669
      ],
      [
       45,
-      416
+      726
      ],
      [
       40,
-      528
+      780
      ],
      [
       35,
-      640
+      836
      ],
      [
       30,
-      753
+      892
      ],
      [
       25,
-      863
+      946
      ],
      [
       20,
-      973
+      1001
      ],
      [
       15,
-      1085
+      1056
      ],
      [
       10,
-      1200
+      1111
      ],
      [
       5,
-      1314
+      1168
      ],
      [
       1,
-      1407
+      1212
      ]
     ]
    },
    "rows": {
     "middle": {
-     "y_top": 177,
+     "y_top": 602,
      "x_top": [
-      614,
-      592,
-      569,
-      546,
-      524
+      444,
+      434,
+      423,
+      413,
+      403
      ],
-     "y_bottom": 1407,
+     "y_bottom": 1212,
      "x_bottom": [
-      614,
-      592,
-      569,
-      546,
-      524
+      444,
+      434,
+      423,
+      413,
+      403
      ],
      "letters": "a-e"
     },
     "rails": {
-     "y_top": 177,
+     "y_top": 602,
      "x_top": [
-      458,
-      436,
-      413,
-      390,
-      368
+      367,
+      357,
+      347,
+      337,
+      327
      ],
-     "y_bottom": 1407,
+     "y_bottom": 1212,
      "x_bottom": [
-      458,
-      436,
-      413,
-      390,
-      368
+      367,
+      357,
+      347,
+      337,
+      327
      ],
      "letters": "f-j"
     }
    },
    "rail_x": {
     "GND": {
-     "y_top": 177,
-     "x_top": 301,
-     "y_bottom": 1407,
-     "x_bottom": 301
+     "y_top": 602,
+     "x_top": 302,
+     "y_bottom": 1212,
+     "x_bottom": 302
     },
     "+5V": {
-     "y_top": 177,
-     "x_top": 278,
-     "y_bottom": 1407,
-     "x_bottom": 278
+     "y_top": 602,
+     "x_top": 292,
+     "y_bottom": 1212,
+     "x_bottom": 292
     }
    },
    "crop": [
-    248,
-    147,
-    644,
-    1447
-   ]
+    279,
+    589,
+    455,
+    1228
+   ],
+   "zoomed_frame": {
+    "frame": "captures/b15-z250m.jpg",
+    "zoom_pan_tilt": [
+     250,
+     0,
+     -21600
+    ],
+    "band": [
+     250,
+     700
+    ]
+   }
   }
  },
  "chips": {
