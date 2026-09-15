@@ -41,7 +41,7 @@ sys.path.insert(0, str(ROOT / "tools"))
 from loadmod import load  # noqa: E402
 
 GREY = (150, 150, 150)
-PINK = (212, 0, 111)
+PINK = (215, 20, 20)  # the check colour: red, heavy, seen at arm's length
 PALETTE = [(122, 63, 191), (15, 143, 158), (181, 101, 29), (141, 31, 94), (63, 111, 42), (91, 91, 214), (194, 24, 91),
            (0, 121, 107), (230, 81, 0), (69, 39, 160), (46, 125, 50), (109, 76, 65), (2, 119, 189), (173, 20, 87),
            (85, 139, 47), (239, 108, 0), (40, 83, 147), (0, 131, 143), (158, 157, 36), (216, 67, 21), (21, 101, 192)]
@@ -431,8 +431,8 @@ def main():
         callout[key] = notes.index(text) + 1
     hollow = {n for n in range(1, len(notes) + 1) if not any(k in on_map for k, m_ in callout.items() if m_ == n)}
     try:
-        note_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 15)
-        badge_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 15)
+        note_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 19)
+        badge_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 20)
     except OSError:
         note_font = badge_font = ImageFont.load_default()
 
@@ -453,17 +453,17 @@ def main():
     note_lines = []
     for i, text in enumerate(notes, 1):
         pins_of = ", ".join(k.replace(".", "-") for k, n in callout.items() if n == i)
-        note_lines.append((i, wrap(f"{pins_of}: {text}", W - 80)))
-    panel = 40 + sum(22 * len(ls) + 10 for _, ls in note_lines) if note_lines else 0
-    canvas = Image.new("RGB", (W, H + 270 + panel), (250, 248, 240))
+        note_lines.append((i, wrap(f"{pins_of}: {text}", W - 90)))
+    panel = 40 + sum(27 * len(ls) + 14 for _, ls in note_lines) if note_lines else 0
+    canvas = Image.new("RGB", (W, H + 300 + panel), (250, 248, 240))
     rot = crop.rotate(-90, expand=True).resize((W, H), Image.LANCZOS)
-    top_pad = 130
+    top_pad = 150
     canvas.paste(rot, (0, top_pad))
     d = ImageDraw.Draw(canvas)
     try:
-        font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSansMono-Bold.ttf", 14)
-        small = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 13)
-        title = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 20)
+        font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSansMono-Bold.ttf", 19)
+        small = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 15)
+        title = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 26)
     except OSError:
         font = small = title = ImageFont.load_default()
 
@@ -477,6 +477,7 @@ def main():
         return v["state"] if v else None
 
     placed = 0
+    areas = {}
     labels = []  # (x, y, text, colour, above)
     for ref, chip in m["chips"].items():
         if chip["board"] != board_name:
@@ -496,24 +497,44 @@ def main():
             cx, cy = to_canvas(px, py)
             st = state_of(ref, pin)
             c = GREY if st == "done" else PINK if st == "check" else colour.get(net, (60, 60, 60))
-            r = 11 if st == "check" else 9
-            d.ellipse([cx - r, cy - r, cx + r, cy + r], outline=c, width=3 if st == "check" else 2)
+            r = 13 if st == "check" else 10
+            d.ellipse([cx - r, cy - r, cx + r, cy + r], outline=c, width=5 if st == "check" else 3)
             # the wire's other end: a rail pin points to its rail
             if net in nl.RAILS:
                 rx, ry = to_canvas(board.rail_x(net, py), py)
-                d.line([cx, cy, rx, ry], fill=c, width=2)
-                d.ellipse([rx - 5, ry - 5, rx + 5, ry + 5], fill=c)
+                d.line([cx, cy, rx, ry], fill=c, width=3)
+                d.ellipse([rx - 6, ry - 6, rx + 6, ry + 6], fill=c)
             labels.append((cx, cy, f"{pin} {net}", c, side == "middle"))
             n = callout.get(f"{ref}.{pin}")
             if n:
-                # the badge sits off the ring toward the board's edge on its
-                # side, on a short leader, clear of the chip body
-                bx, by = cx + (22 if side == "middle" else -22), cy + (-26 if side == "middle" else 26)
-                d.line([cx, cy, bx, by], fill=PINK, width=2)
-                d.ellipse([bx - 12, by - 12, bx + 12, by + 12], fill=PINK)
-                w = d.textlength(str(n), font=badge_font)
-                d.text((bx - w / 2, by - 9), str(n), fill=(255, 255, 255), font=badge_font)
+                areas.setdefault(n, []).append((cx, cy, side))
             placed += 1
+    # A check the map does not place may say where on the board its note
+    # points ("at": column and side); that spot is circled like a pin's.
+    for key, v in status["pins"].items():
+        n, at = callout.get(key), v.get("at")
+        if n and at and key not in on_map:
+            y = board.y(at["col"])
+            if at["side"] == "rail":
+                pts = [to_canvas(board.rail_x(r, y), y) for r in ("GND", "+5V")]
+                pts = [(x, yy, "rails") for x, yy in pts]
+            else:
+                x = board.x(at["side"], 0 if at["side"] == "middle" else 4, y)
+                pts = [(*to_canvas(x, y), at["side"])]
+            areas.setdefault(n, []).extend(pts)
+            hollow.discard(n)
+    # The area of interest: one heavy red circle round every pin a callout
+    # names (a note that names three neighbours gets one circle round the
+    # three), the badge on its rim toward the board's edge on that side.
+    for n, pts in areas.items():
+        mx, my = sum(p[0] for p in pts) / len(pts), sum(p[1] for p in pts) / len(pts)
+        rr = max(((p[0] - mx) ** 2 + (p[1] - my) ** 2) ** 0.5 for p in pts) + 42
+        d.ellipse([mx - rr, my - rr, mx + rr, my + rr], outline=PINK, width=6)
+        up = pts[0][2] == "middle"
+        bx, by = mx + rr * 0.7, my - rr * 0.7 if up else my + rr * 0.7
+        d.ellipse([bx - 20, by - 20, bx + 20, by + 20], fill=PINK)
+        w = d.textlength(str(n), font=badge_font)
+        d.text((bx - w / 2, by - 13), str(n), fill=(255, 255, 255), font=badge_font)
     # rails
     for name in ("GND", "+5V"):
         ya, yb = board.y(1), board.y(35)
@@ -528,34 +549,34 @@ def main():
             w = d.textlength(text, font=font)
             row = k % 3
             if above:
-                ty = top_pad - 26 - row * 20
-                d.line([cx, cy - 9, cx, ty + 16], fill=c, width=1)
+                ty = top_pad - 30 - row * 24
+                d.line([cx, cy - 10, cx, ty + 22], fill=c, width=2)
             else:
-                ty = top_pad + H + 10 + row * 20
-                d.line([cx, cy + 9, cx, ty - 2], fill=c, width=1)
+                ty = top_pad + H + 12 + row * 24
+                d.line([cx, cy + 10, cx, ty - 2], fill=c, width=2)
             d.text((cx - w / 2, ty), text, fill=c, font=font)
-    d.text((12, 8), f"Bridge v1b on the board: the eye's frame with every chip pin's landing ringed and named. {status['read']}.", fill=(30, 30, 30), font=title)
-    d.text((12, 36), "Grey: seen in its hole. Pink: needs a check (the as-built sheet's note says what). Colour: not built yet. A ring is the outermost hole of the pin's strip; a rail pin points at its rail. "
+    d.text((12, 10), f"Bridge v1b on the board: the eye's frame with every chip pin's landing ringed and named. {status['read']}.", fill=(30, 30, 30), font=title)
+    d.text((12, 44), "Grey: seen in its hole. Red: needs a check (the as-built sheet's note says what). Colour: not built yet. A ring is the outermost hole of the pin's strip; a rail pin points at its rail. "
                      f"Frame {m['frame']}; the grid read off it under rulers, one camera pose.", fill=(70, 70, 70), font=small)
     if note_lines:
-        y = top_pad + H + 100
-        d.line([12, y - 12, W - 12, y - 12], fill=(200, 200, 200), width=1)
+        y = top_pad + H + 115
+        d.line([12, y - 12, W - 12, y - 12], fill=(200, 200, 200), width=2)
         d.text((12, y - 6), "The checks, as the as-built sheet notes them (a hollow badge is a pin the map does not place: the UNO's, the console lead's):", fill=(30, 30, 30), font=badge_font)
         y += 26
         for i, ls in note_lines:
             if i in hollow:
-                d.ellipse([16, y + 1, 40, y + 25], outline=PINK, width=2)
-                d.text((28 - d.textlength(str(i), font=badge_font) / 2, y + 4), str(i), fill=PINK, font=badge_font)
+                d.ellipse([14, y, 46, y + 32], outline=PINK, width=3)
+                d.text((30 - d.textlength(str(i), font=badge_font) / 2, y + 4), str(i), fill=PINK, font=badge_font)
             else:
-                d.ellipse([16, y + 1, 40, y + 25], fill=PINK)
-                d.text((28 - d.textlength(str(i), font=badge_font) / 2, y + 4), str(i), fill=(255, 255, 255), font=badge_font)
+                d.ellipse([14, y, 46, y + 32], fill=PINK)
+                d.text((30 - d.textlength(str(i), font=badge_font) / 2, y + 4), str(i), fill=(255, 255, 255), font=badge_font)
             for line in ls:
-                d.text((52, y + 3), line, fill=(40, 40, 40), font=note_font)
-                y += 22
-            y += 10
+                d.text((60, y + 4), line, fill=(40, 40, 40), font=note_font)
+                y += 27
+            y += 14
     Path(a.out).parent.mkdir(parents=True, exist_ok=True)
     canvas.save(a.out, optimize=True)
-    print(f"wrote {a.out}: {placed} pins over {len(m['chips'])} chips on the {board_name} board, {len(notes)} callouts, {W}x{H + 270 + panel}")
+    print(f"wrote {a.out}: {placed} pins over {len(m['chips'])} chips on the {board_name} board, {len(notes)} callouts, {W}x{H + 300 + panel}")
 
 
 if __name__ == "__main__":
