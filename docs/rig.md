@@ -28,6 +28,20 @@ below is measured against.
 | Logitech QuickCam Communicate Deluxe | `usb-046d_09a2_ABAD8310` | the second side eye, along the chip board's rails side from the cable end: the probe clips, the console cable's housing, U3's rails-side landings | on the frame's upright at the cable end, low | 1280 by 960, MJPG | LOCKED 2026-09-15 (`docs/lab/rig-side-eye-communicate.jpg`): column numbers legible to about column 25, the Q lines' arc and the housings in profile |
 | Roxio capture (em28xx) | `usb-1b80_Roxio_Video_Capture_USB_...` | the console's picture | on the splitter with the scope's CH3 | 720 by 480 NTSC | not a camera |
 
+## The bench, photographed
+
+Four phone photographs of the whole rig, 2026-09-15, after the lock
+(phone metadata stripped; the TV's picture blurred, since the site
+carries no commercial game screenshots):
+
+![the bench from the front: the console and its TV at the left, the frame over the backing board, the scope behind it](lab/rig-bench-front.jpg)
+
+![the frame: the bench light on its cross-bar, the BRIO under it at the middle, the side eyes on the lower rail](lab/rig-bench-frame.jpg)
+
+![the console's side: the mainboard with the cartridge in, the modulator, the probe clips, the breadboards beyond](lab/rig-bench-console-side.jpg)
+
+![the bird's eye: the whole backing board as the BRIO sees it, the UNO and the Pi at the bottom, the QuickCam 9000 at the right](lab/rig-bench-birds-eye.jpg)
+
 ## The pose, locked
 
 All three cameras and the boards were gaffer-taped and velcroed on 2026-09-15 night, the BRIO levelled (the tilt of the first raised pose, 9.2 px a hole along the rows against 11.1 along the columns, is gone: both read 11.1). Every named close-up lands on its target and the map's rings sit on the holes across both boards to column 56 (`captures/views-20260915T152127`). This is the baseline: a moved thing shows as a frame that differs from `captures/b15-all.jpg` by more than sensor noise (the timed grabs' worst 40 px block against it), and the fix is `--read` again, not a new tool.
