@@ -66,8 +66,12 @@ class Board:
         # quadratic through three anchors cannot follow); a sparse map keeps
         # the quadratic.
         if len(self.anchors) >= 6:
-            cols = self.anchors[::-1, 0]
-            return float(np.interp(col, cols, self.anchors[::-1, 1]))
+            cols, ys = self.anchors[::-1, 0], self.anchors[::-1, 1]
+            if col > cols[-1]:
+                # past the last anchor (a wire hid the holes the walk
+                # needed): carry the last pitch on
+                return float(ys[-1] + (col - cols[-1]) * (ys[-1] - ys[-2]) / (cols[-1] - cols[-2]))
+            return float(np.interp(col, cols, ys))
         return float(np.polyval(self.poly, col))
 
     def x(self, side, i, y):
@@ -325,7 +329,16 @@ def read_board(m, name, xs, ys, L):
     band = (ys > min(ae[0], fj[0]) - 15) & (ys < max(ae[-1], fj[-1]) + 15) & sel
     h = np.convolve(np.bincount(xs[band], minlength=2000).astype(float), np.ones(5), "same")
     px = np.array([i for i in range(40, 1600) if h[i] >= 4 and h[i] == h[i - 14:i + 15].max()], float)
-    x, col, pitch, pos = px.max(), 1, 24.4, {}
+    # the pitch to start the walk with is the peaks' own commonest spacing
+    # (24 px at the first rig height, 31 on a zoom-250 frame at the second)
+    gaps = np.diff(np.sort(px))
+    gaps = gaps[(gaps > 8) & (gaps < 60)]
+    pitch = float(np.median(gaps)) if len(gaps) else 24.4
+    # column 1 is the rightmost peak that has the next column beside it:
+    # a stray peak past the board's end (the rail strip, a wire's edge)
+    # must not be numbered 1
+    starts = [x for x in sorted(px, reverse=True) if np.any(abs(px - (x - pitch)) < 6)]
+    x, col, pos = (starts[0] if starts else px.max()), 1, {}
     pos[1] = x
     missed = 0
     while col < 70 and x > 50 and missed < 5:
@@ -369,7 +382,37 @@ def read_board(m, name, xs, ys, L):
     return f"{name}: rows a-e {ae}, f-j {fj}, rails {where} at {rl}, columns 1 to {last} ({pos[1] - pos[2]:.1f} px a column at 1)"
 
 
-def read_map(m, frame: Path, out: Path, views: Path):
+def unzoom(m, b, zoomed):
+    """A map read off a zoomed frame, put into zoom-100 coordinates: the
+    crop of zoom Z is centred at (960 + pan/36000*960*(1-100/Z),
+    540 - tilt/36000*540*(1-100/Z)) and Z/100 wide (docs/eye-views.json).
+    The map's own frame is the camera's turned by frame_rotate, so the
+    turn is undone, the zoom taken out, and the turn put back."""
+    Z, pan, tilt = zoomed
+    f = 1 - 100 / Z
+    cx, cy = 960 + pan / 36000 * 960 * f, 540 - tilt / 36000 * 540 * f
+    s = Z / 100
+
+    def fix(mx, my):
+        # map -> camera (zoomed) -> camera (zoom 100) -> map
+        camx, camy = my, 1080 - mx
+        camx, camy = cx + (camx - 960) / s, cy + (camy - 540) / s
+        return 1080 - camy, camx
+
+    b["column_y"]["anchors"] = [[c, int(round(fix(0, y)[1]))] for c, y in b["column_y"]["anchors"]]
+    for side in b["rows"].values():
+        side["x_top"] = [int(round(fix(x, 0)[0])) for x in side["x_top"]]
+        side["x_bottom"] = list(side["x_top"])
+        side["y_top"], side["y_bottom"] = b["column_y"]["anchors"][0][1], b["column_y"]["anchors"][-1][1]
+    for r in b["rail_x"].values():
+        r["x_top"] = r["x_bottom"] = int(round(fix(r["x_top"], 0)[0]))
+        r["y_top"], r["y_bottom"] = b["column_y"]["anchors"][0][1], b["column_y"]["anchors"][-1][1]
+    x0, y0, x1, y1 = b["crop"]
+    (X0, Y0), (X1, Y1) = fix(x0, y0), fix(x1, y1)
+    b["crop"] = [int(min(X0, X1)), int(min(Y0, Y1)), int(max(X0, X1)), int(max(Y0, Y1))]
+
+
+def read_map(m, frame: Path, out: Path, views: Path, zoomed=None):
     """The map read off a frame of the rig (the camera straight down and
     turned, `frame_rotate` set): every hole found, the ten hole rows and
     the two rail rows fitted as even progressions, the columns walked
@@ -383,6 +426,13 @@ def read_map(m, frame: Path, out: Path, views: Path):
     b = m["boards"]["right"]
     old = Board(b)
     reads = [read_board(m, name, xs, ys, L) for name in m["boards"]]
+    if zoomed:
+        # The raised camera puts about 10 px on a hole at zoom 100, under
+        # what the hole finder resolves; the map is read off a zoomed frame
+        # (the board's band given in that frame) and put into zoom-100
+        # coordinates, which is what every view and overlay uses.
+        for name in m["boards"]:
+            unzoom(m, m["boards"][name], zoomed)
     new = Board(b)
     stamp = __import__("time").strftime("%Y-%m-%d %H:%M %Z")
     m["frame"] = f"{frame} (read {stamp} by board-overlay.py --read)"
@@ -423,6 +473,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--read", action="store_true", help="read the map afresh off FRAME (the rig: straight down, frame_rotate set), re-aim the views, and stop")
     ap.add_argument("--views", default=str(ROOT / "docs" / "eye-views.json"))
+    ap.add_argument("--zoomed", metavar="Z,PAN,TILT", help="--read off a zoomed frame taken at this zoom, pan and tilt (the bands in that frame); the map comes out in zoom-100 coordinates")
     ap.add_argument("--recalibrate", nargs=2, type=int, metavar=("DX", "DY"), help="re-read the map off FRAME with this shift from the current map as the prior, and stop")
     ap.add_argument("--tolerance", type=int, default=8, help="how far a re-read anchor may land from its shifted prior, in pixels")
     ap.add_argument("--columns-from-prior", action="store_true", help="shift the column anchors by DY instead of re-reading them (the rows are always re-read)")
@@ -434,7 +485,7 @@ def main():
     a = ap.parse_args()
     m = json.loads(Path(a.map).read_text())
     if a.read:
-        read_map(m, Path(a.frame), Path(a.map), Path(a.views))
+        read_map(m, Path(a.frame), Path(a.map), Path(a.views), zoomed=[int(v) for v in a.zoomed.split(",")] if a.zoomed else None)
         return
     if a.recalibrate:
         recalibrate(m, Path(a.frame), "right", a.recalibrate, Path(a.map), tol=a.tolerance, columns_from_prior=a.columns_from_prior)
