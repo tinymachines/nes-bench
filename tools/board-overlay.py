@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """The wiring drawn on the photograph: every chip pin's landing on the
 breadboard ringed and named with its net, coloured by the build's state,
-over the eye's frame of the board.
+over the eye's frame of the board, and every check called out by number
+with the sheet's note set below the photograph.
 
   python3 tools/board-overlay.py [frame.jpg] [--out docs/lab/board-junctions-v1b.png]
                                  [--status docs/build-status-v1b.json] [--map docs/board-map.json]
@@ -413,7 +414,48 @@ def main():
     # sat on a mirrored column, which the photograph made obvious at once.
     S = a.scale
     W, H = int((y1 - y0) * S), int((x1 - x0) * S)
-    canvas = Image.new("RGB", (W, H + 270), (250, 248, 240))
+    # The callouts: every pin the sheet marks as a check gets a number,
+    # one number per distinct note (a note that names two pins is one
+    # callout on both), and the notes are set below the photograph in
+    # that order, so the picture reads like the right-angle sheet.
+    notes, callout = [], {}
+    on_map = {f"{ref}.{p}" for ref, chip in m["chips"].items() for p in range(1, chip["pins"] + 1)}
+    checks = [(k, v) for k, v in status["pins"].items() if v.get("state") == "check"]
+    # the pins the picture rings first, so the badges count up from 1 on
+    # the board; a check on a pin the map does not place (the UNO, the
+    # console lead) is listed after them with a hollow badge
+    for key, v in sorted(checks, key=lambda kv: kv[0] not in on_map):
+        text = v.get("note", "")
+        if text not in notes:
+            notes.append(text)
+        callout[key] = notes.index(text) + 1
+    hollow = {n for n in range(1, len(notes) + 1) if not any(k in on_map for k, m_ in callout.items() if m_ == n)}
+    try:
+        note_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 15)
+        badge_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 15)
+    except OSError:
+        note_font = badge_font = ImageFont.load_default()
+
+    def wrap(text, width):
+        probe = ImageDraw.Draw(Image.new("RGB", (1, 1)))
+        lines, line = [], ""
+        for word in text.split():
+            trial = (line + " " + word).strip()
+            if probe.textlength(trial, font=note_font) > width and line:
+                lines.append(line)
+                line = word
+            else:
+                line = trial
+        if line:
+            lines.append(line)
+        return lines
+
+    note_lines = []
+    for i, text in enumerate(notes, 1):
+        pins_of = ", ".join(k.replace(".", "-") for k, n in callout.items() if n == i)
+        note_lines.append((i, wrap(f"{pins_of}: {text}", W - 80)))
+    panel = 40 + sum(22 * len(ls) + 10 for _, ls in note_lines) if note_lines else 0
+    canvas = Image.new("RGB", (W, H + 270 + panel), (250, 248, 240))
     rot = crop.rotate(-90, expand=True).resize((W, H), Image.LANCZOS)
     top_pad = 130
     canvas.paste(rot, (0, top_pad))
@@ -462,6 +504,15 @@ def main():
                 d.line([cx, cy, rx, ry], fill=c, width=2)
                 d.ellipse([rx - 5, ry - 5, rx + 5, ry + 5], fill=c)
             labels.append((cx, cy, f"{pin} {net}", c, side == "middle"))
+            n = callout.get(f"{ref}.{pin}")
+            if n:
+                # the badge sits off the ring toward the board's edge on its
+                # side, on a short leader, clear of the chip body
+                bx, by = cx + (22 if side == "middle" else -22), cy + (-26 if side == "middle" else 26)
+                d.line([cx, cy, bx, by], fill=PINK, width=2)
+                d.ellipse([bx - 12, by - 12, bx + 12, by + 12], fill=PINK)
+                w = d.textlength(str(n), font=badge_font)
+                d.text((bx - w / 2, by - 9), str(n), fill=(255, 255, 255), font=badge_font)
             placed += 1
     # rails
     for name in ("GND", "+5V"):
@@ -486,9 +537,25 @@ def main():
     d.text((12, 8), f"Bridge v1b on the board: the eye's frame with every chip pin's landing ringed and named. {status['read']}.", fill=(30, 30, 30), font=title)
     d.text((12, 36), "Grey: seen in its hole. Pink: needs a check (the as-built sheet's note says what). Colour: not built yet. A ring is the outermost hole of the pin's strip; a rail pin points at its rail. "
                      f"Frame {m['frame']}; the grid read off it under rulers, one camera pose.", fill=(70, 70, 70), font=small)
+    if note_lines:
+        y = top_pad + H + 100
+        d.line([12, y - 12, W - 12, y - 12], fill=(200, 200, 200), width=1)
+        d.text((12, y - 6), "The checks, as the as-built sheet notes them (a hollow badge is a pin the map does not place: the UNO's, the console lead's):", fill=(30, 30, 30), font=badge_font)
+        y += 26
+        for i, ls in note_lines:
+            if i in hollow:
+                d.ellipse([16, y + 1, 40, y + 25], outline=PINK, width=2)
+                d.text((28 - d.textlength(str(i), font=badge_font) / 2, y + 4), str(i), fill=PINK, font=badge_font)
+            else:
+                d.ellipse([16, y + 1, 40, y + 25], fill=PINK)
+                d.text((28 - d.textlength(str(i), font=badge_font) / 2, y + 4), str(i), fill=(255, 255, 255), font=badge_font)
+            for line in ls:
+                d.text((52, y + 3), line, fill=(40, 40, 40), font=note_font)
+                y += 22
+            y += 10
     Path(a.out).parent.mkdir(parents=True, exist_ok=True)
     canvas.save(a.out, optimize=True)
-    print(f"wrote {a.out}: {placed} pins over {len(m['chips'])} chips on the {board_name} board, {W}x{H + 270}")
+    print(f"wrote {a.out}: {placed} pins over {len(m['chips'])} chips on the {board_name} board, {len(notes)} callouts, {W}x{H + 270 + panel}")
 
 
 if __name__ == "__main__":
