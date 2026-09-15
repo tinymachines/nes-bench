@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2428 1152" width="2428" height="1152" role="img" aria-label="Bridge v1b wiring diagram">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2428 1135" width="2428" height="1135" role="img" aria-label="Bridge v1b wiring diagram">
 <style>
  text{font-family:ui-sans-serif,'DejaVu Sans',sans-serif;fill:#222}
  .title{font-size:24px;font-weight:700}
@@ -24,9 +24,9 @@
  .checknote{font-size:13px;fill:#222}
  .checkhead{font-size:15px;font-weight:700;fill:#d4006f}
 </style>
-<rect x="0" y="0" width="2428" height="1152" fill="#ffffff"/>
+<rect x="0" y="0" width="2428" height="1135" fill="#ffffff"/>
 <g class="sheet-heading" data-height="60">
-<text class="title" x="24.0" y="30.0" text-anchor="start">Bridge v1b as built, read 2026-09-15 evening (placements for the clock filter and U2's decoupling drawn): grounds, +5 V, the J1 console side, the J1 to U3 chain, the UNO's leads, and on the middle board the pad housing (J2) and the trigger resistor (R1)</text>
+<text class="title" x="24.0" y="30.0" text-anchor="start">Bridge v1b as built, read 2026-09-15 21:15 EDT (the rig locked; R1 settled by the trigger firing): grounds, +5 V, the J1 console side, the J1 to U3 chain, the UNO's leads, and on the middle board the pad housing (J2) and the trigger resistor (R1)</text>
 <text class="sub" x="24.0" y="46.0" text-anchor="start">Grey: built and seen in the right hole. A ring and a number: needs a check, the note under the rails says what. Full colour: not built yet, or not part of this pass.</text>
 </g>
 <line class="railline" x1="40.0" y1="122.0" x2="2378.0" y2="122.0" stroke="#d02b2b"/>
@@ -451,7 +451,7 @@
 <text class="net" x="1100.0" y="284.0" text-anchor="start">RCLK</text>
 <line class="wire" x1="1538.0" y1="332.0" x2="1730.0" y2="332.0" stroke="#d84315"/>
 <line class="wire" x1="1538.0" y1="406.0" x2="1538.0" y2="332.0" stroke="#d84315"/>
-<line class="wire" x1="1730.0" y1="406.0" x2="1730.0" y2="332.0" stroke="#d84315"/>
+<line class="wire" x1="1730.0" y1="406.0" x2="1730.0" y2="332.0" stroke="#c4c4c4"/>
 <text class="net" x="1542.0" y="329.0" text-anchor="start">TRIG</text>
 <line class="wire" x1="1388.0" y1="612.0" x2="1388.0" y2="638.0" stroke="#444"/>
 <text class="net" x="1382.0" y="642.0" text-anchor="end">PI_USB: USB to the Pi</text>
@@ -464,19 +464,19 @@
 <text class="tag" x="2349.0" y="397.0" text-anchor="middle">1</text>
 <circle class="ring" cx="2054.0" cy="612.0" r="10"/>
 <circle cx="2067.0" cy="599.0" r="8.5" fill="#d4006f" stroke="#fff" stroke-width="1.5"/>
-<text class="tag" x="2067.0" y="603.0" text-anchor="middle">3</text>
+<text class="tag" x="2067.0" y="603.0" text-anchor="middle">2</text>
 <circle class="ring" cx="2216.0" cy="406.0" r="10"/>
 <circle cx="2229.0" cy="393.0" r="8.5" fill="#d4006f" stroke="#fff" stroke-width="1.5"/>
 <text class="tag" x="2229.0" y="397.0" text-anchor="middle">1</text>
 <circle class="ring" cx="1892.0" cy="406.0" r="10"/>
 <circle cx="1905.0" cy="393.0" r="8.5" fill="#d4006f" stroke="#fff" stroke-width="1.5"/>
-<text class="tag" x="1905.0" y="397.0" text-anchor="middle">3</text>
+<text class="tag" x="1905.0" y="397.0" text-anchor="middle">2</text>
 <circle class="ring" cx="2054.0" cy="406.0" r="10"/>
 <circle cx="2067.0" cy="393.0" r="8.5" fill="#d4006f" stroke="#fff" stroke-width="1.5"/>
-<text class="tag" x="2067.0" y="397.0" text-anchor="middle">3</text>
+<text class="tag" x="2067.0" y="397.0" text-anchor="middle">2</text>
 <circle class="ring" cx="1892.0" cy="612.0" r="10"/>
 <circle cx="1905.0" cy="599.0" r="8.5" fill="#d4006f" stroke="#fff" stroke-width="1.5"/>
-<text class="tag" x="1905.0" y="603.0" text-anchor="middle">3</text>
+<text class="tag" x="1905.0" y="603.0" text-anchor="middle">2</text>
 <circle class="ring" cx="2246.0" cy="406.0" r="10"/>
 <circle cx="2259.0" cy="393.0" r="8.5" fill="#d4006f" stroke="#fff" stroke-width="1.5"/>
 <text class="tag" x="2259.0" y="397.0" text-anchor="middle">1</text>
@@ -486,22 +486,18 @@
 <circle class="ring" cx="2306.0" cy="406.0" r="10"/>
 <circle cx="2319.0" cy="393.0" r="8.5" fill="#d4006f" stroke="#fff" stroke-width="1.5"/>
 <text class="tag" x="2319.0" y="397.0" text-anchor="middle">1</text>
-<circle class="ring" cx="1730.0" cy="406.0" r="10"/>
-<circle cx="1743.0" cy="393.0" r="8.5" fill="#d4006f" stroke="#fff" stroke-width="1.5"/>
-<text class="tag" x="1743.0" y="397.0" text-anchor="middle">2</text>
-<text class="checkhead" x="24.0" y="879.0" text-anchor="start">Needs a check (4)</text>
+<text class="checkhead" x="24.0" y="879.0" text-anchor="start">Needs a check (3)</text>
 <text class="checknote" x="24.0" y="900.0" text-anchor="start">1. J2, the pad-side housing: not located. The five-way housing at the middle board's columns 9 to 13 is the power and reset breakout's, joined to nothing. The pad cable and the UNO's D6, D7 and D8 leads run in under the UNO's lead bundle at the frame's right; where they land is under the leads. Say where, or route them where the eye can see, and the sheet will read them.</text>
-<text class="checknote" x="24.0" y="917.0" text-anchor="start">2. R1, the trigger resistor: stands over column 49 on the middle board's rails side with one lead down into row f at 49; the green TRIG lead from the UNO's D3 lands in a housing at column 47, row f; a thin bare lead curves from under that housing toward column 46 row h. The eye cannot say whether R1's other lead reaches column 47 or the scope's trigger lead does. Meter: UNO D3 to one end of R1, the other end to the scope's trigger lead, and the two ends not to each other.</text>
-<text class="checknote" x="24.0" y="934.0" text-anchor="start">3. PLACE R2 and C4 (the clock pin's filter) so they sit between the lead and the pin: 1. move the two-pin housing now in column 24 (the console's red CLK and the UNO's blue D2) three columns along to column 27, row j (columns 26 and 27 are free between U2 and U1). 2. R2, 1 k: one lead in column 27 row h, the other in column 24 row h. 3. C4, 100 pF: one lead in column 24 row i, the other in column 28 row i (column 28 is U1 pin 7, the GND strip). Then U2 pin 2 sees the console's clock through 1 k with 100 pF to ground at the pin, and the UNO's D2 still counts the clock ahead of the resistor. Keep the leads short and the wires away from the grey Q lines.</text>
-<text class="checknote" x="24.0" y="951.0" text-anchor="start">4. PLACE C2, the 165's own 100 nF, straight across its supply pins with the shortest leads that reach: one lead in column 18 row e (U2 pin 16, +5V, the rails side), the other in column 18 row f (U2 pin 8, GND, the middle side), the body lying across the chip gap. The two yellow capacitors on the rails at columns 17 and 29 stay: they are the rails', this one is the chip's. This is the fix for a clock spike that comes in through the chip's ground rather than the clock lead (the procedure, 2026-09-15); with it in, the walk of single bits is the check.</text>
-<text class="note" x="24.0" y="972.0" text-anchor="start">Seen, not on this sheet's nets:</text>
-<text class="note" x="24.0" y="989.0" text-anchor="start">- RIG, SECOND POSE: the boards shifted right on the frame; the map re-read automatically (tools/board-overlay.py --read) and every view re-aimed; the rings sit on the holes out to column 50.</text>
-<text class="note" x="24.0" y="1006.0" text-anchor="start">- The middle board is mapped (its rows read the other way up: a to e toward the right board, f to j toward its own rails, the pair below). The five-way housing at columns 9 to 13 is the power and reset breakout's, parked, joined to nothing (the user, 2026-09-15); a 2-by-4 black header stands at the board's left end (columns 58 to 60, rows f to h) and a 4-way header on its rail rows near columns 50 to 53, both with pin tips up.</text>
-<text class="note" x="24.0" y="1023.0" text-anchor="start">- The UNO now sits at the frame's top right on a blue screw-terminal shield, its leads running direct: a bundle (purple, blue, cream, red) down over the top rail to U3's rails side and on, a red to the +5V rail at column 5, and white, yellow and orange to the pad's housing on the middle board. The screw shield hides the header's pin labels, so which UNO pin each lead leaves is not readable on camera.</text>
-<text class="note" x="24.0" y="1040.0" text-anchor="start">- The two-pin black header across the rail rows at column 27 is a probe point for metering the rail voltage (the user, 2026-09-15): its two pins are not joined to each other, and it is not the UNO's feed.</text>
-<text class="note" x="24.0" y="1057.0" text-anchor="start">- Orientation settled: the notch and the pin-1 dot of U1, U2 and U3 all face the high-column end, as the map places them.</text>
-<text class="note" x="24.0" y="1074.0" text-anchor="start">- The six grey Q lines are one colour. The eye confirms where each end lands, not which end pairs with which; the bring-up's SPI loopback is what proves the pairing.</text>
-<text class="note" x="24.0" y="1091.0" text-anchor="start">- Two yellow ceramic capacitors stand across the rails at columns 28 and 17; the plan puts one 100 nF beside each chip. The value is not readable on camera.</text>
-<text class="note" x="24.0" y="1108.0" text-anchor="start">- A red link from the top GND rail row at column 12 runs down to the board's other rail pair: correct but red.</text>
-<text class="note" x="2404" y="1136" text-anchor="end">20 nets on tracks, 7 of them crossing the row; 27 supply pins on the rails. drawn by tools/wiring-diagram.py</text>
+<text class="checknote" x="24.0" y="917.0" text-anchor="start">2. PLACE R2 and C4 (the clock pin's filter) so they sit between the lead and the pin: 1. move the two-pin housing now in column 24 (the console's red CLK and the UNO's blue D2) three columns along to column 27, row j (columns 26 and 27 are free between U2 and U1). 2. R2, 1 k: one lead in column 27 row h, the other in column 24 row h. 3. C4, 100 pF: one lead in column 24 row i, the other in column 28 row i (column 28 is U1 pin 7, the GND strip). Then U2 pin 2 sees the console's clock through 1 k with 100 pF to ground at the pin, and the UNO's D2 still counts the clock ahead of the resistor. Keep the leads short and the wires away from the grey Q lines.</text>
+<text class="checknote" x="24.0" y="934.0" text-anchor="start">3. PLACE C2, the 165's own 100 nF, straight across its supply pins with the shortest leads that reach: one lead in column 18 row e (U2 pin 16, +5V, the rails side), the other in column 18 row f (U2 pin 8, GND, the middle side), the body lying across the chip gap. The two yellow capacitors on the rails at columns 17 and 29 stay: they are the rails', this one is the chip's. This is the fix for a clock spike that comes in through the chip's ground rather than the clock lead (the procedure, 2026-09-15); with it in, the walk of single bits is the check.</text>
+<text class="note" x="24.0" y="955.0" text-anchor="start">Seen, not on this sheet's nets:</text>
+<text class="note" x="24.0" y="972.0" text-anchor="start">- RIG, SECOND POSE: the boards shifted right on the frame; the map re-read automatically (tools/board-overlay.py --read) and every view re-aimed; the rings sit on the holes out to column 50.</text>
+<text class="note" x="24.0" y="989.0" text-anchor="start">- The middle board is mapped (its rows read the other way up: a to e toward the right board, f to j toward its own rails, the pair below). The five-way housing at columns 9 to 13 is the power and reset breakout's, parked, joined to nothing (the user, 2026-09-15); a 2-by-4 black header stands at the board's left end (columns 58 to 60, rows f to h) and a 4-way header on its rail rows near columns 50 to 53, both with pin tips up.</text>
+<text class="note" x="24.0" y="1006.0" text-anchor="start">- The UNO now sits at the frame's top right on a blue screw-terminal shield, its leads running direct: a bundle (purple, blue, cream, red) down over the top rail to U3's rails side and on, a red to the +5V rail at column 5, and white, yellow and orange to the pad's housing on the middle board. The screw shield hides the header's pin labels, so which UNO pin each lead leaves is not readable on camera.</text>
+<text class="note" x="24.0" y="1023.0" text-anchor="start">- The two-pin black header across the rail rows at column 27 is a probe point for metering the rail voltage (the user, 2026-09-15): its two pins are not joined to each other, and it is not the UNO's feed.</text>
+<text class="note" x="24.0" y="1040.0" text-anchor="start">- Orientation settled: the notch and the pin-1 dot of U1, U2 and U3 all face the high-column end, as the map places them.</text>
+<text class="note" x="24.0" y="1057.0" text-anchor="start">- The six grey Q lines are one colour. The eye confirms where each end lands, not which end pairs with which; the bring-up's SPI loopback is what proves the pairing.</text>
+<text class="note" x="24.0" y="1074.0" text-anchor="start">- Two yellow ceramic capacitors stand across the rails at columns 28 and 17; the plan puts one 100 nF beside each chip. The value is not readable on camera.</text>
+<text class="note" x="24.0" y="1091.0" text-anchor="start">- A red link from the top GND rail row at column 12 runs down to the board's other rail pair: correct but red.</text>
+<text class="note" x="2404" y="1119" text-anchor="end">20 nets on tracks, 7 of them crossing the row; 27 supply pins on the rails. drawn by tools/wiring-diagram.py</text>
 </svg>

@@ -316,15 +316,15 @@
  "parts": {
   "R1": {
    "board": "middle",
-   "side": "rails",
+   "side": "middle",
    "columns": [
-    47,
-    49
+    6,
+    9
    ],
    "pins": 2,
-   "pin1": "lo",
-   "note": "R1 stands over column 49 with a lead down into row f; the green TRIG lead's housing is at column 47, row f",
-   "row": 0
+   "pin1": "hi",
+   "row": 0,
+   "note": "R1 flattened 2026-09-15: lies in row a from column 9 (the green D3 lead's housing, rows d/e of the same column) to column 6, where the red lead to the scope's CH1 lands"
   },
   "R2": {
    "board": "right",

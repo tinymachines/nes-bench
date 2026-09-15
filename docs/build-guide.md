@@ -277,7 +277,7 @@ Photographs:
 
 - `docs/lab/06-trigger-cable.jpg`  (wanted)
 
-> Last run 2026-09-15 17:38:35: held. TRIG 20 stopped the scope on CH1
+> Last run 2026-09-15 21:14:18: held. TRIG 20 stopped the scope on CH1
 
 ### 6.2  The reset optocoupler pulses the console
 

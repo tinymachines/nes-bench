@@ -16,7 +16,7 @@
     "THIRD RIG POSE 2026-09-15 13:16 EDT: the boards rearranged on the frame (the chip board at the top, its rails along the frame's top edge, the middle board below it, a fourth rail-only board at the bottom); the map re-read by --read with new bands. R2 and C4 (the clock pin's filter, added by the user this afternoon) went on the schematic and are looked for here.",
     "PLACEMENTS 2026-09-15: state \"plan\" is a placement asked for and not built (green on the photograph, listed with the checks on the sheet); the note is the instruction."
   ],
-  "read": "2026-09-15 evening (placements for the clock filter and U2's decoupling drawn)",
+  "read": "2026-09-15 21:15 EDT (the rig locked; R1 settled by the trigger firing)",
   "scope": "grounds, +5 V, the J1 console side, the J1 to U3 chain, the UNO's leads, and on the middle board the pad housing (J2) and the trigger resistor (R1)",
   "pins": {
     "U1.2": {
@@ -210,12 +210,12 @@
       "note": "J2, the pad-side housing: not located. The five-way housing at the middle board's columns 9 to 13 is the power and reset breakout's, joined to nothing. The pad cable and the UNO's D6, D7 and D8 leads run in under the UNO's lead bundle at the frame's right; where they land is under the leads. Say where, or route them where the eye can see, and the sheet will read them."
     },
     "R1.1": {
-      "state": "check",
-      "note": "R1, the trigger resistor: stands over column 49 on the middle board's rails side with one lead down into row f at 49; the green TRIG lead from the UNO's D3 lands in a housing at column 47, row f; a thin bare lead curves from under that housing toward column 46 row h. The eye cannot say whether R1's other lead reaches column 47 or the scope's trigger lead does. Meter: UNO D3 to one end of R1, the other end to the scope's trigger lead, and the two ends not to each other."
+      "state": "done",
+      "note": "R1, the trigger resistor, flattened 2026-09-15: lies in row a of the middle board's chip-board side from column 9, where the UNO's green D3 lead lands in a housing (rows d and e), to column 6, where the red lead to the scope's CH1 lands. MEASURED 2026-09-15 21:14 by the bring-up's step 6.1: TRIG 20 stopped the scope on CH1."
     },
     "R1.2": {
-      "state": "check",
-      "note": "R1, the trigger resistor: stands over column 49 on the middle board's rails side with one lead down into row f at 49; the green TRIG lead from the UNO's D3 lands in a housing at column 47, row f; a thin bare lead curves from under that housing toward column 46 row h. The eye cannot say whether R1's other lead reaches column 47 or the scope's trigger lead does. Meter: UNO D3 to one end of R1, the other end to the scope's trigger lead, and the two ends not to each other."
+      "state": "done",
+      "note": "R1, the trigger resistor, flattened 2026-09-15: lies in row a of the middle board's chip-board side from column 9, where the UNO's green D3 lead lands in a housing (rows d and e), to column 6, where the red lead to the scope's CH1 lands. MEASURED 2026-09-15 21:14 by the bring-up's step 6.1: TRIG 20 stopped the scope on CH1."
     },
     "R2.1": {
       "state": "plan",

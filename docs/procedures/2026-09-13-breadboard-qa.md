@@ -529,3 +529,14 @@ worst residual 8 px) and re-taken: the rings sit on the holes in
 every one. Focus 18. `docs/rig.md` has the dimensions and each
 camera's job and scale; the side eyes' baseline frames are in the lab
 folder.
+
+## The trigger, cleared, 2026-09-15 21:14
+
+R1 flattened and the leads pointed out: the UNO's green D3 lands in a
+housing at column 9 of the middle board's chip-board side, R1 lies in
+row a from column 9 to column 6, and the red lead to the scope's CH1
+takes column 6. The eye places the parts; the instrument settles the
+net: step 6.1 run again, TRIG 20 stopped the scope on CH1, and the
+pulse measures 5.4 V high, 874 us wide (`docs/lab/16-trigger-on-ch1.png`),
+the firmware's millisecond less the loop it was raised in. R1 is done
+on the sheet.
