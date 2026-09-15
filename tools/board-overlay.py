@@ -351,8 +351,9 @@ def read_board(m, name, xs, ys, L):
     mid = sorted((1080 - y for y in fj), key=lambda x: -abs(x - rail_x))
     rails_x = sorted((1080 - y for y in ae), key=lambda x: -abs(x - rail_x))
     yt, yb = anchors[0][1], anchors[-1][1]
-    b["rows"] = {"middle": {"y_top": yt, "x_top": mid, "y_bottom": yb, "x_bottom": mid},
-                 "rails": {"y_top": yt, "x_top": rails_x, "y_bottom": yb, "x_bottom": rails_x}}
+    letters = {s: b.get("rows", {}).get(s, {}).get("letters", "") for s in ("middle", "rails")}
+    b["rows"] = {"middle": {"y_top": yt, "x_top": mid, "y_bottom": yb, "x_bottom": mid, "letters": letters["middle"]},
+                 "rails": {"y_top": yt, "x_top": rails_x, "y_bottom": yb, "x_bottom": rails_x, "letters": letters["rails"]}}
     # the inner rail row (next to the board's blue line) is GND, the outer +5V
     b["rail_x"] = {"GND": {"y_top": yt, "x_top": 1080 - inner, "y_bottom": yb, "x_bottom": 1080 - inner},
                    "+5V": {"y_top": yt, "x_top": 1080 - outer, "y_bottom": yb, "x_bottom": 1080 - outer}}

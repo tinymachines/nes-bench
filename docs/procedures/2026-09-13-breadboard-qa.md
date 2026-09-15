@@ -378,3 +378,24 @@ which row and column a housing's pins are in cannot be read from
 above. The overlay draws one panel per board, the middle board above
 the right one as they lie. Rev J: 47 pins done, 7 to check, all seven
 on the middle board's two parts.
+
+## The register read back through the console, 2026-09-15 evening
+
+With the console polling (the multicart's menu) and the bridge in
+MODE INJECT, bytes were SET one at a time and D0 read on the scope's
+CH4, triggered on the latch's fall on CH2 (20 us/div; the traces read
+off the scope's own screenshots, since the DS1054Z's waveform query
+came back empty over the LAN). The latch is 3.6 us wide; the first
+clock follows the fall by about 7 us and the rest at 13 us, eight in
+all, then DS (ground) shows. Pressed reads LOW on D0.
+
+What read right, twice each: 00 (nothing pressed), ff (everything),
+01 (A alone), 80 (Right alone), 03 (A and B), 7f (A to Left). What did
+not: 02, 04, 08, 10, 20 and 40 (one bit alone, B to Left) each showed
+the pressed bit only as a sliver at its own position and then LOW at
+position 8 (Right); 06 (B and Select) showed B at position 2 and
+Select at position 8. So the register, the six grey lines and the 165
+carry every bit when the byte has A pressed or several bits pressed,
+and lose a lone middle bit to the Right position. The eye cannot see
+this; a probe on CH1 can: U3 pin 1 (QB) with SET 02, then U2 pin 5 (G)
+with the same, splits the 595 from the 165 in two captures.
