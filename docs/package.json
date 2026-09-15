@@ -2,14 +2,13 @@
   "org": "tinymachines",
   "project": "nes-bench",
   "docno": "TM-NESB-001",
-  "rev": "J",
+  "rev": "K",
   "drawn": "bisenbek",
   "page": "ansi-a",
   "title": "NES controller-port bridge, v1b",
   "intro": [
     "The bench drives an unmodified NES-001 through its controller port and records what it does. This package is the v1b build: an Arduino UNO between a Raspberry Pi and the console, on one 5 V rail.",
-    "Nothing is placed or typed by hand: the schematic's coordinates come from the parts' own sizes, and every list and diagram here is read back out of it, the lab log and the bring-up tool. Four sheets are ANSI B: their type would print below 5 pt on letter, and the package refuses that.",
-    "AUTHORED means not yet measured. MEASURED carries its date and its record in docs/lab-notebook.md."
+    "Nothing is placed by hand: every coordinate, list and diagram derives from the schematic, the lab log and the bring-up tool. Four sheets are ANSI B. AUTHORED means not yet measured; MEASURED carries a date."
   ],
   "sheets": [
     {
@@ -156,6 +155,11 @@
       "J",
       "2026-09-15",
       "the middle board mapped: the pad housing and R1 on the sheet"
+    ],
+    [
+      "K",
+      "2026-09-15",
+      "R2 and C4 on the 165's clock pin; the trigger to CH1"
     ]
   ]
 }

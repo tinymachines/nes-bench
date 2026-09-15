@@ -58,8 +58,14 @@ CHIPS = {
 }
 # Decoupling: rail to rail, in the empty column beside each chip.
 CAPS = {"C1": 16, "C2": 25, "C3": 34}
-# The trigger resistor, out of the way at the end of the board.
-RES = {"R1": (36, 38)}
+# The trigger resistor, out of the way at the end of the board, and the
+# clock pin's series resistor (added 2026-09-15) in the free columns
+# before U1, its filter capacitor sharing its second column and going
+# to the GND rail.
+RES = {"R1": (36, 38), "R2": (5, 6)}
+RES_PART = {"R1": "100R", "R2": "1k"}
+RES_NOTE = {"R1": "to the scope CH1 (the trigger)", "R2": "CON_CLK in, CP out"}
+CAP_TO_GND = {"C4": 6}
 # The cut cable's lead colours, which are the ones in your hand. Pin
 # order is the measured pinout: 1 GND, 2 CLK, 3 OUT0, 4 D0, 5 +5V.
 LEAD = {1: ("yellow", "#d9b400"), 2: ("blue", "#1b64c8"), 3: ("black", "#222222"),
@@ -191,6 +197,11 @@ def endpoint(ref, pin, pinname, terms):
     if ref in RES:
         c = RES[ref][0] if pin == 1 else RES[ref][1]
         return {"x": cx(c), "y": cy("H"), "half": "lower", "at": f"{ref} col {c} row H"}
+    if ref in CAP_TO_GND:
+        c = CAP_TO_GND[ref]
+        if pin == 1:
+            return {"x": cx(c), "y": cy("J"), "half": "lower", "at": f"{ref} col {c} row J"}
+        return {"x": cx(c), "y": Y_RAIL_BN, "half": "rail", "at": f"{ref} on the bottom GND rail"}
     t = terms[(ref, pinname)]
     return {"x": t["x"], "y": t["y"], "half": "term", "at": f"{ref} {pinname}"}
 
@@ -285,8 +296,12 @@ def main():
         d.text(cx(col) + 14, (Y_RAIL_BN + Y_RAIL_BP) / 2 + 4, f"{ref} 100nF", "col")
     for ref, (c1, c2) in RES.items():
         d.add(f'<rect class="pass" x="{cx(c1)}" y="{cy("H")-7}" width="{cx(c2)-cx(c1)}" height="14" rx="3"/>')
-        d.text((cx(c1) + cx(c2)) / 2, cy("H") - 12, f"{ref} 100R", "col", "middle")
-        d.text(cx(c2) + 12, cy("G") + 4, "to the scope EXT TRIG", "col")
+        d.text((cx(c1) + cx(c2)) / 2, cy("H") - 12, f"{ref} {RES_PART[ref]}", "col", "middle")
+        d.text(cx(c2) + 12, cy("G") + 4, RES_NOTE[ref], "col")
+    # A capacitor from a strip to the GND rail: a box standing between them.
+    for ref, c in CAP_TO_GND.items():
+        d.add(f'<rect class="pass" x="{cx(c)-7}" y="{cy("J")}" width="14" height="{Y_RAIL_BN-cy("J")}" rx="3"/>')
+        d.text(cx(c) + 12, (cy("J") + Y_RAIL_BN) / 2 + 4, f"{ref} 100pF", "col")
 
     # ---------------------------------------------------------- the wires
     wires = []

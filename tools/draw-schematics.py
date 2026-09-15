@@ -505,7 +505,7 @@ def _v1b_body_1(sh):
              (11, "5A", "GND"), (13, "6A", "GND"), (14, "VCC", "+5V"), (7, "GND", "GND")],
             [(2, "1Y", "/PL"), (4, "2Y", "NC"), (6, "3Y", "NC"), (8, "4Y", "NC"), (10, "5Y", "NC"),
              (12, "6Y", "NC")], extra="2.0 V threshold: safe on NMOS OUT0")
-    hct165(sh, *sh.slot(0, 2), "U2", "/PL", "CON_CLK", "CON_D0",
+    hct165(sh, *sh.slot(0, 2), "U2", "/PL", "CP", "CON_D0",
            part="74HC165  at +5V (the TI bag)", inputs=Q_NETS)
     band2 = "DECOUPLING, AND WHAT THE CONSOLE ACTUALLY DOES"
     sh.bank(*sh.slot(1, 0, label=band2), ["C1", "C2", "C3"], "100nF", "+5V", "GND")
@@ -516,6 +516,14 @@ def _v1b_body_1(sh):
         "QH shows A. Each CLK rising edge shifts the next bit out: B, Select, Start, Up, Down, Left,",
         "Right, then DS = GND, so the ninth read and later return 1 as an original pad does.",
         "Pressed is LOW, which is what the pad's own 4021 drives."])
+    band3 = "THE CLOCK PIN, FILTERED (added 2026-09-15)"
+    sh.twopin(*sh.slot(2, 0, label=band3), "R2", "1k", "CON_CLK", "CP")
+    sh.twopin(*sh.slot(2, 1), "C4", "100pF", "CP", "GND")
+    sh.note(*sh.slot(2, 2), [
+        "MEASURED 2026-09-15: a lone pressed bit from B to Left showed on D0 for 50 ns and the",
+        "register read as if shifted once too often; D0's own falling edge was re-clocking the 165.",
+        "R2 and C4 (100 ns) sit at pin 2 against a spike that short; the console's clock is",
+        "microseconds wide and passes. The UNO's D2 still counts CON_CLK ahead of R2."])
 
 
 def _v1b_body_2(sh):
@@ -537,9 +545,9 @@ def _v1b_body_2(sh):
          (9, "QH'", "NC")], extra="one RCLK edge = one byte")
     band2 = "THE TRIGGER, AND WHY THESE PINS"
     sh.twopin(*sh.slot(1, 0, label=band2), "R1", "100R", "TRIG", "EXT_TRIG")
-    sh.note(*sh.slot(1, 1), ["to the DS1054Z's rear EXT TRIG. Check the input's",
-                             "rating first; if 5 V exceeds it, a 2:1 divider",
-                             "(two 1k) after R1."])
+    sh.note(*sh.slot(1, 1), ["to the DS1054Z's CH1 (MEASURED 2026-09-15: this",
+                             "scope has no external trigger input; its rear BNC",
+                             "is Trig Out). Trigger on CH1, 2.5 V rising."])
     sh.note(*sh.slot(1, 2), [
         "D5 is Timer1's external clock input (T1): a 16-bit hardware counter of",
         "OUT0 rising edges, which is the latch index. D2 (INT0) takes a falling-edge",
@@ -556,7 +564,7 @@ def _v1b_body_2(sh):
     sh.note(*sh.slot(2, 1), [
         "One normally-open contact in series with one lead of the AC adapter cable, never",
         "the mains side and never both. Grounds: J1 pin 1, the bridge, the UNO GND and the",
-        "Pi GND through USB are one net. Scope: video on CH3, EXT TRIG from R1, SCPI by LAN."])
+        "Pi GND through USB are one net. Scope: video on CH3, the trigger from R1 on CH1, SCPI by LAN."])
 
 
 def sheet_v1b():

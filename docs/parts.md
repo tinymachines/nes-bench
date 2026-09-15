@@ -19,6 +19,8 @@ Every distinct part across every sheet, with where it is.
 | 74HCT04 | on hand | SN74HCT04N, the tube that arrived 2026-09-09 |
 | 74HC165 | on hand | the TI bag. v2b needs a second one |
 | 100nF | on hand | v2b runs seven |
+| 1k | unlisted | not in the status table: add it |
+| 100pF | unlisted | not in the status table: add it |
 | Arduino UNO R3 (ATmega328P) | on hand | the pile |
 | 74HC595 | on hand | the box of 30 |
 | 100R | on hand | the trigger |
@@ -37,6 +39,8 @@ Every distinct part across every sheet, with where it is.
 | power | to order | pad adapter only, the battery |
 | +330R | check | pad adapter only, the LED |
 
+**2 part(s) have no status**: 1k, 100pF. Add them to `STATUS` in `tools/parts.py`.
+
 ## bench-v1b
 
 **Build this first.** The UNO bridge, one port, everything at 5 V.
@@ -48,6 +52,8 @@ Every distinct part across every sheet, with where it is.
 | C1 | 100nF | +5V to GND |
 | C2 | 100nF | +5V to GND |
 | C3 | 100nF | +5V to GND |
+| R2 | 1k | CON_CLK to CP |
+| C4 | 100pF | CP to GND |
 | A1 | Arduino UNO R3 (ATmega328P) | 5 V logic, 16 MHz |
 | U3 | 74HC595  at +5V | one RCLK edge = one byte |
 | R1 | 100R | TRIG to EXT_TRIG |

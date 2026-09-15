@@ -16,7 +16,7 @@ Pin numbers are the ones moulded into this console's port housing and the signal
 | pin | signal | NES harness | breakout lead | on the bridge |
 |---|---|---|---|---|
 | 1 | GND | brown | yellow | the GND rail |
-| 2 | CLK | red | blue | U2-2, A1 D2 (INT0) |
+| 2 | CLK | red | blue | R2-1, A1 D2 (INT0) |
 | 3 | OUT0 | orange | black | U1-1, A1 D5 (T1) |
 | 4 | D0 | yellow | green | U2-9 |
 | 5 | +5V | white | red | not used: the bridge runs from the UNO's 5 V |
@@ -52,7 +52,7 @@ Nine Dupont wires from the UNO's digital header, colour per pin as read off the 
 
 | UNO pin | colour | net | to |
 |---|---|---|---|
-| D2 | blue | CON_CLK | J1-2, U2-2 |
+| D2 | blue | CON_CLK | J1-2, R2-1 |
 | D3 | green | TRIG | R1-1 |
 | D5 | yellow | CON_OUT0 | J1-3, U1-1 |
 | D6 | orange | PAD_LATCH | J2-3 |
@@ -102,7 +102,7 @@ Hex inverter, six independent gates. HCT inputs switch at TTL levels (high from 
 | pin | name | on the part | on this bench |
 |---|---|---|---|
 | 1 | /PL | parallel load, active low: inputs copied in while low | /PL: U1-2 |
-| 2 | CP | shift clock, rising edge, when /CE is low | CON_CLK: J1-2, A1 D2 (INT0) |
+| 2 | CP | shift clock, rising edge, when /CE is low | CP: R2-2, C4-1 |
 | 3 | E | parallel input E, the fourth bit out | Q_START: U3-3 |
 | 4 | F | parallel input F, the third bit out | Q_SEL: U3-2 |
 | 5 | G | parallel input G, the second bit out | Q_B: U3-1 |

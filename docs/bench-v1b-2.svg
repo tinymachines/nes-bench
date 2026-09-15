@@ -232,9 +232,9 @@
 <text class="pin" x="130.8" y="479.0" text-anchor="middle">100R</text>
 <path class="offsheet" d="M170.8 467.0 L220.4 467.0 L228.4 475.0 L220.4 483.0 L170.8 483.0 Z"/>
 <text class="net" x="175.8" y="478.5" text-anchor="start">EXT_TRIG</text>
-<text class="note" x="260.4" y="475.0" text-anchor="start">to the DS1054Z's rear EXT TRIG. Check the input's</text>
-<text class="note" x="260.4" y="488.0" text-anchor="start">rating first; if 5 V exceeds it, a 2:1 divider</text>
-<text class="note" x="260.4" y="501.0" text-anchor="start">(two 1k) after R1.</text>
+<text class="note" x="260.4" y="475.0" text-anchor="start">to the DS1054Z's CH1 (MEASURED 2026-09-15: this</text>
+<text class="note" x="260.4" y="488.0" text-anchor="start">scope has no external trigger input; its rear BNC</text>
+<text class="note" x="260.4" y="501.0" text-anchor="start">is Trig Out). Trigger on CH1, 2.5 V rising.</text>
 <text class="note" x="555.0" y="475.0" text-anchor="start">D5 is Timer1's external clock input (T1): a 16-bit hardware counter of</text>
 <text class="note" x="555.0" y="488.0" text-anchor="start">OUT0 rising edges, which is the latch index. D2 (INT0) takes a falling-edge</text>
 <text class="note" x="555.0" y="501.0" text-anchor="start">ISR counting clocks per poll, 480/s, nothing for a 16 MHz part. D3 rises at</text>
@@ -247,5 +247,5 @@
 <text class="note" x="48.0" y="656.0" text-anchor="start">because the Songle SRD-05VDC and the Tongling board are 5 V coil parts.</text>
 <text class="note" x="515.4000000000001" y="630.0" text-anchor="start">One normally-open contact in series with one lead of the AC adapter cable, never</text>
 <text class="note" x="515.4000000000001" y="643.0" text-anchor="start">the mains side and never both. Grounds: J1 pin 1, the bridge, the UNO GND and the</text>
-<text class="note" x="515.4000000000001" y="656.0" text-anchor="start">Pi GND through USB are one net. Scope: video on CH3, EXT TRIG from R1, SCPI by LAN.</text>
+<text class="note" x="515.4000000000001" y="656.0" text-anchor="start">Pi GND through USB are one net. Scope: video on CH3, the trigger from R1 on CH1, SCPI by LAN.</text>
 </svg>

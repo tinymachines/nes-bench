@@ -12,9 +12,10 @@
     "SECOND RIG POSE 2026-09-15 01:45 EDT: the UNO's leads re-run direct from its header and the boards shifted right. The map was read off the new frame by tools/board-overlay.py --read (every hole found, the rows and columns fitted, the views re-aimed) and every landing read on tools/view-rings.py projections. LIMIT met here: a Dupont housing hides which of its positions is loaded, and a raised object reads outward from the frame's centre (about one pixel per 5 mm of height per 100 px of offset), so a housing that stands across two columns cannot be settled from above; those pins stay checks for the meter or the side eye.",
     "METERED 2026-09-15 EDT by the user: U1-1 and the three SPI pins on U3 checked for continuity with a meter after the second rig pose. The eye reads the housings as before (it cannot settle a housing's positions); the meter can, and did.",
     "A check on a pin the map does not place (the UNO's, the console lead's) may carry \"at\": {\"col\": N, \"side\": \"rail\"|\"middle\"|\"rails\"} naming the place on the board its note is about; the overlay circles that spot.",
-    "MIDDLE BOARD MAPPED 2026-09-15: the map covers the middle board (docs/board-map.json, `parts`: J2 and R1 placed where the eye reads them); their pins are listed here from this look on."
+    "MIDDLE BOARD MAPPED 2026-09-15: the map covers the middle board (docs/board-map.json, `parts`: J2 and R1 placed where the eye reads them); their pins are listed here from this look on.",
+    "THIRD RIG POSE 2026-09-15 13:16 EDT: the boards rearranged on the frame (the chip board at the top, its rails along the frame's top edge, the middle board below it, a fourth rail-only board at the bottom); the map re-read by --read with new bands. R2 and C4 (the clock pin's filter, added by the user this afternoon) went on the schematic and are looked for here."
   ],
-  "read": "2026-09-15 EDT (both boards mapped; the pad housing and R1 read)",
+  "read": "2026-09-15 13:16 EDT (the boards rearranged; R2 and C4 on the sheet)",
   "scope": "grounds, +5 V, the J1 console side, the J1 to U3 chain, the UNO's leads, and on the middle board the pad housing (J2) and the trigger resistor (R1)",
   "pins": {
     "U1.2": {
@@ -214,6 +215,22 @@
     "R1.2": {
       "state": "check",
       "note": "R1, the trigger resistor: stands over column 49 on the middle board's rails side with one lead down into row f at 49; the green TRIG lead from the UNO's D3 lands in a housing at column 47, row f; a thin bare lead curves from under that housing toward column 46 row h. The eye cannot say whether R1's other lead reaches column 47 or the scope's trigger lead does. Meter: UNO D3 to one end of R1, the other end to the scope's trigger lead, and the two ends not to each other."
+    },
+    "R2.1": {
+      "state": "check",
+      "note": "R2 and C4, the filter on U2's clock pin (1 k in series with CON_CLK, 100 pF from CP to ground): the user reports them added, but at column 24 the eye sees the D2 blue and the console's red CLK lead landing direct in a two-pin housing and no resistor or capacitor on either side of U2. Say where they sit; the walk of single bits read the same after them as before (a lone B to Left bit still shifts to the Right position), which is what an RC away from the pin, or a spike that comes in through the chip's ground rather than the clock lead, would give."
+    },
+    "R2.2": {
+      "state": "check",
+      "note": "R2 and C4, the filter on U2's clock pin (1 k in series with CON_CLK, 100 pF from CP to ground): the user reports them added, but at column 24 the eye sees the D2 blue and the console's red CLK lead landing direct in a two-pin housing and no resistor or capacitor on either side of U2. Say where they sit; the walk of single bits read the same after them as before (a lone B to Left bit still shifts to the Right position), which is what an RC away from the pin, or a spike that comes in through the chip's ground rather than the clock lead, would give."
+    },
+    "C4.1": {
+      "state": "check",
+      "note": "R2 and C4, the filter on U2's clock pin (1 k in series with CON_CLK, 100 pF from CP to ground): the user reports them added, but at column 24 the eye sees the D2 blue and the console's red CLK lead landing direct in a two-pin housing and no resistor or capacitor on either side of U2. Say where they sit; the walk of single bits read the same after them as before (a lone B to Left bit still shifts to the Right position), which is what an RC away from the pin, or a spike that comes in through the chip's ground rather than the clock lead, would give."
+    },
+    "C4.2": {
+      "state": "check",
+      "note": "R2 and C4, the filter on U2's clock pin (1 k in series with CON_CLK, 100 pF from CP to ground): the user reports them added, but at column 24 the eye sees the D2 blue and the console's red CLK lead landing direct in a two-pin housing and no resistor or capacitor on either side of U2. Say where they sit; the walk of single bits read the same after them as before (a lone B to Left bit still shifts to the Right position), which is what an RC away from the pin, or a spike that comes in through the chip's ground rather than the clock lead, would give."
     }
   },
   "rails": {

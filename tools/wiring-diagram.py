@@ -50,7 +50,7 @@ PITCH = 24          # pin pitch on the drawn packages
 STUB = 18           # pin stub outside the body
 TRACK = 15          # spacing between tracks in a channel
 COL = 13            # spacing between around-verticals in a gap
-GAP = 132           # between parts along the row
+GAP = 118           # between parts along the row (132 until 2026-09-15: R2 and C4 joined the row and the sheet has to keep 5 pt on ANSI B)
 BODY = 170          # height of a body: the pin names run up inside it from both edges
 HPITCH = 30         # pin pitch on the header parts, whose names are longer
 HEADING_H = 60
@@ -75,6 +75,10 @@ ROW = [
                     (None, "D6"), (None, "D5 (T1)"), (None, "D3"), (None, "D2 (INT0)")],
             "bottom": [(None, "5V"), (None, "GND"), (None, "USB-B"), (None, "D0, D1")]}),
     ("R1", {"kind": "header", "label": "R1 100R", "sub": "trigger",
+            "top": [(1, "1")], "bottom": [(2, "2")]}),
+    ("R2", {"kind": "header", "label": "R2 1k", "sub": "clock filter",
+            "top": [(1, "1")], "bottom": [(2, "2")]}),
+    ("C4", {"kind": "header", "label": "C4 100pF", "sub": "clock filter",
             "top": [(1, "1")], "bottom": [(2, "2")]}),
     ("J2", {"kind": "header", "label": "J2 pad cable", "sub": "the pad half",
             "top": [(1, "GND"), (2, "CLK"), (3, "OUT0"), (4, "D0"), (5, "+5V")], "bottom": []}),

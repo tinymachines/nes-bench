@@ -486,3 +486,28 @@ console's microseconds-wide clock), and the CLK and D0 leads kept
 apart on the board. The capture on U2 pin 2 would show the spike
 itself; the fix can be tried without it, since the walk of single
 bits is the check.
+
+## The walk after the RC, 2026-09-15 afternoon: unchanged
+
+The user reports a 1 k and 100 pF added at U2 pin 2. The walk of
+single bits through the register reads exactly as before: A and Right
+alone right, every byte with A pressed right, a lone bit from B to
+Left shown for a sliver and then the Right position low; and three
+multi-bit bytes (55, aa, 1b) read as the model "every falling edge of
+D0 outside the load adds one shift" predicts, bit for bit. So the
+extra clock does not come in on the clock lead, or the RC is not
+between the lead and the pin: the eye, on the rearranged boards (the
+map re-read for the new pose), finds the blue D2 and the console's red
+CLK landing direct in a housing at column 24 and no resistor or
+capacitor beside U2. The mechanism that fits an RC-proof spike is
+ground bounce: the 165's QH pulls the console's D0 line, the cable and
+a 1x probe down hard, its ground pin lifts on the rail links' length,
+and the clock pin, idle high, dips and recovers as the chip sees it.
+The fix for that is a 100 nF straight across U2 pins 8 and 16 with the
+shortest leads possible (the design has one, and the two on the rails
+at columns 17 and 29 are not it), the probes on 10x, and a short
+ground lead from U2 pin 8 to the rail. The walk stays the check.
+
+R2 and C4 are on the schematic (sheet 1, band 3) and the cheat sheet
+from this revision, as built by the user; they are checks on the
+as-built sheet until the eye or a meter places them.

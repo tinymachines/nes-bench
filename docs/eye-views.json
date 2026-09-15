@@ -8,7 +8,8 @@
   "RE-AIMED 2026-09-15 06:55 EDT by board-overlay.py --read off b10-all.jpg: scale 1.000, -0.0 degrees, shift [0.0, 0.0], worst residual 0 px.",
   "RE-AIMED 2026-09-15 08:27 EDT by board-overlay.py --read off b11-all.jpg: scale 1.001, 0.0 degrees, shift [-2.0, -0.0], worst residual 1 px.",
   "RE-AIMED 2026-09-15 08:27 EDT by board-overlay.py --read off b11-all.jpg: scale 1.000, 0.0 degrees, shift [0.0, 0.0], worst residual 0 px.",
-  "RE-AIMED 2026-09-15 08:34 EDT by board-overlay.py --read off b11-all.jpg: scale 1.000, 0.0 degrees, shift [0.0, 0.0], worst residual 0 px."
+  "RE-AIMED 2026-09-15 08:34 EDT by board-overlay.py --read off b11-all.jpg: scale 1.000, 0.0 degrees, shift [0.0, 0.0], worst residual 0 px.",
+  "RE-AIMED 2026-09-15 13:16 EDT by board-overlay.py --read off b12-all.jpg: scale 0.955, -0.0 degrees, shift [-83.0, -244.0], worst residual 8 px."
  ],
  "camera": {
   "focus": 25,
@@ -20,218 +21,218 @@
  "views": {
   "grey-mid": {
    "zoom": 500,
-   "pan": 7200,
-   "tilt": -28800,
+   "pan": 0,
+   "tilt": -7200,
    "at": [
-    1089,
-    893
+    957,
+    609
    ]
   },
   "header": {
    "zoom": 500,
-   "pan": -18000,
-   "tilt": 3600,
+   "pan": -25200,
+   "tilt": 25200,
    "at": [
-    558,
-    489
+    450,
+    223
    ]
   },
   "j1-cap": {
    "zoom": 500,
-   "pan": 10800,
-   "tilt": 21600,
+   "pan": 3600,
+   "tilt": 36000,
    "at": [
-    1189,
-    293
+    1053,
+    36
    ]
   },
   "left-cap": {
    "zoom": 500,
-   "pan": 14400,
-   "tilt": -36000,
+   "pan": 7200,
+   "tilt": -28800,
    "at": [
-    1240,
-    1190
+    1101,
+    893
    ]
   },
   "left-greys": {
    "zoom": 500,
-   "pan": -7200,
-   "tilt": -36000,
+   "pan": -14400,
+   "tilt": -21600,
    "at": [
-    799,
-    1084
+    680,
+    792
    ]
   },
   "left-links": {
    "zoom": 500,
-   "pan": 21600,
-   "tilt": -36000,
+   "pan": 14400,
+   "tilt": -21600,
    "at": [
-    1411,
-    1101
+    1265,
+    808
    ]
   },
   "right-link": {
    "zoom": 500,
-   "pan": 25200,
-   "tilt": 18000,
+   "pan": 18000,
+   "tilt": 36000,
    "at": [
-    1500,
-    310
+    1350,
+    52
    ]
   },
   "strip-bottom": {
    "zoom": 500,
-   "pan": -10800,
-   "tilt": -21600,
+   "pan": -18000,
+   "tilt": 3600,
    "at": [
-    708,
-    782
+    593,
+    503
    ]
   },
   "strip-top": {
    "zoom": 500,
-   "pan": -14400,
-   "tilt": -21600,
+   "pan": -21600,
+   "tilt": 3600,
    "at": [
-    622,
-    779
+    511,
+    500
    ]
   },
   "u1-ends-bottom": {
    "zoom": 500,
-   "pan": -3600,
-   "tilt": 0,
+   "pan": -7200,
+   "tilt": 25200,
    "at": [
-    897,
-    523
+    774,
+    256
    ]
   },
   "u1-ends-top": {
    "zoom": 500,
-   "pan": -10800,
-   "tilt": 3600,
+   "pan": -14400,
+   "tilt": 25200,
    "at": [
-    732,
-    513
+    616,
+    246
    ]
   },
   "u1-left": {
    "zoom": 500,
-   "pan": -7200,
-   "tilt": -10800,
+   "pan": -10800,
+   "tilt": 10800,
    "at": [
-    819,
-    686
+    699,
+    411
    ]
   },
   "u1-rail": {
    "zoom": 500,
-   "pan": -7200,
-   "tilt": 10800,
+   "pan": -10800,
+   "tilt": 36000,
    "at": [
-    839,
-    390
+    718,
+    129
    ]
   },
   "u1-top": {
    "zoom": 500,
-   "pan": -10800,
-   "tilt": 3600,
+   "pan": -18000,
+   "tilt": 25200,
    "at": [
-    720,
-    492
+    605,
+    226
    ]
   },
   "u2-bottom": {
    "zoom": 500,
-   "pan": 7200,
-   "tilt": 3600,
+   "pan": 0,
+   "tilt": 25200,
    "at": [
-    1109,
-    500
+    976,
+    234
    ]
   },
   "u2-ends-bottom": {
    "zoom": 500,
-   "pan": 7200,
-   "tilt": 0,
+   "pan": 0,
+   "tilt": 21600,
    "at": [
-    1126,
-    529
+    992,
+    261
    ]
   },
   "u2-ends-top": {
    "zoom": 500,
-   "pan": 0,
-   "tilt": 0,
+   "pan": -7200,
+   "tilt": 25200,
    "at": [
-    958,
-    522
+    832,
+    255
    ]
   },
   "u2-rail": {
    "zoom": 500,
-   "pan": 3600,
-   "tilt": 18000,
+   "pan": -3600,
+   "tilt": 36000,
    "at": [
-    1034,
-    324
+    905,
+    66
    ]
   },
   "u2-top": {
    "zoom": 500,
-   "pan": 0,
-   "tilt": -3600,
+   "pan": -3600,
+   "tilt": 18000,
    "at": [
-    993,
-    597
+    865,
+    326
    ]
   },
   "u3-bottom": {
    "zoom": 500,
-   "pan": 21600,
-   "tilt": 3600,
+   "pan": 14400,
+   "tilt": 25200,
    "at": [
-    1440,
-    506
+    1292,
+    239
    ]
   },
   "u3-ends-bottom": {
    "zoom": 500,
-   "pan": 21600,
-   "tilt": 0,
+   "pan": 14400,
+   "tilt": 21600,
    "at": [
-    1438,
-    533
+    1290,
+    265
    ]
   },
   "u3-ends-top": {
    "zoom": 500,
-   "pan": 14400,
-   "tilt": 0,
+   "pan": 7200,
+   "tilt": 25200,
    "at": [
-    1252,
-    523
+    1113,
+    256
    ]
   },
   "u3-rail": {
    "zoom": 500,
-   "pan": 18000,
-   "tilt": 21600,
+   "pan": 10800,
+   "tilt": 36000,
    "at": [
-    1337,
-    302
+    1194,
+    45
    ]
   },
   "u3-top": {
    "zoom": 500,
-   "pan": 14400,
-   "tilt": -7200,
+   "pan": 7200,
+   "tilt": 18000,
    "at": [
-    1267,
-    605
+    1127,
+    334
    ]
   }
  }
