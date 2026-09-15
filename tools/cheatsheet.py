@@ -227,6 +227,30 @@ def pinmap(sheet="bench-v1b"):
     return [con, pwr, head, rib]
 
 
+# The scope's four channels, as wired 2026-09-15 (the user), and the
+# trigger. CH1 is kept for the console's master clock because the
+# alignment classifier needs that channel and no other; CH3 is where
+# the video probe has sat since 2026-09-07 (1,512 sync pulses counted
+# there). The trigger is not a channel: UNO D3 through R1 to the rear
+# EXT TRIG input, 1.5 V rising, so all four channels stay signals.
+SCOPE = [
+    ("CH1", "reserved: the console's master clock", "later, on the mainboard", "the alignment classifier's channel; do not reuse"),
+    ("CH2", "CON_OUT0 (latch)", "U1 pin 1", "one pulse per poll, the poll's start"),
+    ("CH3", "composite video", "the console's video out, through the splitter", "the picture the poll lands in"),
+    ("CH4", "CON_D0", "U2 pin 9", "the byte the console reads back"),
+    ("EXT TRIG (rear)", "TRIG", "UNO D3 through R1 (100 ohm)", "rises at latch T for a millisecond; level 1.5 V, rising edge"),
+]
+
+
+def scope_table():
+    return ("The scope: channels and the trigger",
+            "As wired 2026-09-15. Probe grounds on the bridge's GND rail, which is the console's ground. "
+            "CH1 is held for the master clock (the alignment classifier's channel); the trigger takes the "
+            "rear EXT TRIG input, not a channel, so all four stay signals. Step 6.1 of the bring-up "
+            "arms the scope on EXT TRIG and fires TRIG at a latch.",
+            ["input", "signal", "probe on", "why"], [list(r) for r in SCOPE])
+
+
 def chip_sheet(ref, sheet="bench-v1b"):
     """(ref, part, description, headers, rows) for one chip on a sheet.
     Refuses a pin the schematic names differently from CHIPS."""
@@ -299,7 +323,7 @@ def render(sheet="bench-v1b"):
          "in one place in that tool and refused if the schematic names a pin differently.",
          "The same rows are sheets of the drawing package (`tools/make-package.py`).", "",
          f"Sheet: `{sheet}`.", ""]
-    for title, note, headers, rows in pinmap(sheet):
+    for title, note, headers, rows in pinmap(sheet) + [scope_table()]:
         L += [f"## {title}", "", note, "", md_table(headers, rows), ""]
     for ref in chip_refs(sheet):
         r, part, what, headers, rows = chip_sheet(ref, sheet)

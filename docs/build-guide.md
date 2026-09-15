@@ -22,8 +22,8 @@ observations are written down, is in
 | 1 | Instruments | done |
 | 2 | The console, measured | done |
 | 3 | The bridge, built | not started |
-| 4 | Joined | not started |
-| 5 | The head's hands | not started |
+| 4 | Joined | stopped at 5.1 |
+| 5 | The head's hands | stopped at 6.1 |
 
 ## Before the first sitting
 
@@ -227,7 +227,7 @@ The halves wired together. B0's first gate.
 python3 tools/bringup.py --session 4
 ```
 
-### 5.1  The two halves joined, eight clocks per latch on a game
+### 5.1  The two halves joined, eight clocks per latch on a game  (did not hold)
 
 Answers: the plan's B0 gate 1, which is the first thing the part gets to answer.
 
@@ -244,6 +244,8 @@ Photographs:
 
 - `docs/lab/05-bridge-joined.jpg`  (wanted)
 - `docs/lab/05-console-running.jpg`  (wanted)
+
+> Last run 2026-09-15 15:52:06: did not hold. 1203 polls in 20 s (60.1/s), clocks per poll {0: 18, 1: 37, 2: 29, 3: 28, 4: 12, 5: 4, 6: 12, 7: 32, 8: 826, 9: 40, 10: 35, 11: 10, 12: 16, 13: 37, 14: 35, 15: 27, 16: 5}  <- 377 polls were not 8 clocks
 
 ### 5.2  A pressed button reaches the console through the bridge
 
@@ -264,7 +266,7 @@ The trigger, the reset optocoupler and the power relay.
 python3 tools/bringup.py --session 5
 ```
 
-### 6.1  The trigger reaches the scope
+### 6.1  The trigger reaches the scope  (did not hold)
 
 - UNO D3 through a 100 ohm resistor to the scope's rear EXT TRIG.
 - Check the EXT TRIG input's rating first; if 5 V is over it, a 2:1 divider after the resistor.
@@ -274,6 +276,8 @@ Then it arms the scope on EXT TRIG and fires the bridge's trigger at a latch.
 Photographs:
 
 - `docs/lab/06-trigger-cable.jpg`  (wanted)
+
+> Last run 2026-09-15 15:52:46: did not hold. the scope did not trigger: check the resistor, the BNC, and EXT TRIG's level (1.5 V, rising)
 
 ### 6.2  The reset optocoupler pulses the console
 

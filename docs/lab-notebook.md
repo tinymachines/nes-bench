@@ -17,7 +17,7 @@ Those are in the log, marked, and are not counted below.
 
 ## Where the build stands
 
-6 of 6 attempted steps hold, over 11 attempts.
+6 of 8 attempted steps hold, over 13 attempts.
 
 | step | what it proves | attempts | state |
 |---|---|---|---|
@@ -27,6 +27,8 @@ Those are in the log, marked, and are not counted below.
 | 1.1 | The controller harness's colours against the port's pins | 1 | held |
 | 1.2 | The port's idle levels with the console on | 1 | held |
 | 2.1 | The scope on an original pad's port, a game running | 3 | held |
+| 5.1 | The two halves joined, eight clocks per latch on a game | 1 | did not hold |
+| 6.1 | The trigger reaches the scope | 1 | did not hold |
 
 ## Instruments
 
@@ -137,4 +139,32 @@ Clocks per poll: 8 clocks on 14 polls.
 Photograph pending: `docs/lab/02-probes-on-port.jpg`.
 
 Photograph pending: `docs/lab/02-scope-screen.jpg`.
+
+## Joined
+
+### 5.1  The two halves joined, eight clocks per latch on a game
+
+Answers: the plan's B0 gate 1, which is the first thing the part gets to answer.
+
+**2026-09-15 15:52:06**: did not hold. 1203 polls in 20 s (60.1/s), clocks per poll {0: 18, 1: 37, 2: 29, 3: 28, 4: 12, 5: 4, 6: 12, 7: 32, 8: 826, 9: 40, 10: 35, 11: 10, 12: 16, 13: 37, 14: 35, 15: 27, 16: 5}  <- 377 polls were not 8 clocks
+
+| | |
+|---|---|
+| polls per second | 60.15 |
+| polls logged | 1203 |
+| polls with eight clocks | 0.687 |
+
+Clocks per poll: 0 clocks on 18 polls, 1 clocks on 37 polls, 2 clocks on 29 polls, 3 clocks on 28 polls, 4 clocks on 12 polls, 5 clocks on 4 polls, 6 clocks on 12 polls, 7 clocks on 32 polls, 8 clocks on 826 polls, 9 clocks on 40 polls, 10 clocks on 35 polls, 11 clocks on 10 polls, 12 clocks on 16 polls, 13 clocks on 37 polls, 14 clocks on 35 polls, 15 clocks on 27 polls, 16 clocks on 5 polls.
+
+Photograph pending: `docs/lab/05-bridge-joined.jpg`.
+
+Photograph pending: `docs/lab/05-console-running.jpg`.
+
+## The head's hands
+
+### 6.1  The trigger reaches the scope
+
+**2026-09-15 15:52:46**: did not hold. the scope did not trigger: check the resistor, the BNC, and EXT TRIG's level (1.5 V, rising)
+
+Photograph pending: `docs/lab/06-trigger-cable.jpg`.
 
