@@ -42,6 +42,7 @@ from loadmod import load  # noqa: E402
 
 GREY = (150, 150, 150)
 PINK = (215, 20, 20)  # the check colour: red, heavy, seen at arm's length
+PLAN = (20, 140, 40)  # a placement asked for and not built yet: green
 PALETTE = [(122, 63, 191), (15, 143, 158), (181, 101, 29), (141, 31, 94), (63, 111, 42), (91, 91, 214), (194, 24, 91),
            (0, 121, 107), (230, 81, 0), (69, 39, 160), (46, 125, 50), (109, 76, 65), (2, 119, 189), (173, 20, 87),
            (85, 139, 47), (239, 108, 0), (40, 83, 147), (0, 131, 143), (158, 157, 36), (216, 67, 21), (21, 101, 192)]
@@ -97,6 +98,12 @@ def pin_hole(board, chip, pin):
 def part_hole(board, part, pin):
     """A single-row part's pin: the column counted from the pin-1 end
     along one side, and the outermost hole of that column's strip."""
+    if "holes" in part:
+        # a part whose pins sit on named holes (a capacitor across a chip's
+        # end, a resistor between two strips): [[column, side, row], ...]
+        col, side, i = part["holes"][pin - 1]
+        y = board.y(col)
+        return col, side, (board.x(side, i, y), y)
     lo, hi = part["columns"]
     col = hi - (pin - 1) if part.get("pin1", "hi") == "hi" else lo + (pin - 1)
     side = part["side"]
@@ -461,7 +468,7 @@ def main():
     notes, callout = [], {}
     on_map = {f"{ref}.{p}" for ref, chip in m["chips"].items() for p in range(1, chip["pins"] + 1)}
     on_map |= {f"{ref}.{p}" for ref, part in m.get("parts", {}).items() for p in range(1, part["pins"] + 1)}
-    checks = [(k, v) for k, v in status["pins"].items() if v.get("state") == "check"]
+    checks = [(k, v) for k, v in status["pins"].items() if v.get("state") in ("check", "plan")]
     # the pins the picture rings first, so the badges count up from 1 on
     # the board; a check on a pin the map does not place (the UNO, the
     # console lead) is listed after them with a hollow badge
@@ -471,6 +478,7 @@ def main():
             notes.append(text)
         callout[key] = notes.index(text) + 1
     hollow = {n for n in range(1, len(notes) + 1) if not any(k in on_map for k, m_ in callout.items() if m_ == n)}
+    plans = {n for k, n in callout.items() if status["pins"][k].get("state") == "plan"}
     try:
         note_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 19)
         badge_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 20)
@@ -547,9 +555,11 @@ def main():
                 col, side, (px, py) = hole(board, c, pin)
                 cx, cy = to_canvas(px, py)
                 st = state_of(ref, pin)
-                col_ = GREY if st == "done" else PINK if st == "check" else colour.get(net, (60, 60, 60))
-                r = 13 if st == "check" else 10
-                d.ellipse([cx - r, cy - r, cx + r, cy + r], outline=col_, width=5 if st == "check" else 3)
+                col_ = GREY if st == "done" else PINK if st == "check" else PLAN if st == "plan" else colour.get(net, (60, 60, 60))
+                r = 13 if st in ("check", "plan") else 10
+                d.ellipse([cx - r, cy - r, cx + r, cy + r], outline=col_, width=5 if st in ("check", "plan") else 3)
+                if st == "plan":
+                    d.ellipse([cx - r - 6, cy - r - 6, cx + r + 6, cy + r + 6], outline=col_, width=2)
                 if net in nl.RAILS:
                     rx, ry = to_canvas(board.rail_x(net, py), py)
                     d.line([cx, cy, rx, ry], fill=col_, width=3)
@@ -573,12 +583,13 @@ def main():
             pts = [p for p in pts if p[3] == board_name]
             if not pts:
                 continue
+            kc = PLAN if k in plans else PINK
             mx, my = sum(p[0] for p in pts) / len(pts), sum(p[1] for p in pts) / len(pts)
             rr = max(((p[0] - mx) ** 2 + (p[1] - my) ** 2) ** 0.5 for p in pts) + 42
-            d.ellipse([mx - rr, my - rr, mx + rr, my + rr], outline=PINK, width=6)
+            d.ellipse([mx - rr, my - rr, mx + rr, my + rr], outline=kc, width=6)
             up = pts[0][2] == "middle"
             bx, by = mx + rr * 0.7, my - rr * 0.7 if up else my + rr * 0.7
-            d.ellipse([bx - 20, by - 20, bx + 20, by + 20], fill=PINK)
+            d.ellipse([bx - 20, by - 20, bx + 20, by + 20], fill=kc)
             w = d.textlength(str(k), font=badge_font)
             d.text((bx - w / 2, by - 13), str(k), fill=(255, 255, 255), font=badge_font)
         for name in ("GND", "+5V"):
@@ -611,20 +622,21 @@ def main():
         canvas.paste(c, (0, y))
         y += c.height
     d.text((12, 10), f"Bridge v1b on the boards: the eye's frame with every chip and part pin's landing ringed and named. {status['read']}.", fill=(30, 30, 30), font=title)
-    d.text((12, 44), "Grey: seen in its hole. Red: needs a check (the as-built sheet's note says what). Colour: not built yet. A ring is the outermost hole of the pin's strip; a rail pin points at its rail. "
+    d.text((12, 44), "Grey: seen in its hole. Red: needs a check. Green: a placement asked for, not built yet (the note says where). Colour: not built yet. A ring is the outermost hole of the pin's strip; a rail pin points at its rail. "
                      f"Frame {m['frame']}.", fill=(70, 70, 70), font=small)
     top_pad, H = 0, H_all
     if note_lines:
         y = H_all + 80 + 30
         d.line([12, y - 12, W - 12, y - 12], fill=(200, 200, 200), width=2)
-        d.text((12, y - 6), "The checks, as the as-built sheet notes them (a hollow badge is a pin the map does not place: the UNO's, the console lead's):", fill=(30, 30, 30), font=badge_font)
+        d.text((12, y - 6), "The checks (red) and the placements to make (green), as the as-built sheet notes them; a hollow badge is a pin the map does not place:", fill=(30, 30, 30), font=badge_font)
         y += 26
         for i, ls in note_lines:
+            kc = PLAN if i in plans else PINK
             if i in hollow:
-                d.ellipse([14, y, 46, y + 32], outline=PINK, width=3)
-                d.text((30 - d.textlength(str(i), font=badge_font) / 2, y + 4), str(i), fill=PINK, font=badge_font)
+                d.ellipse([14, y, 46, y + 32], outline=kc, width=3)
+                d.text((30 - d.textlength(str(i), font=badge_font) / 2, y + 4), str(i), fill=kc, font=badge_font)
             else:
-                d.ellipse([14, y, 46, y + 32], fill=PINK)
+                d.ellipse([14, y, 46, y + 32], fill=kc)
                 d.text((30 - d.textlength(str(i), font=badge_font) / 2, y + 4), str(i), fill=(255, 255, 255), font=badge_font)
             for line in ls:
                 d.text((60, y + 4), line, fill=(40, 40, 40), font=note_font)

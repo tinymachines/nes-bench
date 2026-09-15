@@ -236,17 +236,21 @@ def pinmap(sheet="bench-v1b"):
 # when it is, TRIG and the clock share CH1 by turns. CH3 is where the
 # video probe has sat since 2026-09-07 (1,512 sync pulses counted there).
 SCOPE = [
-    ("CH1", "TRIG", "UNO D3 through R1 (100 ohm)", "rises at latch T for a millisecond; trigger here, 2.5 V rising (the master clock's channel later, by turns)"),
-    ("CH2", "CON_OUT0 (latch)", "U1 pin 1", "one pulse per poll, the poll's start"),
+    ("CH1", "TRIG", "R1 on the middle board: the resistor at column 49 row f, the green D3 lead's housing at 47", "the trigger: 2.5 V rising at latch T; the master clock's channel later, by turns"),
+    ("CH2", "CON_OUT0 (latch)", "U1 pin 1: right board column 34, the side toward U2 (rows f to j)", "one pulse per poll, 3.6 us wide; the probe's lead broke 2026-09-15 and the channel is idle until it is replaced"),
     ("CH3", "composite video", "the console's video out, through the splitter", "the picture the poll lands in"),
-    ("CH4", "CON_D0", "U2 pin 9", "the byte the console reads back"),
-    ("EXT TRIG", "none", "not on this scope", "the DS1054Z has no external trigger input (MEASURED 2026-09-15: source EXT refused)"),
+    ("CH4", "CON_D0", "U2 pin 9: right board column 18, the rails side (rows a to e)", "the byte the console reads back, pressed LOW"),
+    ("EXT TRIG", "none", "not on this scope", "the DS1054Z has no external trigger input (MEASURED 2026-09-15: source EXT refused; the rear BNC is Trig Out)"),
 ]
+# Every probe's ground on the right board's GND rail, and the probes on
+# 10x: a 1x probe hangs 100 pF on the line it reads, which on D0 is
+# part of the ground-bounce story of 2026-09-15.
 
 
 def scope_table():
     return ("The scope: channels and the trigger",
-            "As wired 2026-09-15. Probe grounds on the bridge's GND rail, which is the console's ground. "
+            "As wired 2026-09-15, each probe's landing given as a board column so it can be put back. Probe grounds on the "
+            "right board's GND rail, which is the console's ground; probes on 10x. "
             "The DS1054Z has no external trigger input (MEASURED 2026-09-15), so the bridge's TRIG takes "
             "CH1, the channel held for the master clock until the mainboard is probed. Step 6.1 of the "
             "bring-up arms the scope on CH1 and fires TRIG at a latch.",

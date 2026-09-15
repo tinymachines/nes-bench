@@ -2,7 +2,7 @@
   "org": "tinymachines",
   "project": "nes-bench",
   "docno": "TM-NESB-001",
-  "rev": "K",
+  "rev": "L",
   "drawn": "bisenbek",
   "page": "ansi-a",
   "title": "NES controller-port bridge, v1b",
@@ -160,6 +160,11 @@
       "K",
       "2026-09-15",
       "R2 and C4 on the 165's clock pin; the trigger to CH1"
+    ],
+    [
+      "L",
+      "2026-09-15",
+      "placements drawn: the clock filter and U2's decoupling; probe positions"
     ]
   ]
 }

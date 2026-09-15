@@ -13,9 +13,10 @@
     "METERED 2026-09-15 EDT by the user: U1-1 and the three SPI pins on U3 checked for continuity with a meter after the second rig pose. The eye reads the housings as before (it cannot settle a housing's positions); the meter can, and did.",
     "A check on a pin the map does not place (the UNO's, the console lead's) may carry \"at\": {\"col\": N, \"side\": \"rail\"|\"middle\"|\"rails\"} naming the place on the board its note is about; the overlay circles that spot.",
     "MIDDLE BOARD MAPPED 2026-09-15: the map covers the middle board (docs/board-map.json, `parts`: J2 and R1 placed where the eye reads them); their pins are listed here from this look on.",
-    "THIRD RIG POSE 2026-09-15 13:16 EDT: the boards rearranged on the frame (the chip board at the top, its rails along the frame's top edge, the middle board below it, a fourth rail-only board at the bottom); the map re-read by --read with new bands. R2 and C4 (the clock pin's filter, added by the user this afternoon) went on the schematic and are looked for here."
+    "THIRD RIG POSE 2026-09-15 13:16 EDT: the boards rearranged on the frame (the chip board at the top, its rails along the frame's top edge, the middle board below it, a fourth rail-only board at the bottom); the map re-read by --read with new bands. R2 and C4 (the clock pin's filter, added by the user this afternoon) went on the schematic and are looked for here.",
+    "PLACEMENTS 2026-09-15: state \"plan\" is a placement asked for and not built (green on the photograph, listed with the checks on the sheet); the note is the instruction."
   ],
-  "read": "2026-09-15 13:16 EDT (the boards rearranged; R2 and C4 on the sheet)",
+  "read": "2026-09-15 evening (placements for the clock filter and U2's decoupling drawn)",
   "scope": "grounds, +5 V, the J1 console side, the J1 to U3 chain, the UNO's leads, and on the middle board the pad housing (J2) and the trigger resistor (R1)",
   "pins": {
     "U1.2": {
@@ -217,20 +218,28 @@
       "note": "R1, the trigger resistor: stands over column 49 on the middle board's rails side with one lead down into row f at 49; the green TRIG lead from the UNO's D3 lands in a housing at column 47, row f; a thin bare lead curves from under that housing toward column 46 row h. The eye cannot say whether R1's other lead reaches column 47 or the scope's trigger lead does. Meter: UNO D3 to one end of R1, the other end to the scope's trigger lead, and the two ends not to each other."
     },
     "R2.1": {
-      "state": "check",
-      "note": "R2 and C4, the filter on U2's clock pin (1 k in series with CON_CLK, 100 pF from CP to ground): the user reports them added, but at column 24 the eye sees the D2 blue and the console's red CLK lead landing direct in a two-pin housing and no resistor or capacitor on either side of U2. Say where they sit; the walk of single bits read the same after them as before (a lone B to Left bit still shifts to the Right position), which is what an RC away from the pin, or a spike that comes in through the chip's ground rather than the clock lead, would give."
+      "state": "plan",
+      "note": "PLACE R2 and C4 (the clock pin's filter) so they sit between the lead and the pin: 1. move the two-pin housing now in column 24 (the console's red CLK and the UNO's blue D2) three columns along to column 27, row j (columns 26 and 27 are free between U2 and U1). 2. R2, 1 k: one lead in column 27 row h, the other in column 24 row h. 3. C4, 100 pF: one lead in column 24 row i, the other in column 28 row i (column 28 is U1 pin 7, the GND strip). Then U2 pin 2 sees the console's clock through 1 k with 100 pF to ground at the pin, and the UNO's D2 still counts the clock ahead of the resistor. Keep the leads short and the wires away from the grey Q lines."
     },
     "R2.2": {
-      "state": "check",
-      "note": "R2 and C4, the filter on U2's clock pin (1 k in series with CON_CLK, 100 pF from CP to ground): the user reports them added, but at column 24 the eye sees the D2 blue and the console's red CLK lead landing direct in a two-pin housing and no resistor or capacitor on either side of U2. Say where they sit; the walk of single bits read the same after them as before (a lone B to Left bit still shifts to the Right position), which is what an RC away from the pin, or a spike that comes in through the chip's ground rather than the clock lead, would give."
+      "state": "plan",
+      "note": "PLACE R2 and C4 (the clock pin's filter) so they sit between the lead and the pin: 1. move the two-pin housing now in column 24 (the console's red CLK and the UNO's blue D2) three columns along to column 27, row j (columns 26 and 27 are free between U2 and U1). 2. R2, 1 k: one lead in column 27 row h, the other in column 24 row h. 3. C4, 100 pF: one lead in column 24 row i, the other in column 28 row i (column 28 is U1 pin 7, the GND strip). Then U2 pin 2 sees the console's clock through 1 k with 100 pF to ground at the pin, and the UNO's D2 still counts the clock ahead of the resistor. Keep the leads short and the wires away from the grey Q lines."
     },
     "C4.1": {
-      "state": "check",
-      "note": "R2 and C4, the filter on U2's clock pin (1 k in series with CON_CLK, 100 pF from CP to ground): the user reports them added, but at column 24 the eye sees the D2 blue and the console's red CLK lead landing direct in a two-pin housing and no resistor or capacitor on either side of U2. Say where they sit; the walk of single bits read the same after them as before (a lone B to Left bit still shifts to the Right position), which is what an RC away from the pin, or a spike that comes in through the chip's ground rather than the clock lead, would give."
+      "state": "plan",
+      "note": "PLACE R2 and C4 (the clock pin's filter) so they sit between the lead and the pin: 1. move the two-pin housing now in column 24 (the console's red CLK and the UNO's blue D2) three columns along to column 27, row j (columns 26 and 27 are free between U2 and U1). 2. R2, 1 k: one lead in column 27 row h, the other in column 24 row h. 3. C4, 100 pF: one lead in column 24 row i, the other in column 28 row i (column 28 is U1 pin 7, the GND strip). Then U2 pin 2 sees the console's clock through 1 k with 100 pF to ground at the pin, and the UNO's D2 still counts the clock ahead of the resistor. Keep the leads short and the wires away from the grey Q lines."
     },
     "C4.2": {
-      "state": "check",
-      "note": "R2 and C4, the filter on U2's clock pin (1 k in series with CON_CLK, 100 pF from CP to ground): the user reports them added, but at column 24 the eye sees the D2 blue and the console's red CLK lead landing direct in a two-pin housing and no resistor or capacitor on either side of U2. Say where they sit; the walk of single bits read the same after them as before (a lone B to Left bit still shifts to the Right position), which is what an RC away from the pin, or a spike that comes in through the chip's ground rather than the clock lead, would give."
+      "state": "plan",
+      "note": "PLACE R2 and C4 (the clock pin's filter) so they sit between the lead and the pin: 1. move the two-pin housing now in column 24 (the console's red CLK and the UNO's blue D2) three columns along to column 27, row j (columns 26 and 27 are free between U2 and U1). 2. R2, 1 k: one lead in column 27 row h, the other in column 24 row h. 3. C4, 100 pF: one lead in column 24 row i, the other in column 28 row i (column 28 is U1 pin 7, the GND strip). Then U2 pin 2 sees the console's clock through 1 k with 100 pF to ground at the pin, and the UNO's D2 still counts the clock ahead of the resistor. Keep the leads short and the wires away from the grey Q lines."
+    },
+    "C2.1": {
+      "state": "plan",
+      "note": "PLACE C2, the 165's own 100 nF, straight across its supply pins with the shortest leads that reach: one lead in column 18 row e (U2 pin 16, +5V, the rails side), the other in column 18 row f (U2 pin 8, GND, the middle side), the body lying across the chip gap. The two yellow capacitors on the rails at columns 17 and 29 stay: they are the rails', this one is the chip's. This is the fix for a clock spike that comes in through the chip's ground rather than the clock lead (the procedure, 2026-09-15); with it in, the walk of single bits is the check."
+    },
+    "C2.2": {
+      "state": "plan",
+      "note": "PLACE C2, the 165's own 100 nF, straight across its supply pins with the shortest leads that reach: one lead in column 18 row e (U2 pin 16, +5V, the rails side), the other in column 18 row f (U2 pin 8, GND, the middle side), the body lying across the chip gap. The two yellow capacitors on the rails at columns 17 and 29 stay: they are the rails', this one is the chip's. This is the fix for a clock spike that comes in through the chip's ground rather than the clock lead (the procedure, 2026-09-15); with it in, the walk of single bits is the check."
     }
   },
   "rails": {

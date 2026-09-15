@@ -13,7 +13,8 @@
   "parts: single-row parts as built, read off the eye 2026-09-15: `side`, `columns` [lo, hi], `pins`, and `pin1` (\"hi\" or \"lo\": which end pin 1 is at); a part's pin k sits in the column counted from that end. Where the eye could not settle which column carries which pin, the as-built sheet says so.",
   "READ 2026-09-15 08:34 EDT off b11-all.jpg by --read: 1214 hole centres by template correlation; per board, in the camera-y band it names, the two five-row groups and the rail pair as even progressions and the columns walked from the board's last hole with an adaptive pitch, anchors every fifth column. right: rows a-e [396, 419, 442, 465, 488], f-j [546, 569, 592, 615, 638], rails above at [300, 324], columns 1 to 48 (26.0 px a column at 1); middle: rows a-e [889, 913, 937, 961, 985], f-j [724, 747, 770, 793, 816], rails below at [1046, 1069], columns 1 to 52 (24.4 px a column at 1).",
   "The five-way housing at the middle board's columns 9 to 13 is the POWER AND RESET BREAKOUT's, joined to nothing (the user, 2026-09-15), not J2; J2, the pad-side housing, is not located yet.",
-  "READ 2026-09-15 13:16 EDT off b12-all.jpg by --read: 1593 hole centres by template correlation; per board, in the camera-y band it names, the two five-row groups and the rail pair as even progressions and the columns walked from the board's last hole with an adaptive pitch, anchors every fifth column. right: rows a-e [126, 149, 172, 195, 218], f-j [282, 305, 328, 351, 374], rails above at [68, 91], columns 1 to 40 (26.0 px a column at 1); middle: rows a-e [622, 644, 667, 690, 712], f-j [466, 488, 511, 534, 556], rails below at [779, 802], columns 1 to 56 (24.4 px a column at 1)."
+  "READ 2026-09-15 13:16 EDT off b12-all.jpg by --read: 1593 hole centres by template correlation; per board, in the camera-y band it names, the two five-row groups and the rail pair as even progressions and the columns walked from the board's last hole with an adaptive pitch, anchors every fifth column. right: rows a-e [126, 149, 172, 195, 218], f-j [282, 305, 328, 351, 374], rails above at [68, 91], columns 1 to 40 (26.0 px a column at 1); middle: rows a-e [622, 644, 667, 690, 712], f-j [466, 488, 511, 534, 556], rails below at [779, 802], columns 1 to 56 (24.4 px a column at 1).",
+  "A part may give `holes`, one [column, side, row] per pin, where its pins are not one row of one side (a capacitor across a chip's end). PLANNED parts (R2, C4, C2, 2026-09-15) are drawn where they should go; the as-built sheet's state says whether they are."
  ],
  "frame": "captures/b12-all.jpg (read 2026-09-15 13:16 EDT by board-overlay.py --read)",
  "boards": {
@@ -289,6 +290,72 @@
    "pin1": "lo",
    "note": "R1 stands over column 49 with a lead down into row f; the green TRIG lead's housing is at column 47, row f",
    "row": 0
+  },
+  "R2": {
+   "board": "right",
+   "side": "middle",
+   "columns": [
+    24,
+    27
+   ],
+   "pins": 2,
+   "holes": [
+    [
+     27,
+     "middle",
+     2
+    ],
+    [
+     24,
+     "middle",
+     2
+    ]
+   ],
+   "note": "PLANNED 2026-09-15: 1 k between the CLK lead's new strip (column 27) and U2 pin 2's strip (column 24), both in row h"
+  },
+  "C4": {
+   "board": "right",
+   "side": "middle",
+   "columns": [
+    24,
+    28
+   ],
+   "pins": 2,
+   "holes": [
+    [
+     24,
+     "middle",
+     1
+    ],
+    [
+     28,
+     "middle",
+     1
+    ]
+   ],
+   "note": "PLANNED 2026-09-15: 100 pF from U2 pin 2's strip (column 24, row i) to U1 pin 7's strip (column 28, row i), which is the ground nearest the pin"
+  },
+  "C2": {
+   "board": "right",
+   "side": "middle",
+   "columns": [
+    18,
+    18
+   ],
+   "pins": 2,
+   "holes": [
+    [
+     18,
+     "rails",
+     0
+    ],
+    [
+     18,
+     "middle",
+     4
+    ]
+   ],
+   "note": "PLANNED 2026-09-15: 100 nF straight across U2's supply pins, column 18, row e to row f, across the chip gap: the shortest decoupling the board allows"
   }
  }
 }

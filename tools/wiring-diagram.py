@@ -213,8 +213,13 @@ def build(status=None):
     if status is not None:
         by_name = {f"{ref}.{k}": (ref, k) for ref, k in drawn}
         for key, v in status["pins"].items():
+            if v.get("state") == "plan" and key not in by_name:
+                # a placement on the board for a part this sheet draws
+                # without pins (the decoupling bank): its note is listed,
+                # nothing on the sheet is marked
+                continue
             assert key in by_name, f"build status names {key!r}, which is not a pin on this sheet"
-            assert v["state"] in ("done", "check"), f"build status {key}: state must be done or check, not {v['state']!r}"
+            assert v["state"] in ("done", "check", "plan"), f"build status {key}: state must be done, check or plan, not {v['state']!r}"
             assert v["state"] == "done" or v.get("note"), f"build status {key}: a check needs a note"
             state[by_name[key]] = v
     checks = []                 # (x, y, note) in drawing order, numbered after
@@ -284,7 +289,7 @@ def build(status=None):
     rail_bot = {"GND": track_y_bot(len(bot)) + 8, "+5V": track_y_bot(len(bot)) + 30}
     # Numbered in the status file's own order, the rails first: the file
     # lists what would do damage before what only needs a look.
-    notes = list(dict.fromkeys(v["note"] for v in (status or {}).get("pins", {}).values() if v["state"] == "check"))
+    notes = list(dict.fromkeys(v["note"] for v in (status or {}).get("pins", {}).values() if v["state"] in ("check", "plan")))
     rails_check = status is not None and status.get("rails", {}).get("state", "check") == "check"
     if rails_check:
         notes.insert(0, status["rails"]["note"])
@@ -296,7 +301,7 @@ def build(status=None):
 
     def ring(ref, k, x, y):
         v = state.get((ref, k))
-        if v and v["state"] == "check":
+        if v and v["state"] in ("check", "plan"):
             checks.append((x, y, v["note"]))
 
     d = Draw()
