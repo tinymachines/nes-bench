@@ -50,6 +50,8 @@ FOOTPRINTS = [
     ("100nF", "Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P5.00mm", "5 mm disc, 0.2 inch pitch"),
     ("100R", "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal", "quarter watt axial, lying down"),
     ("680k", "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal", "quarter watt axial, lying down"),
+    ("1k", "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal", "quarter watt axial, lying down (R2, the clock pin's series element, 2026-09-15)"),
+    ("100pF", "Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P5.00mm", "5 mm disc, 0.2 inch pitch (C4, the clock pin's filter, 2026-09-15)"),
     ("console controller port", "Connector_PinHeader_2.54mm:PinHeader_1x05_P2.54mm_Vertical",
      "the cut cable lands on a 5 way header; pins 6 and 7 are not carried"),
     ("original pad", "Connector_PinHeader_2.54mm:PinHeader_1x05_P2.54mm_Vertical",
