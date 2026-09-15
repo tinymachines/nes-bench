@@ -16,7 +16,7 @@
     "THIRD RIG POSE 2026-09-15 13:16 EDT: the boards rearranged on the frame (the chip board at the top, its rails along the frame's top edge, the middle board below it, a fourth rail-only board at the bottom); the map re-read by --read with new bands. R2 and C4 (the clock pin's filter, added by the user this afternoon) went on the schematic and are looked for here.",
     "PLACEMENTS 2026-09-15: state \"plan\" is a placement asked for and not built (green on the photograph, listed with the checks on the sheet); the note is the instruction."
   ],
-  "read": "2026-09-15 22:00 EDT (D0 flat after the placements; C2's instruction corrected)",
+  "read": "2026-09-15 22:30 EDT (the filter and decoupling seen on the middle board; the walk waits for CH4)",
   "scope": "grounds, +5 V, the J1 console side, the J1 to U3 chain, the UNO's leads, and on the middle board the pad housing (J2) and the trigger resistor (R1)",
   "pins": {
     "U1.2": {
@@ -73,7 +73,7 @@
     },
     "U2.9": {
       "state": "check",
-      "note": "U2-9 (QH, the console's D0): MEASURED 2026-09-15 22:00 flat at 0 V on the scope's CH4 with the console polling (eight clocks a latch), where it swung 0 to 4.4 V before this afternoon's placements. See the C2 note: a capacitor in column 18 sits on this pin. Once it is moved, D0 must swing again."
+      "note": "U2-9 (QH, D0): CH4 reads 0 V because its probe is lying on the middle board as a pointer, not on the pin. Put it back on column 18, rails side, and D0 must swing 0 to 4.4 V with the console polling."
     },
     "U2.10": {
       "state": "done"
@@ -219,28 +219,28 @@
       "note": "R1, the trigger resistor, flattened 2026-09-15: lies in row a of the middle board's chip-board side from column 9, where the UNO's green D3 lead lands in a housing (rows d and e), to column 6, where the red lead to the scope's CH1 lands. MEASURED 2026-09-15 21:14 by the bring-up's step 6.1: TRIG 20 stopped the scope on CH1."
     },
     "R2.1": {
-      "state": "plan",
-      "note": "PLACE R2 and C4 (the clock pin's filter) so they sit between the lead and the pin: 1. move the two-pin housing now in column 24 (the console's red CLK and the UNO's blue D2) three columns along to column 27, row j (columns 26 and 27 are free between U2 and U1). 2. R2, 1 k: one lead in column 27 row h, the other in column 24 row h. 3. C4, 100 pF: one lead in column 24 row i, the other in column 28 row i (column 28 is U1 pin 7, the GND strip). Then U2 pin 2 sees the console's clock through 1 k with 100 pF to ground at the pin, and the UNO's D2 still counts the clock ahead of the resistor. Keep the leads short and the wires away from the grey Q lines."
+      "state": "check",
+      "note": "SEEN 2026-09-15 22:30 on the middle board's rails side (rows f to j), with two probe bodies laid on the board as pointers: a blue-banded axial resistor lying from column 27 row f to column 25 row i, a yellow disc capacitor at column 23 with a lead into the GND rail row, a bare link and a brown link between the two sides of the board near columns 24 to 26, and the UNO's blue D2 lead re-routed here from the right board. How these join U2 pin 2 and its ground cannot be traced from above; the walk of single bits is the check, and it needs the CH4 probe back on U2 pin 9 (right board, column 18, rails side): while it lies on the board as a pointer, D0 reads 0 V."
     },
     "R2.2": {
-      "state": "plan",
-      "note": "PLACE R2 and C4 (the clock pin's filter) so they sit between the lead and the pin: 1. move the two-pin housing now in column 24 (the console's red CLK and the UNO's blue D2) three columns along to column 27, row j (columns 26 and 27 are free between U2 and U1). 2. R2, 1 k: one lead in column 27 row h, the other in column 24 row h. 3. C4, 100 pF: one lead in column 24 row i, the other in column 28 row i (column 28 is U1 pin 7, the GND strip). Then U2 pin 2 sees the console's clock through 1 k with 100 pF to ground at the pin, and the UNO's D2 still counts the clock ahead of the resistor. Keep the leads short and the wires away from the grey Q lines."
+      "state": "check",
+      "note": "SEEN 2026-09-15 22:30 on the middle board's rails side (rows f to j), with two probe bodies laid on the board as pointers: a blue-banded axial resistor lying from column 27 row f to column 25 row i, a yellow disc capacitor at column 23 with a lead into the GND rail row, a bare link and a brown link between the two sides of the board near columns 24 to 26, and the UNO's blue D2 lead re-routed here from the right board. How these join U2 pin 2 and its ground cannot be traced from above; the walk of single bits is the check, and it needs the CH4 probe back on U2 pin 9 (right board, column 18, rails side): while it lies on the board as a pointer, D0 reads 0 V."
     },
     "C4.1": {
-      "state": "plan",
-      "note": "PLACE R2 and C4 (the clock pin's filter) so they sit between the lead and the pin: 1. move the two-pin housing now in column 24 (the console's red CLK and the UNO's blue D2) three columns along to column 27, row j (columns 26 and 27 are free between U2 and U1). 2. R2, 1 k: one lead in column 27 row h, the other in column 24 row h. 3. C4, 100 pF: one lead in column 24 row i, the other in column 28 row i (column 28 is U1 pin 7, the GND strip). Then U2 pin 2 sees the console's clock through 1 k with 100 pF to ground at the pin, and the UNO's D2 still counts the clock ahead of the resistor. Keep the leads short and the wires away from the grey Q lines."
+      "state": "check",
+      "note": "SEEN 2026-09-15 22:30 on the middle board's rails side (rows f to j), with two probe bodies laid on the board as pointers: a blue-banded axial resistor lying from column 27 row f to column 25 row i, a yellow disc capacitor at column 23 with a lead into the GND rail row, a bare link and a brown link between the two sides of the board near columns 24 to 26, and the UNO's blue D2 lead re-routed here from the right board. How these join U2 pin 2 and its ground cannot be traced from above; the walk of single bits is the check, and it needs the CH4 probe back on U2 pin 9 (right board, column 18, rails side): while it lies on the board as a pointer, D0 reads 0 V."
     },
     "C4.2": {
-      "state": "plan",
-      "note": "PLACE R2 and C4 (the clock pin's filter) so they sit between the lead and the pin: 1. move the two-pin housing now in column 24 (the console's red CLK and the UNO's blue D2) three columns along to column 27, row j (columns 26 and 27 are free between U2 and U1). 2. R2, 1 k: one lead in column 27 row h, the other in column 24 row h. 3. C4, 100 pF: one lead in column 24 row i, the other in column 28 row i (column 28 is U1 pin 7, the GND strip). Then U2 pin 2 sees the console's clock through 1 k with 100 pF to ground at the pin, and the UNO's D2 still counts the clock ahead of the resistor. Keep the leads short and the wires away from the grey Q lines."
+      "state": "check",
+      "note": "SEEN 2026-09-15 22:30 on the middle board's rails side (rows f to j), with two probe bodies laid on the board as pointers: a blue-banded axial resistor lying from column 27 row f to column 25 row i, a yellow disc capacitor at column 23 with a lead into the GND rail row, a bare link and a brown link between the two sides of the board near columns 24 to 26, and the UNO's blue D2 lead re-routed here from the right board. How these join U2 pin 2 and its ground cannot be traced from above; the walk of single bits is the check, and it needs the CH4 probe back on U2 pin 9 (right board, column 18, rails side): while it lies on the board as a pointer, D0 reads 0 V."
     },
     "C2.1": {
-      "state": "plan",
-      "note": "C2, U2's own 100 nF. CORRECTION 2026-09-15 22:00: the earlier instruction was WRONG. U2 pin 16 (+5V) is column 25 on the rails side; column 18 on the rails side is pin 9, QH, the console's D0 line, and column 18 on the middle side is pin 8, GND. A capacitor placed as first written sits across D0 and ground, and after it was placed the scope's CH4 reads D0 flat at 0 V with the console polling. PLACE C2: one lead in column 25 row a (pin 16, +5V), the other in the GND rail hole directly beside it (the blue-line rail row); take the capacitor out of column 18 if it is there. The walk of single bits is the check."
+      "state": "check",
+      "note": "SEEN 2026-09-15 22:30 on the middle board's rails side (rows f to j), with two probe bodies laid on the board as pointers: a blue-banded axial resistor lying from column 27 row f to column 25 row i, a yellow disc capacitor at column 23 with a lead into the GND rail row, a bare link and a brown link between the two sides of the board near columns 24 to 26, and the UNO's blue D2 lead re-routed here from the right board. How these join U2 pin 2 and its ground cannot be traced from above; the walk of single bits is the check, and it needs the CH4 probe back on U2 pin 9 (right board, column 18, rails side): while it lies on the board as a pointer, D0 reads 0 V."
     },
     "C2.2": {
-      "state": "plan",
-      "note": "C2, U2's own 100 nF. CORRECTION 2026-09-15 22:00: the earlier instruction was WRONG. U2 pin 16 (+5V) is column 25 on the rails side; column 18 on the rails side is pin 9, QH, the console's D0 line, and column 18 on the middle side is pin 8, GND. A capacitor placed as first written sits across D0 and ground, and after it was placed the scope's CH4 reads D0 flat at 0 V with the console polling. PLACE C2: one lead in column 25 row a (pin 16, +5V), the other in the GND rail hole directly beside it (the blue-line rail row); take the capacitor out of column 18 if it is there. The walk of single bits is the check."
+      "state": "check",
+      "note": "SEEN 2026-09-15 22:30 on the middle board's rails side (rows f to j), with two probe bodies laid on the board as pointers: a blue-banded axial resistor lying from column 27 row f to column 25 row i, a yellow disc capacitor at column 23 with a lead into the GND rail row, a bare link and a brown link between the two sides of the board near columns 24 to 26, and the UNO's blue D2 lead re-routed here from the right board. How these join U2 pin 2 and its ground cannot be traced from above; the walk of single bits is the check, and it needs the CH4 probe back on U2 pin 9 (right board, column 18, rails side): while it lies on the board as a pointer, D0 reads 0 V."
     }
   },
   "rails": {
