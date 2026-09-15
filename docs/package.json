@@ -2,7 +2,7 @@
   "org": "tinymachines",
   "project": "nes-bench",
   "docno": "TM-NESB-001",
-  "rev": "F",
+  "rev": "G",
   "drawn": "bisenbek",
   "page": "ansi-a",
   "title": "NES controller-port bridge, v1b",
@@ -136,6 +136,11 @@
       "F",
       "2026-09-14",
       "the U3 checks closed: one wire per Q pin, the brown seated"
+    ],
+    [
+      "G",
+      "2026-09-15",
+      "the rig baseline: camera on the frame, the UNO leads read"
     ]
   ]
 }

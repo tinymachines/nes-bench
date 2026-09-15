@@ -6,10 +6,11 @@
     "Drawn by tools/wiring-diagram.py into docs/wiring-v1b-build.svg; a key that names no pin on the sheet stops the tool.",
     "BASELINE 2026-09-13 15:40 EDT: the camera fixed in place, the wiring as the user left it. Later reads are compared against this one.",
     "FIFTH LOOK 2026-09-14 12:06 EDT: the J1 to U3 chain wired (the /PL link and the eight Q lines). A wire's end stands a few millimetres proud of the board and the eye looks at it from one side, so a raised end reads up to half a pitch from its hole; a landing is settled where the bare end is seen at the hole, and left as a check where it is not.",
-    "SIXTH LOOK 2026-09-14 13:55 EDT: the user moved the second wire off U3-5 and pushed the brown home; both re-read with the map's holes projected onto fresh close looks. The boards had moved again on the desk (126 px down), so the map was shifted, not re-read."
+    "SIXTH LOOK 2026-09-14 13:55 EDT: the user moved the second wire off U3-5 and pushed the brown home; both re-read with the map's holes projected onto fresh close looks. The boards had moved again on the desk (126 px down), so the map was shifted, not re-read.",
+    "RIG BASELINE 2026-09-15 06:10 EDT: the BRIO on the metal frame, straight down, the whole board in one frame (captures/b8-all.jpg); the hole map read afresh; the named views re-aimed (they stand turned 90 degrees against the earlier sets). Read against the rig set (captures/views-20260915T010318, captures/grid8): every pin done before reads the same; the UNO batch is read below."
   ],
-  "read": "2026-09-14 13:55 EDT (sixth look)",
-  "scope": "grounds, +5 V, the J1 console side, and the J1 to U3 chain: /PL and the eight Q lines",
+  "read": "2026-09-15 06:10 EDT (the rig baseline)",
+  "scope": "grounds, +5 V, the J1 console side, the J1 to U3 chain, and the UNO's leads as far as the eye can follow them",
   "pins": {
     "U1.2": {
       "state": "done",
@@ -42,7 +43,7 @@
     },
     "U2.2": {
       "state": "done",
-      "note": "two blue Dupont ends in column 24: J1's CLK and the UNO's D2."
+      "note": "column 24 rows b and c: a two-pin housing carrying the UNO's D2 (fat blue) and the console's CLK (thin red at this end of the cut cable). Both pins in column 24, so both on U2-2."
     },
     "U2.3": {
       "state": "done",
@@ -115,7 +116,8 @@
       "state": "done"
     },
     "U3.10": {
-      "state": "done"
+      "state": "check",
+      "note": "U3-10 (/SRCLR): the link to +5V at column 7 is not seen in the rig set; the black SPI lead's housing stands in that column instead. See the U3-11 note."
     },
     "U3.13": {
       "state": "done"
@@ -152,11 +154,11 @@
     },
     "U1.1": {
       "state": "check",
-      "note": "U1-1: J1's OUT0 is right. A grey from the strip now arrives at the top of U1's column, but its raised end reads between column 34 (pin 1) and column 35 (nothing), and the eye cannot settle it from above. Confirm it is in 34."
+      "note": "U1-1: the UNO's D5 (fat yellow) and the console's OUT0 (thin orange at this end of the cut cable) share a two-pin housing standing at columns 35 and 34, rows h and i, pulled diagonal by the leads. If both its pins are in column 35 nothing reaches U1-1 (column 34). Meter U1 pin 1 to the UNO's D5, or seat a single pin in column 34."
     },
     "A1.D5 (T1)": {
       "state": "check",
-      "note": "A1 D5: see the U1-1 note; the strip end was in the green's column (D3) at the baseline."
+      "note": "A1 D5: see the U1-1 note."
     },
     "A1.5V": {
       "state": "check",
@@ -165,6 +167,18 @@
     "A1.GND": {
       "state": "check",
       "note": "A1 5V and GND to the rails: the feed is off the top of the camera's view. Meter 5 V between the rails with the UNO on USB."
+    },
+    "U3.11": {
+      "state": "check",
+      "note": "U3-11, U3-12 and U3-14 (SCK grey, RCLK black, MOSI white): the three fat leads cross over U3's rails side from the frame's top right to the UNO and hide their own landings. The black one's pin housing stands at column 7 (pin 10, /SRCLR), not column 9 (pin 12, RCLK); the white and grey ends are not found on U3 at all. Route the three around the board's end, not across the chip, then the eye can read them. Column 7 also shows no link to +5V now (pin 10 must be tied high to run)."
+    },
+    "U3.12": {
+      "state": "check",
+      "note": "U3-11, U3-12 and U3-14 (SCK grey, RCLK black, MOSI white): the three fat leads cross over U3's rails side from the frame's top right to the UNO and hide their own landings. The black one's pin housing stands at column 7 (pin 10, /SRCLR), not column 9 (pin 12, RCLK); the white and grey ends are not found on U3 at all. Route the three around the board's end, not across the chip, then the eye can read them. Column 7 also shows no link to +5V now (pin 10 must be tied high to run)."
+    },
+    "U3.14": {
+      "state": "check",
+      "note": "U3-11, U3-12 and U3-14 (SCK grey, RCLK black, MOSI white): the three fat leads cross over U3's rails side from the frame's top right to the UNO and hide their own landings. The black one's pin housing stands at column 7 (pin 10, /SRCLR), not column 9 (pin 12, RCLK); the white and grey ends are not found on U3 at all. Route the three around the board's end, not across the chip, then the eye can read them. Column 7 also shows no link to +5V now (pin 10 must be tied high to run)."
     }
   },
   "rails": {
@@ -172,11 +186,13 @@
     "note": "Rails read right with the lead ends in the holes: orange + and brown GND from the left board to the middle board; one red link from the left board's GND column to the right board's GND column (a red wire on GND), one from the middle board's + to the right board's +."
   },
   "observations": [
-    "The breadboards moved on the desk under the fixed camera during the fifth look's batch (150 px left, 90 px up) and again during the sixth (126 px down); the hole map followed each time, and the eye's views were re-aimed.",
-    "Orientation settled: in the 12:06 views the notch and the pin-1 dot of U1, U2 and U3 all face the high-column end, as the map places them. The round mark at the other end of each is the mould's ejector pin, not pin 1.",
+    "RIG: the BRIO on the metal frame looks straight down (the column pitch is the same at both ends of the board, so there is no perspective to model), the whole board in one frame at about 24 px a column, focus 25; every named close-up lands on its target. Mark and lock.",
+    "The three UNO SPI leads and the console's cable both cross the right board diagonally over U3 and U2. Leads across a chip hide the landings under them; around the board's end they hide nothing.",
+    "The console's cut cable enters at the frame's top left; at this end its wires read thin red (CLK) and thin orange (OUT0), which is not the colour map recorded at the other end. The pad's cable (white, brown, red, orange, yellow: a real NES lead) enters at the top right under a cable tie and lands in a three-pin housing on the middle board, which the map does not cover yet.",
+    "The UNO ribbon's housing stands on the right board at columns 40 to 46, rows b to d, with a grey strand from column 39 up to the GND rail beside it; five short brown links bridge the middle gap at columns 47 to 51. Neither is on the chip sheet; the pad-side nets (D6, D7, D8) run through them to the middle board.",
+    "Orientation settled: the notch and the pin-1 dot of U1, U2 and U3 all face the high-column end, as the map places them. The round mark at the other end of each is the mould's ejector pin, not pin 1.",
     "The six grey Q lines are one colour. The eye confirms where each end lands, not which end pairs with which; the bring-up's SPI loopback (a walking one out of the 595, read back through the 165) is what proves the pairing.",
-    "Two yellow ceramic capacitors stand across the rails, on the left board near column 49 and on the right board near column 15; the plan puts one 100 nF beside each chip. The value is not readable on camera.",
-    "The red link on GND is correct but red: a black or blue wire there would stop it being read as +5 V later.",
+    "Two yellow ceramic capacitors stand across the rails, on the right board near columns 15 and 45; the plan puts one 100 nF beside each chip. The value is not readable on camera.",
     "The power and reset breakout's five-way housing is parked on the right board's columns 41 to 45; it joins nothing on this sheet."
   ]
 }

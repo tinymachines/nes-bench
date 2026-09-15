@@ -260,3 +260,32 @@ its hole (10 a, 9 b, 8 c, 7 d); the brown's bare end enters the U2-6
 hole. Both checks closed; the sheet is rev F, 40 pins done, 4 to
 check, all four on the strip side and the rails' feed. Which grey
 moved is not visible, so the Q pairing still rests on the SPI loopback.
+
+## The rig, 2026-09-15 06:10: the camera on the frame, a fresh baseline
+
+The BRIO is fixed to a metal frame over the boards, looking straight
+down. The first mount had the frame's short side along the board and
+lost U3's low columns off the bottom edge; turned 90 degrees the whole
+board sits in one 1080p frame at about 24 px a column, with the column
+pitch the same at both ends (no perspective to model, and none of the
+raised-end parallax that cost the U1-1 read). Focus re-swept: 25. The
+hole map was read afresh (`docs/board-map.json`: hole centres by
+template correlation along six rows, the rows and rails as luma dips at
+both ends), and it names a `frame_rotate` so the overlay and the map
+keep the earlier convention in the turned frame. Every named view's
+aim was carried through the similarity between the last desk map and
+the rig map (worst residual 20 px at zoom 100) and the set re-taken; a
+3 by 3 grid of zoom-300 frames with the map's holes projected onto
+them shows the rings on the holes across the whole board, out to
+column 48.
+
+Read against the rig set, every pin settled before reads the same. The
+UNO batch: D2 and the console's CLK share a two-pin housing in column
+24 (both on U2-2, settled); D5 and the console's OUT0 share one at
+columns 35 and 34 (still a check: the housing is pulled diagonal and
+its two pins may both be in column 35); the three SPI leads cross over
+U3 and hide their own landings, the black one's housing standing in
+column 7 rather than 9, the white and grey ends not found on U3 at all,
+and no +5V link visible at column 7 (pin 10) now. The pad's cable lands
+on the middle board, which the map does not cover yet: extending the
+map to the middle board is the next tool step. The sheet is rev G.

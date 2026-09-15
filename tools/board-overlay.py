@@ -19,7 +19,10 @@ live in one file.
 
 The frame is cropped to the board the map describes and turned so the
 columns run left to right as they do on the sheets, pin 1 ends at the
-right. Only the chips are placed on the map so far; the console lead,
+right. A map may name a `frame_rotate` (degrees, PIL's sense) applied
+to the frame before anything else: the rig's camera is turned 90
+degrees so the whole board fits one frame, and the map is read in the
+frame turned back. Only the chips are placed on the map so far; the console lead,
 the UNO strip and the rails' feeds are named on the sheet, not here.
 """
 import argparse
@@ -251,6 +254,11 @@ def main():
     board_name = "right"
     board = Board(m["boards"][board_name])
     img = Image.open(a.frame).convert("RGB")
+    if m.get("frame_rotate"):
+        # The rig's camera is turned so the columns run along the frame's
+        # long side; the map is read in the frame turned back, so the
+        # conventions below (columns along y) hold for both mounts.
+        img = img.rotate(m["frame_rotate"], expand=True)
     x0, y0, x1, y1 = board.crop
     crop = img.crop((x0, y0, x1, y1))
     # Columns left to right like the sheets: the frame's y runs down as the
