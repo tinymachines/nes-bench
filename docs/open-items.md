@@ -174,13 +174,3 @@ entry is the one that raised it, with its date.
   Bros. for the combination cartridge) and dump with the wrong sizes.
   Nothing to fix in the reader; the note is that a named cartridge is
   not a checked one until the dump's checksum matches.
-
-## The workstation
-
-- **The API services run on the system Python's user site
-  (2026-09-11).** `~/.local/lib/python3.10` was wiped by an unrelated
-  install and two services broke on their next restart. A venv per
-  service, named in each unit, would end that class of outage. The
-  public deploy now tests on the unit's interpreter and refuses if it
-  cannot import uvicorn; the 6502 deploy runs under systemd's
-  environment and needs the same guard.
