@@ -3,7 +3,7 @@
   "Named close-ups of the breadboard for the BRIO in its fixed mount (baseline 2026-09-13). 'at' is the spot in the zoom-100 frame the view is aimed at.",
   "MEASURED: a zoom-Z crop is centred at x = 960 + (pan/36000)*960*(1-100/Z), y = 540 - (tilt/36000)*540*(1-100/Z) in the 1920x1080 zoom-100 frame; pan and tilt step by 3600. Checked by locating four calibration crops in the whole frame, each within a pixel.",
   "If the camera is moved, these are wrong: re-take the board frame, re-aim, and cut a new baseline.",
-  "RE-AIMED 2026-09-15 06:15 EDT for the rig: the BRIO on the metal frame, turned 90 degrees; every aim carried through the similarity fitted on the right board's holes between the last desk map and the rig map (scale 1.341, -91.1 degrees, worst residual 20 px), then pan and tilt re-quantised. The close-ups now stand turned 90 degrees against the earlier sets: columns run left to right in them."
+  "RE-AIMED 2026-09-15 01:15 EDT for the rig: the BRIO on the metal frame, turned 90 degrees; every aim carried through the similarity fitted on the right board's holes between the last desk map and the rig map (scale 1.341, -91.1 degrees, worst residual 20 px), then pan and tilt re-quantised. The close-ups now stand turned 90 degrees against the earlier sets: columns run left to right in them."
  ],
  "camera": {
   "focus": 25,

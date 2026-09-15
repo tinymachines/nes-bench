@@ -7,9 +7,10 @@
     "BASELINE 2026-09-13 15:40 EDT: the camera fixed in place, the wiring as the user left it. Later reads are compared against this one.",
     "FIFTH LOOK 2026-09-14 12:06 EDT: the J1 to U3 chain wired (the /PL link and the eight Q lines). A wire's end stands a few millimetres proud of the board and the eye looks at it from one side, so a raised end reads up to half a pitch from its hole; a landing is settled where the bare end is seen at the hole, and left as a check where it is not.",
     "SIXTH LOOK 2026-09-14 13:55 EDT: the user moved the second wire off U3-5 and pushed the brown home; both re-read with the map's holes projected onto fresh close looks. The boards had moved again on the desk (126 px down), so the map was shifted, not re-read.",
-    "RIG BASELINE 2026-09-15 06:10 EDT: the BRIO on the metal frame, straight down, the whole board in one frame (captures/b8-all.jpg); the hole map read afresh; the named views re-aimed (they stand turned 90 degrees against the earlier sets). Read against the rig set (captures/views-20260915T010318, captures/grid8): every pin done before reads the same; the UNO batch is read below."
+    "RIG BASELINE 2026-09-15 01:10 EDT: the BRIO on the metal frame, straight down, the whole board in one frame (captures/b8-all.jpg); the hole map read afresh; the named views re-aimed (they stand turned 90 degrees against the earlier sets). Read against the rig set (captures/views-20260915T010318, captures/grid8): every pin done before reads the same; the UNO batch is read below.",
+    "LOOKED AGAIN 2026-09-15 01:26 EDT after the user reported the SPI leads re-routed and D5 seated in column 34: the board frame and the U3 and U1 close-ups differ from the baseline set only by sensor noise (worst 40 px block mean difference 18 of 255, against 182 when the camera turned), so the change had not reached the board when these were taken. The checks stand until the morning's look."
   ],
-  "read": "2026-09-15 06:10 EDT (the rig baseline)",
+  "read": "2026-09-15 01:10 EDT (the rig baseline)",
   "scope": "grounds, +5 V, the J1 console side, the J1 to U3 chain, and the UNO's leads as far as the eye can follow them",
   "pins": {
     "U1.2": {

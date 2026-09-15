@@ -261,7 +261,7 @@ hole. Both checks closed; the sheet is rev F, 40 pins done, 4 to
 check, all four on the strip side and the rails' feed. Which grey
 moved is not visible, so the Q pairing still rests on the SPI loopback.
 
-## The rig, 2026-09-15 06:10: the camera on the frame, a fresh baseline
+## The rig, 2026-09-15 01:10: the camera on the frame, a fresh baseline
 
 The BRIO is fixed to a metal frame over the boards, looking straight
 down. The first mount had the frame's short side along the board and
@@ -289,3 +289,15 @@ column 7 rather than 9, the white and grey ends not found on U3 at all,
 and no +5V link visible at column 7 (pin 10) now. The pad's cable lands
 on the middle board, which the map does not cover yet: extending the
 map to the middle board is the next tool step. The sheet is rev G.
+
+A note on the clock: the Pi stamps its frames in London time, and the
+rig baseline above was first written up as 06:10 EDT from those
+stamps; it was 01:10 EDT. The timed grabs carry their own zone file
+for this reason; the by-hand grabs do not, and a stamp read off a
+by-hand frame is London's.
+
+Looked again at 01:26 EDT after the user reported the SPI leads
+re-routed and D5 seated in column 34: the board frame and the close-ups
+differ from the baseline only by sensor noise (worst block 18 of 255,
+against 182 when the camera turned), so whatever was changed is not on
+this board yet. The two checks stand for the morning.

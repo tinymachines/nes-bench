@@ -26,7 +26,7 @@
 </style>
 <rect x="0" y="0" width="2188" height="1154" fill="#ffffff"/>
 <g class="sheet-heading" data-height="60">
-<text class="title" x="24.0" y="30.0" text-anchor="start">Bridge v1b as built, read 2026-09-15 06:10 EDT (the rig baseline): grounds, +5 V, the J1 console side, the J1 to U3 chain, and the UNO's leads as far as the eye can follow them</text>
+<text class="title" x="24.0" y="30.0" text-anchor="start">Bridge v1b as built, read 2026-09-15 01:10 EDT (the rig baseline): grounds, +5 V, the J1 console side, the J1 to U3 chain, and the UNO's leads as far as the eye can follow them</text>
 <text class="sub" x="24.0" y="46.0" text-anchor="start">Grey: built and seen in the right hole. A ring and a number: needs a check, the note under the rails says what. Full colour: not built yet, or not part of this pass.</text>
 </g>
 <line class="railline" x1="40.0" y1="122.0" x2="2138.0" y2="122.0" stroke="#d02b2b"/>
