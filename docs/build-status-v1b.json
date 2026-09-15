@@ -8,9 +8,10 @@
     "FIFTH LOOK 2026-09-14 12:06 EDT: the J1 to U3 chain wired (the /PL link and the eight Q lines). A wire's end stands a few millimetres proud of the board and the eye looks at it from one side, so a raised end reads up to half a pitch from its hole; a landing is settled where the bare end is seen at the hole, and left as a check where it is not.",
     "SIXTH LOOK 2026-09-14 13:55 EDT: the user moved the second wire off U3-5 and pushed the brown home; both re-read with the map's holes projected onto fresh close looks. The boards had moved again on the desk (126 px down), so the map was shifted, not re-read.",
     "RIG BASELINE 2026-09-15 01:10 EDT: the BRIO on the metal frame, straight down, the whole board in one frame (captures/b8-all.jpg); the hole map read afresh; the named views re-aimed (they stand turned 90 degrees against the earlier sets). Read against the rig set (captures/views-20260915T010318, captures/grid8): every pin done before reads the same; the UNO batch is read below.",
-    "LOOKED AGAIN 2026-09-15 01:26 EDT after the user reported the SPI leads re-routed and D5 seated in column 34: the board frame and the U3 and U1 close-ups differ from the baseline set only by sensor noise (worst 40 px block mean difference 18 of 255, against 182 when the camera turned), so the change had not reached the board when these were taken. The checks stand until the morning's look."
+    "LOOKED AGAIN 2026-09-15 01:26 EDT after the user reported the SPI leads re-routed and D5 seated in column 34: the board frame and the U3 and U1 close-ups differ from the baseline set only by sensor noise (worst 40 px block mean difference 18 of 255, against 182 when the camera turned), so the change had not reached the board when these were taken. The checks stand until the morning's look.",
+    "SECOND RIG POSE 2026-09-15 01:45 EDT: the UNO's leads re-run direct from its header and the boards shifted right. The map was read off the new frame by tools/board-overlay.py --read (every hole found, the rows and columns fitted, the views re-aimed) and every landing read on tools/view-rings.py projections. LIMIT met here: a Dupont housing hides which of its positions is loaded, and a raised object reads outward from the frame's centre (about one pixel per 5 mm of height per 100 px of offset), so a housing that stands across two columns cannot be settled from above; those pins stay checks for the meter or the side eye."
   ],
-  "read": "2026-09-15 01:10 EDT (the rig baseline)",
+  "read": "2026-09-15 01:45 EDT (the rig, second pose)",
   "scope": "grounds, +5 V, the J1 console side, the J1 to U3 chain, and the UNO's leads as far as the eye can follow them",
   "pins": {
     "U1.2": {
@@ -117,8 +118,8 @@
       "state": "done"
     },
     "U3.10": {
-      "state": "check",
-      "note": "U3-10 (/SRCLR): the link to +5V at column 7 is not seen in the rig set; the black SPI lead's housing stands in that column instead. See the U3-11 note."
+      "state": "done",
+      "note": "grey link from column 7 up into the +5V rail row: /SRCLR tied high, seen now that the SPI leads no longer cross it."
     },
     "U3.13": {
       "state": "done"
@@ -134,10 +135,12 @@
       "state": "done"
     },
     "J1.2": {
-      "state": "done"
+      "state": "done",
+      "note": "the thin red at this end of the cut cable lands in column 24 row i: U2-2, beside the D2 blue's housing."
     },
     "J1.3": {
-      "state": "done"
+      "state": "check",
+      "note": "J1-3 (OUT0, the thin orange at this end of the cut cable): its bare end reads at column 33 row i, one column past U1-1. See the U1-1 note."
     },
     "J1.4": {
       "state": "done"
@@ -155,31 +158,31 @@
     },
     "U1.1": {
       "state": "check",
-      "note": "U1-1: the UNO's D5 (fat yellow) and the console's OUT0 (thin orange at this end of the cut cable) share a two-pin housing standing at columns 35 and 34, rows h and i, pulled diagonal by the leads. If both its pins are in column 35 nothing reaches U1-1 (column 34). Meter U1 pin 1 to the UNO's D5, or seat a single pin in column 34."
+      "note": "U1-1: the D5 yellow's two-position housing reads across columns 35 and 34 with the yellow in the higher one, and the console's OUT0 (thin orange, row i) has its bare end at column 33, which is U1-2 (/PL). Both readings are at the eye's half-column limit. Meter: UNO D5 to U1 pin 1, the console cable's OUT0 to U1 pin 1, and U1 pin 2 to nothing but U2 pin 1. If the orange is in 33, move it to 34."
     },
     "A1.D5 (T1)": {
       "state": "check",
       "note": "A1 D5: see the U1-1 note."
     },
     "A1.5V": {
-      "state": "check",
-      "note": "A1 5V and GND to the rails: the feed is off the top of the camera's view. Meter 5 V between the rails with the UNO on USB."
+      "state": "done",
+      "note": "a fat red from the UNO's side enters the +5V rail row at column 5."
     },
     "A1.GND": {
       "state": "check",
-      "note": "A1 5V and GND to the rails: the feed is off the top of the camera's view. Meter 5 V between the rails with the UNO on USB."
+      "note": "no lead from the UNO is seen entering the GND rail row. A two-pin black header stands across the two rail rows at column 27 with bright pin tips: if that is the UNO's ground (and 5 V) feed, say so; if it is a probe point, the UNO's ground still needs a lead to the GND row."
     },
     "U3.11": {
       "state": "check",
-      "note": "U3-11, U3-12 and U3-14 (SCK grey, RCLK black, MOSI white): the three fat leads cross over U3's rails side from the frame's top right to the UNO and hide their own landings. The black one's pin housing stands at column 7 (pin 10, /SRCLR), not column 9 (pin 12, RCLK); the white and grey ends are not found on U3 at all. Route the three around the board's end, not across the chip, then the eye can read them. Column 7 also shows no link to +5V now (pin 10 must be tied high to run)."
+      "note": "U3-11, U3-12 and U3-14 (SCK, RCLK, MOSI), the direct leads from the UNO: two black Dupont housings stand on U3's rails side, one across columns 11 and 10 (rows c/d), one across columns 9 to 7 (rows b to d), with a cream and a black lead leaving them; which positions carry pins is not visible from above. The design wants MOSI at 11, RCLK at 9, SCK at 8, and nothing at 10 (/OE, grounded) or 7 (/SRCLR, tied high). Meter: UNO D11 to U3 pin 14, D10 to pin 12, D13 to pin 11, and none of the three to either rail."
     },
     "U3.12": {
       "state": "check",
-      "note": "U3-11, U3-12 and U3-14 (SCK grey, RCLK black, MOSI white): the three fat leads cross over U3's rails side from the frame's top right to the UNO and hide their own landings. The black one's pin housing stands at column 7 (pin 10, /SRCLR), not column 9 (pin 12, RCLK); the white and grey ends are not found on U3 at all. Route the three around the board's end, not across the chip, then the eye can read them. Column 7 also shows no link to +5V now (pin 10 must be tied high to run)."
+      "note": "U3-11, U3-12 and U3-14 (SCK, RCLK, MOSI), the direct leads from the UNO: two black Dupont housings stand on U3's rails side, one across columns 11 and 10 (rows c/d), one across columns 9 to 7 (rows b to d), with a cream and a black lead leaving them; which positions carry pins is not visible from above. The design wants MOSI at 11, RCLK at 9, SCK at 8, and nothing at 10 (/OE, grounded) or 7 (/SRCLR, tied high). Meter: UNO D11 to U3 pin 14, D10 to pin 12, D13 to pin 11, and none of the three to either rail."
     },
     "U3.14": {
       "state": "check",
-      "note": "U3-11, U3-12 and U3-14 (SCK grey, RCLK black, MOSI white): the three fat leads cross over U3's rails side from the frame's top right to the UNO and hide their own landings. The black one's pin housing stands at column 7 (pin 10, /SRCLR), not column 9 (pin 12, RCLK); the white and grey ends are not found on U3 at all. Route the three around the board's end, not across the chip, then the eye can read them. Column 7 also shows no link to +5V now (pin 10 must be tied high to run)."
+      "note": "U3-11, U3-12 and U3-14 (SCK, RCLK, MOSI), the direct leads from the UNO: two black Dupont housings stand on U3's rails side, one across columns 11 and 10 (rows c/d), one across columns 9 to 7 (rows b to d), with a cream and a black lead leaving them; which positions carry pins is not visible from above. The design wants MOSI at 11, RCLK at 9, SCK at 8, and nothing at 10 (/OE, grounded) or 7 (/SRCLR, tied high). Meter: UNO D11 to U3 pin 14, D10 to pin 12, D13 to pin 11, and none of the three to either rail."
     }
   },
   "rails": {
@@ -187,13 +190,13 @@
     "note": "Rails read right with the lead ends in the holes: orange + and brown GND from the left board to the middle board; one red link from the left board's GND column to the right board's GND column (a red wire on GND), one from the middle board's + to the right board's +."
   },
   "observations": [
-    "RIG: the BRIO on the metal frame looks straight down (the column pitch is the same at both ends of the board, so there is no perspective to model), the whole board in one frame at about 24 px a column, focus 25; every named close-up lands on its target. Mark and lock.",
-    "The three UNO SPI leads and the console's cable both cross the right board diagonally over U3 and U2. Leads across a chip hide the landings under them; around the board's end they hide nothing.",
-    "The console's cut cable enters at the frame's top left; at this end its wires read thin red (CLK) and thin orange (OUT0), which is not the colour map recorded at the other end. The pad's cable (white, brown, red, orange, yellow: a real NES lead) enters at the top right under a cable tie and lands in a three-pin housing on the middle board, which the map does not cover yet.",
-    "The UNO ribbon's housing stands on the right board at columns 40 to 46, rows b to d, with a grey strand from column 39 up to the GND rail beside it; five short brown links bridge the middle gap at columns 47 to 51. Neither is on the chip sheet; the pad-side nets (D6, D7, D8) run through them to the middle board.",
-    "Orientation settled: the notch and the pin-1 dot of U1, U2 and U3 all face the high-column end, as the map places them. The round mark at the other end of each is the mould's ejector pin, not pin 1.",
-    "The six grey Q lines are one colour. The eye confirms where each end lands, not which end pairs with which; the bring-up's SPI loopback (a walking one out of the 595, read back through the 165) is what proves the pairing.",
-    "Two yellow ceramic capacitors stand across the rails, on the right board near columns 15 and 45; the plan puts one 100 nF beside each chip. The value is not readable on camera.",
-    "The power and reset breakout's five-way housing is parked on the right board's columns 41 to 45; it joins nothing on this sheet."
+    "RIG, SECOND POSE: the boards shifted right on the frame; the map re-read automatically (tools/board-overlay.py --read) and every view re-aimed; the rings sit on the holes out to column 50.",
+    "The UNO now sits at the frame's top right on a blue screw-terminal shield, its leads running direct: a bundle (purple, blue, cream, red) down over the top rail to U3's rails side and on, a red to the +5V rail at column 5, and white, yellow and orange to the pad's housing on the middle board. The screw shield hides the header's pin labels, so which UNO pin each lead leaves is not readable on camera.",
+    "A two-pin black header stands across the two rail rows at column 27 (pin tips up, no lead seen): a probe point, or a feed with its leads out of view.",
+    "The pad's cable (a real NES lead: white, brown, red, orange, yellow) and the UNO's white, yellow and orange land in a three-position housing on the middle board, which the map does not cover yet: the middle board is the next map to read.",
+    "Orientation settled: the notch and the pin-1 dot of U1, U2 and U3 all face the high-column end, as the map places them.",
+    "The six grey Q lines are one colour. The eye confirms where each end lands, not which end pairs with which; the bring-up's SPI loopback is what proves the pairing.",
+    "Two yellow ceramic capacitors stand across the rails at columns 28 and 17; the plan puts one 100 nF beside each chip. The value is not readable on camera.",
+    "A red link from the top GND rail row at column 12 runs down to the board's other rail pair: correct but red."
   ]
 }

@@ -301,3 +301,39 @@ re-routed and D5 seated in column 34: the board frame and the close-ups
 differ from the baseline only by sensor noise (worst block 18 of 255,
 against 182 when the camera turned), so whatever was changed is not on
 this board yet. The two checks stand for the morning.
+
+## Second rig pose, 01:45: the UNO direct, the map read automatically
+
+The user re-ran the UNO's leads direct from its header (the UNO now
+sits at the frame's top right on a screw-terminal shield) and shifted
+the boards right on the frame. The map was read off the new frame
+without a hand in it: every hole centre by normalised correlation with
+a hole template (1,201 found), the two five-row groups and the rail
+pair as even progressions (the second group looked for across the chip
+gap only, or the next board's rows win the fit), the columns walked
+leftward from the board's last hole with an adaptive pitch (25 px at
+column 1, 23 at column 45: the lens), anchors every fifth column and
+the map interpolating between them. That is now
+`board-overlay.py --read`, which also carries every view's aim through
+the similarity between the old map and the new; on the previous frame
+it reproduces the hand-read map, and on this one the rings sit on the
+holes out to column 50. `tools/view-rings.py` is the reading
+instrument, promoted from the scratchpad.
+
+What settled: /SRCLR's link to +5V at column 7 (hidden before under
+the SPI leads), the UNO's 5 V into the +5V rail at column 5, the
+console's CLK at U2-2, every Q line and every rail link as before.
+
+What the eye cannot settle, and why: a Dupont housing hides which of
+its positions carries a pin, and anything raised reads outward from
+the frame's centre by about a pixel per 5 mm of height per 100 px of
+offset (the lens is about 142 mm over the board: a 200 mm field at
+1080p), so a housing standing across two columns reads to the eye's
+half-column limit and no further. Three such stand on this board: the
+D5 yellow's at columns 35 and 34 (the yellow in the higher one), and
+two on U3's rails side across columns 11 to 10 and 9 to 7, the SPI
+leads' landings. The console's OUT0 (thin orange) has its bare end at
+column 33, row i, one column past U1-1. These are the morning's meter
+checks, and the case for aiming the second camera low along the chip
+row, where a housing's pins are in plain view. The sheet is rev H:
+40 pins done, 7 to check.

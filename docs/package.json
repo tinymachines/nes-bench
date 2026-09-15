@@ -2,7 +2,7 @@
   "org": "tinymachines",
   "project": "nes-bench",
   "docno": "TM-NESB-001",
-  "rev": "G",
+  "rev": "H",
   "drawn": "bisenbek",
   "page": "ansi-a",
   "title": "NES controller-port bridge, v1b",
@@ -141,6 +141,11 @@
       "G",
       "2026-09-15",
       "the rig baseline: camera on the frame, the UNO leads read"
+    ],
+    [
+      "H",
+      "2026-09-15",
+      "second rig pose: the UNO direct, the map read automatically"
     ]
   ]
 }

@@ -5,6 +5,8 @@ over the eye's frame of the board.
 
   python3 tools/board-overlay.py [frame.jpg] [--out docs/lab/board-junctions-v1b.png]
                                  [--status docs/build-status-v1b.json] [--map docs/board-map.json]
+  python3 tools/board-overlay.py --read captures/frame.jpg    # the map off a fresh rig frame,
+                                                              # the views re-aimed; then draw
 
 The photograph's hole grid comes from docs/board-map.json, read off one
 camera pose under pixel rulers (MEASURED, dated there); the nets come
@@ -50,12 +52,20 @@ class Board:
 
     def __init__(self, m):
         a = np.array(m["column_y"]["anchors"], dtype=float)
+        self.anchors = a[np.argsort(-a[:, 0])]
         self.poly = np.polyfit(a[:, 0], a[:, 1], 2)
         self.rows = m["rows"]
         self.rail = m["rail_x"]
         self.crop = m["crop"]
 
     def y(self, col):
+        # With anchors at every fifth column the map interpolates between
+        # them (the lens shrinks the pitch toward the frame's edge in a way a
+        # quadratic through three anchors cannot follow); a sparse map keeps
+        # the quadratic.
+        if len(self.anchors) >= 6:
+            cols = self.anchors[::-1, 0]
+            return float(np.interp(col, cols, self.anchors[::-1, 1]))
         return float(np.polyval(self.poly, col))
 
     def x(self, side, i, y):
@@ -228,8 +238,139 @@ def recalibrate(m, frame: Path, board_name: str, shift, out: Path, tol=8, column
     print(f"wrote {out}: re-read off {frame.name}, worst residual {worst:.0f} px")
 
 
+def find_holes(L):
+    """Every hole centre in a frame: normalised correlation with a dark
+    7x7 square in a 15x15 patch of board, local maxima above 0.5."""
+    from scipy.signal import fftconvolve
+    from scipy.ndimage import maximum_filter
+    t = np.full((15, 15), 1.0)
+    t[4:11, 4:11] = -1.0
+    t -= t.mean()
+    t /= np.linalg.norm(t)
+    num = fftconvolve(L, t[::-1, ::-1], mode="same")
+    ones = np.ones_like(t)
+    m = fftconvolve(L, ones, mode="same") / t.size
+    m2 = fftconvolve(L * L, ones, mode="same")
+    sd = np.sqrt(np.maximum(m2 - t.size * m * m, 1e-6))
+    ncc = num / sd
+    pk = (ncc == maximum_filter(ncc, size=9)) & (ncc > 0.5)
+    ys, xs = np.nonzero(pk)
+    return xs, ys
+
+
+def even_rows(v, lo, hi, n, pitches=np.arange(22.5, 25.5, 0.05)):
+    """n evenly spaced rows fitted to a set of coordinates: the origin
+    and pitch that put the most holes within 3 px of a row."""
+    best = None
+    for p in pitches:
+        for y0 in np.arange(lo, hi, 0.5):
+            rows = y0 + p * np.arange(n)
+            c = sum(int((abs(v - r) <= 3).sum()) for r in rows)
+            if best is None or c > best[0]:
+                best = (c, y0, p)
+    c, y0, p = best
+    return [int(round(y0 + p * i)) for i in range(n)], p, c
+
+
+def read_map(m, frame: Path, out: Path, views: Path):
+    """The map read off a frame of the rig (the camera straight down and
+    turned, `frame_rotate` set): every hole found, the ten hole rows and
+    the two rail rows fitted as even progressions, the columns walked
+    leftward from the board's last hole (column 1) with an adaptive
+    pitch. The old map stays as the prior for one thing only: the bands
+    the rows are looked for in. The named views' aims are carried through
+    the similarity between the old map and the new one."""
+    img = Image.open(frame).convert("L")
+    L = np.asarray(img, dtype=float)
+    xs, ys = find_holes(L)
+    b = m["boards"]["right"]
+    old = Board(b)
+    # No prior: the two five-row groups are the best two even fits over
+    # the whole frame (the second found with the first masked out), the
+    # rails side (a to e) is the one nearer the frame's top, where the
+    # rig puts the rails, and the rail pair sits just above it.
+    sel = (xs > 60) & (xs < 1600)
+    Y = ys[sel]
+    g1, p1, c1 = even_rows(Y, 30, 1080 - 100, 5)
+    # The board's other five rows sit across the chip gap, 0.3 inch from
+    # the first: looked for there and only there, or the next board's
+    # rows (as many holes, further away) win the second fit.
+    cands = [even_rows(Y, g1[-1] + 45, g1[-1] + 95, 5)]
+    hi = g1[0] - 45 - 4 * p1
+    if hi > 10:
+        cands.append(even_rows(Y, max(2, hi - 50), hi, 5))
+    g2, p2, c2 = max(cands, key=lambda g: g[2])
+    (ae, pa, ca), (fj, pf, cf) = sorted([(g1, p1, c1), (g2, p2, c2)], key=lambda g: g[0][0])
+    rl, pr, cr = even_rows(Y, max(2, ae[0] - 160), ae[0] - 30, 2)
+    print(f"  rows a-e {ae} (pitch {pa:.1f}, {ca} holes), f-j {fj} (pitch {pf:.1f}, {cf} holes), rails {rl} ({cr} holes)")
+    band = (ys > ae[0] - 15) & (ys < fj[-1] + 15) & sel
+    h = np.convolve(np.bincount(xs[band], minlength=2000).astype(float), np.ones(5), "same")
+    px = np.array([i for i in range(60, 1600) if h[i] >= 4 and h[i] == h[i - 14:i + 15].max()], float)
+    x, col, pitch, pos = px.max(), 1, 24.4, {}
+    pos[1] = x
+    while col < 52 and x > 70:
+        exp = x - pitch
+        near = px[abs(px - exp) < 5]
+        if len(near):
+            nx = near[np.argmin(abs(near - exp))]
+            pitch = 0.7 * pitch + 0.3 * (x - nx)
+        else:
+            nx = exp
+        col += 1
+        x = nx
+        pos[col] = x
+    anchors = [[c, int(round(pos[c]))] for c in (50, 45, 40, 35, 30, 25, 20, 15, 10, 5, 1) if c in pos]
+    print(f"  columns: 1 at x {pos[1]:.0f}, 50 at {pos.get(50, float('nan')):.0f}; pitch {pos[1] - pos[2]:.1f} px at column 1, {pos[45] - pos[46]:.1f} at 45")
+    b["column_y"]["anchors"] = anchors
+    mid = [1080 - y for y in fj[::-1]]
+    rails = [1080 - y for y in ae[::-1]]
+    yt, yb = anchors[0][1], anchors[-1][1]
+    b["rows"] = {"middle": {"y_top": yt, "x_top": mid, "y_bottom": yb, "x_bottom": mid},
+                 "rails": {"y_top": yt, "x_top": rails, "y_bottom": yb, "x_bottom": rails}}
+    # the rail row nearest the board's red line is +5V: the higher camera y of the two is nearer the board
+    b["rail_x"] = {"GND": {"y_top": yt, "x_top": 1080 - rl[1], "y_bottom": yb, "x_bottom": 1080 - rl[1]},
+                   "+5V": {"y_top": yt, "x_top": 1080 - rl[0], "y_bottom": yb, "x_bottom": 1080 - rl[0]}}
+    b["crop"] = [mid[0] - 30, yt - 30, 1080 - rl[0] + 30, yb + 40]
+    new = Board(b)
+    stamp = __import__("time").strftime("%Y-%m-%d %H:%M %Z")
+    m["frame"] = f"{frame} (read {stamp} by board-overlay.py --read)"
+    m["_about"].append(f"READ {stamp} off {frame.name} by --read: {len(xs)} hole centres by template correlation; rows a-e at camera y {ae}, f-j at {fj}, the rails at {rl}; the columns walked from the board's last hole with an adaptive pitch ({pos[1] - pos[2]:.1f} px at column 1, {pos[45] - pos[46]:.1f} at 45), anchors every fifth column.")
+    out.write_text(json.dumps(m, indent=1) + "\n")
+    print(f"wrote {out}")
+    # carry the views' aims through the similarity old -> new (camera frame coordinates)
+    A, B = [], []
+    for col in range(1, 36):
+        for side in ("middle", "rails"):
+            for i in (0, 4):
+                y = old.y(col); A.append((y, 1080 - old.x(side, i, y)))
+                y = new.y(col); B.append((y, 1080 - new.x(side, i, y)))
+    A, B = np.array(A), np.array(B)
+    ma, mb = A.mean(0), B.mean(0)
+    Ac, Bc = A - ma, B - mb
+    U, D, Vt = np.linalg.svd(Ac.T @ Bc / len(A))
+    R = (U @ Vt).T
+    if np.linalg.det(R) < 0:
+        Vt[-1] *= -1
+        R = (U @ Vt).T
+    s = D.sum() / (Ac ** 2).sum() * len(A)
+    t = mb - s * R @ ma
+    res = np.abs(B - (s * (R @ A.T).T + t)).max()
+    v = json.loads(views.read_text())
+    q = lambda x: max(-36000, min(36000, int(round(x / 3600)) * 3600))
+    for w in v["views"].values():
+        ax, ay = s * R @ np.array(w["at"], float) + t
+        w["at"] = [int(round(ax)), int(round(ay))]
+        f = 1 - 100 / w["zoom"]
+        w["pan"], w["tilt"] = q((ax - 960) / (960 * f) * 36000), q((540 - ay) / (540 * f) * 36000)
+    v["_about"].append(f"RE-AIMED {stamp} by board-overlay.py --read off {frame.name}: scale {s:.3f}, {np.degrees(np.arctan2(R[1, 0], R[0, 0])):.1f} degrees, shift {t.round(0).tolist()}, worst residual {res:.0f} px.")
+    views.write_text(json.dumps(v, indent=1) + "\n")
+    print(f"re-aimed {len(v['views'])} views (scale {s:.3f}, shift {t.round(0).tolist()}, worst residual {res:.0f} px)")
+
+
 def main():
     ap = argparse.ArgumentParser()
+    ap.add_argument("--read", action="store_true", help="read the map afresh off FRAME (the rig: straight down, frame_rotate set), re-aim the views, and stop")
+    ap.add_argument("--views", default=str(ROOT / "docs" / "eye-views.json"))
     ap.add_argument("--recalibrate", nargs=2, type=int, metavar=("DX", "DY"), help="re-read the map off FRAME with this shift from the current map as the prior, and stop")
     ap.add_argument("--tolerance", type=int, default=8, help="how far a re-read anchor may land from its shifted prior, in pixels")
     ap.add_argument("--columns-from-prior", action="store_true", help="shift the column anchors by DY instead of re-reading them (the rows are always re-read)")
@@ -240,6 +381,9 @@ def main():
     ap.add_argument("--scale", type=float, default=2.6)
     a = ap.parse_args()
     m = json.loads(Path(a.map).read_text())
+    if a.read:
+        read_map(m, Path(a.frame), Path(a.map), Path(a.views))
+        return
     if a.recalibrate:
         recalibrate(m, Path(a.frame), "right", a.recalibrate, Path(a.map), tol=a.tolerance, columns_from_prior=a.columns_from_prior)
         return
