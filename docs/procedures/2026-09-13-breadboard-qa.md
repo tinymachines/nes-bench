@@ -425,3 +425,27 @@ CP is inhibited, so those bytes read right; a byte of consecutive
 pressed bits has no falling edge inside the poll. One capture decides
 it: CH1 on U2 pin 2 with 02 held, looking for a glitch at the moment
 D0 falls, about 7 us after the latch.
+
+## B0 gate 1 held: eight clocks on every poll, after the firmware learned to read at the edge
+
+The scatter in the bridge's per-poll clock counts was the firmware's,
+in three layers, each found by the gate and fixed in turn (the hexes
+built with `firmware/build-uno.sh`, flashed through the Pi with
+avrdude, the console polling throughout):
+
+1. The loop read Timer1 (latches) and the clock counter a few
+   instructions apart while the console's clocks came 13 us apart and
+   the loop was busy printing: 377 of 1,203 polls booked wrong. The
+   clock count is now snapshotted in the latch's pin-change interrupt.
+2. That interrupt told a rise from a fall by reading the pin, and a
+   3.6 us pulse can be over by the time the interrupt runs: 7 of 1,202
+   missed, each a 0 followed by a 16. It now asks Timer1 whether the
+   hardware count moved.
+3. The loop still took the latch count from Timer1, which can step
+   before the interrupt that snapshots the clocks has run: 2 of 1,202.
+   The loop now reads the interrupt's own pair, latches and snapshot,
+   in one breath.
+
+Three runs after that: 1,202, 1,203 and 1,202 polls in 20 s, every one
+eight clocks. MUTATE ON still reports one clock a latch, so the gate
+can still go red.

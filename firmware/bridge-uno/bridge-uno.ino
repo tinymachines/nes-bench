@@ -87,6 +87,7 @@ static uint32_t clocks_at_latch = 0;
 static uint8_t byte_at_latch = 0;
 static bool have_latch = false;
 static uint16_t last_tcnt = 0;
+static uint32_t last_rises = 0;
 static long trig_at = -1;
 static unsigned long trig_until = 0;
 static uint16_t deferred_writes = 0;
@@ -103,7 +104,36 @@ static void clock_isr() { if (!mutated) clock_edges++; }
 
 // D5 is PD5, which is PCINT21. Rises only, so a mutated run reports one
 // "clock" per latch instead of eight and the 8-per-latch gate is red.
-ISR(PCINT2_vect) { if (mutated && (PIND & _BV(PD5))) clock_edges++; }
+//
+// The same rise is where the clock count has to be read. MEASURED
+// 2026-09-15 on the bench: the loop used to read Timer1 (the latch) and
+// clock_edges (the clocks) a few instructions apart, and with the
+// console's clocks 13 us apart and the loop busy printing, the count it
+// booked to a poll included clocks of the next one. The L lines came
+// out scattered from 0 to 16 in neighbours that summed to 16 while the
+// running totals were exactly eight a latch. So the clock count is
+// captured here, at the latch's own edge, and the loop reads the
+// snapshot: clocks_at_rise is the clock count when the latest latch
+// rose, rises the number of rises the interrupt has seen.
+//
+// A rise is told from a fall by Timer1, not by reading the pin: the
+// pulse is 3.6 us wide (MEASURED 2026-09-15) and a pin-change interrupt
+// held off by the serial port's own can arrive after it has ended,
+// when the pin reads low again. The first build of this read the pin
+// and missed 7 latches in 1,202 that way (a 0 followed by a 16).
+// Timer1 counts the rises in hardware whatever the latency, so the
+// interrupt asks it whether the count moved.
+static volatile uint32_t clocks_at_rise = 0;
+static volatile uint32_t rises = 0;
+static volatile uint16_t tcnt_in_isr = 0;
+ISR(PCINT2_vect) {
+  uint16_t c = TCNT1;
+  if (c == tcnt_in_isr) return;          // a fall, or a rise already booked
+  if (mutated) clock_edges += (uint16_t)(c - tcnt_in_isr);
+  tcnt_in_isr = c;
+  clocks_at_rise = clock_edges;
+  rises++;
+}
 
 // --------------------------------------------------------- register
 // The 74HC595's QA..QH feed the 74HC165's H..A, and the 165 shifts H
@@ -191,7 +221,7 @@ static void handle(char *s) {
   }
   else if (!strcmp(s, "RESET")) {
     uint8_t sreg = SREG; cli();
-    latches = 0; clock_edges = 0; last_tcnt = TCNT1;
+    latches = 0; clock_edges = 0; last_tcnt = TCNT1; tcnt_in_isr = last_tcnt; clocks_at_rise = 0; rises = 0; last_rises = 0;
     SREG = sreg;
     clocks = 0; clocks_at_latch = 0; have_latch = false;
     schedule_len = 0; schedule_cursor = 0; trig_at = -1;
@@ -276,23 +306,30 @@ void loop() {
 
   // The console's pulses first, so a latch is logged with the byte the
   // register held at it, before any new byte is written.
-  uint16_t now16;
-  uint8_t sreg = SREG; cli(); now16 = TCNT1; SREG = sreg;
-  uint16_t dl = (uint16_t)(now16 - last_tcnt);   // unsigned: the wrap takes care of itself
-  last_tcnt = now16;
-  uint32_t edges;
-  sreg = SREG; cli(); edges = clock_edges; SREG = sreg;
+  // The latch count and the clock snapshot are the interrupt's pair,
+  // read in one breath: rises and clocks_at_rise were written together
+  // at the latch's edge. Reading Timer1 here instead paired a poll with
+  // the snapshot of the one before whenever the loop looked between the
+  // counter's step and the interrupt that follows it (2 of 1,202 polls
+  // came out as a 0 and a 16 that way, MEASURED 2026-09-15).
+  uint32_t seen, edges, at_rise;
+  uint8_t sreg = SREG; cli(); seen = rises; edges = clock_edges; at_rise = clocks_at_rise; SREG = sreg;
+  uint16_t dl = (uint16_t)(seen - last_rises);
+  last_rises = seen;
   clocks = edges;
 
   if (dl > 0) {
+    // The poll that just ended took the clocks between the previous
+    // latch's rise and this one's, both read at the edge by the
+    // interrupt above, not whatever the loop sees now.
     if (have_latch) {
-      snprintf(out, sizeof out, "L %lu %02x %lu", latches - 1, byte_at_latch, clocks - clocks_at_latch);
+      snprintf(out, sizeof out, "L %lu %02x %lu", latches - 1, byte_at_latch, at_rise - clocks_at_latch);
       say(out);
       if (torn_pending) { say("# the load window opened across an RCLK edge: the byte above may be torn"); torn_pending = false; }
     }
     if (dl > 1) { snprintf(out, sizeof out, "# %u latches in one look at %lu", dl, latches); say(out); }
     latches += dl;
-    clocks_at_latch = clocks;
+    clocks_at_latch = at_rise;
     byte_at_latch = held;
     have_latch = true;
     if (trig_at >= 0 && (uint32_t)trig_at < latches) {
