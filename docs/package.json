@@ -2,7 +2,7 @@
   "org": "tinymachines",
   "project": "nes-bench",
   "docno": "TM-NESB-001",
-  "rev": "H",
+  "rev": "I",
   "drawn": "bisenbek",
   "page": "ansi-a",
   "title": "NES controller-port bridge, v1b",
@@ -146,6 +146,11 @@
       "H",
       "2026-09-15",
       "second rig pose: the UNO direct, the map read automatically"
+    ],
+    [
+      "I",
+      "2026-09-15",
+      "U1-1 and the SPI pins metered; one check left, the UNO's ground"
     ]
   ]
 }

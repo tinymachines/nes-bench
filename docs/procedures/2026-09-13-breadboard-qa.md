@@ -337,3 +337,13 @@ column 33, row i, one column past U1-1. These are the morning's meter
 checks, and the case for aiming the second camera low along the chip
 row, where a housing's pins are in plain view. The sheet is rev H:
 40 pins done, 7 to check.
+
+## Metered, later on 2026-09-15: U1-1 and the SPI pins
+
+The user put a meter on U1-1 and on U3's pins 11, 12 and 14 after the
+morning's list: the UNO's D5 and the console's OUT0 reach U1 pin 1,
+and the three SPI leads reach their pins. Fresh close-ups differ from
+the previous look by sensor noise only, which is the point: the eye
+reads the same housings it could not settle, and the meter settles
+them. Recorded as MEASURED on the sheet, rev I. One check remains,
+the UNO's ground into the GND rail row.

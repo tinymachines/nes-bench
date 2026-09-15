@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2188 1154" width="2188" height="1154" role="img" aria-label="Bridge v1b wiring diagram">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2188 1086" width="2188" height="1086" role="img" aria-label="Bridge v1b wiring diagram">
 <style>
  text{font-family:ui-sans-serif,'DejaVu Sans',sans-serif;fill:#222}
  .title{font-size:24px;font-weight:700}
@@ -24,9 +24,9 @@
  .checknote{font-size:13px;fill:#222}
  .checkhead{font-size:15px;font-weight:700;fill:#d4006f}
 </style>
-<rect x="0" y="0" width="2188" height="1154" fill="#ffffff"/>
+<rect x="0" y="0" width="2188" height="1086" fill="#ffffff"/>
 <g class="sheet-heading" data-height="60">
-<text class="title" x="24.0" y="30.0" text-anchor="start">Bridge v1b as built, read 2026-09-15 01:45 EDT (the rig, second pose): grounds, +5 V, the J1 console side, the J1 to U3 chain, and the UNO's leads as far as the eye can follow them</text>
+<text class="title" x="24.0" y="30.0" text-anchor="start">Bridge v1b as built, read 2026-09-15 EDT (the rig, second pose; U1-1 and the SPI pins metered): grounds, +5 V, the J1 console side, the J1 to U3 chain, and the UNO's leads as far as the eye can follow them</text>
 <text class="sub" x="24.0" y="46.0" text-anchor="start">Grey: built and seen in the right hole. A ring and a number: needs a check, the note under the rails says what. Full colour: not built yet, or not part of this pass.</text>
 </g>
 <line class="railline" x1="40.0" y1="122.0" x2="2138.0" y2="122.0" stroke="#d02b2b"/>
@@ -339,15 +339,15 @@
 <line class="wire" x1="726.0" y1="597.0" x2="726.0" y2="761.0" stroke="#c4c4c4"/>
 <text class="net" x="730.0" y="772.0" text-anchor="start">CON_CLK</text>
 <line class="wire" x1="1296.0" y1="167.0" x2="1296.0" y2="761.0" stroke="#c4c4c4"/>
-<line class="wire" x1="152.0" y1="182.0" x2="1564.0" y2="182.0" stroke="#8d1f5e"/>
-<line class="wire" x1="152.0" y1="391.0" x2="152.0" y2="182.0" stroke="#8d1f5e"/>
-<line class="wire" x1="1564.0" y1="391.0" x2="1564.0" y2="182.0" stroke="#8d1f5e"/>
-<circle cx="616.0" cy="182.0" r="3.4" fill="#8d1f5e"/>
+<line class="wire" x1="152.0" y1="182.0" x2="1564.0" y2="182.0" stroke="#c4c4c4"/>
+<line class="wire" x1="152.0" y1="391.0" x2="152.0" y2="182.0" stroke="#c4c4c4"/>
+<line class="wire" x1="1564.0" y1="391.0" x2="1564.0" y2="182.0" stroke="#c4c4c4"/>
+<circle cx="616.0" cy="182.0" r="3.4" fill="#c4c4c4"/>
 <text class="net" x="156.0" y="179.0" text-anchor="start">CON_OUT0</text>
-<line class="wire" x1="386.0" y1="671.0" x2="616.0" y2="671.0" stroke="#8d1f5e"/>
-<line class="wire" x1="386.0" y1="597.0" x2="386.0" y2="671.0" stroke="#8d1f5e"/>
+<line class="wire" x1="386.0" y1="671.0" x2="616.0" y2="671.0" stroke="#c4c4c4"/>
+<line class="wire" x1="386.0" y1="597.0" x2="386.0" y2="671.0" stroke="#c4c4c4"/>
 <text class="net" x="390.0" y="682.0" text-anchor="start">CON_OUT0</text>
-<line class="wire" x1="616.0" y1="182.0" x2="616.0" y2="671.0" stroke="#8d1f5e"/>
+<line class="wire" x1="616.0" y1="182.0" x2="616.0" y2="671.0" stroke="#c4c4c4"/>
 <line class="wire" x1="182.0" y1="197.0" x2="870.0" y2="197.0" stroke="#c4c4c4"/>
 <line class="wire" x1="182.0" y1="391.0" x2="182.0" y2="197.0" stroke="#c4c4c4"/>
 <line class="wire" x1="870.0" y1="391.0" x2="870.0" y2="197.0" stroke="#c4c4c4"/>
@@ -417,15 +417,15 @@
 <text class="net" x="1478.0" y="209.0" text-anchor="start">PAD_D0</text>
 <line class="wire" x1="1162.0" y1="287.0" x2="1384.0" y2="287.0" stroke="#00838f"/>
 <line class="wire" x1="1384.0" y1="391.0" x2="1384.0" y2="287.0" stroke="#00838f"/>
-<line class="wire" x1="1162.0" y1="391.0" x2="1162.0" y2="287.0" stroke="#00838f"/>
+<line class="wire" x1="1162.0" y1="391.0" x2="1162.0" y2="287.0" stroke="#c4c4c4"/>
 <text class="net" x="1166.0" y="284.0" text-anchor="start">SCK</text>
 <line class="wire" x1="1090.0" y1="257.0" x2="1414.0" y2="257.0" stroke="#3f6f2a"/>
 <line class="wire" x1="1414.0" y1="391.0" x2="1414.0" y2="257.0" stroke="#3f6f2a"/>
-<line class="wire" x1="1090.0" y1="391.0" x2="1090.0" y2="257.0" stroke="#3f6f2a"/>
+<line class="wire" x1="1090.0" y1="391.0" x2="1090.0" y2="257.0" stroke="#c4c4c4"/>
 <text class="net" x="1094.0" y="254.0" text-anchor="start">MOSI</text>
 <line class="wire" x1="1138.0" y1="272.0" x2="1444.0" y2="272.0" stroke="#283593"/>
 <line class="wire" x1="1444.0" y1="391.0" x2="1444.0" y2="272.0" stroke="#283593"/>
-<line class="wire" x1="1138.0" y1="391.0" x2="1138.0" y2="272.0" stroke="#283593"/>
+<line class="wire" x1="1138.0" y1="391.0" x2="1138.0" y2="272.0" stroke="#c4c4c4"/>
 <text class="net" x="1142.0" y="269.0" text-anchor="start">RCLK</text>
 <line class="wire" x1="1594.0" y1="317.0" x2="1800.0" y2="317.0" stroke="#9e9d24"/>
 <line class="wire" x1="1594.0" y1="391.0" x2="1594.0" y2="317.0" stroke="#9e9d24"/>
@@ -439,39 +439,17 @@
 <text class="net" x="1794.0" y="627.0" text-anchor="end">EXT_TRIG: scope EXT TRIG</text>
 <circle class="ring" cx="1414.0" cy="597.0" r="10"/>
 <circle cx="1427.0" cy="584.0" r="8.5" fill="#d4006f" stroke="#fff" stroke-width="1.5"/>
-<text class="tag" x="1427.0" y="588.0" text-anchor="middle">4</text>
-<circle class="ring" cx="152.0" cy="391.0" r="10"/>
-<circle cx="165.0" cy="378.0" r="8.5" fill="#d4006f" stroke="#fff" stroke-width="1.5"/>
-<text class="tag" x="165.0" y="382.0" text-anchor="middle">1</text>
-<circle class="ring" cx="1564.0" cy="391.0" r="10"/>
-<circle cx="1577.0" cy="378.0" r="8.5" fill="#d4006f" stroke="#fff" stroke-width="1.5"/>
-<text class="tag" x="1577.0" y="382.0" text-anchor="middle">3</text>
-<circle class="ring" cx="386.0" cy="597.0" r="10"/>
-<circle cx="399.0" cy="584.0" r="8.5" fill="#d4006f" stroke="#fff" stroke-width="1.5"/>
-<text class="tag" x="399.0" y="588.0" text-anchor="middle">2</text>
-<circle class="ring" cx="1162.0" cy="391.0" r="10"/>
-<circle cx="1175.0" cy="378.0" r="8.5" fill="#d4006f" stroke="#fff" stroke-width="1.5"/>
-<text class="tag" x="1175.0" y="382.0" text-anchor="middle">5</text>
-<circle class="ring" cx="1090.0" cy="391.0" r="10"/>
-<circle cx="1103.0" cy="378.0" r="8.5" fill="#d4006f" stroke="#fff" stroke-width="1.5"/>
-<text class="tag" x="1103.0" y="382.0" text-anchor="middle">5</text>
-<circle class="ring" cx="1138.0" cy="391.0" r="10"/>
-<circle cx="1151.0" cy="378.0" r="8.5" fill="#d4006f" stroke="#fff" stroke-width="1.5"/>
-<text class="tag" x="1151.0" y="382.0" text-anchor="middle">5</text>
-<text class="checkhead" x="24.0" y="864.0" text-anchor="start">Needs a check (5)</text>
-<text class="checknote" x="24.0" y="885.0" text-anchor="start">1. J1-3 (OUT0, the thin orange at this end of the cut cable): its bare end reads at column 33 row i, one column past U1-1. See the U1-1 note.</text>
-<text class="checknote" x="24.0" y="902.0" text-anchor="start">2. U1-1: the D5 yellow's two-position housing reads across columns 35 and 34 with the yellow in the higher one, and the console's OUT0 (thin orange, row i) has its bare end at column 33, which is U1-2 (/PL). Both readings are at the eye's half-column limit. Meter: UNO D5 to U1 pin 1, the console cable's OUT0 to U1 pin 1, and U1 pin 2 to nothing but U2 pin 1. If the orange is in 33, move it to 34.</text>
-<text class="checknote" x="24.0" y="919.0" text-anchor="start">3. A1 D5: see the U1-1 note.</text>
-<text class="checknote" x="24.0" y="936.0" text-anchor="start">4. no lead from the UNO is seen entering the GND rail row. A two-pin black header stands across the two rail rows at column 27 with bright pin tips: if that is the UNO's ground (and 5 V) feed, say so; if it is a probe point, the UNO's ground still needs a lead to the GND row.</text>
-<text class="checknote" x="24.0" y="953.0" text-anchor="start">5. U3-11, U3-12 and U3-14 (SCK, RCLK, MOSI), the direct leads from the UNO: two black Dupont housings stand on U3's rails side, one across columns 11 and 10 (rows c/d), one across columns 9 to 7 (rows b to d), with a cream and a black lead leaving them; which positions carry pins is not visible from above. The design wants MOSI at 11, RCLK at 9, SCK at 8, and nothing at 10 (/OE, grounded) or 7 (/SRCLR, tied high). Meter: UNO D11 to U3 pin 14, D10 to pin 12, D13 to pin 11, and none of the three to either rail.</text>
-<text class="note" x="24.0" y="974.0" text-anchor="start">Seen, not on this sheet's nets:</text>
-<text class="note" x="24.0" y="991.0" text-anchor="start">- RIG, SECOND POSE: the boards shifted right on the frame; the map re-read automatically (tools/board-overlay.py --read) and every view re-aimed; the rings sit on the holes out to column 50.</text>
-<text class="note" x="24.0" y="1008.0" text-anchor="start">- The UNO now sits at the frame's top right on a blue screw-terminal shield, its leads running direct: a bundle (purple, blue, cream, red) down over the top rail to U3's rails side and on, a red to the +5V rail at column 5, and white, yellow and orange to the pad's housing on the middle board. The screw shield hides the header's pin labels, so which UNO pin each lead leaves is not readable on camera.</text>
-<text class="note" x="24.0" y="1025.0" text-anchor="start">- A two-pin black header stands across the two rail rows at column 27 (pin tips up, no lead seen): a probe point, or a feed with its leads out of view.</text>
-<text class="note" x="24.0" y="1042.0" text-anchor="start">- The pad's cable (a real NES lead: white, brown, red, orange, yellow) and the UNO's white, yellow and orange land in a three-position housing on the middle board, which the map does not cover yet: the middle board is the next map to read.</text>
-<text class="note" x="24.0" y="1059.0" text-anchor="start">- Orientation settled: the notch and the pin-1 dot of U1, U2 and U3 all face the high-column end, as the map places them.</text>
-<text class="note" x="24.0" y="1076.0" text-anchor="start">- The six grey Q lines are one colour. The eye confirms where each end lands, not which end pairs with which; the bring-up's SPI loopback is what proves the pairing.</text>
-<text class="note" x="24.0" y="1093.0" text-anchor="start">- Two yellow ceramic capacitors stand across the rails at columns 28 and 17; the plan puts one 100 nF beside each chip. The value is not readable on camera.</text>
-<text class="note" x="24.0" y="1110.0" text-anchor="start">- A red link from the top GND rail row at column 12 runs down to the board's other rail pair: correct but red.</text>
-<text class="note" x="2164" y="1138" text-anchor="end">19 nets on tracks, 7 of them crossing the row; 26 supply pins on the rails. drawn by tools/wiring-diagram.py</text>
+<text class="tag" x="1427.0" y="588.0" text-anchor="middle">1</text>
+<text class="checkhead" x="24.0" y="864.0" text-anchor="start">Needs a check (1)</text>
+<text class="checknote" x="24.0" y="885.0" text-anchor="start">1. no lead from the UNO is seen entering the GND rail row. A two-pin black header stands across the two rail rows at column 27 with bright pin tips: if that is the UNO's ground (and 5 V) feed, say so; if it is a probe point, the UNO's ground still needs a lead to the GND row.</text>
+<text class="note" x="24.0" y="906.0" text-anchor="start">Seen, not on this sheet's nets:</text>
+<text class="note" x="24.0" y="923.0" text-anchor="start">- RIG, SECOND POSE: the boards shifted right on the frame; the map re-read automatically (tools/board-overlay.py --read) and every view re-aimed; the rings sit on the holes out to column 50.</text>
+<text class="note" x="24.0" y="940.0" text-anchor="start">- The UNO now sits at the frame's top right on a blue screw-terminal shield, its leads running direct: a bundle (purple, blue, cream, red) down over the top rail to U3's rails side and on, a red to the +5V rail at column 5, and white, yellow and orange to the pad's housing on the middle board. The screw shield hides the header's pin labels, so which UNO pin each lead leaves is not readable on camera.</text>
+<text class="note" x="24.0" y="957.0" text-anchor="start">- A two-pin black header stands across the two rail rows at column 27 (pin tips up, no lead seen): a probe point, or a feed with its leads out of view.</text>
+<text class="note" x="24.0" y="974.0" text-anchor="start">- The pad's cable (a real NES lead: white, brown, red, orange, yellow) and the UNO's white, yellow and orange land in a three-position housing on the middle board, which the map does not cover yet: the middle board is the next map to read.</text>
+<text class="note" x="24.0" y="991.0" text-anchor="start">- Orientation settled: the notch and the pin-1 dot of U1, U2 and U3 all face the high-column end, as the map places them.</text>
+<text class="note" x="24.0" y="1008.0" text-anchor="start">- The six grey Q lines are one colour. The eye confirms where each end lands, not which end pairs with which; the bring-up's SPI loopback is what proves the pairing.</text>
+<text class="note" x="24.0" y="1025.0" text-anchor="start">- Two yellow ceramic capacitors stand across the rails at columns 28 and 17; the plan puts one 100 nF beside each chip. The value is not readable on camera.</text>
+<text class="note" x="24.0" y="1042.0" text-anchor="start">- A red link from the top GND rail row at column 12 runs down to the board's other rail pair: correct but red.</text>
+<text class="note" x="2164" y="1070" text-anchor="end">19 nets on tracks, 7 of them crossing the row; 26 supply pins on the rails. drawn by tools/wiring-diagram.py</text>
 </svg>
