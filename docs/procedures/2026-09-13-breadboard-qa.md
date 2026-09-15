@@ -449,3 +449,40 @@ avrdude, the console polling throughout):
 Three runs after that: 1,202, 1,203 and 1,202 polls in 20 s, every one
 eight clocks. MUTATE ON still reports one clock a latch, so the gate
 can still go red.
+
+With the bookkeeping exact, the bridge's own count of the console's
+clock edges was read again with a lone middle bit held (02, 40, 06)
+against 00, 7f and ff: 481 polls each, eight edges every poll, no
+ninth. So whatever shifts the 165 once too often is not a full-swing
+edge on the clock line at the UNO's D2; if it is a spike on the 165's
+CP, it is one too short for the AVR's edge detector (a cycle, 62 ns)
+and long enough for the 74HC165 (about 10 ns). The capture on U2 pin
+2 is still the one that decides it.
+
+## The sliver, seen close: D0's own edge cuts it short
+
+Triggered on D0's fall with 02 held, at 1 us/div
+(`docs/lab/15-d0-fall-crosstalk.png`): D0 starts down at the 165's
+first shift, reaches only 1.9 V, and is back high within about 50 ns
+with a slow tail; the latch line on CH2 shows a blip of half a volt
+each way at the same instant, though nothing drives it. A pressed bit
+was never presented for a bit-time: the register shifted again within
+tens of nanoseconds of its output starting to fall. The blip on the
+latch line is the mechanism made visible: D0's edge couples into the
+lines that share its cable, harmlessly into OUT0 and, on the clock
+line, as a spike that the 74HC165 takes for a rising edge (it needs
+about 10 ns) and the UNO's edge detector does not (it needs a cycle,
+62 ns, which is why the bridge still counts eight). The 165's output
+falling clocks the 165, which lifts its output: a lone pressed bit
+lasts as long as the loop, and the ground on DS then arrives a clock
+early. With A pressed the fall lands inside the load, when the clock
+is inhibited, and a run of pressed bits has no fall inside the poll:
+those bytes read clean.
+
+The fix is at the clock pin: a series resistor and a small capacitor
+on U2 pin 2 (1 kilohm from the CLK lead to the pin, 100 pF from the
+pin to ground: 100 ns against a 50 ns spike, and nothing against the
+console's microseconds-wide clock), and the CLK and D0 leads kept
+apart on the board. The capture on U2 pin 2 would show the spike
+itself; the fix can be tried without it, since the walk of single
+bits is the check.
