@@ -16,7 +16,7 @@
     "THIRD RIG POSE 2026-09-15 13:16 EDT: the boards rearranged on the frame (the chip board at the top, its rails along the frame's top edge, the middle board below it, a fourth rail-only board at the bottom); the map re-read by --read with new bands. R2 and C4 (the clock pin's filter, added by the user this afternoon) went on the schematic and are looked for here.",
     "PLACEMENTS 2026-09-15: state \"plan\" is a placement asked for and not built (green on the photograph, listed with the checks on the sheet); the note is the instruction."
   ],
-  "read": "2026-09-15 21:15 EDT (the rig locked; R1 settled by the trigger firing)",
+  "read": "2026-09-15 21:40 EDT (J1 and J2 located with the pointer)",
   "scope": "grounds, +5 V, the J1 console side, the J1 to U3 chain, the UNO's leads, and on the middle board the pad housing (J2) and the trigger resistor (R1)",
   "pins": {
     "U1.2": {
@@ -191,23 +191,23 @@
     },
     "J2.1": {
       "state": "check",
-      "note": "J2, the pad-side housing: not located. The five-way housing at the middle board's columns 9 to 13 is the power and reset breakout's, joined to nothing. The pad cable and the UNO's D6, D7 and D8 leads run in under the UNO's lead bundle at the frame's right; where they land is under the leads. Say where, or route them where the eye can see, and the sheet will read them."
+      "note": "J2, the pad-side housing: LOCATED 2026-09-15 (the pointer): a black housing lying in row j of the middle board's rails side across columns 15 to 10, with the UNO's white, yellow and orange pad leads and the pad cable's five-colour bundle going into it from the frame's right. Which position carries which lead cannot be read from above (the leads enter the housing's far side). Say the order of the five leads along the housing from column 15 to 10, or meter: pad cable GND to the GND rail, pad +5 V to the +5V rail, and the UNO's D6, D7, D8 to the pad's LATCH, CLK and D0 leads."
     },
     "J2.2": {
       "state": "check",
-      "note": "J2, the pad-side housing: not located. The five-way housing at the middle board's columns 9 to 13 is the power and reset breakout's, joined to nothing. The pad cable and the UNO's D6, D7 and D8 leads run in under the UNO's lead bundle at the frame's right; where they land is under the leads. Say where, or route them where the eye can see, and the sheet will read them."
+      "note": "J2, the pad-side housing: LOCATED 2026-09-15 (the pointer): a black housing lying in row j of the middle board's rails side across columns 15 to 10, with the UNO's white, yellow and orange pad leads and the pad cable's five-colour bundle going into it from the frame's right. Which position carries which lead cannot be read from above (the leads enter the housing's far side). Say the order of the five leads along the housing from column 15 to 10, or meter: pad cable GND to the GND rail, pad +5 V to the +5V rail, and the UNO's D6, D7, D8 to the pad's LATCH, CLK and D0 leads."
     },
     "J2.3": {
       "state": "check",
-      "note": "J2, the pad-side housing: not located. The five-way housing at the middle board's columns 9 to 13 is the power and reset breakout's, joined to nothing. The pad cable and the UNO's D6, D7 and D8 leads run in under the UNO's lead bundle at the frame's right; where they land is under the leads. Say where, or route them where the eye can see, and the sheet will read them."
+      "note": "J2, the pad-side housing: LOCATED 2026-09-15 (the pointer): a black housing lying in row j of the middle board's rails side across columns 15 to 10, with the UNO's white, yellow and orange pad leads and the pad cable's five-colour bundle going into it from the frame's right. Which position carries which lead cannot be read from above (the leads enter the housing's far side). Say the order of the five leads along the housing from column 15 to 10, or meter: pad cable GND to the GND rail, pad +5 V to the +5V rail, and the UNO's D6, D7, D8 to the pad's LATCH, CLK and D0 leads."
     },
     "J2.4": {
       "state": "check",
-      "note": "J2, the pad-side housing: not located. The five-way housing at the middle board's columns 9 to 13 is the power and reset breakout's, joined to nothing. The pad cable and the UNO's D6, D7 and D8 leads run in under the UNO's lead bundle at the frame's right; where they land is under the leads. Say where, or route them where the eye can see, and the sheet will read them."
+      "note": "J2, the pad-side housing: LOCATED 2026-09-15 (the pointer): a black housing lying in row j of the middle board's rails side across columns 15 to 10, with the UNO's white, yellow and orange pad leads and the pad cable's five-colour bundle going into it from the frame's right. Which position carries which lead cannot be read from above (the leads enter the housing's far side). Say the order of the five leads along the housing from column 15 to 10, or meter: pad cable GND to the GND rail, pad +5 V to the +5V rail, and the UNO's D6, D7, D8 to the pad's LATCH, CLK and D0 leads."
     },
     "J2.5": {
       "state": "check",
-      "note": "J2, the pad-side housing: not located. The five-way housing at the middle board's columns 9 to 13 is the power and reset breakout's, joined to nothing. The pad cable and the UNO's D6, D7 and D8 leads run in under the UNO's lead bundle at the frame's right; where they land is under the leads. Say where, or route them where the eye can see, and the sheet will read them."
+      "note": "J2, the pad-side housing: LOCATED 2026-09-15 (the pointer): a black housing lying in row j of the middle board's rails side across columns 15 to 10, with the UNO's white, yellow and orange pad leads and the pad cable's five-colour bundle going into it from the frame's right. Which position carries which lead cannot be read from above (the leads enter the housing's far side). Say the order of the five leads along the housing from column 15 to 10, or meter: pad cable GND to the GND rail, pad +5 V to the +5V rail, and the UNO's D6, D7, D8 to the pad's LATCH, CLK and D0 leads."
     },
     "R1.1": {
       "state": "done",

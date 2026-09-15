@@ -391,6 +391,30 @@
     ]
    ],
    "note": "PLANNED 2026-09-15: 100 nF straight across U2's supply pins, column 18, row e to row f, across the chip gap: the shortest decoupling the board allows"
+  },
+  "J1": {
+   "board": "right",
+   "side": "rails",
+   "columns": [
+    40,
+    44
+   ],
+   "pins": 5,
+   "pin1": "hi",
+   "row": 3,
+   "note": "the console cable's five-way white housing, read 2026-09-15 with the pointer: columns 44 (yellow, GND) to 40 (red, +5V) on the right board's rails side, rows b/c; the thin CLK and OUT0 leads to U2-2 and U1-1 leave from the two-pin housings under it"
+  },
+  "J2": {
+   "board": "middle",
+   "side": "rails",
+   "columns": [
+    10,
+    15
+   ],
+   "pins": 5,
+   "pin1": "hi",
+   "row": 4,
+   "note": "the pad-side housing, located 2026-09-15 with the pointer: a black housing lying in row j of the middle board's rails side across columns 15 to 10, the UNO's white, yellow and orange pad leads and the pad cable's bundle into it from the frame's right"
   }
  }
 }
