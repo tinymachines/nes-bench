@@ -372,25 +372,25 @@
   },
   "C2": {
    "board": "right",
-   "side": "middle",
+   "side": "rails",
    "columns": [
-    18,
-    18
+    25,
+    25
    ],
    "pins": 2,
    "holes": [
     [
-     18,
+     25,
      "rails",
      0
     ],
     [
-     18,
-     "middle",
-     4
+     25,
+     "rails",
+     0
     ]
    ],
-   "note": "PLANNED 2026-09-15: 100 nF straight across U2's supply pins, column 18, row e to row f, across the chip gap: the shortest decoupling the board allows"
+   "note": "CORRECTED 2026-09-15 22:00: U2 pin 16 (+5V) is column 25 on the rails side, not column 18 (column 18 rails side is pin 9, QH, the console's D0). C2 goes from column 25 row a to the GND rail hole beside it, the shortest lead the board allows; its ground end is the rail, not a strip hole."
   },
   "J1": {
    "board": "right",

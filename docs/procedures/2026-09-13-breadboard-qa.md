@@ -540,3 +540,17 @@ net: step 6.1 run again, TRIG 20 stopped the scope on CH1, and the
 pulse measures 5.4 V high, 874 us wide (`docs/lab/16-trigger-on-ch1.png`),
 the firmware's millisecond less the loop it was raised in. R1 is done
 on the sheet.
+
+## A wrong instruction, 2026-09-15 22:00: C2 drawn on the D0 pin
+
+The placement note for C2 said "column 18 row e (U2 pin 16)". Column
+18 on the rails side is pin 9, QH, the console's D0; pin 16 is column
+25. The map's own pin_hole says so and the note was typed against it,
+not derived from it. After the user placed the parts as drawn, the
+scope's CH4 read D0 flat at 0 V with the console polling (the bridge
+still counting eight clocks a latch), and the walk could not run: no
+byte produced a falling edge. The note and the map are corrected (C2
+from column 25 row a to the GND rail hole beside it) and the
+photograph redrawn; the lesson for the tool is that a placement note
+should be generated from the map's pin positions, not written beside
+them.
