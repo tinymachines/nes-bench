@@ -223,9 +223,14 @@ class Page:
         room = int((w - cw[0] - cw[1] - 14) / 6.3)
         for lab, cx in zip(("rev", "date", "revision"), (0, cw[0], cw[0] + cw[1])):
             self.text(x + cx + 6, y + tb["band"] - 9, lab.upper(), "tmf-lab")
-        lh = (tb["h"] - tb["band"]) / max(len(rows), 4)
+        # Four rows fit; the strip shows the newest four. The row height
+        # used to divide by the whole list, so once it passed four
+        # entries the four drawn rows sat in a fraction of the strip on
+        # top of each other (seen at rev N, fifteen entries in).
+        shown = rows[-4:]
+        lh = (tb["h"] - tb["band"]) / 4
         cy = y + tb["band"]
-        for rev, dt, what in rows[-4:]:
+        for rev, dt, what in shown:
             cy += lh
             self.text(x + 6, cy - 5, rev, "tmf-tdm")
             self.text(x + cw[0] + 6, cy - 5, dt, "tmf-tdm")

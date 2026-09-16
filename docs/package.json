@@ -175,6 +175,11 @@
       "M",
       "2026-09-15",
       "the register walk reads right through the console; the filter and decoupling done"
+    ],
+    [
+      "N",
+      "2026-09-15",
+      "sheet 3: the head's hands, reset and power from the Pi"
     ]
   ]
 }
