@@ -116,15 +116,21 @@ def plan(measured, target=None):
         ks = [k for k in keys if k[0] == b]
         cols, rows = sorted({k[1] for k in ks}), sorted({k[2] for k in ks})
         colw, colpad = {}, {}
+        # A column is as wide as its widest overhang to the left plus
+        # its longest reach to the right, measured about the anchor
+        # separately: a part with left flags over a part with a long
+        # caption and none used to be measured as the wider of the two
+        # spans, and the caption ran off the sheet (found on the head
+        # sheet, 2026-09-15). Rows the same way.
         for c in cols:
             bx = [measured[k] for k in ks if k[1] == c]
-            colw[c] = max(v[2] - v[0] for v in bx)
             colpad[c] = max(-v[0] for v in bx)
+            colw[c] = colpad[c] + max(v[2] for v in bx)
         rowh, rowpad = {}, {}
         for r in rows:
             bx = [measured[k] for k in ks if k[2] == r]
-            rowh[r] = max(v[3] - v[1] for v in bx)
             rowpad[r] = max(-v[1] for v in bx)
+            rowh[r] = rowpad[r] + max(v[3] for v in bx)
         cx, colx = 0.0, {}
         for c in cols:
             colx[c] = cx
@@ -567,14 +573,73 @@ def _v1b_body_2(sh):
         "Pi GND through USB are one net. Scope: video on CH3, the trigger from R1 on CH1, SCPI by LAN."])
 
 
+def _v1b_body_3(sh):
+    """The head's hands: bring-up 6.2 and 6.3. Nothing on this sheet
+    touches the breadboard: the Pi's four jumpers go to two modules,
+    and the modules go to the console. The Pi's pin numbers are its
+    header positions, the same ones the cheat sheet's jumper table
+    carries, and check-sheets holds the two together."""
+    band = "THE PI'S FOUR JUMPERS, THE OPTOCOUPLER ON THE RESET PADS, THE RELAY IN THE ADAPTER LEAD"
+    x, y = sh.slot(0, 0, label=band)
+    sh.chip(x, y, 170, "PI", "Raspberry Pi 4 Model B", [], [
+        (11, "GPIO17", "RST_DRIVE"), (13, "GPIO27", "PWR_DRIVE"), (2, "5V", "PI_5V"), (6, "GND", "GND"),
+        (None, "USB-A", "PI_USB"), (None, "ETH", "LAN")],
+        conn=True, extra="the head: headd.py. Pin numbers are header positions")
+    x, y = sh.slot(0, 1, 0)
+    sh.chip(x, y, 150, "OK1", "PC817 module", [(None, "INPUT +", "RST_DRIVE"), (None, "INPUT -", "GND")],
+            [(None, "OUT", "RST_PAD"), (None, "GND", "RST_GND"), (None, "VCC", "NC")],
+            extra="open collector across the reset pads")
+    x, y = sh.slot(0, 1, 1)
+    sh.chip(x, y, 150, "K1", "relay module, 5 V coil", [(None, "IN", "PWR_DRIVE"), (None, "GND", "GND"), (None, "VCC", "PI_5V")],
+            [(None, "NO", "PWR_SW"), (None, "COM", "PWR_IN"), (None, "NC", "NC")], extra="opto input, active low")
+    x, y = sh.slot(0, 2, 0)
+    sh.chip(x, y, 200, "CON", "NES-001 (NES-CPU-10)", [
+        (None, "reset pad, pulled up", "RST_PAD"), (None, "reset pad, ground", "RST_GND"),
+        (None, "DC jack, switched", "PWR_SW"), (None, "DC jack, straight", "PWR_RET")], [],
+        conn=True, extra="reset pads through J3, the 5 way breakout")
+    x, y = sh.slot(0, 2, 1)
+    sh.chip(x, y, 200, "PSU", "the console's adapter (9 V)", [], [
+        (None, "lead, cut", "PWR_IN"), (None, "lead, whole", "PWR_RET")],
+        conn=True, extra="the low-voltage cable only")
+    band2 = "6.2 RESET AND 6.3 POWER: WHAT THE STEPS METER FIRST, AND THE ONE SAFETY RULE"
+    sh.note(*sh.slot(1, 0, label=band2), [
+        "J3, the power and reset breakout: five ways straight through, colour for colour with",
+        "the front panel's harness, 1 brown 2 red 3 orange 4 yellow 5 white, pin 1 at the back",
+        "(lab/06-breakout-map-power-reset.jpg). The reset pair is two of the five. Console on,",
+        "meter each way to the port's GND: the ground pad reads 0 V; the pulled-up pad reads",
+        "about 5 V and drops to 0 V while the reset button is held. Step 6.2 asks for both and",
+        "writes them in the lab log; nothing here guesses them. OK1 OUT lands on the pulled-up",
+        "way, OK1 GND on the ground way, VCC open. GPIO17 high holds the pad low for 100 ms:",
+        "the button, pressed by the head. INPUT - is the Pi's ground; OUT and GND are the console's."])
+    sh.note(*sh.slot(1, 1), [
+        "The console's own switch stays latched ON; K1 is the switch. Cut ONE conductor of",
+        "the adapter's low-voltage cable and put NO and COM in the cut; the other conductor",
+        "stays whole. The original adapter gives 9 V AC, a replacement often 9 V DC; the",
+        "contact takes either. GPIO27 low turns the relay on. NO is open with the Pi off or",
+        "rebooting, so the console's rest state is OFF, which is what the head wants.",
+        "Coil from the Pi's 5 V pin (position 2), about 80 mA; GND is position 6.",
+        "MAINS SAFETY: never the mains side, never both leads. Step 6.3 refuses to run",
+        "until the operator has said the contact is on the adapter side."])
+
+
 def sheet_v1b():
-    """One schematic on two landscape letter sheets."""
+    """One schematic on two landscape letter sheets, and a third for
+    the head's hands, which share no net with the first two."""
     cross = {"CON_OUT0": "2", "CON_CLK": "2"}
-    laid(OUT / "bench-v1b-1.svg", V1B_TITLE + "  (sheet 1 of 2: the console side)", V1B_SUB,
+    laid(OUT / "bench-v1b-1.svg", V1B_TITLE + "  (sheet 1 of 3: the console side)", V1B_SUB,
          _v1b_body_1, LETTER, links={**cross, **{q: "2" for q in Q_NETS}})
     back = {"CON_OUT0": "1", "CON_CLK": "1"}
-    laid(OUT / "bench-v1b-2.svg", V1B_TITLE + "  (sheet 2 of 2: the bridge side)", V1B_SUB,
+    laid(OUT / "bench-v1b-2.svg", V1B_TITLE + "  (sheet 2 of 3: the bridge side)", V1B_SUB,
          _v1b_body_2, LETTER, links={**back, **{q: "1" for q in Q_NETS}})
+
+
+def sheet_v1b_head():
+    """Sheet 3: its own netlist, because nothing on it is on the
+    breadboard and the wiring and breadboard drawings lay out every
+    part of the netlist they are handed."""
+    laid(OUT / "bench-v1b-3.svg", V1B_TITLE + "  (sheet 3 of 3: the head's hands, bring-up 6.2 and 6.3)",
+         "reset and power from the Pi's header through two modules; the Pi's ground reaches the console through the UNO's USB lead only. Added 2026-09-15.",
+         _v1b_body_3, LETTER)
 
 
 # ------------------------------------------------------------------- sheet v2
@@ -947,6 +1012,7 @@ if __name__ == "__main__":
     OUT.mkdir(parents=True, exist_ok=True)
     sheet_v1()
     sheet_v1b()
+    sheet_v1b_head()
     sheet_v2()
     sheet_v2b()
     sheet_logic()

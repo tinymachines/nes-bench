@@ -45,12 +45,40 @@ def sheet_v1b_nets():
     """{pin: net} from the v1b sheet's A1 chip, both its lists."""
     src = (ROOT / "tools" / "draw-schematics.py").read_text()
     i = src.index('"A1", "Arduino UNO R3')
-    j = src.index("pad_socket(", i)
+    # The block ends at the chip's own extra line, not at the next
+    # pad_socket call: sheet 3 sits between the two and also names a
+    # 5V and a GND pin (the Pi's), which used to land in this table.
+    j = src.index('extra="5 V logic', i)
     out = {}
     for label, net in re.findall(r'\(None, "([^"]+)", "([^"]+)"\)', src[i:j]):
         for pin in re.findall(r"\bD\d+\b|\b5V\b|\bGND\b", label):
             out[pin] = net
     return out
+
+
+def check_head():
+    """The head sheet's Pi pins against the cheat sheet's jumper table.
+    Both name the Pi's pins by header position, and a jumper lands on a
+    position, so the two carrying different numbers is a wrong wire.
+    Four rows is the floor: the check cannot pass on nothing."""
+    src = (ROOT / "tools" / "draw-schematics.py").read_text()
+    i = src.index("def _v1b_body_3")     # the v1 sheet draws a Pi too, with no positions
+    i = src.index('"PI", "Raspberry Pi 4 Model B"', i)
+    j = src.index("conn=True", i)
+    sheet = {name: int(pos) for pos, name in re.findall(r'\((\d+), "([^"]+)", "[^"]+"\)', src[i:j])}
+    cs = __import__("cheatsheet")
+    doc = {name: pos for name, pos, _to, _role in cs.PI_HEADER}
+    bad = 0
+    for name in sorted(set(doc) | set(sheet)):
+        if doc.get(name) != sheet.get(name):
+            print(f"  Pi {name}: cheatsheet.py says position {doc.get(name)}, the head sheet says {sheet.get(name)}")
+            bad += 1
+    if len(doc) < 4:
+        print("  the cheat sheet's Pi table has fewer than four rows")
+        bad += 1
+    if not bad:
+        print(f"check-sheets: {len(doc)} Pi header positions agree between the head sheet and the cheat sheet")
+    return bad
 
 
 def doc_v1b_pins(universe):
@@ -203,6 +231,7 @@ def main():
     print(f"check-sheets: {len(want)} C6 pins on the v1 sheet agree with docs/wiring.md" if not bad else f"check-sheets: {bad} disagreement(s)")
     bad += check_v1b()
     bad += check_port_pinout()
+    bad += check_head()
     # The committed SVGs are what the generator writes.
     n_sheets = 0
     with tempfile.TemporaryDirectory() as d:

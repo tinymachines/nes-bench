@@ -26,6 +26,7 @@ OUT = ROOT / "docs" / "parts.md"
 # after the ones the README says to build.
 SHEETS = [
     ("bench-v1b", "sheet_v1b", "**Build this first.** The UNO bridge, one port, everything at 5 V."),
+    ("bench-v1b-head", "sheet_v1b_head", "v1b sheet 3: the head's hands, reset and power from the Pi (bring-up 6.2 and 6.3)."),
     ("bench-v2b", "sheet_v2b", "**Build this second.** Two ports on one SPI chain, sync counted, still one UNO."),
     ("bench-v1", "sheet_v1", "The ESP32-C6 alternative to v1b. Not the build."),
     ("bench-v2", "sheet_v2", "The C6 alternative to v2b. Not the build."),
@@ -53,6 +54,8 @@ STATUS = {
     "100nF": ("on hand", "v2b runs seven"),
     "680k": ("check", "LM1881 RSET. One resistor"),
     "100R": ("on hand", "the trigger"),
+    "1k": ("on hand", "R2, the clock pin's series element, placed 2026-09-15"),
+    "100pF": ("on hand", "C4, the clock pin's filter, placed 2026-09-15"),
     "74HCT165": ("on hand", "the C6 sheets' register. HCT there because the C6 drives it at 3.3 V"),
     "10k": ("check", "pad adapter only. A common value; check the drawer before ordering"),
     "330R": ("check", "pad adapter only, the LED"),

@@ -71,7 +71,7 @@ register's job, as it is in the pad.
 - `docs/wiring-v1b.svg`: the v1b wiring as a diagram to build from, the
   packages as they sit and every wire at right angles, one track per
   net. Derived from the schematic by `tools/wiring-diagram.py`.
-- `docs/bench-v1b-uno.md` with `bench-v1b-1.svg` and `bench-v1b-2.svg`: the all-5V UNO
+- `docs/bench-v1b-uno.md` with `bench-v1b-1.svg`, `bench-v1b-2.svg` and `bench-v1b-3.svg`: the all-5V UNO
   bridge, the version to build first, and its sketch in
   `firmware/bridge-uno/`.
 - `docs/bench-build-v1-v2.md` with `bench-v1.svg`, `bench-v2.svg`,

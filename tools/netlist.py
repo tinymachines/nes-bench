@@ -28,8 +28,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 
-SHEETS = ["bench-v1b", "bench-v2b", "bench-v1", "bench-v2", "pad-adapter"]
-FN = {"bench-v1b": "sheet_v1b", "bench-v2b": "sheet_v2b", "bench-v1": "sheet_v1",
+SHEETS = ["bench-v1b", "bench-v1b-head", "bench-v2b", "bench-v1", "bench-v2", "pad-adapter"]
+FN = {"bench-v1b": "sheet_v1b", "bench-v1b-head": "sheet_v1b_head", "bench-v2b": "sheet_v2b", "bench-v1": "sheet_v1",
       "bench-v2": "sheet_v2", "pad-adapter": "sheet_pad"}
 
 # A net named this is a deliberate no-connect, not a wire.

@@ -19,18 +19,18 @@ Every distinct part across every sheet, with where it is.
 | 74HCT04 | on hand | SN74HCT04N, the tube that arrived 2026-09-09 |
 | 74HC165 | on hand | the TI bag. v2b needs a second one |
 | 100nF | on hand | v2b runs seven |
-| 1k | unlisted | not in the status table: add it |
-| 100pF | unlisted | not in the status table: add it |
+| 1k | on hand | R2, the clock pin's series element, placed 2026-09-15 |
+| 100pF | on hand | C4, the clock pin's filter, placed 2026-09-15 |
 | Arduino UNO R3 (ATmega328P) | on hand | the pile |
 | 74HC595 | on hand | the box of 30 |
 | 100R | on hand | the trigger |
+| PC817 module | on hand | module, for the reset pads |
+| relay module, 5 V coil | on hand | 5 V coil with an opto input |
 | LM1881N | TO ORDER | the one real order. An old National part, mostly resellers now: buy two |
 | 680k | check | LM1881 RSET. One resistor |
 | 74HCT165 | on hand | the C6 sheets' register. HCT there because the C6 drives it at 3.3 V |
 | 74LVC245 | on hand | C6 sheets only; no UNO sheet uses one any more |
 | ESP32-C6-DevKitC-1 v1.2 | on hand | DevKitC-1 v1.2, the alternative build |
-| PC817 module | on hand | module, for the reset pads |
-| relay module, 5 V coil | on hand | 5 V coil with an opto input |
 | 10k | check | pad adapter only. A common value; check the drawer before ordering |
 | ESP32-S3-DevKitC-1 (or C6) | to order | only if the pad adapter gets built |
 | TP4056 + protection | to order | pad adapter only |
@@ -38,8 +38,6 @@ Every distinct part across every sheet, with where it is.
 | slide | to order | pad adapter only, the power switch |
 | power | to order | pad adapter only, the battery |
 | +330R | check | pad adapter only, the LED |
-
-**2 part(s) have no status**: 1k, 100pF. Add them to `STATUS` in `tools/parts.py`.
 
 ## bench-v1b
 
@@ -57,6 +55,15 @@ Every distinct part across every sheet, with where it is.
 | A1 | Arduino UNO R3 (ATmega328P) | 5 V logic, 16 MHz |
 | U3 | 74HC595  at +5V | one RCLK edge = one byte |
 | R1 | 100R | TRIG to EXT_TRIG |
+
+## bench-v1b-head
+
+v1b sheet 3: the head's hands, reset and power from the Pi (bring-up 6.2 and 6.3).
+
+| ref | part | on the sheet |
+|---|---|---|
+| OK1 | PC817 module | open collector across the reset pads |
+| K1 | relay module, 5 V coil | opto input, active low |
 
 ## bench-v2b
 

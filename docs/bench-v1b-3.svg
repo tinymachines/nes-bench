@@ -1,0 +1,171 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1180.0 695.0" width="1180.0" height="695.0" role="img" aria-label="nes-bench bridge v1b: the UNO version, one supply, one port  (sheet 3 of 3: the head's hands, bring-up 6.2 and 6.3)">
+
+  <style>
+    text { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; fill: #1f2328; }
+    .title { font-size: 15px; font-weight: 700; font-family: ui-sans-serif, system-ui, sans-serif; }
+    .sub { font-size: 11px; fill: #57606a; font-family: ui-sans-serif, system-ui, sans-serif; }
+    .ref { font-size: 12px; font-weight: 700; }
+    .part { font-size: 10px; fill: #57606a; }
+    .pin { font-size: 9.5px; }
+    .pinno { font-size: 9px; fill: #57606a; }
+    .linkflag { fill: #fdf3e3; stroke: #a35c00; stroke-width: 1.1; }
+    .linkno { font-size: 9px; fill: #a35c00; font-weight: 700; }
+    .net { font-size: 9.5px; fill: #0a5b9c; font-weight: 600; }
+    .rail5 { font-size: 9px; fill: #b3261e; font-weight: 700; }
+    .rail3 { font-size: 9px; fill: #b35c00; font-weight: 700; }
+    .gnd { font-size: 9px; fill: #1f2328; font-weight: 700; }
+    .note { font-size: 10px; fill: #57606a; font-family: ui-sans-serif, system-ui, sans-serif; }
+    .box { fill: #ffffff; stroke: #1f2328; stroke-width: 1.3; }
+    .offsheet { fill: #eaf3fb; stroke: #0a5b9c; stroke-width: 1.1; }
+    .conn { fill: #f3f5f7; stroke: #1f2328; stroke-width: 1.3; }
+    .zone { fill: none; stroke: #57606a; stroke-dasharray: 5 4; stroke-width: 1; }
+    .lead { stroke: #1f2328; stroke-width: 1; }
+    .wire { stroke: #0a5b9c; stroke-width: 1.2; fill: none; }
+    .w5 { stroke: #b3261e; stroke-width: 1.2; fill: none; }
+    .w3 { stroke: #b35c00; stroke-width: 1.2; fill: none; }
+    .wg { stroke: #1f2328; stroke-width: 1.2; fill: none; }
+    .lane { stroke: #1f2328; stroke-width: 1.4; fill: none; }
+    .lanelbl { font-size: 11px; font-weight: 700; }
+    .win { fill: #b3261e; fill-opacity: 0.10; stroke: none; }
+    .safe { fill: #1a7f37; fill-opacity: 0.12; stroke: none; }
+    .mark { stroke: #0a5b9c; stroke-width: 1.2; stroke-dasharray: 3 3; }
+    .auth { font-size: 9px; fill: #b3261e; font-family: ui-sans-serif, system-ui, sans-serif; font-style: italic; }
+  </style>
+
+<rect x="0" y="0" width="1180.0" height="695.0" fill="#ffffff"/>
+<g class="sheet-heading" data-height="60">
+<text class="title" x="24" y="30">nes-bench bridge v1b: the UNO version, one supply, one port  (sheet 3 of 3: the head's hands, bring-up 6.2 and 6.3)</text>
+<text class="sub" x="24" y="46">reset and power from the Pi's header through two modules; the Pi's ground reaches the console through the UNO's USB lead only. Added 2026-09-15.</text>
+</g>
+<rect class="zone" x="22" y="66" width="1136.0" height="434.0" rx="6"/>
+<text class="sub" x="30" y="80" text-anchor="start">THE PI'S FOUR JUMPERS, THE OPTOCOUPLER ON THE RESET PADS, THE RELAY IN THE ADAPTER LEAD</text>
+<rect class="zone" x="22" y="524.0" width="1136.0" height="149.0" rx="6"/>
+<text class="sub" x="30" y="538.0" text-anchor="start">6.2 RESET AND 6.3 POWER: WHAT THE STEPS METER FIRST, AND THE ONE SAFETY RULE</text>
+<rect class="conn" x="48.0" y="92.0" width="170" height="206" rx="3"/>
+<text class="ref" x="54.0" y="106.0" text-anchor="start">PI</text>
+<text class="part" x="54.0" y="118.0" text-anchor="start">Raspberry Pi 4 Model B</text>
+<text class="part" x="49.0" y="311.0" text-anchor="start">the head: headd.py. Pin numbers are header positions</text>
+<line class="lead" x1="218.0" y1="148.0" x2="244.0" y2="148.0"/>
+<text class="pin" x="213.0" y="151.5" text-anchor="end">GPIO17</text>
+<text class="pinno" x="222.0" y="146.0" text-anchor="start">11</text>
+<path class="wire" d="M244.0,148.0 l6,-6 h65.80000000000001 v12 h-65.80000000000001 z"/>
+<text class="net" x="253.0" y="151.5" text-anchor="start">RST_DRIVE</text>
+<line class="lead" x1="218.0" y1="174.0" x2="244.0" y2="174.0"/>
+<text class="pin" x="213.0" y="177.5" text-anchor="end">GPIO27</text>
+<text class="pinno" x="222.0" y="172.0" text-anchor="start">13</text>
+<path class="offsheet" d="M244.0 166.0 L299.8 166.0 L307.8 174.0 L299.8 182.0 L244.0 182.0 Z"/>
+<text class="net" x="249.0" y="177.5" text-anchor="start">PWR_DRIVE</text>
+<line class="lead" x1="218.0" y1="200.0" x2="244.0" y2="200.0"/>
+<text class="pin" x="213.0" y="203.5" text-anchor="end">5V</text>
+<text class="pinno" x="222.0" y="198.0" text-anchor="start">2</text>
+<path class="wire" d="M244.0,200.0 l6,-6 h41.0 v12 h-41.0 z"/>
+<text class="net" x="253.0" y="203.5" text-anchor="start">PI_5V</text>
+<line class="lead" x1="218.0" y1="226.0" x2="244.0" y2="226.0"/>
+<text class="pin" x="213.0" y="229.5" text-anchor="end">GND</text>
+<text class="pinno" x="222.0" y="224.0" text-anchor="start">6</text>
+<line class="wg" x1="244.0" y1="226.0" x2="244.0" y2="234.0"/><line class="wg" x1="238.0" y1="234.0" x2="250.0" y2="234.0"/><line class="wg" x1="241.0" y1="237.0" x2="247.0" y2="237.0"/>
+<line class="lead" x1="218.0" y1="252.0" x2="244.0" y2="252.0"/>
+<text class="pin" x="213.0" y="255.5" text-anchor="end">USB-A</text>
+<path class="offsheet" d="M244.0 244.0 L281.2 244.0 L289.2 252.0 L281.2 260.0 L244.0 260.0 Z"/>
+<text class="net" x="249.0" y="255.5" text-anchor="start">PI_USB</text>
+<line class="lead" x1="218.0" y1="278.0" x2="244.0" y2="278.0"/>
+<text class="pin" x="213.0" y="281.5" text-anchor="end">ETH</text>
+<path class="offsheet" d="M244.0 270.0 L262.6 270.0 L270.6 278.0 L262.6 286.0 L244.0 286.0 Z"/>
+<text class="net" x="249.0" y="281.5" text-anchor="start">LAN</text>
+<rect class="box" x="489.8" y="92.0" width="150" height="128" rx="3"/>
+<text class="ref" x="495.8" y="106.0" text-anchor="start">OK1</text>
+<text class="part" x="495.8" y="118.0" text-anchor="start">PC817 module</text>
+<text class="part" x="490.8" y="233.0" text-anchor="start">open collector across the reset pads</text>
+<line class="lead" x1="463.8" y1="148.0" x2="489.8" y2="148.0"/>
+<text class="pin" x="494.8" y="151.5" text-anchor="start">INPUT +</text>
+<path class="wire" d="M463.8,148.0 l-6,-6 h-65.80000000000001 v12 h65.80000000000001 z"/>
+<text class="net" x="454.8" y="151.5" text-anchor="end">RST_DRIVE</text>
+<line class="lead" x1="463.8" y1="174.0" x2="489.8" y2="174.0"/>
+<text class="pin" x="494.8" y="177.5" text-anchor="start">INPUT -</text>
+<line class="wg" x1="463.8" y1="174.0" x2="463.8" y2="182.0"/><line class="wg" x1="457.8" y1="182.0" x2="469.8" y2="182.0"/><line class="wg" x1="460.8" y1="185.0" x2="466.8" y2="185.0"/>
+<line class="lead" x1="639.8" y1="148.0" x2="665.8" y2="148.0"/>
+<text class="pin" x="634.8" y="151.5" text-anchor="end">OUT</text>
+<path class="wire" d="M665.8,148.0 l6,-6 h53.4 v12 h-53.4 z"/>
+<text class="net" x="674.8" y="151.5" text-anchor="start">RST_PAD</text>
+<line class="lead" x1="639.8" y1="174.0" x2="665.8" y2="174.0"/>
+<text class="pin" x="634.8" y="177.5" text-anchor="end">GND</text>
+<path class="wire" d="M665.8,174.0 l6,-6 h53.4 v12 h-53.4 z"/>
+<text class="net" x="674.8" y="177.5" text-anchor="start">RST_GND</text>
+<line class="lead" x1="639.8" y1="200.0" x2="665.8" y2="200.0"/>
+<text class="pin" x="634.8" y="203.5" text-anchor="end">VCC</text>
+<line class="lead" x1="662.8" y1="197.0" x2="668.8" y2="203.0"/><line class="lead" x1="662.8" y1="203.0" x2="668.8" y2="197.0"/>
+<rect class="box" x="489.8" y="339.0" width="150" height="128" rx="3"/>
+<text class="ref" x="495.8" y="353.0" text-anchor="start">K1</text>
+<text class="part" x="495.8" y="365.0" text-anchor="start">relay module, 5 V coil</text>
+<text class="part" x="490.8" y="480.0" text-anchor="start">opto input, active low</text>
+<line class="lead" x1="463.8" y1="395.0" x2="489.8" y2="395.0"/>
+<text class="pin" x="494.8" y="398.5" text-anchor="start">IN</text>
+<path class="offsheet" d="M400.0 387.0 L455.8 387.0 L463.8 395.0 L455.8 403.0 L400.0 403.0 Z"/>
+<text class="net" x="405.0" y="398.5" text-anchor="start">PWR_DRIVE</text>
+<line class="lead" x1="463.8" y1="421.0" x2="489.8" y2="421.0"/>
+<text class="pin" x="494.8" y="424.5" text-anchor="start">GND</text>
+<line class="wg" x1="463.8" y1="421.0" x2="463.8" y2="429.0"/><line class="wg" x1="457.8" y1="429.0" x2="469.8" y2="429.0"/><line class="wg" x1="460.8" y1="432.0" x2="466.8" y2="432.0"/>
+<line class="lead" x1="463.8" y1="447.0" x2="489.8" y2="447.0"/>
+<text class="pin" x="494.8" y="450.5" text-anchor="start">VCC</text>
+<path class="wire" d="M463.8,447.0 l-6,-6 h-41.0 v12 h41.0 z"/>
+<text class="net" x="454.8" y="450.5" text-anchor="end">PI_5V</text>
+<line class="lead" x1="639.8" y1="395.0" x2="665.8" y2="395.0"/>
+<text class="pin" x="634.8" y="398.5" text-anchor="end">NO</text>
+<path class="wire" d="M665.8,395.0 l6,-6 h47.2 v12 h-47.2 z"/>
+<text class="net" x="674.8" y="398.5" text-anchor="start">PWR_SW</text>
+<line class="lead" x1="639.8" y1="421.0" x2="665.8" y2="421.0"/>
+<text class="pin" x="634.8" y="424.5" text-anchor="end">COM</text>
+<path class="wire" d="M665.8,421.0 l6,-6 h47.2 v12 h-47.2 z"/>
+<text class="net" x="674.8" y="424.5" text-anchor="start">PWR_IN</text>
+<line class="lead" x1="639.8" y1="447.0" x2="665.8" y2="447.0"/>
+<text class="pin" x="634.8" y="450.5" text-anchor="end">NC</text>
+<line class="lead" x1="662.8" y1="444.0" x2="668.8" y2="450.0"/><line class="lead" x1="662.8" y1="450.0" x2="668.8" y2="444.0"/>
+<rect class="conn" x="844.6" y="92.0" width="200" height="154" rx="3"/>
+<text class="ref" x="850.6" y="106.0" text-anchor="start">CON</text>
+<text class="part" x="850.6" y="118.0" text-anchor="start">NES-001 (NES-CPU-10)</text>
+<text class="part" x="845.6" y="259.0" text-anchor="start">reset pads through J3, the 5 way breakout</text>
+<line class="lead" x1="818.6" y1="148.0" x2="844.6" y2="148.0"/>
+<text class="pin" x="849.6" y="151.5" text-anchor="start">reset pad, pulled up</text>
+<path class="wire" d="M818.6,148.0 l-6,-6 h-53.4 v12 h53.4 z"/>
+<text class="net" x="809.6" y="151.5" text-anchor="end">RST_PAD</text>
+<line class="lead" x1="818.6" y1="174.0" x2="844.6" y2="174.0"/>
+<text class="pin" x="849.6" y="177.5" text-anchor="start">reset pad, ground</text>
+<path class="wire" d="M818.6,174.0 l-6,-6 h-53.4 v12 h53.4 z"/>
+<text class="net" x="809.6" y="177.5" text-anchor="end">RST_GND</text>
+<line class="lead" x1="818.6" y1="200.0" x2="844.6" y2="200.0"/>
+<text class="pin" x="849.6" y="203.5" text-anchor="start">DC jack, switched</text>
+<path class="wire" d="M818.6,200.0 l-6,-6 h-47.2 v12 h47.2 z"/>
+<text class="net" x="809.6" y="203.5" text-anchor="end">PWR_SW</text>
+<line class="lead" x1="818.6" y1="226.0" x2="844.6" y2="226.0"/>
+<text class="pin" x="849.6" y="229.5" text-anchor="start">DC jack, straight</text>
+<path class="wire" d="M818.6,226.0 l-6,-6 h-53.4 v12 h53.4 z"/>
+<text class="net" x="809.6" y="229.5" text-anchor="end">PWR_RET</text>
+<rect class="conn" x="844.6" y="339.0" width="200" height="102" rx="3"/>
+<text class="ref" x="850.6" y="353.0" text-anchor="start">PSU</text>
+<text class="part" x="850.6" y="365.0" text-anchor="start">the console's adapter (9 V)</text>
+<text class="part" x="845.6" y="454.0" text-anchor="start">the low-voltage cable only</text>
+<line class="lead" x1="1044.6" y1="395.0" x2="1070.6" y2="395.0"/>
+<text class="pin" x="1039.6" y="398.5" text-anchor="end">lead, cut</text>
+<path class="wire" d="M1070.6,395.0 l6,-6 h47.2 v12 h-47.2 z"/>
+<text class="net" x="1079.6" y="398.5" text-anchor="start">PWR_IN</text>
+<line class="lead" x1="1044.6" y1="421.0" x2="1070.6" y2="421.0"/>
+<text class="pin" x="1039.6" y="424.5" text-anchor="end">lead, whole</text>
+<path class="wire" d="M1070.6,421.0 l6,-6 h53.4 v12 h-53.4 z"/>
+<text class="net" x="1079.6" y="424.5" text-anchor="start">PWR_RET</text>
+<text class="note" x="48.0" y="561.0" text-anchor="start">J3, the power and reset breakout: five ways straight through, colour for colour with</text>
+<text class="note" x="48.0" y="574.0" text-anchor="start">the front panel's harness, 1 brown 2 red 3 orange 4 yellow 5 white, pin 1 at the back</text>
+<text class="note" x="48.0" y="587.0" text-anchor="start">(lab/06-breakout-map-power-reset.jpg). The reset pair is two of the five. Console on,</text>
+<text class="note" x="48.0" y="600.0" text-anchor="start">meter each way to the port's GND: the ground pad reads 0 V; the pulled-up pad reads</text>
+<text class="note" x="48.0" y="613.0" text-anchor="start">about 5 V and drops to 0 V while the reset button is held. Step 6.2 asks for both and</text>
+<text class="note" x="48.0" y="626.0" text-anchor="start">writes them in the lab log; nothing here guesses them. OK1 OUT lands on the pulled-up</text>
+<text class="note" x="48.0" y="639.0" text-anchor="start">way, OK1 GND on the ground way, VCC open. GPIO17 high holds the pad low for 100 ms:</text>
+<text class="note" x="48.0" y="652.0" text-anchor="start">the button, pressed by the head. INPUT - is the Pi's ground; OUT and GND are the console's.</text>
+<text class="note" x="569.4000000000001" y="561.0" text-anchor="start">The console's own switch stays latched ON; K1 is the switch. Cut ONE conductor of</text>
+<text class="note" x="569.4000000000001" y="574.0" text-anchor="start">the adapter's low-voltage cable and put NO and COM in the cut; the other conductor</text>
+<text class="note" x="569.4000000000001" y="587.0" text-anchor="start">stays whole. The original adapter gives 9 V AC, a replacement often 9 V DC; the</text>
+<text class="note" x="569.4000000000001" y="600.0" text-anchor="start">contact takes either. GPIO27 low turns the relay on. NO is open with the Pi off or</text>
+<text class="note" x="569.4000000000001" y="613.0" text-anchor="start">rebooting, so the console's rest state is OFF, which is what the head wants.</text>
+<text class="note" x="569.4000000000001" y="626.0" text-anchor="start">Coil from the Pi's 5 V pin (position 2), about 80 mA; GND is position 6.</text>
+<text class="note" x="569.4000000000001" y="639.0" text-anchor="start">MAINS SAFETY: never the mains side, never both leads. Step 6.3 refuses to run</text>
+<text class="note" x="569.4000000000001" y="652.0" text-anchor="start">until the operator has said the contact is on the adapter side.</text>
+</svg>

@@ -20,6 +20,8 @@ C6 version, for when v2's counters need it.
 
 ![The bridge, v1b, sheet 2: the UNO, the output register and the bridge's own pad](bench-v1b-2.svg)
 
+![The bridge, v1b, sheet 3: the head's hands, the PC817 on the reset pads and the relay in the adapter lead](bench-v1b-3.svg)
+
 ![The bridge, v1: the pad the console clocks, one port](bench-v1.svg)
 
 ![The bridge, v2: two ports, 74HC595 atomic bytes, an LM1881 sync separator](bench-v2.svg)
@@ -29,8 +31,9 @@ C6 version, for when v2's counters need it.
 ![The pad adapter: an original pad to BLE or USB HID, with a bench mode](pad-adapter.svg)
 
 
-- `bench-v1b-1.svg` and `bench-v1b-2.svg`: the same bridge on an Arduino
-  UNO, one supply, on two landscape letter sheets. No
+- `bench-v1b-1.svg`, `bench-v1b-2.svg` and `bench-v1b-3.svg`: the same bridge on an Arduino
+  UNO, one supply, on three landscape letter sheets, the third being the head's
+  hands (reset and power from the Pi, bring-up 6.2 and 6.3). No
   74LVC245 and no LS245 up-shifter: the UNO reads the console's OUT0
   and CLK directly and drives the 595 at 5 V.
 - `bench-v1.svg`: the bridge exactly as `wiring.md` has it. One port,
