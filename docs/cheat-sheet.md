@@ -6,6 +6,8 @@ the bring-up tool's own table, and each chip's wiring out of the netlist. The on
 authored text is what each pin does on the part, which is the datasheet's, kept
 in one place in that tool and refused if the schematic names a pin differently.
 The same rows are sheets of the drawing package (`tools/make-package.py`).
+The head's hands (the Pi's jumpers, the PC817 and the relay) have their own:
+`cheat-sheet-head.md`.
 
 Sheet: `bench-v1b`.
 

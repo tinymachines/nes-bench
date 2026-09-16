@@ -3,6 +3,7 @@
 
   python3 tools/cheatsheet.py            # write docs/cheat-sheet.md
   python3 tools/cheatsheet.py --check    # exit 1 if it is not current
+  python3 tools/cheatsheet.py --sheet bench-v1b-head   # -> docs/cheat-sheet-head.md, the head's hands
   MUTATE=1 python3 tools/cheatsheet.py   # must exit 0 having CAUGHT a
                                          # pinout that disagrees with the
                                          # schematic (see bottom)
@@ -38,7 +39,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 LOG = ROOT / "docs" / "lab-log.jsonl"
-OUT = ROOT / "docs" / "cheat-sheet.md"
+OUTS = {"bench-v1b": ROOT / "docs" / "cheat-sheet.md",
+        "bench-v1b-head": ROOT / "docs" / "cheat-sheet-head.md"}
 sys.path.insert(0, str(ROOT / "tools"))
 from loadmod import load  # noqa: E402
 
@@ -129,6 +131,52 @@ PI_HEADER = [
     ("GND", 6, "PC817 IN-, relay GND", "the one ground lent"),
 ]
 
+# The two modules on the head sheet. Their pins are named, not
+# numbered, so the join below is by name: a pin the schematic draws
+# under another name is refused, and so is a table pin the schematic
+# does not draw. Sources: the PC817 datasheet (Sharp) and the module's
+# own silkscreen; the Songle SRD-05VDC-SL-C relay and the one-channel
+# opto-isolated module's silkscreen.
+MODULES = {
+    "PC817 module": {
+        "what": ("One optocoupler on a carrier: an LED behind a series resistor on the input "
+                 "side, a phototransistor on the output side, nothing joining the two but light. "
+                 "The carrier adds a pull-up from OUT to VCC; with VCC left open OUT is the bare "
+                 "collector and GND the emitter, so the output side is a switch to its own GND "
+                 "and nothing more: the reset button, closed by the head. INPUT + high (3.3 V "
+                 "from a Pi pin is enough) lights the LED and closes the switch."),
+        "pins": [
+            ("input", "INPUT +", "LED anode via the series resistor: high turns it on"),
+            ("input", "INPUT -", "LED cathode, the input side's return"),
+            ("output", "OUT", "collector: pulled to GND while the LED is lit"),
+            ("output", "GND", "emitter, the output side's own ground"),
+            ("output", "VCC", "pull-up supply for OUT; open, so OUT is open collector"),
+        ],
+    },
+    "relay module, 5 V coil": {
+        "what": ("A 5 V coil relay on a carrier with an opto-isolated, active-low input: IN low "
+                 "lights the carrier's optocoupler, which drives the coil's transistor, and the "
+                 "contact moves. The coil takes about 80 mA from VCC, which is why it is on the "
+                 "Pi's 5 V pin and not a GPIO. The contact is a changeover: COM meets NO while the "
+                 "coil is on and NC while it is off, so with the Pi off or rebooting NO is open."),
+        "pins": [
+            ("coil", "VCC", "coil and carrier supply, 5 V"),
+            ("coil", "GND", "coil and carrier return"),
+            ("coil", "IN", "control, active low: low turns the relay on"),
+            ("contact", "COM", "the contact's common"),
+            ("contact", "NO", "normally open: meets COM while the coil is on"),
+            ("contact", "NC", "normally closed: meets COM while the coil is off"),
+        ],
+    },
+}
+
+
+def module_of(part):
+    for key in MODULES:
+        if part.startswith(key):
+            return key
+    return None
+
 
 # ------------------------------------------------------------- DERIVED
 def _read_log():
@@ -160,9 +208,10 @@ def harness_colours():
 def collect(sheet="bench-v1b"):
     nl = load(ROOT / "tools" / "netlist.py", "netlist")
     bu = load(ROOT / "tools" / "bringup.py", "bringup")
-    sheets, _off = nl.collect()
+    sheets, off = nl.collect()
     nodes = sheets[sheet]
     nets = nl.nets_of(nodes)
+    nl.OFFSHEET = off
     return nl, bu, nodes, nets
 
 
@@ -175,12 +224,62 @@ def other_ends(nl, nets, net, ref):
     if net in nl.RAILS:
         return f"the {net} rail"
     ends = [n for n in nets.get(net, []) if n["ref"] != ref]
-    return ", ".join(f"{n['ref']}-{n['pin']}" if n["pin"] is not None else f"{n['ref']} {n['pinname']}"
+    return ", ".join(end_name(n) if n["ref"] == "PI" else
+                     f"{n['ref']}-{n['pin']}" if n["pin"] is not None else f"{n['ref']} {n['pinname']}"
                      for n in ends)
+
+
+def end_name(n):
+    """One end of a net as a builder reads it: the designator and the pin
+    name, with the pin number where the sheet has one (on the head sheet
+    the Pi's numbers are header positions)."""
+    if n["ref"] == "PI" and n["pin"] is not None:
+        return f"{n['ref']} {n['pinname']} (position {n['pin']})"
+    if n["pin"] is not None:
+        return f"{n['ref']}-{n['pin']} {n['pinname']}"
+    return f"{n['ref']} {n['pinname']}"
+
+
+def head_pinmap(sheet="bench-v1b-head"):
+    """The head sheet's tables: the Pi's jumpers read off the sheet, the
+    power and reset breakout, and every net as a wiring list."""
+    nl, bu, nodes, nets = collect(sheet)
+    role = {bcm: (pos, r) for bcm, pos, _to, r in PI_HEADER}
+    hrows = []
+    for n in sorted([n for n in nodes if n["ref"] == "PI" and n["pin"] is not None], key=lambda n: n["pin"]):
+        pos, r = role[n["pinname"]]
+        assert pos == n["pin"], f"PI {n['pinname']}: the sheet says position {n['pin']}, PI_HEADER says {pos}"
+        hrows.append([n["pinname"], str(n["pin"]), other_ends(nl, nets, n["net"], "PI"), r])
+    assert len(hrows) >= 4, "the head sheet draws fewer than four Pi jumpers"
+    head = ("The head's four jumpers",
+            "Four Dupont leads off the Pi's header, no breakout (2026-09-10). Positions are the Pi's "
+            "own numbering, odd on the inside row; the far end is read off sheet 3. No wire from "
+            "here to the console: the Pi's ground reaches it through the UNO's USB cable only.",
+            ["Pi pin", "pos.", "to", "role"], hrows)
+    prows = [[str(p), c, c] for p, c in bu.POWER_RESET_LEADS]
+    pwr = ("The power and reset breakout, J3",
+           "Five ways straight through, colour for colour with the front panel's harness, pin 1 at "
+           "the back (lab/06-breakout-map-power-reset.jpg). Two are the reset pair: step 6.2 meters "
+           "which, and which of the two is ground, and logs both.",
+           ["pin", "NES harness", "breakout lead"], prows)
+    wrows = []
+    for net in sorted(nets, key=lambda k: (k in nl.RAILS, k)):
+        ends = [end_name(n) for n in nets[net]]
+        if len(ends) == 1:
+            ends.append(nl.OFFSHEET[net])     # a cable off the sheet, named by where it goes
+        wrows.append([net, ends[0], "; ".join(ends[1:])])
+    wiring = ("Every wire on sheet 3",
+              "One row per net, read off the schematic. RST_PAD and RST_GND land on the two ways of J3 "
+              "step 6.2 measures. PWR_IN and PWR_SW are the halves of the one cut adapter conductor, "
+              "PWR_RET the whole one: never the mains side, never both.",
+              ["net", "from", "to"], wrows)
+    return [wiring, head, pwr]
 
 
 def pinmap(sheet="bench-v1b"):
     """Three tables: (title, note, headers, rows)."""
+    if sheet == "bench-v1b-head":
+        return head_pinmap(sheet)
     nl, bu, nodes, nets = collect(sheet)
     colours, when = harness_colours()
     leads = {p: c for p, _n, c in bu.LEADS}
@@ -257,6 +356,37 @@ def scope_table():
             ["input", "signal", "probe on", "why"], [list(r) for r in SCOPE])
 
 
+def module_sheet(ref, sheet, drawn, nl, nets):
+    """A module's pins are named, so the join is by name, both ways:
+    a drawn pin the table lacks and a table pin the sheet lacks are
+    both refused. MUTATE renames one table pin and must be caught."""
+    part = drawn[0]["part"]
+    key = module_of(part)
+    spec = MODULES[key]
+    pins = list(spec["pins"])
+    if os.environ.get("MUTATE"):
+        side, name, purpose = pins[0]
+        pins[0] = (side, name + "X", purpose)
+    names = [name for _s, name, _p in pins]
+    on = {n["pinname"]: n for n in drawn}
+    for name in on:
+        assert name in names, f"{ref} ({key}): the schematic draws pin {name!r}, which the module table does not have"
+    for name in names:
+        assert name in on, f"{ref} ({key}): the module table has pin {name!r}, which the schematic does not draw"
+    rows = []
+    for side, name, purpose in pins:
+        net = on[name]["net"]
+        if net in nl.NC:
+            here = "no connection: left open on purpose"
+        elif net in nl.RAILS:
+            here = other_ends(nl, nets, net, ref)
+        else:
+            ends = other_ends(nl, nets, net, ref)
+            here = f"{net}" + (f": {ends}" if ends else "")
+        rows.append([side, name, purpose, here])
+    return ref, part, spec["what"], ["side", "pin", "on the part", "on this bench"], rows
+
+
 def chip_sheet(ref, sheet="bench-v1b"):
     """(ref, part, description, headers, rows) for one chip on a sheet.
     Refuses a pin the schematic names differently from CHIPS."""
@@ -264,6 +394,8 @@ def chip_sheet(ref, sheet="bench-v1b"):
     drawn = [n for n in nodes if n["ref"] == ref]
     assert drawn, f"{ref} is not on {sheet}"
     part = drawn[0]["part"]
+    if module_of(part):
+        return module_sheet(ref, sheet, drawn, nl, nets)
     key = part.split()[0]
     if os.environ.get("MUTATE"):
         # The proof this join can refuse: swap the datasheet's names for
@@ -309,8 +441,10 @@ def chip_refs(sheet="bench-v1b"):
     _nl, _bu, nodes, _nets = collect(sheet)
     seen = []
     for n in nodes:
-        if n["ref"] not in seen and n["part"].split()[0] in CHIPS:
+        if n["ref"] not in seen and (n["part"].split()[0] in CHIPS or module_of(n["part"])):
             seen.append(n["ref"])
+    if sheet == "bench-v1b-head":
+        return seen     # the sheet's own order: OK1 (6.2) before K1 (6.3)
     return sorted(seen, key=lambda r: (r[0], int(r[1:]) if r[1:].isdigit() else 0))
 
 
@@ -320,14 +454,47 @@ def md_table(headers, rows):
     return "\n".join(out)
 
 
+def steps_section():
+    """Bring-up 6.2 and 6.3 as the tool runs them, from its own table."""
+    bu = load(ROOT / "tools" / "bringup.py", "bringup")
+    L = ["## The two steps, as the bring-up tool runs them", "",
+         "From `tools/bringup.py`, the same table `docs/build-guide.md` is written from. On the Pi:",
+         "", "```", "cd ~/nes-bench && yes '' | python3 tools/bringup.py --step 6.2 --bridge /dev/ttyACM0 --scope SCOPE --operator NAME",
+         "```", ""]
+    for sid in ("6.2", "6.3"):
+        st = bu.BY_ID[sid]
+        L += [f"**{sid} {st['title']}**", ""]
+        L += [f"- {d}" for d in st["do"]]
+        L += [""]
+    return L
+
+
 def render(sheet="bench-v1b"):
+    if sheet == "bench-v1b-head":
+        L = ["# Cheat sheet, sheet 3: the head's hands", "",
+             "Generated by `tools/cheatsheet.py --sheet bench-v1b-head`. The jumpers, the wiring",
+             "list and each module's bench column are read out of the schematic's third sheet",
+             "(`bench-v1b-3.svg`); the breakout leads come from the bring-up tool's own table; the",
+             "only authored text is what each module pin does on the part, kept in one place in",
+             "that tool and refused if the schematic names a pin differently. Which two ways of",
+             "the breakout are the reset pair is step 6.2's measurement and is not written here.", "",
+             f"Sheet: `{sheet}`.", ""]
+        for title, note, headers, rows in pinmap(sheet):
+            L += [f"## {title}", "", note, "", md_table(headers, rows), ""]
+        for ref in chip_refs(sheet):
+            r, part, what, headers, rows = chip_sheet(ref, sheet)
+            L += [f"## {r}: {part}", "", what, "", md_table(headers, rows), ""]
+        L += steps_section()
+        return "\n".join(L).rstrip() + "\n"
     L = ["# Cheat sheet: the breakouts pin by pin, and every pin of every chip", "",
          "Generated by `tools/cheatsheet.py`. The pin numbers and signals are read out of",
          "the schematic, the harness colours out of the lab log, the breakout leads out of",
          "the bring-up tool's own table, and each chip's wiring out of the netlist. The only",
          "authored text is what each pin does on the part, which is the datasheet's, kept",
          "in one place in that tool and refused if the schematic names a pin differently.",
-         "The same rows are sheets of the drawing package (`tools/make-package.py`).", "",
+         "The same rows are sheets of the drawing package (`tools/make-package.py`).",
+         "The head's hands (the Pi's jumpers, the PC817 and the relay) have their own:",
+         "`cheat-sheet-head.md`.", "",
          f"Sheet: `{sheet}`.", ""]
     for title, note, headers, rows in pinmap(sheet) + [scope_table()]:
         L += [f"## {title}", "", note, "", md_table(headers, rows), ""]
@@ -351,12 +518,13 @@ def main():
             return 0
         print("MUTATE: a swapped pinout was NOT caught")
         return 1
+    OUT = OUTS[a.sheet]
     text = render(a.sheet)
     if a.check:
         if OUT.exists() and OUT.read_text() == text:
             print(f"{OUT.relative_to(ROOT)} is current")
             return 0
-        print(f"{OUT.relative_to(ROOT)} is stale: run python3 tools/cheatsheet.py")
+        print(f"{OUT.relative_to(ROOT)} is stale: run python3 tools/cheatsheet.py --sheet {a.sheet}")
         return 1
     OUT.write_text(text)
     print(f"wrote {OUT.relative_to(ROOT)}")

@@ -259,7 +259,10 @@ def sheet_chip(p, cfg, spec):
         cy += 15
         p.text(x, cy, line, "tmf-body")
     cy += 12
-    drawn = p.table((x, cy, w, y + h - cy), headers, rows, widths=[0.05, 0.09, 0.44, 0.42], mono=(0, 1),
+    # A chip's first column is a pin number; a module's is which side of
+    # the part the pin is on, a word, so it gets the room a word needs.
+    widths = [0.08, 0.09, 0.42, 0.41] if headers[0] == "side" else [0.05, 0.09, 0.44, 0.42]
+    drawn = p.table((x, cy, w, y + h - cy), headers, rows, widths=widths, mono=(0, 1),
                     strict=True)
     assert drawn == len(rows), f"chip {ref}: fits {drawn} of {len(rows)} pins on a {p.size} sheet"
     p.footer("pin purposes authored from the datasheet in tools/cheatsheet.py; the bench column is read out of the schematic")
@@ -313,6 +316,7 @@ def build(cfg, out, svg_only):
                 continue
             specs.insert(i + 1, {**{k: v for k, v in spec.items() if not k.startswith("_")},
                                  "from": nxt})
+            print(f"  {spec['title']!r} runs on: another sheet from item {nxt}")
             grown = True
             break
         if not grown:

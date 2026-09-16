@@ -7,8 +7,7 @@
   "page": "ansi-a",
   "title": "NES controller-port bridge, v1b",
   "intro": [
-    "The bench drives an unmodified NES-001 through its controller port and records what it does. This package is the v1b build: an Arduino UNO between a Raspberry Pi and the console, on one 5 V rail.",
-    "Nothing is placed by hand: every coordinate, list and diagram derives from the schematic, the lab log and the bring-up tool. Four sheets are ANSI B. AUTHORED means not yet measured; MEASURED carries a date."
+    "The UNO bridge between the Pi and an unmodified NES-001, and the Pi's hands on its reset and power."
   ],
   "sheets": [
     {
@@ -82,6 +81,23 @@
       "ref": "U3",
       "sheet": "bench-v1b",
       "title": "U3, 74HC595 output register"
+    },
+    {
+      "kind": "pinmap",
+      "sheet": "bench-v1b-head",
+      "title": "Pin map, sheet 3: the head's jumpers, the breakout, every wire"
+    },
+    {
+      "kind": "chip",
+      "ref": "OK1",
+      "sheet": "bench-v1b-head",
+      "title": "OK1, PC817 module on the reset pads"
+    },
+    {
+      "kind": "chip",
+      "ref": "K1",
+      "sheet": "bench-v1b-head",
+      "title": "K1, relay module in the adapter lead"
     },
     {
       "kind": "steps",
