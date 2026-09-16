@@ -439,7 +439,14 @@ def read_map(m, frame: Path, out: Path, views: Path, zoomed=None):
     m["_about"].append(f"READ {stamp} off {frame.name} by --read: {len(xs)} hole centres by template correlation; per board, in the camera-y band it names, the two five-row groups and the rail pair as even progressions and the columns walked from the board's last hole with an adaptive pitch, anchors every fifth column. " + "; ".join(reads) + ".")
     out.write_text(json.dumps(m, indent=1) + "\n")
     print(f"wrote {out}")
-    # carry the views' aims through the similarity old -> new (camera frame coordinates)
+    reaim_views(old, new, views, stamp, f"by board-overlay.py --read off {frame.name}")
+
+
+def reaim_views(old, new, views: Path, stamp, how):
+    """Carry the named views' aims through the similarity between the old
+    map and the new one (camera frame coordinates): a view that looked at
+    a hole keeps looking at that hole after the camera or the board
+    moved. Returns (scale, degrees, shift, worst residual)."""
     A, B = [], []
     for col in range(1, 36):
         for side in ("middle", "rails"):
@@ -464,15 +471,63 @@ def read_map(m, frame: Path, out: Path, views: Path, zoomed=None):
         w["at"] = [int(round(ax)), int(round(ay))]
         f = 1 - 100 / w["zoom"]
         w["pan"], w["tilt"] = q((ax - 960) / (960 * f) * 36000), q((540 - ay) / (540 * f) * 36000)
-    v["_about"].append(f"RE-AIMED {stamp} by board-overlay.py --read off {frame.name}: scale {s:.3f}, {np.degrees(np.arctan2(R[1, 0], R[0, 0])):.1f} degrees, shift {t.round(0).tolist()}, worst residual {res:.0f} px.")
+    deg = np.degrees(np.arctan2(R[1, 0], R[0, 0]))
+    v["_about"].append(f"RE-AIMED {stamp} {how}: scale {s:.3f}, {deg:.1f} degrees, shift {t.round(0).tolist()}, worst residual {res:.0f} px.")
     views.write_text(json.dumps(v, indent=1) + "\n")
     print(f"re-aimed {len(v['views'])} views (scale {s:.3f}, shift {t.round(0).tolist()}, worst residual {res:.0f} px)")
+    return s, deg, t, res
+
+
+def read_boards(m, out: Path, views: Path, frames=None, bands=None, write=True, aims=None, only=None):
+    """Each board read off its own zoomed frame, the one the map names in
+    `zoomed_frame` (frame, zoom_pan_tilt, band) or the one given in
+    `frames`, in the band it sits in there, and put into zoom-100
+    coordinates. This is the read the locked rig uses: at 11 px a hole
+    the zoom-100 frame is under what the hole finder resolves, and one
+    zoom-250 frame holds one board. Returns the per-board summaries; with
+    write=False nothing is written and the map in memory is the read."""
+    old = Board(m["boards"]["right"])
+    reads = []
+    for name, b in m["boards"].items():
+        if only and name not in only:
+            continue
+        z = dict(b["zoomed_frame"])
+        if frames and name in frames:
+            z["frame"] = frames[name]
+        if bands and name in bands:
+            z["band"] = list(bands[name])
+        if aims and name in aims:
+            z["zoom_pan_tilt"] = list(aims[name])
+        L = np.asarray(Image.open(ROOT / z["frame"] if not Path(z["frame"]).is_absolute() else z["frame"]).convert("L"), dtype=float)
+        xs, ys = find_holes(L)
+        band100 = b.get("band")
+        b["band"] = z["band"]
+        reads.append(read_board(m, name, xs, ys, L))
+        unzoom(m, b, z["zoom_pan_tilt"])
+        b["band"] = band100
+        b["zoomed_frame"] = z
+    if not write:
+        return reads
+    new = Board(m["boards"]["right"])
+    stamp = __import__("time").strftime("%Y-%m-%d %H:%M %Z")
+    m["frame"] = f"per board off zoomed frames (read {stamp} by board-overlay.py --read-boards)"
+    m["_about"].append(f"READ {stamp} by --read-boards, each board off its zoomed frame (" + "; ".join(
+        f"{n}: {b['zoomed_frame']['frame']} at zoom,pan,tilt {b['zoomed_frame']['zoom_pan_tilt']}, band {b['zoomed_frame']['band']}" for n, b in m["boards"].items())
+        + ") and put into zoom-100 coordinates. " + "; ".join(reads) + ".")
+    out.write_text(json.dumps(m, indent=1) + "\n")
+    print(f"wrote {out}")
+    reaim_views(old, new, views, stamp, "by board-overlay.py --read-boards")
+    return reads
 
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--read", action="store_true", help="read the map afresh off FRAME (the rig: straight down, frame_rotate set), re-aim the views, and stop")
     ap.add_argument("--views", default=str(ROOT / "docs" / "eye-views.json"))
+    ap.add_argument("--read-boards", action="store_true", help="read each board off its own zoomed frame (the map's zoomed_frame: frame, zoom_pan_tilt, band), re-aim the views, and stop")
+    ap.add_argument("--frames", metavar="BOARD=PATH,...", help="--read-boards: fresh zoomed frames per board, taken at the map's aims")
+    ap.add_argument("--bands", metavar="BOARD=LO,HI,...", help="--read-boards: the band (frame y) a board sits in, as BOARD=LO:HI, when it changed")
+    ap.add_argument("--aims", metavar="BOARD=Z:PAN:TILT,...", help="--read-boards: the zoom, pan and tilt the board's fresh frame was taken at, when it changed")
     ap.add_argument("--zoomed", metavar="Z,PAN,TILT", help="--read off a zoomed frame taken at this zoom, pan and tilt (the bands in that frame); the map comes out in zoom-100 coordinates")
     ap.add_argument("--recalibrate", nargs=2, type=int, metavar=("DX", "DY"), help="re-read the map off FRAME with this shift from the current map as the prior, and stop")
     ap.add_argument("--tolerance", type=int, default=8, help="how far a re-read anchor may land from its shifted prior, in pixels")
@@ -484,6 +539,12 @@ def main():
     ap.add_argument("--scale", type=float, default=2.6)
     a = ap.parse_args()
     m = json.loads(Path(a.map).read_text())
+    if a.read_boards:
+        frames = dict(kv.split("=", 1) for kv in a.frames.split(",")) if a.frames else None
+        bands = {kv.split("=")[0]: [int(x) for x in kv.split("=")[1].split(":")] for kv in a.bands.split(",")} if a.bands else None
+        aims = {kv.split("=")[0]: [int(x) for x in kv.split("=")[1].split(":")] for kv in a.aims.split(",")} if a.aims else None
+        read_boards(m, Path(a.map), Path(a.views), frames, bands, aims=aims)
+        return
     if a.read:
         read_map(m, Path(a.frame), Path(a.map), Path(a.views), zoomed=[int(v) for v in a.zoomed.split(",")] if a.zoomed else None)
         return

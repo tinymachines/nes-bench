@@ -56,6 +56,36 @@ frame: the UNO, the Pi, the console's mainboard and the modulator,
 which is what the timed grabs want as a record. What it costs is the
 fine read of a housing across two columns, which the side eye is for.
 
+## After every change: the regression check
+
+```
+python3 tools/rig-check.py --pi HOST
+```
+
+Four checks, each PASS or FAIL with the number that decided it: **light**
+(the whole-board frame's level near the baseline's, the exposure under the
+camera's cap: a dark room pins it at 312, seen 2026-09-15 when the sliding
+bar took the light with it), **still** (the frame differs from the
+baseline frame by sensor noise only: the worst 40 px block under 60, where
+noise measures about 20 and a moved board or camera 120 and up; a FAIL
+names the region in map coordinates), **board right** and **board middle**
+(each read afresh off a zoom-250 frame at the aim the map records, and
+held to the map within half a hole; a FAIL means the map is stale), and
+the two **side eyes** (lit, and correlating with their baseline frames at
+0.85 or better). Exit 1 on any FAIL. The frames it took are in
+`captures/rig/`, so a FAIL can be looked at.
+
+When a change was meant (a board added, the camera slid), the sequence is:
+the check (it fails, and says where), the map re-read off the frames it
+just took (`tools/board-overlay.py --read-boards --frames
+right=captures/rig/right.jpg,middle=captures/rig/middle.jpg`, with
+`--aims` and `--bands` when a board no longer sits in its frame), the
+overlay (`tools/board-overlay.py captures/rig/all.jpg`) looked at with
+the rings on the holes, and then the check again with `--baseline`, which
+refuses if any check fails on the frames the baseline would be made of.
+The baseline's measurements are `docs/rig-baseline.json`, dated; its
+frames are `captures/rig/baseline-*.jpg`.
+
 ## When something moves
 
 1. `python3 tools/eye.py sweep NAME --pi HOST --from 10 --to 40 --step 4`: the focus.
