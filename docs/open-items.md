@@ -5,6 +5,16 @@ and what closes it. Dated when added; struck through with the date and
 the commit when done. Measurements do not live here; a number in an
 entry is the one that raised it, with its date.
 
+## The bench (milestone 2026-09-15, `milestone-2026-09-15-rig-and-bridge.md`)
+
+- **Reset and power from the head OPEN** (bring-up 6.2, 6.3): the
+  console cannot yet be brought to a known state without a hand.
+  Closes with the PC817 on the reset pads and the relay in the adapter
+  lead, both held by the bring-up.
+- **The pad through the bridge OPEN** (4.2, 5.2), and with it J2's
+  lead order, the last check on the as-built sheet.
+- **CH2's original lead broke 2026-09-15**; a new lead is on the latch.
+
 ## The calibration cartridge (plan 2026-09-13)
 
 - **C0 of `calibration-plan.md`: machine side DONE 2026-09-13 (`nes` @
