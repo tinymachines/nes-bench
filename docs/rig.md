@@ -86,6 +86,27 @@ refuses if any check fails on the frames the baseline would be made of.
 The baseline's measurements are `docs/rig-baseline.json`, dated; its
 frames are `captures/rig/baseline-*.jpg`.
 
+### The signal paths, the same way
+
+```
+python3 tools/bench-check.py
+```
+
+The eye's check says nothing about the electrons. This one runs the
+measurements the bring-up and the register walk held: the bridge answers
+STATUS, the scope answers *IDN?, the console's polls come at about sixty
+a second with eight clocks in every one (B0's gate 1), TRIG 20 stops the
+scope on CH1, and fifteen bytes set into the register read back off D0 at
+the eight mid-slots, pressed LOW, every one as set. It needs the console
+on with a game polling; without polls the checks that need them are
+SKIPPED with that reason, not failed. The scope's settings are read
+first and put back after. A byte that differs is taken again before it
+counts, because the game does not clock every poll alike (one poll in
+fifteen came with its eight clocks in 68 us against the usual 98,
+2026-09-15), and a retake is reported. Screenshots in `captures/bench/`.
+First run 2026-09-15 23:35: bridge, scope, polls (1212 in 20 s, all
+eight clocks), trigger and walk 15 of 15, no regression.
+
 ## When something moves
 
 1. `python3 tools/eye.py sweep NAME --pi HOST --from 10 --to 40 --step 4`: the focus.
