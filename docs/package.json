@@ -43,6 +43,12 @@
     },
     {
       "kind": "schematic",
+      "svg": "wiring-v1b-head.svg",
+      "page": "ansi-b",
+      "title": "Wiring diagram, sheet 3: the head's hands at right angles"
+    },
+    {
+      "kind": "schematic",
       "svg": "breadboard-v1b.svg",
       "title": "Breadboard: which hole each part and jumper goes in",
       "page": "ansi-b"

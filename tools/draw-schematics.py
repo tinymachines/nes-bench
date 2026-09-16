@@ -594,7 +594,7 @@ def _v1b_body_3(sh):
             [(None, "NO", "PWR_SW"), (None, "COM", "PWR_IN"), (None, "NC", "NC")], extra="opto input, active low")
     x, y = sh.slot(0, 2, 0)
     sh.chip(x, y, 200, "CON", "NES-001 (NES-CPU-10)", [
-        (None, "reset pad, pulled up", "RST_PAD"), (None, "reset pad, ground", "RST_GND"),
+        (None, "reset pad, high", "RST_PAD"), (None, "reset pad, GND", "RST_GND"),
         (None, "DC jack, switched", "PWR_SW"), (None, "DC jack, straight", "PWR_RET")], [],
         conn=True, extra="reset pads through J3, the 5 way breakout")
     x, y = sh.slot(0, 2, 1)

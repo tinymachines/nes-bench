@@ -327,7 +327,7 @@ class Page:
                  f'viewBox="0 {top:g} {sw:g} {sh:g}" preserveAspectRatio="xMidYMid meet">{inner}</svg>')
         return scale
 
-    def table(self, box, headers, rows, widths=None, mono=(), strict=False):
+    def table(self, box, headers, rows, widths=None, mono=(), strict=False, lh=19):
         """A table that stops at the bottom of the box and says how many
         rows it could not fit, rather than drawing over the title block.
 
@@ -351,7 +351,7 @@ class Page:
                         raise AssertionError(
                             f"table cell {cell!r} needs about {est:.0f} px and column "
                             f"{headers[i]!r} is {w * widths[i]:.0f}: shorten it or widen the column")
-        lh = 19
+        # lh: the row height; the cover's index runs at 17 so its rows fit the page
         self.add(f'<rect class="tmf-band" x="{x}" y="{y}" width="{w}" height="{lh+2}"/>')
         for i, hd in enumerate(headers):
             self.text(xs[i] + 6, y + 14, hd.upper(), "tmf-th")

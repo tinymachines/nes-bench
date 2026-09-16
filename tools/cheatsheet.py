@@ -477,7 +477,8 @@ def render(sheet="bench-v1b"):
              "(`bench-v1b-3.svg`); the breakout leads come from the bring-up tool's own table; the",
              "only authored text is what each module pin does on the part, kept in one place in",
              "that tool and refused if the schematic names a pin differently. Which two ways of",
-             "the breakout are the reset pair is step 6.2's measurement and is not written here.", "",
+             "the breakout are the reset pair is step 6.2's measurement and is not written here.",
+             "The same wiring at right angles: `wiring-v1b-head.svg`.", "",
              f"Sheet: `{sheet}`.", ""]
         for title, note, headers, rows in pinmap(sheet):
             L += [f"## {title}", "", note, "", md_table(headers, rows), ""]

@@ -22,6 +22,8 @@ C6 version, for when v2's counters need it.
 
 ![The bridge, v1b, sheet 3: the head's hands, the PC817 on the reset pads and the relay in the adapter lead](bench-v1b-3.svg)
 
+![The head's hands at right angles: the Pi's jumpers by header position, the PC817 on the reset pads, the relay in the adapter lead](wiring-v1b-head.svg)
+
 ![The bridge, v1: the pad the console clocks, one port](bench-v1.svg)
 
 ![The bridge, v2: two ports, 74HC595 atomic bytes, an LM1881 sync separator](bench-v2.svg)

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """The wiring diagram: the packages as they sit, every wire at right angles.
 
-  python3 tools/wiring-diagram.py [outdir]   # -> docs/wiring-v1b.svg, docs/wiring-v1b-build.svg
+  python3 tools/wiring-diagram.py [outdir]   # -> docs/wiring-v1b.svg, docs/wiring-v1b-build.svg, docs/wiring-v1b-head.svg
   python3 tools/wiring-diagram.py --check    # exit 1 if a committed one is stale
 
 The breadboard sheet (tools/breadboard.py) says which hole everything
@@ -87,7 +87,51 @@ ROW = [
 CAPS = {"C1": "U1", "C2": "U2", "C3": "U3"}
 # The cut cable's lead colours, by pin, both halves (docs/cheat-sheet.md).
 LEAD = {1: "yellow", 2: "blue", 3: "black", 4: "green", 5: "red"}
-RAIL_COLOUR = {"+5V": "#d02b2b", "GND": "#1b64c8"}
+RAIL_COLOUR = {"+5V": "#d02b2b", "GND": "#1b64c8", "PI_5V": "#d02b2b"}
+
+# Sheet 3, the head's hands (bench-v1b-3.svg): the Pi's four jumpers,
+# the PC817 across the reset pads, the relay in the adapter lead. Left
+# to right as they sit: the Pi's pins on the T-cobbler, the two modules,
+# then the console and its adapter. The Pi's pins are keyed by header
+# position, as the schematic keys them, and the number is printed beside
+# the stub. The modules' input sides face the Pi's rails (top edge), the
+# output sides face the console (bottom edge), which is also what keeps
+# the isolation readable: nothing on a top edge reaches the console.
+ROW_HEAD = [
+    ("PI", {"kind": "header", "label": "PI Raspberry Pi", "sub": "its header, on the T-cobbler",
+            "top": [(11, "GPIO17"), (13, "GPIO27"), (2, "5V"), (6, "GND")],
+            "bottom": [(None, "USB-A"), (None, "ETH")]}),
+    ("OK1", {"kind": "header", "label": "OK1 PC817 module", "sub": "the reset button, pressed by the head",
+             "top": [(None, "INPUT +"), (None, "INPUT -")],
+             "bottom": [(None, "OUT"), (None, "GND"), (None, "VCC")]}),
+    ("K1", {"kind": "header", "label": "K1 relay module", "sub": "5 V coil, IN active low",
+            "top": [(None, "VCC"), (None, "GND"), (None, "IN")],
+            "bottom": [(None, "COM"), (None, "NO"), (None, "NC")]}),
+    ("CON", {"kind": "header", "label": "CON NES-001", "sub": "reset pads through J3; the DC jack", "label_at": "top",
+             "top": [],
+             "bottom": [(None, "reset pad, high"), (None, "reset pad, GND"),
+                        (None, "DC jack, switched"), (None, "DC jack, straight")]}),
+    ("PSU", {"kind": "header", "label": "PSU the adapter", "sub": "9 V, low-voltage cable only", "label_at": "top",
+             "top": [], "bottom": [(None, "lead, cut"), (None, "lead, whole")]}),
+]
+
+# What differs between the two sheets: the netlist, the row, the rails,
+# the words. Everything about routing and drawing is shared.
+SHEETS = {
+    "v1b": dict(netlist="bench-v1b", row=ROW, caps=CAPS, rails=("+5V", "GND"), out="wiring-v1b",
+                status="build-status-v1b.json", aria="Bridge v1b wiring diagram",
+                title="Bridge v1b: every wire, at right angles, on the packages as they sit",
+                sub="Notch left, pin 1 bottom left, numbered as the package is. One track and one colour per net, named "
+                    "at its left end; a dot is a junction, a crossing is nothing. Every wire is read out of the schematic.",
+                built_title="Bridge v1b as built", rails_note="rails joined end to end, as on the board"),
+    "head": dict(netlist="bench-v1b-head", row=ROW_HEAD, caps={}, rails=("PI_5V", "GND"), out="wiring-v1b-head",
+                 status=None, aria="The head's hands wiring diagram",
+                 title="The head's hands: the Pi's jumpers, the PC817 on the reset pads, the relay in the adapter lead",
+                 sub="Sheet 3 of the v1b schematic at right angles. The Pi's pins carry their header positions. Top edges "
+                     "are the Pi's side, bottom edges the console's; the two never meet. Every wire is read out of the schematic.",
+                 built_title="The head's hands as built",
+                 rails_note="the Pi's 5 V and GND, positions 2 and 6: the relay's coil and the two modules' input returns"),
+}
 PALETTE = ["#7a3fbf", "#0f8f9e", "#b5651d", "#8d1f5e", "#3f6f2a", "#5b5bd6", "#c2185b",
            "#00796b", "#e65100", "#4527a0", "#2e7d32", "#6d4c41", "#0277bd", "#ad1457",
            "#558b2f", "#ef6c00", "#283593", "#00838f", "#9e9d24", "#d84315", "#1565c0",
@@ -175,12 +219,15 @@ class Draw:
         self.add(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="3.4" fill="{colour}"/>')
 
 
-def build(status=None):
+def build(status=None, sheet="v1b"):
     """The sheet; with `status` (the parsed build-status file) the
     as-built copy of it."""
+    S = SHEETS[sheet]
+    ROW, CAPS = S["row"], S["caps"]
+    RAIL_A, RAIL_B = S["rails"]          # the two rails, the supply and GND
     nl = load(ROOT / "tools" / "netlist.py", "nl")
     sheets, offsheet = nl.collect()
-    nodes = sheets["bench-v1b"]
+    nodes = sheets[S["netlist"]]
     nets = nl.nets_of(nodes)
 
     # ---------------------------------------------------------- the row
@@ -190,7 +237,8 @@ def build(status=None):
         parts[ref] = p
         x = p.right + GAP
     row_right = x - GAP
-    W = row_right + LEFT
+    # at least as wide as the heading, which a short row does not cover
+    W = max(row_right + LEFT, int(13.2 * len(S["title"])) + 48, int(6.6 * len(S["sub"])) + 48)
 
     # Every drawn pin that the schematic knows, and every schematic pin
     # that is drawn. The netlist keys DIP pins by number and header pins
@@ -285,8 +333,8 @@ def build(status=None):
         return y_top - STUB - 14 - i * TRACK
     def track_y_bot(i):
         return y_bot + STUB + 14 + i * TRACK
-    rail_top = {"GND": track_y_top(len(top)) - 8, "+5V": track_y_top(len(top)) - 30}
-    rail_bot = {"GND": track_y_bot(len(bot)) + 8, "+5V": track_y_bot(len(bot)) + 30}
+    rail_top = {RAIL_B: track_y_top(len(top)) - 8, RAIL_A: track_y_top(len(top)) - 30}
+    rail_bot = {RAIL_B: track_y_bot(len(bot)) + 8, RAIL_A: track_y_bot(len(bot)) + 30}
     # Numbered in the status file's own order, the rails first: the file
     # lists what would do damage before what only needs a look.
     notes = list(dict.fromkeys(v["note"] for v in (status or {}).get("pins", {}).values() if v["state"] in ("check", "plan")))
@@ -294,7 +342,7 @@ def build(status=None):
     if rails_check:
         notes.insert(0, status["rails"]["note"])
     extra = list((status or {}).get("observations", []))
-    H = rail_bot["+5V"] + 70 + ((len(notes) + len(extra) + (1 if extra else 0)) * NOTE_H + 40 if status is not None else 0)
+    H = rail_bot[RAIL_A] + 70 + ((len(notes) + len(extra) + (1 if extra else 0)) * NOTE_H + 40 if status is not None else 0)
 
     def colour_at(ref, k, c):
         return GREY if state.get((ref, k), {}).get("state") == "done" else c
@@ -306,33 +354,32 @@ def build(status=None):
 
     d = Draw()
     d.add(f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" width="{W}" height="{H}" role="img" '
-          f'aria-label="Bridge v1b wiring diagram">')
+          f'aria-label="{S["aria"]}">')
     d.add(STYLE)
     if status is not None:
         d.add(BUILD_STYLE)
     d.add(f'<rect x="0" y="0" width="{W}" height="{H}" fill="#ffffff"/>')
     d.add(f'<g class="sheet-heading" data-height="{HEADING_H}">')
     if status is None:
-        d.text(24, 30, "Bridge v1b: every wire, at right angles, on the packages as they sit", "title")
-        d.text(24, 46, "Notch left, pin 1 bottom left, numbered as the package is. One track and one colour per net, named "
-                       "at its left end; a dot is a junction, a crossing is nothing. Every wire is read out of the schematic.", "sub")
+        d.text(24, 30, S["title"], "title")
+        d.text(24, 46, S["sub"], "sub")
     else:
-        d.text(24, 30, f"Bridge v1b as built, read {status['read']}: {status['scope']}", "title")
+        d.text(24, 30, f"{S['built_title']}, read {status['read']}: {status['scope']}", "title")
         d.text(24, 46, "Grey: built and seen in the right hole. A ring and a number: needs a check, the note under the rails "
                        "says what. Full colour: not built yet, or not part of this pass.", "sub")
     d.add("</g>")
 
     # Rails, top and bottom, joined at the left end.
-    for rail, ys in (("+5V", (rail_top["+5V"], rail_bot["+5V"])), ("GND", (rail_top["GND"], rail_bot["GND"]))):
+    for rail, ys in ((RAIL_A, (rail_top[RAIL_A], rail_bot[RAIL_A])), (RAIL_B, (rail_top[RAIL_B], rail_bot[RAIL_B]))):
         c = RAIL_COLOUR[rail]
-        xl = LEFT - (30 if rail == "+5V" else 16)
+        xl = LEFT - (30 if rail == RAIL_A else 16)
         for y in ys:
             d.line(xl, y, row_right + 20, y, "railline", c)
             d.text(row_right + 26, y + 4, rail, "rail")
         d.line(xl, ys[0], xl, ys[1], "railline", c)
-    d.text(LEFT - 34, rail_top["+5V"] - 8, "rails joined end to end, as on the board", "note")
+    d.text(LEFT - 34, rail_top[RAIL_A] - 8, S["rails_note"], "note")
     if rails_check:
-        rails_ring = (LEFT - 30, (rail_top["+5V"] + rail_bot["+5V"]) / 2)
+        rails_ring = (LEFT - 30, (rail_top[RAIL_A] + rail_bot[RAIL_A]) / 2)
 
     # Parts.
     for ref, p in parts.items():
@@ -346,8 +393,12 @@ def build(status=None):
             d.text(p.x + p.w / 2, y_top + BODY / 2 + 13, spec["sub"], "note", "middle")
         else:
             d.add(f'<rect class="hdr" x="{p.x}" y="{y_top}" width="{p.w}" height="{BODY}" rx="4"/>')
-            d.text(p.x + p.w / 2, y_top + BODY / 2 - 2, spec["label"], "ref", "middle")
-            d.text(p.x + p.w / 2, y_top + BODY / 2 + 13, spec["sub"], "note", "middle")
+            # A part with pins on one edge only keeps its label at the other
+            # end of the body, so a long pin name has the body's height to
+            # run up (the console's "reset pad, pulled up").
+            ly = {"top": y_top + 22, "bottom": y_bot - 22}.get(spec.get("label_at"), y_top + BODY / 2)
+            d.text(p.x + p.w / 2, ly - 2, spec["label"], "ref", "middle")
+            d.text(p.x + p.w / 2, ly + 13, spec["sub"], "note", "middle")
         for k, (edge, px) in p.pins.items():
             if edge == "top":
                 d.line(px, y_top, px, y_top - STUB)
@@ -379,6 +430,13 @@ def build(status=None):
                 if isinstance(k, int) and ref in ("J1", "J2"):
                     d.add(f'<text class="lead" x="{px + 15:.1f}" y="{y_top + 12:.1f}" text-anchor="end" '
                           f'transform="rotate(-90 {px + 15:.1f} {y_top + 12:.1f})">{k} {LEAD[k]}</text>')
+                elif isinstance(k, int) and names[k] != str(k):
+                    # a header pin numbered other than by its name (the Pi's
+                    # header positions): the number beside the stub, as a DIP's
+                    if edge == "top":
+                        d.text(px + 4, y_top - 6, str(k), "pinno")
+                    else:
+                        d.text(px + 4, y_bot + 14, str(k), "pinno")
         # No-connect pins: an x at the stub end.
         for n in nodes:
             if n["ref"] == ref and n["net"] in nl.NC and key_of(n) in p.pins:
@@ -390,15 +448,15 @@ def build(status=None):
     # Decoupling: a cap standing between the bottom rails beside its chip.
     for cref, host in CAPS.items():
         cx = parts[host].right + 30
-        y1, y2 = rail_bot["GND"], rail_bot["+5V"]
+        y1, y2 = rail_bot[RAIL_B], rail_bot[RAIL_A]
         d.line(cx, y1, cx, y2, "stub")
         cy = (y1 + y2) / 2
         d.add(f'<rect class="cap" x="{cx - 5}" y="{cy - 6:.1f}" width="10" height="12"/>')
         d.text(cx + 9, cy + 4, f"{cref} 100nF", "note")
 
     # Supply pins straight to their rails.
-    for net in ("+5V", "GND"):
-        for n in nets[net]:
+    for net in (RAIL_A, RAIL_B):
+        for n in nets.get(net, []):
             if n["ref"] in CAPS:
                 continue
             p = parts[n["ref"]]
@@ -452,7 +510,10 @@ def build(status=None):
         # on each other.
         drop = 26 + 18 * i
         d.line(px, y_bot + STUB, px, y_bot + STUB + drop, "wire", "#444")
-        d.text(px - 6, y_bot + STUB + drop + 4, text, "net", "end")
+        if px > 300:
+            d.text(px - 6, y_bot + STUB + drop + 4, text, "net", "end")
+        else:   # near the left edge the sentence reads to the right, or it runs off the sheet
+            d.text(px + 6, y_bot + STUB + drop + 4, text, "net", "start")
 
     if status is not None:
         # Rings last, over everything, numbered by the note they point at.
@@ -464,7 +525,7 @@ def build(status=None):
             tx, ty = x + 13, y - 13
             d.add(f'<circle cx="{tx:.1f}" cy="{ty:.1f}" r="8.5" fill="{MARK}" stroke="#fff" stroke-width="1.5"/>')
             d.text(tx, ty + 4, str(number[note]), "tag", "middle")
-        y0 = rail_bot["+5V"] + 58
+        y0 = rail_bot[RAIL_A] + 58
         d.text(24, y0, f"Needs a check ({len(notes)})", "checkhead")
         for i, note in enumerate(notes):
             d.text(24, y0 + (i + 1) * NOTE_H + 4, f"{i + 1}. {note}", "checknote")
@@ -480,7 +541,7 @@ def build(status=None):
         assert not unringed, f"a check note is on no drawn pin: {unringed}"
 
     d.add(f'<text class="note" x="{W - 24}" y="{H - 16}" text-anchor="end">'
-          f'{len(signal)} nets on tracks, {len(around)} of them crossing the row; {len(nets["+5V"]) + len(nets["GND"])} '
+          f'{len(signal)} nets on tracks, {len(around)} of them crossing the row; {len(nets.get(RAIL_A, [])) + len(nets.get(RAIL_B, []))} '
           f'supply pins on the rails. drawn by tools/wiring-diagram.py</text>')
     d.add("</svg>")
     return "\n".join(d.o) + "\n", len(signal), len(around)
@@ -491,15 +552,17 @@ def main():
     ap.add_argument("outdir", nargs="?", default=str(ROOT / "docs"))
     ap.add_argument("--check", action="store_true")
     a = ap.parse_args()
-    svg, n, m = build()
-    outs = [(Path(a.outdir) / "wiring-v1b.svg", svg, f"{n} nets on tracks, {m} crossing the row")]
-    status_file = ROOT / "docs" / "build-status-v1b.json"
-    if status_file.exists():
-        status = json.loads(status_file.read_text())
-        bsvg, _n, _m = build(status)
-        done = sum(1 for v in status["pins"].values() if v["state"] == "done")
-        outs.append((Path(a.outdir) / "wiring-v1b-build.svg", bsvg,
-                     f"as built {status['read']}: {done} pins done, {len(status['pins']) - done} to check"))
+    outs = []
+    for key, S in SHEETS.items():
+        svg, n, m = build(sheet=key)
+        outs.append((Path(a.outdir) / f"{S['out']}.svg", svg, f"{n} nets on tracks, {m} crossing the row"))
+        status_file = ROOT / "docs" / S["status"] if S["status"] else None
+        if status_file and status_file.exists():
+            status = json.loads(status_file.read_text())
+            bsvg, _n, _m = build(status, sheet=key)
+            done = sum(1 for v in status["pins"].values() if v["state"] == "done")
+            outs.append((Path(a.outdir) / f"{S['out']}-build.svg", bsvg,
+                         f"as built {status['read']}: {done} pins done, {len(status['pins']) - done} to check"))
     bad = 0
     for out, text, what in outs:
         if a.check:

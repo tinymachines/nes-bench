@@ -6,6 +6,7 @@ list and each module's bench column are read out of the schematic's third sheet
 only authored text is what each module pin does on the part, kept in one place in
 that tool and refused if the schematic names a pin differently. Which two ways of
 the breakout are the reset pair is step 6.2's measurement and is not written here.
+The same wiring at right angles: `wiring-v1b-head.svg`.
 
 Sheet: `bench-v1b-head`.
 
@@ -22,8 +23,8 @@ One row per net, read off the schematic. RST_PAD and RST_GND land on the two way
 | PWR_RET | CON DC jack, straight | PSU lead, whole |
 | PWR_SW | K1 NO | CON DC jack, switched |
 | RST_DRIVE | PI GPIO17 (position 11) | OK1 INPUT + |
-| RST_GND | OK1 GND | CON reset pad, ground |
-| RST_PAD | OK1 OUT | CON reset pad, pulled up |
+| RST_GND | OK1 GND | CON reset pad, GND |
+| RST_PAD | OK1 OUT | CON reset pad, high |
 | GND | PI GND (position 6) | OK1 INPUT -; K1 GND |
 | PI_5V | PI 5V (position 2) | K1 VCC |
 
@@ -58,8 +59,8 @@ One optocoupler on a carrier: an LED behind a series resistor on the input side,
 |---|---|---|---|
 | input | INPUT + | LED anode via the series resistor: high turns it on | RST_DRIVE: PI GPIO17 (position 11) |
 | input | INPUT - | LED cathode, the input side's return | the GND rail |
-| output | OUT | collector: pulled to GND while the LED is lit | RST_PAD: CON reset pad, pulled up |
-| output | GND | emitter, the output side's own ground | RST_GND: CON reset pad, ground |
+| output | OUT | collector: pulled to GND while the LED is lit | RST_PAD: CON reset pad, high |
+| output | GND | emitter, the output side's own ground | RST_GND: CON reset pad, GND |
 | output | VCC | pull-up supply for OUT; open, so OUT is open collector | no connection: left open on purpose |
 
 ## K1: relay module, 5 V coil

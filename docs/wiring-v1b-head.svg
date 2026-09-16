@@ -1,0 +1,149 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1414 591" width="1414" height="591" role="img" aria-label="The head's hands wiring diagram">
+<style>
+ text{font-family:ui-sans-serif,'DejaVu Sans',sans-serif;fill:#222}
+ .title{font-size:24px;font-weight:700}
+ .sub{font-size:13px;fill:#555}
+ .ref{font-size:14px;font-weight:700}
+ .note{font-size:12px;fill:#555}
+ .pin{font-family:ui-monospace,'DejaVu Sans Mono',monospace;font-size:11.5px}
+ .pinno{font-family:ui-monospace,'DejaVu Sans Mono',monospace;font-size:11.5px;fill:#666}
+ .net{font-family:ui-monospace,'DejaVu Sans Mono',monospace;font-size:12px;font-weight:700;paint-order:stroke;stroke:#fff;stroke-width:3px;stroke-linejoin:round}
+ .rail{font-family:ui-monospace,'DejaVu Sans Mono',monospace;font-size:11px;font-weight:700}
+ .lead{font-size:11.5px;font-style:italic;fill:#555}
+ .body{fill:#f4f2ea;stroke:#222;stroke-width:1.6}
+ .hdr{fill:#eef2f7;stroke:#222;stroke-width:1.4}
+ .cap{fill:#fff;stroke:#222;stroke-width:1.2}
+ .stub{stroke:#222;stroke-width:1.6}
+ .wire{fill:none;stroke-width:2.2;stroke-linejoin:miter}
+ .railline{fill:none;stroke-width:3}
+ .notch{fill:#fff;stroke:#222;stroke-width:1.2}
+</style>
+<rect x="0" y="0" width="1414" height="591" fill="#ffffff"/>
+<g class="sheet-heading" data-height="60">
+<text class="title" x="24.0" y="30.0" text-anchor="start">The head's hands: the Pi's jumpers, the PC817 on the reset pads, the relay in the adapter lead</text>
+<text class="sub" x="24.0" y="46.0" text-anchor="start">Sheet 3 of the v1b schematic at right angles. The Pi's pins carry their header positions. Top edges are the Pi's side, bottom edges the console's; the two never meet. Every wire is read out of the schematic.</text>
+</g>
+<line class="railline" x1="40.0" y1="122.0" x2="1112.0" y2="122.0" stroke="#d02b2b"/>
+<text class="rail" x="1118.0" y="126.0" text-anchor="start">PI_5V</text>
+<line class="railline" x1="40.0" y1="521.0" x2="1112.0" y2="521.0" stroke="#d02b2b"/>
+<text class="rail" x="1118.0" y="525.0" text-anchor="start">PI_5V</text>
+<line class="railline" x1="40.0" y1="122.0" x2="40.0" y2="521.0" stroke="#d02b2b"/>
+<line class="railline" x1="54.0" y1="144.0" x2="1112.0" y2="144.0" stroke="#1b64c8"/>
+<text class="rail" x="1118.0" y="148.0" text-anchor="start">GND</text>
+<line class="railline" x1="54.0" y1="499.0" x2="1112.0" y2="499.0" stroke="#1b64c8"/>
+<text class="rail" x="1118.0" y="503.0" text-anchor="start">GND</text>
+<line class="railline" x1="54.0" y1="144.0" x2="54.0" y2="499.0" stroke="#1b64c8"/>
+<text class="note" x="36.0" y="114.0" text-anchor="start">the Pi's 5 V and GND, positions 2 and 6: the relay's coil and the two modules' input returns</text>
+<rect class="hdr" x="70" y="214" width="134" height="170" rx="4"/>
+<text class="ref" x="137.0" y="297.0" text-anchor="middle">PI Raspberry Pi</text>
+<text class="note" x="137.0" y="312.0" text-anchor="middle">its header, on the T-cobbler</text>
+<line class="stub" x1="92.0" y1="214.0" x2="92.0" y2="196.0"/>
+<text class="pin" x="95.5" y="226.0" text-anchor="end" transform="rotate(-90 95.5 226.0)">GPIO17</text>
+<text class="pinno" x="96.0" y="208.0" text-anchor="start">11</text>
+<line class="stub" x1="122.0" y1="214.0" x2="122.0" y2="196.0"/>
+<text class="pin" x="125.5" y="226.0" text-anchor="end" transform="rotate(-90 125.5 226.0)">GPIO27</text>
+<text class="pinno" x="126.0" y="208.0" text-anchor="start">13</text>
+<line class="stub" x1="152.0" y1="214.0" x2="152.0" y2="196.0"/>
+<text class="pin" x="155.5" y="226.0" text-anchor="end" transform="rotate(-90 155.5 226.0)">5V</text>
+<text class="pinno" x="156.0" y="208.0" text-anchor="start">2</text>
+<line class="stub" x1="182.0" y1="214.0" x2="182.0" y2="196.0"/>
+<text class="pin" x="185.5" y="226.0" text-anchor="end" transform="rotate(-90 185.5 226.0)">GND</text>
+<text class="pinno" x="186.0" y="208.0" text-anchor="start">6</text>
+<line class="stub" x1="92.0" y1="384.0" x2="92.0" y2="402.0"/>
+<text class="pin" x="95.5" y="372.0" text-anchor="start" transform="rotate(-90 95.5 372.0)">USB-A</text>
+<line class="stub" x1="122.0" y1="384.0" x2="122.0" y2="402.0"/>
+<text class="pin" x="125.5" y="372.0" text-anchor="start" transform="rotate(-90 125.5 372.0)">ETH</text>
+<rect class="hdr" x="322" y="214" width="104" height="170" rx="4"/>
+<text class="ref" x="374.0" y="297.0" text-anchor="middle">OK1 PC817 module</text>
+<text class="note" x="374.0" y="312.0" text-anchor="middle">the reset button, pressed by the head</text>
+<line class="stub" x1="344.0" y1="214.0" x2="344.0" y2="196.0"/>
+<text class="pin" x="347.5" y="226.0" text-anchor="end" transform="rotate(-90 347.5 226.0)">INPUT +</text>
+<line class="stub" x1="374.0" y1="214.0" x2="374.0" y2="196.0"/>
+<text class="pin" x="377.5" y="226.0" text-anchor="end" transform="rotate(-90 377.5 226.0)">INPUT -</text>
+<line class="stub" x1="344.0" y1="384.0" x2="344.0" y2="402.0"/>
+<text class="pin" x="347.5" y="372.0" text-anchor="start" transform="rotate(-90 347.5 372.0)">OUT</text>
+<line class="stub" x1="374.0" y1="384.0" x2="374.0" y2="402.0"/>
+<text class="pin" x="377.5" y="372.0" text-anchor="start" transform="rotate(-90 377.5 372.0)">GND</text>
+<line class="stub" x1="404.0" y1="384.0" x2="404.0" y2="402.0"/>
+<text class="pin" x="407.5" y="372.0" text-anchor="start" transform="rotate(-90 407.5 372.0)">VCC</text>
+<line class="stub" x1="399.0" y1="405.0" x2="409.0" y2="415.0"/>
+<line class="stub" x1="399.0" y1="415.0" x2="409.0" y2="405.0"/>
+<rect class="hdr" x="544" y="214" width="104" height="170" rx="4"/>
+<text class="ref" x="596.0" y="297.0" text-anchor="middle">K1 relay module</text>
+<text class="note" x="596.0" y="312.0" text-anchor="middle">5 V coil, IN active low</text>
+<line class="stub" x1="566.0" y1="214.0" x2="566.0" y2="196.0"/>
+<text class="pin" x="569.5" y="226.0" text-anchor="end" transform="rotate(-90 569.5 226.0)">VCC</text>
+<line class="stub" x1="596.0" y1="214.0" x2="596.0" y2="196.0"/>
+<text class="pin" x="599.5" y="226.0" text-anchor="end" transform="rotate(-90 599.5 226.0)">GND</text>
+<line class="stub" x1="626.0" y1="214.0" x2="626.0" y2="196.0"/>
+<text class="pin" x="629.5" y="226.0" text-anchor="end" transform="rotate(-90 629.5 226.0)">IN</text>
+<line class="stub" x1="566.0" y1="384.0" x2="566.0" y2="402.0"/>
+<text class="pin" x="569.5" y="372.0" text-anchor="start" transform="rotate(-90 569.5 372.0)">COM</text>
+<line class="stub" x1="596.0" y1="384.0" x2="596.0" y2="402.0"/>
+<text class="pin" x="599.5" y="372.0" text-anchor="start" transform="rotate(-90 599.5 372.0)">NO</text>
+<line class="stub" x1="626.0" y1="384.0" x2="626.0" y2="402.0"/>
+<text class="pin" x="629.5" y="372.0" text-anchor="start" transform="rotate(-90 629.5 372.0)">NC</text>
+<line class="stub" x1="621.0" y1="405.0" x2="631.0" y2="415.0"/>
+<line class="stub" x1="621.0" y1="415.0" x2="631.0" y2="405.0"/>
+<rect class="hdr" x="766" y="214" width="134" height="170" rx="4"/>
+<text class="ref" x="833.0" y="234.0" text-anchor="middle">CON NES-001</text>
+<text class="note" x="833.0" y="249.0" text-anchor="middle">reset pads through J3; the DC jack</text>
+<line class="stub" x1="788.0" y1="384.0" x2="788.0" y2="402.0"/>
+<text class="pin" x="791.5" y="372.0" text-anchor="start" transform="rotate(-90 791.5 372.0)">reset pad, high</text>
+<line class="stub" x1="818.0" y1="384.0" x2="818.0" y2="402.0"/>
+<text class="pin" x="821.5" y="372.0" text-anchor="start" transform="rotate(-90 821.5 372.0)">reset pad, GND</text>
+<line class="stub" x1="848.0" y1="384.0" x2="848.0" y2="402.0"/>
+<text class="pin" x="851.5" y="372.0" text-anchor="start" transform="rotate(-90 851.5 372.0)">DC jack, switched</text>
+<line class="stub" x1="878.0" y1="384.0" x2="878.0" y2="402.0"/>
+<text class="pin" x="881.5" y="372.0" text-anchor="start" transform="rotate(-90 881.5 372.0)">DC jack, straight</text>
+<rect class="hdr" x="1018" y="214" width="74" height="170" rx="4"/>
+<text class="ref" x="1055.0" y="234.0" text-anchor="middle">PSU the adapter</text>
+<text class="note" x="1055.0" y="249.0" text-anchor="middle">9 V, low-voltage cable only</text>
+<line class="stub" x1="1040.0" y1="384.0" x2="1040.0" y2="402.0"/>
+<text class="pin" x="1043.5" y="372.0" text-anchor="start" transform="rotate(-90 1043.5 372.0)">lead, cut</text>
+<line class="stub" x1="1070.0" y1="384.0" x2="1070.0" y2="402.0"/>
+<text class="pin" x="1073.5" y="372.0" text-anchor="start" transform="rotate(-90 1073.5 372.0)">lead, whole</text>
+<line class="wire" x1="152.0" y1="196.0" x2="152.0" y2="122.0" stroke="#d02b2b"/>
+<circle cx="152.0" cy="122.0" r="3.4" fill="#d02b2b"/>
+<line class="wire" x1="566.0" y1="196.0" x2="566.0" y2="122.0" stroke="#d02b2b"/>
+<circle cx="566.0" cy="122.0" r="3.4" fill="#d02b2b"/>
+<line class="wire" x1="182.0" y1="196.0" x2="182.0" y2="144.0" stroke="#1b64c8"/>
+<circle cx="182.0" cy="144.0" r="3.4" fill="#1b64c8"/>
+<line class="wire" x1="374.0" y1="196.0" x2="374.0" y2="144.0" stroke="#1b64c8"/>
+<circle cx="374.0" cy="144.0" r="3.4" fill="#1b64c8"/>
+<line class="wire" x1="596.0" y1="196.0" x2="596.0" y2="144.0" stroke="#1b64c8"/>
+<circle cx="596.0" cy="144.0" r="3.4" fill="#1b64c8"/>
+<line class="wire" x1="92.0" y1="182.0" x2="344.0" y2="182.0" stroke="#3f6f2a"/>
+<line class="wire" x1="92.0" y1="196.0" x2="92.0" y2="182.0" stroke="#3f6f2a"/>
+<line class="wire" x1="344.0" y1="196.0" x2="344.0" y2="182.0" stroke="#3f6f2a"/>
+<text class="net" x="96.0" y="179.0" text-anchor="start">RST_DRIVE</text>
+<line class="wire" x1="122.0" y1="167.0" x2="626.0" y2="167.0" stroke="#7a3fbf"/>
+<line class="wire" x1="122.0" y1="196.0" x2="122.0" y2="167.0" stroke="#7a3fbf"/>
+<line class="wire" x1="626.0" y1="196.0" x2="626.0" y2="167.0" stroke="#7a3fbf"/>
+<text class="net" x="126.0" y="164.0" text-anchor="start">PWR_DRIVE</text>
+<line class="wire" x1="344.0" y1="461.0" x2="788.0" y2="461.0" stroke="#c2185b"/>
+<line class="wire" x1="344.0" y1="402.0" x2="344.0" y2="461.0" stroke="#c2185b"/>
+<line class="wire" x1="788.0" y1="402.0" x2="788.0" y2="461.0" stroke="#c2185b"/>
+<text class="net" x="348.0" y="472.0" text-anchor="start">RST_PAD</text>
+<line class="wire" x1="374.0" y1="446.0" x2="818.0" y2="446.0" stroke="#5b5bd6"/>
+<line class="wire" x1="374.0" y1="402.0" x2="374.0" y2="446.0" stroke="#5b5bd6"/>
+<line class="wire" x1="818.0" y1="402.0" x2="818.0" y2="446.0" stroke="#5b5bd6"/>
+<text class="net" x="378.0" y="457.0" text-anchor="start">RST_GND</text>
+<line class="wire" x1="596.0" y1="431.0" x2="848.0" y2="431.0" stroke="#8d1f5e"/>
+<line class="wire" x1="596.0" y1="402.0" x2="596.0" y2="431.0" stroke="#8d1f5e"/>
+<line class="wire" x1="848.0" y1="402.0" x2="848.0" y2="431.0" stroke="#8d1f5e"/>
+<text class="net" x="600.0" y="442.0" text-anchor="start">PWR_SW</text>
+<line class="wire" x1="566.0" y1="476.0" x2="1040.0" y2="476.0" stroke="#0f8f9e"/>
+<line class="wire" x1="566.0" y1="402.0" x2="566.0" y2="476.0" stroke="#0f8f9e"/>
+<line class="wire" x1="1040.0" y1="402.0" x2="1040.0" y2="476.0" stroke="#0f8f9e"/>
+<text class="net" x="570.0" y="487.0" text-anchor="start">PWR_IN</text>
+<line class="wire" x1="878.0" y1="416.0" x2="1070.0" y2="416.0" stroke="#b5651d"/>
+<line class="wire" x1="878.0" y1="402.0" x2="878.0" y2="416.0" stroke="#b5651d"/>
+<line class="wire" x1="1070.0" y1="402.0" x2="1070.0" y2="416.0" stroke="#b5651d"/>
+<text class="net" x="882.0" y="427.0" text-anchor="start">PWR_RET</text>
+<line class="wire" x1="92.0" y1="402.0" x2="92.0" y2="428.0" stroke="#444"/>
+<text class="net" x="98.0" y="432.0" text-anchor="start">PI_USB: USB to the Pi</text>
+<line class="wire" x1="122.0" y1="402.0" x2="122.0" y2="446.0" stroke="#444"/>
+<text class="net" x="128.0" y="450.0" text-anchor="start">LAN: SCPI over the LAN</text>
+<text class="note" x="1390" y="575" text-anchor="end">7 nets on tracks, 0 of them crossing the row; 5 supply pins on the rails. drawn by tools/wiring-diagram.py</text>
+</svg>
