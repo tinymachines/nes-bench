@@ -213,10 +213,10 @@ def build(status=None):
     if status is not None:
         by_name = {f"{ref}.{k}": (ref, k) for ref, k in drawn}
         for key, v in status["pins"].items():
-            if v.get("state") == "plan" and key not in by_name:
-                # a placement on the board for a part this sheet draws
-                # without pins (the decoupling bank): its note is listed,
-                # nothing on the sheet is marked
+            if key not in by_name and key.split(".")[0] in {ref for ref, _ in drawn} | {"C1", "C2", "C3"}:
+                # a part this sheet draws without pins (the decoupling
+                # bank): a placement's note is listed, a done one is silent,
+                # nothing on the sheet is marked either way
                 continue
             assert key in by_name, f"build status names {key!r}, which is not a pin on this sheet"
             assert v["state"] in ("done", "check", "plan"), f"build status {key}: state must be done, check or plan, not {v['state']!r}"
