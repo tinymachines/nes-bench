@@ -107,6 +107,22 @@ fifteen came with its eight clocks in 68 us against the usual 98,
 First run 2026-09-15 23:35: bridge, scope, polls (1212 in 20 s, all
 eight clocks), trigger and walk 15 of 15, no regression.
 
+With `--hands manual` or `--hands head` it also checks the two hands,
+reset and power, by the poll stream: the game stops polling while the
+CPU is held or the power is off and polls again after, and the polls are
+counted per quarter second (the Pi's bridge hands lines over in batches
+of about 100 ms, so arrival times cannot see the 17 ms cadence). Manual
+means your hand on the front panel, the button held two seconds, the
+switch off for a count of three; head means the Pi's GPIO17 through OK1
+and GPIO27 through K1, the same two measurements. The front panel's own
+button stays wired in parallel with OK1 and its switch in series with
+K1, so a wiring that works by hand and not from the head shows as
+exactly that. The relay module's input is active low: the head daemon
+drives it so (fixed 2026-09-16), and the Pi's GPIO27 rests as an input
+with a pull-down until something claims it, which is the relay ON. A
+`gpio=27=op,dh` line in the Pi's config.txt is the cure, to be set once
+the relay is in and its rest state measured.
+
 ## When something moves
 
 1. `python3 tools/eye.py sweep NAME --pi HOST --from 10 --to 40 --step 4`: the focus.

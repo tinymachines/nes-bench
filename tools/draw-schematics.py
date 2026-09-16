@@ -610,9 +610,9 @@ def _v1b_body_3(sh):
         "about 5 V and drops to 0 V while the reset button is held. Step 6.2 asks for both and",
         "writes them in the lab log; nothing here guesses them. OK1 OUT lands on the pulled-up",
         "way, OK1 GND on the ground way, VCC open. GPIO17 high holds the pad low for 100 ms:",
-        "the button, pressed by the head. INPUT - is the Pi's ground; OUT and GND are the console's."])
+        "the button, pressed by the head; the front panel's own button stays wired, in parallel."])
     sh.note(*sh.slot(1, 1), [
-        "The console's own switch stays latched ON; K1 is the switch. Cut ONE conductor of",
+        "The front panel's switch stays wired and latched ON; K1 is in series with it. Cut ONE conductor of",
         "the adapter's low-voltage cable and put NO and COM in the cut; the other conductor",
         "stays whole. The original adapter gives 9 V AC, a replacement often 9 V DC; the",
         "contact takes either. GPIO27 low turns the relay on. NO is open with the Pi off or",

@@ -25,6 +25,23 @@ in the next experiment's result.
             (CH4) read at the middle of each of the eight bit slots off
             the screen; pressed is LOW; every byte must read back as
             set (the walk of 2026-09-15 23:00, 15 of 15).
+  reset     with --hands: the console resets. The poll stream is the
+            instrument: the game stops polling while the CPU is held and
+            restarts, a pause of a second or more in a stream that
+            otherwise never goes quiet, then polls again. Manual: you
+            hold the front panel's button for two seconds when asked.
+            Head: the Pi holds GPIO17 high for two seconds through OK1,
+            which sits in parallel with that button.
+  power     with --hands: the console goes off and comes back. Manual:
+            you throw the front panel's switch off, count three, and on.
+            Head: the Pi drives GPIO27 high for three seconds and low
+            again, K1's input being active low; K1 sits in series with
+            that switch, so the switch stays on. The stream stops and
+            resumes, a gap of at least a second and a half.
+
+  --hands manual and --hands head are the same two measurements with a
+  different hand on the button, so a wiring that works by hand and not
+  from the head shows as exactly that.
 
 The scope's settings the walk changes are read first and put back after,
 the trigger slope and sweep and the channels with them, and the bridge
@@ -196,6 +213,8 @@ def main():
     ap.add_argument("--no-walk", action="store_true")
     ap.add_argument("--no-scope", action="store_true")
     ap.add_argument("--poll-seconds", type=float, default=20.0)
+    ap.add_argument("--hands", choices=["manual", "head"], help="also check reset and power, by your hand or the Pi's")
+    ap.add_argument("--pi", help="user@host of the Pi, for --hands head (default: the bridge's host)")
     a = ap.parse_args()
     OUT.mkdir(parents=True, exist_ok=True)
     bu = load(ROOT / "tools" / "bringup.py", "bringup")
@@ -359,6 +378,43 @@ def main():
                 check("walk", "PASS", f"{n_ok} of {len(WALK)} bytes read back as set, D0 at the eight mid-slots off the screen{note}")
             else:
                 check("walk", "FAIL", f"{n_ok} of {len(WALK)} right" + (f"; no trigger for {missing}" if missing else "") + (f"; {'; '.join(wrong)}" if wrong else "") + note)
+        # the hands
+        if not a.hands:
+            check("reset", "SKIP", "not asked: --hands manual or --hands head")
+            check("power", "SKIP", "not asked: --hands manual or --hands head")
+        elif not console:
+            check("reset", "SKIP", "no polls: a reset shows as a gap in them")
+            check("power", "SKIP", "no polls: a power cycle shows as a gap in them")
+        else:
+            br.send("MODE PASS")
+            br.read(0.5)
+            pi = a.pi or baddr.rsplit(":", 1)[0]
+            for name, lo, hi, manual, head, wait in (
+                    ("reset", 1.0, 12.0, "press the console's RESET button and HOLD it for two full seconds",
+                     "from gpiozero import DigitalOutputDevice as D; import time; r = D(17, initial_value=False); time.sleep(3.0); r.on(); time.sleep(2.0); r.off(); time.sleep(0.5)", 15.0),
+                    ("power", 1.5, 20.0, "throw the console's POWER switch off, count three, and back on",
+                     "from gpiozero import DigitalOutputDevice as D; import time; k = D(27, active_high=False, initial_value=True); time.sleep(3.0); k.off(); time.sleep(3.0); k.on(); time.sleep(0.5)", 30.0)):
+                if a.hands == "manual":
+                    print(f"\n  {name}: {manual}, any time in the next {wait:.0f} s (listening now)")
+                    gap, resumed, n = poll_gap(br, wait)
+                    how = "by hand"
+                else:
+                    proc = subprocess.Popen(["ssh", "-o", "ConnectTimeout=8", "-o", "BatchMode=yes", pi, "python3", "-c", repr(head)],
+                                            stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+                    gap, resumed, n = poll_gap(br, wait)
+                    _out, err = proc.communicate(timeout=30)
+                    how = f"from the Pi's GPIO{'17' if name == 'reset' else '27'}"
+                    if proc.returncode != 0:
+                        check(name, "FAIL", f"the Pi could not drive the pin: {err.strip()[:160]}")
+                        continue
+                if gap is None:
+                    check(name, "FAIL", f"no pause in the polls in {wait:.0f} s ({n} polls): nothing happened {how}")
+                elif not (lo <= gap <= hi):
+                    check(name, "FAIL", f"polls paused {gap:.2f} s {how}, expected {lo:g} to {hi:g} s")
+                elif not resumed:
+                    check(name, "FAIL", f"polls stopped after {gap:.2f} s {how} and did not resume in {wait:.0f} s")
+                else:
+                    check(name, "PASS", f"polls paused {gap:.2f} s {how} and resumed ({n} polls in {wait:.0f} s)")
     finally:
         br.send("MODE PASS")
         br.send("RESET")
@@ -369,6 +425,44 @@ def main():
             for c in (":CHANnel1:DISPlay ON", ":CHANnel2:DISPlay ON", ":CHANnel3:DISPlay ON", ":CHANnel4:DISPlay ON", ":RUN"):
                 sc.cmd(c)
     return finish(rows, result)
+
+
+def poll_gap(br, seconds, bin_s=0.25, quiet=3):
+    """Listen to the bridge for `seconds` and return (the longest pause
+    in the polls, whether polls came after it, the poll count). The Pi's
+    bridge hands lines over in batches about every 100 ms, so arrival
+    times cannot see the 17 ms cadence (MEASURED 2026-09-16 00:10: a
+    0.1 s "gap" every batch, and one of 0.4 s); the polls are counted per
+    quarter second instead, fifteen a bin when the game runs, and a run
+    of bins with fewer than `quiet` is the pause. A running game never
+    goes quiet that long; a held reset or a power cycle does."""
+    n_bins = int(seconds / bin_s) + 1
+    bins = [0] * n_bins
+    t0, end, count = time.time(), time.time() + seconds, 0
+    while time.time() < end:
+        for l in br.read(0.1):
+            if l.startswith("L ") and len(l.split()) == 4:
+                k = min(int((time.time() - t0) / bin_s), n_bins - 1)
+                bins[k] += 1
+                count += 1
+    # the longest run of quiet bins, with polls before and after it
+    best, run, start, best_start = 0, 0, 0, None
+    for k, c in enumerate(bins):
+        if c < quiet:
+            if run == 0:
+                start = k
+            run += 1
+            if run > best:
+                best, best_start = run, start
+        else:
+            run = 0
+    if best < 2:         # one quiet bin is a late batch from the bridge, not the console
+        return None, True, count
+    after = sum(bins[best_start + best:])
+    before = sum(bins[:best_start])
+    if before == 0:      # quiet from the start is not a pause, the console was off
+        return None, after > 0, count
+    return best * bin_s, after > 0, count
 
 
 def finish(rows, result):

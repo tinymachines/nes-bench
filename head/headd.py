@@ -142,7 +142,12 @@ class Relays:
         if real:
             from gpiozero import DigitalOutputDevice  # Raspberry Pi OS ships it
             self.reset = DigitalOutputDevice(reset_pin, initial_value=False)
-            self.power = DigitalOutputDevice(power_pin, initial_value=False)
+            # The relay module's IN is active low (the cheat sheet, the
+            # v1b sheet 3): on() must drive the pin LOW, and the pin must
+            # rest HIGH so the relay rests open. Until 2026-09-15 this was
+            # active high, which would have powered the console the moment
+            # the head asked for off.
+            self.power = DigitalOutputDevice(power_pin, active_high=False, initial_value=False)
 
     def pulse_reset(self, hold=RESET_HOLD_S):
         if self.real:
