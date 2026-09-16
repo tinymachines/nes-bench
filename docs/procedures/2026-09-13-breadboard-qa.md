@@ -554,3 +554,24 @@ from column 25 row a to the GND rail hole beside it) and the
 photograph redrawn; the lesson for the tool is that a placement note
 should be generated from the map's pin positions, not written beside
 them.
+
+## The walk reads right, 2026-09-15 23:00
+
+With the clock filter and the decoupling placed (on the middle board,
+joined to U2 by leads the eye cannot trace) and both probes back on
+the board, the walk of single bits through the register came back
+right for all fifteen bytes tried: 00, ff, each bit alone, 06, 7f, 55,
+aa and 1b, every pressed bit at its own position on D0
+(`docs/lab/17-walk-02-after-the-filter.png`, `17-walk-55-...`). Before
+the filter, a lone bit from B to Left read at the Right position. That
+closes the sliver, proves the six grey Q lines pair the 595's outputs
+to the 165's inputs as the sheet says, and clears the last checks on
+the chip pins.
+
+Two things the instrument settled that the eye and the word could not:
+the two probes were reported the other way round (CH2 on D0, CH4 on
+the latch); held bytes told them apart in one look (ff makes D0 flat,
+the latch's 3.6 us pulse is there whatever is held), so CH2 is the
+latch and CH4 is D0, as the cheat sheet has them. And two inert
+pointers laid on the board read as probe bodies from above; the sheet
+now says where each probe is, and a pointer is a pointer.

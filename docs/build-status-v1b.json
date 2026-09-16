@@ -16,7 +16,7 @@
     "THIRD RIG POSE 2026-09-15 13:16 EDT: the boards rearranged on the frame (the chip board at the top, its rails along the frame's top edge, the middle board below it, a fourth rail-only board at the bottom); the map re-read by --read with new bands. R2 and C4 (the clock pin's filter, added by the user this afternoon) went on the schematic and are looked for here.",
     "PLACEMENTS 2026-09-15: state \"plan\" is a placement asked for and not built (green on the photograph, listed with the checks on the sheet); the note is the instruction."
   ],
-  "read": "2026-09-15 22:30 EDT (the filter and decoupling seen on the middle board; the walk waits for CH4)",
+  "read": "2026-09-15 23:00 EDT (the walk of single bits reads right through the console)",
   "scope": "grounds, +5 V, the J1 console side, the J1 to U3 chain, the UNO's leads, and on the middle board the pad housing (J2) and the trigger resistor (R1)",
   "pins": {
     "U1.2": {
@@ -72,8 +72,8 @@
       "state": "done"
     },
     "U2.9": {
-      "state": "check",
-      "note": "U2-9 (QH, D0): CH4 reads 0 V because its probe is lying on the middle board as a pointer, not on the pin. Put it back on column 18, rails side, and D0 must swing 0 to 4.4 V with the console polling."
+      "state": "done",
+      "note": "U2-9 (QH, D0): on the scope's CH4, swinging 0 to 4.4 V with the console polling; every walked byte read back right 2026-09-15 23:00."
     },
     "U2.10": {
       "state": "done"
@@ -219,28 +219,28 @@
       "note": "R1, the trigger resistor, flattened 2026-09-15: lies in row a of the middle board's chip-board side from column 9, where the UNO's green D3 lead lands in a housing (rows d and e), to column 6, where the red lead to the scope's CH1 lands. MEASURED 2026-09-15 21:14 by the bring-up's step 6.1: TRIG 20 stopped the scope on CH1."
     },
     "R2.1": {
-      "state": "check",
-      "note": "SEEN 2026-09-15 22:30 on the middle board's rails side (rows f to j), with two probe bodies laid on the board as pointers: a blue-banded axial resistor lying from column 27 row f to column 25 row i, a yellow disc capacitor at column 23 with a lead into the GND rail row, a bare link and a brown link between the two sides of the board near columns 24 to 26, and the UNO's blue D2 lead re-routed here from the right board. How these join U2 pin 2 and its ground cannot be traced from above; the walk of single bits is the check, and it needs the CH4 probe back on U2 pin 9 (right board, column 18, rails side): while it lies on the board as a pointer, D0 reads 0 V."
+      "state": "done",
+      "note": "MEASURED 2026-09-15 23:00: the walk of single bits through the register reads right, every byte at its own positions (00, ff, each bit alone, 06, 7f, 55, aa, 1b: fifteen bytes), where before the filter a lone bit from B to Left read at the Right position. The parts sit on the middle board's rails side (a blue-banded resistor from column 27 to 25, a disc capacitor at column 23 to the GND rail, links across the board's gap), joined to U2 pin 2 by leads the eye cannot trace; the instrument settles the net."
     },
     "R2.2": {
-      "state": "check",
-      "note": "SEEN 2026-09-15 22:30 on the middle board's rails side (rows f to j), with two probe bodies laid on the board as pointers: a blue-banded axial resistor lying from column 27 row f to column 25 row i, a yellow disc capacitor at column 23 with a lead into the GND rail row, a bare link and a brown link between the two sides of the board near columns 24 to 26, and the UNO's blue D2 lead re-routed here from the right board. How these join U2 pin 2 and its ground cannot be traced from above; the walk of single bits is the check, and it needs the CH4 probe back on U2 pin 9 (right board, column 18, rails side): while it lies on the board as a pointer, D0 reads 0 V."
+      "state": "done",
+      "note": "MEASURED 2026-09-15 23:00: the walk of single bits through the register reads right, every byte at its own positions (00, ff, each bit alone, 06, 7f, 55, aa, 1b: fifteen bytes), where before the filter a lone bit from B to Left read at the Right position. The parts sit on the middle board's rails side (a blue-banded resistor from column 27 to 25, a disc capacitor at column 23 to the GND rail, links across the board's gap), joined to U2 pin 2 by leads the eye cannot trace; the instrument settles the net."
     },
     "C4.1": {
-      "state": "check",
-      "note": "SEEN 2026-09-15 22:30 on the middle board's rails side (rows f to j), with two probe bodies laid on the board as pointers: a blue-banded axial resistor lying from column 27 row f to column 25 row i, a yellow disc capacitor at column 23 with a lead into the GND rail row, a bare link and a brown link between the two sides of the board near columns 24 to 26, and the UNO's blue D2 lead re-routed here from the right board. How these join U2 pin 2 and its ground cannot be traced from above; the walk of single bits is the check, and it needs the CH4 probe back on U2 pin 9 (right board, column 18, rails side): while it lies on the board as a pointer, D0 reads 0 V."
+      "state": "done",
+      "note": "MEASURED 2026-09-15 23:00: the walk of single bits through the register reads right, every byte at its own positions (00, ff, each bit alone, 06, 7f, 55, aa, 1b: fifteen bytes), where before the filter a lone bit from B to Left read at the Right position. The parts sit on the middle board's rails side (a blue-banded resistor from column 27 to 25, a disc capacitor at column 23 to the GND rail, links across the board's gap), joined to U2 pin 2 by leads the eye cannot trace; the instrument settles the net."
     },
     "C4.2": {
-      "state": "check",
-      "note": "SEEN 2026-09-15 22:30 on the middle board's rails side (rows f to j), with two probe bodies laid on the board as pointers: a blue-banded axial resistor lying from column 27 row f to column 25 row i, a yellow disc capacitor at column 23 with a lead into the GND rail row, a bare link and a brown link between the two sides of the board near columns 24 to 26, and the UNO's blue D2 lead re-routed here from the right board. How these join U2 pin 2 and its ground cannot be traced from above; the walk of single bits is the check, and it needs the CH4 probe back on U2 pin 9 (right board, column 18, rails side): while it lies on the board as a pointer, D0 reads 0 V."
+      "state": "done",
+      "note": "MEASURED 2026-09-15 23:00: the walk of single bits through the register reads right, every byte at its own positions (00, ff, each bit alone, 06, 7f, 55, aa, 1b: fifteen bytes), where before the filter a lone bit from B to Left read at the Right position. The parts sit on the middle board's rails side (a blue-banded resistor from column 27 to 25, a disc capacitor at column 23 to the GND rail, links across the board's gap), joined to U2 pin 2 by leads the eye cannot trace; the instrument settles the net."
     },
     "C2.1": {
-      "state": "plan",
-      "note": "SEEN 2026-09-15 22:30 on the middle board's rails side (rows f to j), with two probe bodies laid on the board as pointers: a blue-banded axial resistor lying from column 27 row f to column 25 row i, a yellow disc capacitor at column 23 with a lead into the GND rail row, a bare link and a brown link between the two sides of the board near columns 24 to 26, and the UNO's blue D2 lead re-routed here from the right board. How these join U2 pin 2 and its ground cannot be traced from above; the walk of single bits is the check, and it needs the CH4 probe back on U2 pin 9 (right board, column 18, rails side): while it lies on the board as a pointer, D0 reads 0 V."
+      "state": "done",
+      "note": "MEASURED 2026-09-15 23:00: the walk of single bits through the register reads right, every byte at its own positions (00, ff, each bit alone, 06, 7f, 55, aa, 1b: fifteen bytes), where before the filter a lone bit from B to Left read at the Right position. The parts sit on the middle board's rails side (a blue-banded resistor from column 27 to 25, a disc capacitor at column 23 to the GND rail, links across the board's gap), joined to U2 pin 2 by leads the eye cannot trace; the instrument settles the net."
     },
     "C2.2": {
-      "state": "plan",
-      "note": "SEEN 2026-09-15 22:30 on the middle board's rails side (rows f to j), with two probe bodies laid on the board as pointers: a blue-banded axial resistor lying from column 27 row f to column 25 row i, a yellow disc capacitor at column 23 with a lead into the GND rail row, a bare link and a brown link between the two sides of the board near columns 24 to 26, and the UNO's blue D2 lead re-routed here from the right board. How these join U2 pin 2 and its ground cannot be traced from above; the walk of single bits is the check, and it needs the CH4 probe back on U2 pin 9 (right board, column 18, rails side): while it lies on the board as a pointer, D0 reads 0 V."
+      "state": "done",
+      "note": "MEASURED 2026-09-15 23:00: the walk of single bits through the register reads right, every byte at its own positions (00, ff, each bit alone, 06, 7f, 55, aa, 1b: fifteen bytes), where before the filter a lone bit from B to Left read at the Right position. The parts sit on the middle board's rails side (a blue-banded resistor from column 27 to 25, a disc capacitor at column 23 to the GND rail, links across the board's gap), joined to U2 pin 2 by leads the eye cannot trace; the instrument settles the net."
     }
   },
   "rails": {
@@ -250,10 +250,10 @@
   "observations": [
     "RIG, SECOND POSE: the boards shifted right on the frame; the map re-read automatically (tools/board-overlay.py --read) and every view re-aimed; the rings sit on the holes out to column 50.",
     "The middle board is mapped (its rows read the other way up: a to e toward the right board, f to j toward its own rails, the pair below). The five-way housing at columns 9 to 13 is the power and reset breakout's, parked, joined to nothing (the user, 2026-09-15); a 2-by-4 black header stands at the board's left end (columns 58 to 60, rows f to h) and a 4-way header on its rail rows near columns 50 to 53, both with pin tips up.",
+    "The Q pairing is PROVEN 2026-09-15 23:00: the walk of every single bit through the 595 came back on D0 at its own position, so each grey line joins the 595 output to the 165 input the sheet says.",
     "The UNO now sits at the frame's top right on a blue screw-terminal shield, its leads running direct: a bundle (purple, blue, cream, red) down over the top rail to U3's rails side and on, a red to the +5V rail at column 5, and white, yellow and orange to the pad's housing on the middle board. The screw shield hides the header's pin labels, so which UNO pin each lead leaves is not readable on camera.",
     "The two-pin black header across the rail rows at column 27 is a probe point for metering the rail voltage (the user, 2026-09-15): its two pins are not joined to each other, and it is not the UNO's feed.",
     "Orientation settled: the notch and the pin-1 dot of U1, U2 and U3 all face the high-column end, as the map places them.",
-    "The six grey Q lines are one colour. The eye confirms where each end lands, not which end pairs with which; the bring-up's SPI loopback is what proves the pairing.",
     "Two yellow ceramic capacitors stand across the rails at columns 28 and 17; the plan puts one 100 nF beside each chip. The value is not readable on camera.",
     "A red link from the top GND rail row at column 12 runs down to the board's other rail pair: correct but red."
   ]

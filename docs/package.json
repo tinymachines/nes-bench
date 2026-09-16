@@ -2,7 +2,7 @@
   "org": "tinymachines",
   "project": "nes-bench",
   "docno": "TM-NESB-001",
-  "rev": "L",
+  "rev": "M",
   "drawn": "bisenbek",
   "page": "ansi-a",
   "title": "NES controller-port bridge, v1b",
@@ -165,6 +165,11 @@
       "L",
       "2026-09-15",
       "placements drawn: the clock filter and U2's decoupling; probe positions"
+    ],
+    [
+      "M",
+      "2026-09-15",
+      "the register walk reads right through the console; the filter and decoupling done"
     ]
   ]
 }

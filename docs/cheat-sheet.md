@@ -68,10 +68,10 @@ As wired 2026-09-15, each probe's landing given as a board column so it can be p
 
 | input | signal | probe on | why |
 |---|---|---|---|
-| CH1 | TRIG | R1 on the middle board: the resistor at column 49 row f, the green D3 lead's housing at 47 | the trigger: 2.5 V rising at latch T; the master clock's channel later, by turns |
-| CH2 | CON_OUT0 (latch) | U1 pin 1: right board column 34, the side toward U2 (rows f to j) | one pulse per poll, 3.6 us wide; the probe's lead broke 2026-09-15 and the channel is idle until it is replaced |
+| CH1 | TRIG | R1 on the middle board: the resistor in row a from column 9 (the green D3 lead's housing) to column 6 (the red lead to the scope) | the trigger: 2.5 V rising at latch T, 5.4 V for 874 us (MEASURED 2026-09-15); the master clock's channel later, by turns |
+| CH2 | CON_OUT0 (latch) | U1 pin 1: right board column 34, the side toward U2 (rows f to j) | one pulse per poll, 3.6 us wide, 60.06 a second; a new lead 2026-09-15 evening |
 | CH3 | composite video | the console's video out, through the splitter | the picture the poll lands in |
-| CH4 | CON_D0 | U2 pin 9: right board column 18, the rails side (rows a to e) | the byte the console reads back, pressed LOW |
+| CH4 | CON_D0 | U2 pin 9: right board column 18, the rails side (rows a to e) | the byte the console reads back, pressed LOW: high through the eight bits for 00, low for ff (MEASURED 2026-09-15 23:00, which is how the two probes were told apart) |
 | EXT TRIG | none | not on this scope | the DS1054Z has no external trigger input (MEASURED 2026-09-15: source EXT refused; the rear BNC is Trig Out) |
 
 ## U1: 74HCT04  at +5V
