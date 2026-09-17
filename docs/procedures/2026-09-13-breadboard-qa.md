@@ -610,3 +610,26 @@ while the relay's contact side is wired. The head daemon claims the same
 two pins with the same rest values (`headd.py`, Relays), so nothing
 changes state when it starts.
 
+
+## The front panel's harness, metered, 2026-09-17
+
+The user metered the five ways of J3 unpowered, with the front panel still
+wired in parallel: 1 brown and 2 red close with the power switch; 3 orange
+and 4 yellow with the reset button; 4 yellow and 5 white are the LED. No
+way is ground: the front panel is grounded by a pad and its metal housing.
+
+That moves both of the head's hands onto this harness. K1's contact goes
+across brown and red, in parallel with the power switch, so the adapter
+lead is not cut after all; the front switch stays off while the head runs
+the power and does it by hand while the relay rests open. OK1 goes across
+orange and yellow, in parallel with the button. A phototransistor has a
+polarity, so which of the two is the button's high side is still to be
+metered with the console on (orange against yellow, button released), and
+the sheets draw those two pins without a number until it is.
+
+Changed with it: sheet 3 and its right-angle sheet (J3 in place of the
+console's pads and the adapter), the bring-up's 6.2 and 6.3 wording and
+prompts, both cheat sheets' J3 table (a column for what each way is), and
+`bench-check.py --hands head`, which now closes K1 before it listens
+(`pinctrl`, so the level stays after the command exits) and puts GPIO27
+back as it found it.

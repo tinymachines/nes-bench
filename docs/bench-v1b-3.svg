@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1180.0 695.0" width="1180.0" height="695.0" role="img" aria-label="nes-bench bridge v1b: the UNO version, one supply, one port  (sheet 3 of 3: the head's hands, bring-up 6.2 and 6.3)">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1187.4 695.0" width="1187.4" height="695.0" role="img" aria-label="nes-bench bridge v1b: the UNO version, one supply, one port  (sheet 3 of 3: the head's hands, bring-up 6.2 and 6.3)">
 
   <style>
     text { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; fill: #1f2328; }
@@ -32,15 +32,15 @@
     .auth { font-size: 9px; fill: #b3261e; font-family: ui-sans-serif, system-ui, sans-serif; font-style: italic; }
   </style>
 
-<rect x="0" y="0" width="1180.0" height="695.0" fill="#ffffff"/>
+<rect x="0" y="0" width="1187.4" height="695.0" fill="#ffffff"/>
 <g class="sheet-heading" data-height="60">
 <text class="title" x="24" y="30">nes-bench bridge v1b: the UNO version, one supply, one port  (sheet 3 of 3: the head's hands, bring-up 6.2 and 6.3)</text>
 <text class="sub" x="24" y="46">reset and power from the Pi's header through two modules; the Pi's ground reaches the console through the UNO's USB lead only. Added 2026-09-15.</text>
 </g>
-<rect class="zone" x="22" y="66" width="1136.0" height="434.0" rx="6"/>
-<text class="sub" x="30" y="80" text-anchor="start">THE PI'S FOUR JUMPERS, THE OPTOCOUPLER ON THE RESET PADS, THE RELAY IN THE ADAPTER LEAD</text>
-<rect class="zone" x="22" y="524.0" width="1136.0" height="149.0" rx="6"/>
-<text class="sub" x="30" y="538.0" text-anchor="start">6.2 RESET AND 6.3 POWER: WHAT THE STEPS METER FIRST, AND THE ONE SAFETY RULE</text>
+<rect class="zone" x="22" y="66" width="1143.4" height="434.0" rx="6"/>
+<text class="sub" x="30" y="80" text-anchor="start">THE PI'S FOUR JUMPERS, THE OPTOCOUPLER ACROSS THE RESET BUTTON, THE RELAY ACROSS THE POWER SWITCH</text>
+<rect class="zone" x="22" y="524.0" width="1143.4" height="149.0" rx="6"/>
+<text class="sub" x="30" y="538.0" text-anchor="start">WHAT THE HARNESS IS, MEASURED 2026-09-17, AND WHAT IS STILL TO METER</text>
 <rect class="conn" x="48.0" y="92.0" width="170" height="206" rx="3"/>
 <text class="ref" x="54.0" y="106.0" text-anchor="start">PI</text>
 <text class="part" x="54.0" y="118.0" text-anchor="start">Raspberry Pi 4 Model B</text>
@@ -75,7 +75,7 @@
 <rect class="box" x="489.8" y="92.0" width="150" height="128" rx="3"/>
 <text class="ref" x="495.8" y="106.0" text-anchor="start">OK1</text>
 <text class="part" x="495.8" y="118.0" text-anchor="start">PC817 module</text>
-<text class="part" x="490.8" y="233.0" text-anchor="start">open collector across the reset pads</text>
+<text class="part" x="490.8" y="233.0" text-anchor="start">open collector across the reset button</text>
 <line class="lead" x1="463.8" y1="148.0" x2="489.8" y2="148.0"/>
 <text class="pin" x="494.8" y="151.5" text-anchor="start">INPUT +</text>
 <path class="wire" d="M463.8,148.0 l-6,-6 h-65.80000000000001 v12 h65.80000000000001 z"/>
@@ -85,12 +85,12 @@
 <line class="wg" x1="463.8" y1="174.0" x2="463.8" y2="182.0"/><line class="wg" x1="457.8" y1="182.0" x2="469.8" y2="182.0"/><line class="wg" x1="460.8" y1="185.0" x2="466.8" y2="185.0"/>
 <line class="lead" x1="639.8" y1="148.0" x2="665.8" y2="148.0"/>
 <text class="pin" x="634.8" y="151.5" text-anchor="end">OUT</text>
-<path class="wire" d="M665.8,148.0 l6,-6 h53.4 v12 h-53.4 z"/>
-<text class="net" x="674.8" y="151.5" text-anchor="start">RST_PAD</text>
+<path class="wire" d="M665.8,148.0 l6,-6 h47.2 v12 h-47.2 z"/>
+<text class="net" x="674.8" y="151.5" text-anchor="start">RST_HI</text>
 <line class="lead" x1="639.8" y1="174.0" x2="665.8" y2="174.0"/>
 <text class="pin" x="634.8" y="177.5" text-anchor="end">GND</text>
-<path class="wire" d="M665.8,174.0 l6,-6 h53.4 v12 h-53.4 z"/>
-<text class="net" x="674.8" y="177.5" text-anchor="start">RST_GND</text>
+<path class="wire" d="M665.8,174.0 l6,-6 h47.2 v12 h-47.2 z"/>
+<text class="net" x="674.8" y="177.5" text-anchor="start">RST_LO</text>
 <line class="lead" x1="639.8" y1="200.0" x2="665.8" y2="200.0"/>
 <text class="pin" x="634.8" y="203.5" text-anchor="end">VCC</text>
 <line class="lead" x1="662.8" y1="197.0" x2="668.8" y2="203.0"/><line class="lead" x1="662.8" y1="203.0" x2="668.8" y2="197.0"/>
@@ -110,62 +110,55 @@
 <path class="wire" d="M463.8,447.0 l-6,-6 h-41.0 v12 h41.0 z"/>
 <text class="net" x="454.8" y="450.5" text-anchor="end">PI_5V</text>
 <line class="lead" x1="639.8" y1="395.0" x2="665.8" y2="395.0"/>
-<text class="pin" x="634.8" y="398.5" text-anchor="end">NO</text>
-<path class="wire" d="M665.8,395.0 l6,-6 h47.2 v12 h-47.2 z"/>
-<text class="net" x="674.8" y="398.5" text-anchor="start">PWR_SW</text>
+<text class="pin" x="634.8" y="398.5" text-anchor="end">COM</text>
+<path class="wire" d="M665.8,395.0 l6,-6 h65.80000000000001 v12 h-65.80000000000001 z"/>
+<text class="net" x="674.8" y="398.5" text-anchor="start">PWR_BROWN</text>
 <line class="lead" x1="639.8" y1="421.0" x2="665.8" y2="421.0"/>
-<text class="pin" x="634.8" y="424.5" text-anchor="end">COM</text>
-<path class="wire" d="M665.8,421.0 l6,-6 h47.2 v12 h-47.2 z"/>
-<text class="net" x="674.8" y="424.5" text-anchor="start">PWR_IN</text>
+<text class="pin" x="634.8" y="424.5" text-anchor="end">NO</text>
+<path class="wire" d="M665.8,421.0 l6,-6 h53.4 v12 h-53.4 z"/>
+<text class="net" x="674.8" y="424.5" text-anchor="start">PWR_RED</text>
 <line class="lead" x1="639.8" y1="447.0" x2="665.8" y2="447.0"/>
 <text class="pin" x="634.8" y="450.5" text-anchor="end">NC</text>
 <line class="lead" x1="662.8" y1="444.0" x2="668.8" y2="450.0"/><line class="lead" x1="662.8" y1="450.0" x2="668.8" y2="444.0"/>
-<rect class="conn" x="844.6" y="92.0" width="200" height="154" rx="3"/>
-<text class="ref" x="850.6" y="106.0" text-anchor="start">CON</text>
-<text class="part" x="850.6" y="118.0" text-anchor="start">NES-001 (NES-CPU-10)</text>
-<text class="part" x="845.6" y="259.0" text-anchor="start">reset pads through J3, the 5 way breakout</text>
-<line class="lead" x1="818.6" y1="148.0" x2="844.6" y2="148.0"/>
-<text class="pin" x="849.6" y="151.5" text-anchor="start">reset pad, high</text>
-<path class="wire" d="M818.6,148.0 l-6,-6 h-53.4 v12 h53.4 z"/>
-<text class="net" x="809.6" y="151.5" text-anchor="end">RST_PAD</text>
-<line class="lead" x1="818.6" y1="174.0" x2="844.6" y2="174.0"/>
-<text class="pin" x="849.6" y="177.5" text-anchor="start">reset pad, GND</text>
-<path class="wire" d="M818.6,174.0 l-6,-6 h-53.4 v12 h53.4 z"/>
-<text class="net" x="809.6" y="177.5" text-anchor="end">RST_GND</text>
-<line class="lead" x1="818.6" y1="200.0" x2="844.6" y2="200.0"/>
-<text class="pin" x="849.6" y="203.5" text-anchor="start">DC jack, switched</text>
-<path class="wire" d="M818.6,200.0 l-6,-6 h-47.2 v12 h47.2 z"/>
-<text class="net" x="809.6" y="203.5" text-anchor="end">PWR_SW</text>
-<line class="lead" x1="818.6" y1="226.0" x2="844.6" y2="226.0"/>
-<text class="pin" x="849.6" y="229.5" text-anchor="start">DC jack, straight</text>
-<path class="wire" d="M818.6,226.0 l-6,-6 h-53.4 v12 h53.4 z"/>
-<text class="net" x="809.6" y="229.5" text-anchor="end">PWR_RET</text>
-<rect class="conn" x="844.6" y="339.0" width="200" height="102" rx="3"/>
-<text class="ref" x="850.6" y="353.0" text-anchor="start">PSU</text>
-<text class="part" x="850.6" y="365.0" text-anchor="start">the console's adapter (9 V)</text>
-<text class="part" x="845.6" y="454.0" text-anchor="start">the low-voltage cable only</text>
-<line class="lead" x1="1044.6" y1="395.0" x2="1070.6" y2="395.0"/>
-<text class="pin" x="1039.6" y="398.5" text-anchor="end">lead, cut</text>
-<path class="wire" d="M1070.6,395.0 l6,-6 h47.2 v12 h-47.2 z"/>
-<text class="net" x="1079.6" y="398.5" text-anchor="start">PWR_IN</text>
-<line class="lead" x1="1044.6" y1="421.0" x2="1070.6" y2="421.0"/>
-<text class="pin" x="1039.6" y="424.5" text-anchor="end">lead, whole</text>
-<path class="wire" d="M1070.6,421.0 l6,-6 h53.4 v12 h-53.4 z"/>
-<text class="net" x="1079.6" y="424.5" text-anchor="start">PWR_RET</text>
-<text class="note" x="48.0" y="561.0" text-anchor="start">J3, the power and reset breakout: five ways straight through, colour for colour with</text>
-<text class="note" x="48.0" y="574.0" text-anchor="start">the front panel's harness, 1 brown 2 red 3 orange 4 yellow 5 white, pin 1 at the back</text>
-<text class="note" x="48.0" y="587.0" text-anchor="start">(lab/06-breakout-map-power-reset.jpg). The reset pair is two of the five. Console on,</text>
-<text class="note" x="48.0" y="600.0" text-anchor="start">meter each way to the port's GND: the ground pad reads 0 V; the pulled-up pad reads</text>
-<text class="note" x="48.0" y="613.0" text-anchor="start">about 5 V and drops to 0 V while the reset button is held. Step 6.2 asks for both and</text>
-<text class="note" x="48.0" y="626.0" text-anchor="start">writes them in the lab log; nothing here guesses them. OK1 OUT lands on the pulled-up</text>
-<text class="note" x="48.0" y="639.0" text-anchor="start">way, OK1 GND on the ground way, VCC open. GPIO17 high holds the pad low for 100 ms:</text>
-<text class="note" x="48.0" y="652.0" text-anchor="start">the button, pressed by the head; the front panel's own button stays wired, in parallel.</text>
-<text class="note" x="547.8" y="561.0" text-anchor="start">The front panel's switch stays wired and latched ON; K1 is in series with it. Cut ONE conductor of</text>
-<text class="note" x="547.8" y="574.0" text-anchor="start">the adapter's low-voltage cable and put NO and COM in the cut; the other conductor</text>
-<text class="note" x="547.8" y="587.0" text-anchor="start">stays whole. The original adapter gives 9 V AC, a replacement often 9 V DC; the</text>
-<text class="note" x="547.8" y="600.0" text-anchor="start">contact takes either. GPIO27 low turns the relay on. NO is open with the Pi off or</text>
-<text class="note" x="547.8" y="613.0" text-anchor="start">rebooting, so the console's rest state is OFF, which is what the head wants.</text>
-<text class="note" x="547.8" y="626.0" text-anchor="start">Coil from the Pi's 5 V pin (position 2), about 80 mA; GND is position 6.</text>
-<text class="note" x="547.8" y="639.0" text-anchor="start">MAINS SAFETY: never the mains side, never both leads. Step 6.3 refuses to run</text>
-<text class="note" x="547.8" y="652.0" text-anchor="start">until the operator has said the contact is on the adapter side.</text>
+<rect class="conn" x="869.4000000000001" y="92.0" width="210" height="180" rx="3"/>
+<text class="ref" x="875.4000000000001" y="106.0" text-anchor="start">J3</text>
+<text class="part" x="875.4000000000001" y="118.0" text-anchor="start">front panel harness (breakout)</text>
+<text class="part" x="870.4000000000001" y="285.0" text-anchor="start">in parallel with the front panel's own wiring</text>
+<line class="lead" x1="843.4000000000001" y1="148.0" x2="869.4000000000001" y2="148.0"/>
+<text class="pin" x="874.4000000000001" y="151.5" text-anchor="start">1 brown, power</text>
+<text class="pinno" x="865.4000000000001" y="146.0" text-anchor="end">1</text>
+<path class="wire" d="M843.4000000000001,148.0 l-6,-6 h-65.80000000000001 v12 h65.80000000000001 z"/>
+<text class="net" x="834.4000000000001" y="151.5" text-anchor="end">PWR_BROWN</text>
+<line class="lead" x1="843.4000000000001" y1="174.0" x2="869.4000000000001" y2="174.0"/>
+<text class="pin" x="874.4000000000001" y="177.5" text-anchor="start">2 red, power</text>
+<text class="pinno" x="865.4000000000001" y="172.0" text-anchor="end">2</text>
+<path class="wire" d="M843.4000000000001,174.0 l-6,-6 h-53.4 v12 h53.4 z"/>
+<text class="net" x="834.4000000000001" y="177.5" text-anchor="end">PWR_RED</text>
+<line class="lead" x1="843.4000000000001" y1="200.0" x2="869.4000000000001" y2="200.0"/>
+<text class="pin" x="874.4000000000001" y="203.5" text-anchor="start">reset high: 3 or 4</text>
+<path class="wire" d="M843.4000000000001,200.0 l-6,-6 h-47.2 v12 h47.2 z"/>
+<text class="net" x="834.4000000000001" y="203.5" text-anchor="end">RST_HI</text>
+<line class="lead" x1="843.4000000000001" y1="226.0" x2="869.4000000000001" y2="226.0"/>
+<text class="pin" x="874.4000000000001" y="229.5" text-anchor="start">reset low: 3 or 4</text>
+<path class="wire" d="M843.4000000000001,226.0 l-6,-6 h-47.2 v12 h47.2 z"/>
+<text class="net" x="834.4000000000001" y="229.5" text-anchor="end">RST_LO</text>
+<line class="lead" x1="843.4000000000001" y1="252.0" x2="869.4000000000001" y2="252.0"/>
+<text class="pin" x="874.4000000000001" y="255.5" text-anchor="start">5 white, LED</text>
+<text class="pinno" x="865.4000000000001" y="250.0" text-anchor="end">5</text>
+<line class="lead" x1="840.4000000000001" y1="249.0" x2="846.4000000000001" y2="255.0"/><line class="lead" x1="840.4000000000001" y1="255.0" x2="846.4000000000001" y2="249.0"/>
+<text class="note" x="48.0" y="561.0" text-anchor="start">J3 is five ways straight through, colour for colour with the front panel's harness, pin 1 at</text>
+<text class="note" x="48.0" y="574.0" text-anchor="start">the back (lab/06-breakout-map-power-reset.jpg), tapped in parallel with the front panel.</text>
+<text class="note" x="48.0" y="587.0" text-anchor="start">Metered unpowered by the user: 1 brown and 2 red are the power switch; 3 orange and 4 yellow</text>
+<text class="note" x="48.0" y="600.0" text-anchor="start">the reset button; 4 yellow and 5 white the LED. No pin is ground: the front panel is grounded</text>
+<text class="note" x="48.0" y="613.0" text-anchor="start">by its pad and the metal housing. OK1 is a switch with a polarity, so the side of the reset</text>
+<text class="note" x="48.0" y="626.0" text-anchor="start">button that reads HIGHER takes OUT and the other takes GND. Console on, meter orange against</text>
+<text class="note" x="48.0" y="639.0" text-anchor="start">yellow with the button released: the positive one is the high side. Step 6.2 records it.</text>
+<text class="note" x="48.0" y="652.0" text-anchor="start">GPIO17 high closes OK1: the reset button, pressed by the head.</text>
+<text class="note" x="580.2" y="561.0" text-anchor="start">K1's contact is in parallel with the front panel's power switch: COM on brown, NO on red</text>
+<text class="note" x="580.2" y="574.0" text-anchor="start">(a contact has no polarity). Either closes the console's supply, so the front switch stays</text>
+<text class="note" x="580.2" y="587.0" text-anchor="start">OFF while the head runs the power, and does the power by hand while the relay rests open.</text>
+<text class="note" x="580.2" y="600.0" text-anchor="start">GPIO27 low closes K1; the Pi's boot config holds GPIO27 high, so the relay rests open from</text>
+<text class="note" x="580.2" y="613.0" text-anchor="start">power-up. Coil from the Pi's 5 V pin (position 2), about 80 mA; GND is position 6.</text>
+<text class="note" x="580.2" y="626.0" text-anchor="start">The pair carries the adapter's low voltage and the console's current, well inside the</text>
+<text class="note" x="580.2" y="639.0" text-anchor="start">contact's 10 A. MAINS SAFETY: nothing on this sheet is ever on the mains side.</text>
 </svg>

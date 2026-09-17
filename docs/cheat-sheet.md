@@ -27,15 +27,15 @@ Pin numbers are the ones moulded into this console's port housing and the signal
 
 ## The power and reset breakout
 
-Five ways straight through, colour for colour with the power module's harness (docs/lab/06-breakout-map-power-reset.jpg). What each way does is step 6.2's question: which pad is ground and which is pulled up.
+Five ways straight through, colour for colour with the front panel's harness (docs/lab/06-breakout-map-power-reset.jpg), metered 2026-09-17. No way is ground: the front panel is grounded by its pad and housing.
 
-| pin | NES harness | breakout lead |
-|---|---|---|
-| 1 | brown | brown |
-| 2 | red | red |
-| 3 | orange | orange |
-| 4 | yellow | yellow |
-| 5 | white | white |
+| pin | NES harness | breakout lead | what it is |
+|---|---|---|---|
+| 1 | brown | brown | power switch |
+| 2 | red | red | power switch |
+| 3 | orange | orange | reset button |
+| 4 | yellow | yellow | reset button and LED |
+| 5 | white | white | LED |
 
 ## The head's four jumpers
 

@@ -92,7 +92,7 @@ RAIL_COLOUR = {"+5V": "#d02b2b", "GND": "#1b64c8", "PI_5V": "#d02b2b"}
 # Sheet 3, the head's hands (bench-v1b-3.svg): the Pi's four jumpers,
 # the PC817 across the reset pads, the relay in the adapter lead. Left
 # to right as they sit: the Pi's pins on the T-cobbler, the two modules,
-# then the console and its adapter. The Pi's pins are keyed by header
+# then the front panel's harness. The Pi's pins are keyed by header
 # position, as the schematic keys them, and the number is printed beside
 # the stub. The modules' input sides face the Pi's rails (top edge), the
 # output sides face the console (bottom edge), which is also what keeps
@@ -107,12 +107,10 @@ ROW_HEAD = [
     ("K1", {"kind": "header", "label": "K1 relay module", "sub": "5 V coil, IN active low",
             "top": [(None, "VCC"), (None, "GND"), (None, "IN")],
             "bottom": [(None, "COM"), (None, "NO"), (None, "NC")]}),
-    ("CON", {"kind": "header", "label": "CON NES-001", "sub": "reset pads through J3; the DC jack", "label_at": "top",
-             "top": [],
-             "bottom": [(None, "reset pad, high"), (None, "reset pad, GND"),
-                        (None, "DC jack, switched"), (None, "DC jack, straight")]}),
-    ("PSU", {"kind": "header", "label": "PSU the adapter", "sub": "9 V, low-voltage cable only", "label_at": "top",
-             "top": [], "bottom": [(None, "lead, cut"), (None, "lead, whole")]}),
+    ("J3", {"kind": "header", "label": "J3 front panel", "sub": "the breakout, in parallel with the panel", "label_at": "top",
+            "top": [],
+            "bottom": [(1, "1 brown, power"), (2, "2 red, power"), (None, "reset high: 3 or 4"),
+                       (None, "reset low: 3 or 4"), (5, "5 white, LED")]}),
 ]
 
 # What differs between the two sheets: the netlist, the row, the rails,
@@ -126,7 +124,7 @@ SHEETS = {
                 built_title="Bridge v1b as built", rails_note="rails joined end to end, as on the board"),
     "head": dict(netlist="bench-v1b-head", row=ROW_HEAD, caps={}, rails=("PI_5V", "GND"), out="wiring-v1b-head",
                  status=None, aria="The head's hands wiring diagram",
-                 title="The head's hands: the Pi's jumpers, the PC817 on the reset pads, the relay in the adapter lead",
+                 title="The head's hands: the Pi's jumpers, the PC817 across reset, the relay across the power switch",
                  sub="Sheet 3 of the v1b schematic at right angles. The Pi's pins carry their header positions. Top edges "
                      "are the Pi's side, bottom edges the console's; the two never meet. Every wire is read out of the schematic.",
                  built_title="The head's hands as built",

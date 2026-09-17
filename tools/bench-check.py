@@ -31,13 +31,18 @@ in the next experiment's result.
             otherwise never goes quiet, then polls again. Manual: you
             hold the front panel's button for two seconds when asked.
             Head: the Pi holds GPIO17 high for two seconds through OK1,
-            which sits in parallel with that button.
+            which sits in parallel with that button. Both pins are set
+            with pinctrl, which leaves a level in place after it exits
+            (the boot config makes them outputs, GPIO27 high, GPIO17 low).
   power     with --hands: the console goes off and comes back. Manual:
-            you throw the front panel's switch off, count three, and on.
-            Head: the Pi drives GPIO27 high for three seconds and low
-            again, K1's input being active low; K1 sits in series with
-            that switch, so the switch stays on. The stream stops and
-            resumes, a gap of at least a second and a half.
+            you throw the front panel's switch off, count three, and on,
+            with the relay resting open. Head: the front switch stays
+            OFF; the Pi closes K1 before the run (GPIO27 low: the input
+            is active low), opens it for three seconds and closes it
+            again. K1 is in parallel with the front switch (J3 brown and
+            red), so either one powers the console. The stream stops and
+            resumes, a gap of at least a second and a half. The pin is
+            put back as it was found at the end.
 
   --hands manual and --hands head are the same two measurements with a
   different hand on the button, so a wiring that works by hand and not
@@ -253,6 +258,17 @@ def main():
                 check("scope", "FAIL", f"cannot connect: {e}")
                 sc = None
 
+    # the head's power: with the front switch off the console is dark until
+    # K1 closes, so --hands head closes it first and puts it back after
+    pi = a.pi or baddr.rsplit(":", 1)[0]
+    k1_was = None
+    if a.hands == "head":
+        r = subprocess.run(["ssh", "-o", "ConnectTimeout=8", "-o", "BatchMode=yes", pi,
+                            "pinctrl get 27; pinctrl set 27 op dl; sleep 4"], capture_output=True, text=True, timeout=40)
+        k1_was = "hi" if "| hi" in r.stdout else "lo" if "| lo" in r.stdout else None
+        result["k1_found"] = k1_was
+        print(f"  K1 closed from the Pi (GPIO27 was {k1_was}); waiting for the game")
+
     # polls: MODE PASS, the console's own polling through the bridge
     br.send("MODE PASS")
     br.send("RESET")
@@ -388,18 +404,17 @@ def main():
         else:
             br.send("MODE PASS")
             br.read(0.5)
-            pi = a.pi or baddr.rsplit(":", 1)[0]
             for name, lo, hi, manual, head, wait in (
                     ("reset", 1.0, 12.0, "press the console's RESET button and HOLD it for two full seconds",
-                     "from gpiozero import DigitalOutputDevice as D; import time; r = D(17, initial_value=False); time.sleep(3.0); r.on(); time.sleep(2.0); r.off(); time.sleep(0.5)", 15.0),
+                     "sleep 3; pinctrl set 17 op dh; sleep 2; pinctrl set 17 op dl", 15.0),
                     ("power", 1.5, 20.0, "throw the console's POWER switch off, count three, and back on",
-                     "from gpiozero import DigitalOutputDevice as D; import time; k = D(27, active_high=False, initial_value=True); time.sleep(3.0); k.off(); time.sleep(3.0); k.on(); time.sleep(0.5)", 30.0)):
+                     "sleep 3; pinctrl set 27 op dh; sleep 3; pinctrl set 27 op dl", 30.0)):
                 if a.hands == "manual":
                     print(f"\n  {name}: {manual}, any time in the next {wait:.0f} s (listening now)")
                     gap, resumed, n = poll_gap(br, wait)
                     how = "by hand"
                 else:
-                    proc = subprocess.Popen(["ssh", "-o", "ConnectTimeout=8", "-o", "BatchMode=yes", pi, "python3", "-c", repr(head)],
+                    proc = subprocess.Popen(["ssh", "-o", "ConnectTimeout=8", "-o", "BatchMode=yes", pi, head],
                                             stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
                     gap, resumed, n = poll_gap(br, wait)
                     _out, err = proc.communicate(timeout=30)
@@ -416,6 +431,10 @@ def main():
                 else:
                     check(name, "PASS", f"polls paused {gap:.2f} s {how} and resumed ({n} polls in {wait:.0f} s)")
     finally:
+        if k1_was is not None:
+            subprocess.run(["ssh", "-o", "ConnectTimeout=8", "-o", "BatchMode=yes", pi,
+                            f"pinctrl set 27 op d{'h' if k1_was == 'hi' else 'l'}"], capture_output=True, text=True, timeout=30)
+            print(f"  GPIO27 put back {k1_was} (relay {'open' if k1_was == 'hi' else 'closed'})")
         br.send("MODE PASS")
         br.send("RESET")
         br.read(0.3)

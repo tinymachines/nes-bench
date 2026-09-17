@@ -62,7 +62,7 @@ v1b sheet 3: the head's hands, reset and power from the Pi (bring-up 6.2 and 6.3
 
 | ref | part | on the sheet |
 |---|---|---|
-| OK1 | PC817 module | open collector across the reset pads |
+| OK1 | PC817 module | open collector across the reset button |
 | K1 | relay module, 5 V coil | opto input, active low |
 
 ## bench-v2b

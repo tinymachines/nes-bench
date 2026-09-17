@@ -115,9 +115,11 @@ of about 100 ms, so arrival times cannot see the 17 ms cadence). Manual
 means your hand on the front panel, the button held two seconds, the
 switch off for a count of three; head means the Pi's GPIO17 through OK1
 and GPIO27 through K1, the same two measurements. The front panel's own
-button stays wired in parallel with OK1 and its switch in series with
-K1, so a wiring that works by hand and not from the head shows as
-exactly that. The relay module's input is active low: the head daemon
+button stays wired in parallel with OK1 and its switch in parallel with
+K1 (J3 brown and red, metered 2026-09-17), so a wiring that works by hand
+and not from the head shows as exactly that. Manual runs with the relay
+resting open; head runs with the front switch off, and closes K1 before
+it listens. The relay module's input is active low: the head daemon
 drives it so (fixed 2026-09-16), and the Pi's GPIO27 rests as an input
 with a pull-down until something claims it, which is the relay ON. A
 `gpio=27=op,dh` line in the Pi's config.txt is the cure, to be set once

@@ -342,6 +342,11 @@ LEADS_WORDS = ", ".join(f"{c} {n}" for _p, n, c in LEADS)
 # own harness (same procedure, photograph 06-breakout-map-power-reset.jpg).
 # What each way DOES is step 6.2's question and is not written here.
 POWER_RESET_LEADS = [(1, "brown"), (2, "red"), (3, "orange"), (4, "yellow"), (5, "white")]
+# What each way IS, metered unpowered by the user 2026-09-17: 1 and 2 close
+# with the power switch, 3 and 4 with the reset button, 4 and 5 are the LED.
+# No way is ground (the front panel is grounded by its pad and housing).
+# Which of 3 and 4 is the reset button's HIGH side is step 6.2's question.
+POWER_RESET_ROLES = {1: "power switch", 2: "power switch", 3: "reset button", 4: "reset button and LED", 5: "LED"}
 
 # The ribbon from the UNO's digital header, read off the header in the
 # photographs of 2026-09-11 (docs/as-built-v1b.md). Nine wires on
@@ -450,12 +455,12 @@ STEPS = [
       "trigger_reaches_scope",
       photos=["06-trigger-cable.jpg"]),
     S("6.2", "The head's hands", "The reset optocoupler pulses the console",
-      [f"Console on. Find the reset button's two pads; meter which is ground and which is pulled up. The power and reset breakout is five ways straight through, colour for colour ({POWER_RESET_WORDS}); which way is which pad is what this step finds out.",
-       "PC817 module: OUT to the pulled-up pad, its GND to the ground pad, VCC unconnected, and the Pi's GPIO17 to INPUT + with INPUT - to the Pi's GND."],
+      [f"The breakout J3 is five ways straight through, colour for colour ({POWER_RESET_WORDS}); 3 orange and 4 yellow are the reset button (metered 2026-09-17). Console on, button released: meter orange against yellow. The positive one is the button's high side.",
+       "PC817 module: OUT to the high side, its GND to the other, VCC unconnected, and the Pi's GPIO17 to INPUT + with INPUT - to the Pi's GND. The front panel's button stays wired in parallel."],
       "reset_pulse",
       photos=["06-reset-pads.jpg", "06-breakout-map-power-reset.jpg"]),
     S("6.3", "The head's hands", "The power relay switches the console",
-      ["MAINS SAFETY: the contact goes in series with ONE lead of the low-voltage adapter cable, between the adapter and the console's DC jack. Never the mains side, and never both leads.",
+      ["The relay's COM and NO across J3's 1 brown and 2 red, the front panel's power switch (metered 2026-09-17), in parallel with it. The front switch stays OFF for this step. MAINS SAFETY: nothing here is ever on the mains side.",
        "Relay module VCC to the Pi's 5V pin, IN to GPIO27 (active low), GND to the Pi's GND."],
       "power_relay",
       photos=["06-relay-inline.jpg"]),
@@ -867,27 +872,27 @@ def check_trigger_reaches_scope(bench, step):
 
 
 def check_reset_pulse(bench, step):
-    say(f"  {DIM}Which reset pad is ground, and what does the other sit at?{OFF}")
-    gnd = ask("  which pad is ground (left/right/other, your words)")
-    v = ask_float("  the other pad's level with the console on", "V")
+    say(f"  {DIM}Console on, button released: meter orange (3) against yellow (4).{OFF}")
+    gnd = ask("  which of the two is the LOW side, orange or yellow")
+    v = ask_float("  the high side's level against the low side", "V")
     say(f"  {DIM}Now drive it. On the Pi: gpioset (or the head's RESET word).{OFF}")
     ok = ask_yes("  did the console reset when the pin was pulsed")
     d = {"ground_pad": gnd, "pulled_up_v": v, "console_reset": ok}
     if not ok:
-        return "fail", d, "the pulse did not reset the console: check OUT and GND are not swapped"
-    return "pass", d, f"the pulled-up pad sits at {v} V and a 100 ms pulse resets the console"
+        return "fail", d, "the pulse did not reset the console: check OUT is on the high side and GND on the low"
+    return "pass", d, f"the reset button's high side sits {v} V above its low side and the pulse resets the console"
 
 
 def check_power_relay(bench, step):
-    say(f"  {YELLOW}Confirm the contact is in the LOW-VOLTAGE adapter lead, not the mains.{OFF}")
-    if not ask_yes("  is the contact on the adapter's output side, in one lead only"):
-        return "fail", {"mains_safe": False}, "refused: the relay must not be in the mains lead"
+    say(f"  {YELLOW}Confirm the contact is across J3's brown and red, the front panel's power switch, and nowhere near the mains.{OFF}")
+    if not ask_yes("  is the contact across brown and red, with the front switch OFF"):
+        return "fail", {"mains_safe": False}, "refused: the contact must be across the power switch pair, the switch off"
     on = ask_yes("  does the console power up when the relay is driven on")
     off = ask_yes("  and go dark when it is driven off")
     d = {"mains_safe": True, "powers_on": on, "powers_off": off}
     if not (on and off):
         return "fail", d, "the relay does not switch the console cleanly"
-    return "pass", d, "the relay switches the console on and off, in the adapter lead"
+    return "pass", d, "the relay switches the console on and off, across the front panel's power switch"
 
 
 CHECKS = {k[6:]: v for k, v in list(globals().items()) if k.startswith("check_")}

@@ -256,12 +256,12 @@ def head_pinmap(sheet="bench-v1b-head"):
             "own numbering, odd on the inside row; the far end is read off sheet 3. No wire from "
             "here to the console: the Pi's ground reaches it through the UNO's USB cable only.",
             ["Pi pin", "pos.", "to", "role"], hrows)
-    prows = [[str(p), c, c] for p, c in bu.POWER_RESET_LEADS]
+    prows = [[str(p), c, c, bu.POWER_RESET_ROLES[p]] for p, c in bu.POWER_RESET_LEADS]
     pwr = ("The power and reset breakout, J3",
            "Five ways straight through, colour for colour with the front panel's harness, pin 1 at "
-           "the back (lab/06-breakout-map-power-reset.jpg). Two are the reset pair: step 6.2 meters "
-           "which, and which of the two is ground, and logs both.",
-           ["pin", "NES harness", "breakout lead"], prows)
+           "the back, tapped in parallel with the panel. What each way is was metered 2026-09-17; "
+           "no way is ground. Which of orange and yellow is the reset button's high side is step 6.2's.",
+           ["pin", "NES harness", "breakout lead", "what it is"], prows)
     wrows = []
     for net in sorted(nets, key=lambda k: (k in nl.RAILS, k)):
         ends = [end_name(n) for n in nets[net]]
@@ -269,9 +269,9 @@ def head_pinmap(sheet="bench-v1b-head"):
             ends.append(nl.OFFSHEET[net])     # a cable off the sheet, named by where it goes
         wrows.append([net, ends[0], "; ".join(ends[1:])])
     wiring = ("Every wire on sheet 3",
-              "One row per net, read off the schematic. RST_PAD and RST_GND land on the two ways of J3 "
-              "step 6.2 measures. PWR_IN and PWR_SW are the halves of the one cut adapter conductor, "
-              "PWR_RET the whole one: never the mains side, never both.",
+              "One row per net, read off the schematic. RST_HI and RST_LO are orange and yellow, the "
+              "reset button, in whichever order step 6.2 meters. PWR_BROWN and PWR_RED put the relay "
+              "across the front panel's power switch, which stays off while the head runs the power.",
               ["net", "from", "to"], wrows)
     return [wiring, head, pwr]
 
@@ -300,12 +300,12 @@ def pinmap(sheet="bench-v1b"):
            f"out of the console; the pad half of the cut carries the same five colours. "
            f"Use the lead, not the colour rule.",
            ["pin", "signal", "NES harness", "breakout lead", "on the bridge"], rows)
-    prows = [[str(p), c, c] for p, c in bu.POWER_RESET_LEADS]
+    prows = [[str(p), c, c, bu.POWER_RESET_ROLES[p]] for p, c in bu.POWER_RESET_LEADS]
     pwr = ("The power and reset breakout",
-           "Five ways straight through, colour for colour with the power module's harness "
-           "(docs/lab/06-breakout-map-power-reset.jpg). What each way does is step 6.2's "
-           "question: which pad is ground and which is pulled up.",
-           ["pin", "NES harness", "breakout lead"], prows)
+           "Five ways straight through, colour for colour with the front panel's harness "
+           "(docs/lab/06-breakout-map-power-reset.jpg), metered 2026-09-17. No way is ground: "
+           "the front panel is grounded by its pad and housing.",
+           ["pin", "NES harness", "breakout lead", "what it is"], prows)
     # The UNO ribbon: colour per pin from the bring-up tool's table, the
     # net and its far end from the schematic.
     uno = {n["pinname"].split()[0]: n for n in nodes if n["ref"] == "A1"}

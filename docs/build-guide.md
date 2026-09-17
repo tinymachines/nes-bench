@@ -281,8 +281,8 @@ Photographs:
 
 ### 6.2  The reset optocoupler pulses the console
 
-- Console on. Find the reset button's two pads; meter which is ground and which is pulled up. The power and reset breakout is five ways straight through, colour for colour (1 brown, 2 red, 3 orange, 4 yellow, 5 white); which way is which pad is what this step finds out.
-- PC817 module: OUT to the pulled-up pad, its GND to the ground pad, VCC unconnected, and the Pi's GPIO17 to INPUT + with INPUT - to the Pi's GND.
+- The breakout J3 is five ways straight through, colour for colour (1 brown, 2 red, 3 orange, 4 yellow, 5 white); 3 orange and 4 yellow are the reset button (metered 2026-09-17). Console on, button released: meter orange against yellow. The positive one is the button's high side.
+- PC817 module: OUT to the high side, its GND to the other, VCC unconnected, and the Pi's GPIO17 to INPUT + with INPUT - to the Pi's GND. The front panel's button stays wired in parallel.
 
 Then it records which reset pad is ground and checks the pulse resets the console.
 
@@ -293,7 +293,7 @@ Photographs:
 
 ### 6.3  The power relay switches the console
 
-- MAINS SAFETY: the contact goes in series with ONE lead of the low-voltage adapter cable, between the adapter and the console's DC jack. Never the mains side, and never both leads.
+- The relay's COM and NO across J3's 1 brown and 2 red, the front panel's power switch (metered 2026-09-17), in parallel with it. The front switch stays OFF for this step. MAINS SAFETY: nothing here is ever on the mains side.
 - Relay module VCC to the Pi's 5V pin, IN to GPIO27 (active low), GND to the Pi's GND.
 
 Then it refuses unless the contact is on the adapter side, then checks it switches.

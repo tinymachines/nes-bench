@@ -66,7 +66,7 @@ UNITS = {
     "pin7_v": ("port pin 7, the +5V rail", "V"), "pin3_v": ("port pin 3, OUT0 idle", "V"),
     "pin2_v": ("port pin 2, CLK idle", "V"), "pin4_v": ("port pin 4, D0 idle", "V"),
     "qa_v": ("595 QA, not pressed", "V"), "qd_v": ("595 QD, pressed", "V"),
-    "pulled_up_v": ("the reset pad, pulled up", "V"), "eight_fraction": ("polls with eight clocks", ""),
+    "pulled_up_v": ("the reset button, high side over low", "V"), "eight_fraction": ("polls with eight clocks", ""),
     "latch_high_cycles": ("latch high, in 2A03 cycles", ""), "clock_period_cycles": ("between clocks, in 2A03 cycles", ""),
 }
 

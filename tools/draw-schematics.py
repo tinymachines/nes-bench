@@ -579,7 +579,7 @@ def _v1b_body_3(sh):
     and the modules go to the console. The Pi's pin numbers are its
     header positions, the same ones the cheat sheet's jumper table
     carries, and check-sheets holds the two together."""
-    band = "THE PI'S FOUR JUMPERS, THE OPTOCOUPLER ON THE RESET PADS, THE RELAY IN THE ADAPTER LEAD"
+    band = "THE PI'S FOUR JUMPERS, THE OPTOCOUPLER ACROSS THE RESET BUTTON, THE RELAY ACROSS THE POWER SWITCH"
     x, y = sh.slot(0, 0, label=band)
     sh.chip(x, y, 170, "PI", "Raspberry Pi 4 Model B", [], [
         (11, "GPIO17", "RST_DRIVE"), (13, "GPIO27", "PWR_DRIVE"), (2, "5V", "PI_5V"), (6, "GND", "GND"),
@@ -587,40 +587,35 @@ def _v1b_body_3(sh):
         conn=True, extra="the head: headd.py. Pin numbers are header positions")
     x, y = sh.slot(0, 1, 0)
     sh.chip(x, y, 150, "OK1", "PC817 module", [(None, "INPUT +", "RST_DRIVE"), (None, "INPUT -", "GND")],
-            [(None, "OUT", "RST_PAD"), (None, "GND", "RST_GND"), (None, "VCC", "NC")],
-            extra="open collector across the reset pads")
+            [(None, "OUT", "RST_HI"), (None, "GND", "RST_LO"), (None, "VCC", "NC")],
+            extra="open collector across the reset button")
     x, y = sh.slot(0, 1, 1)
     sh.chip(x, y, 150, "K1", "relay module, 5 V coil", [(None, "IN", "PWR_DRIVE"), (None, "GND", "GND"), (None, "VCC", "PI_5V")],
-            [(None, "NO", "PWR_SW"), (None, "COM", "PWR_IN"), (None, "NC", "NC")], extra="opto input, active low")
+            [(None, "COM", "PWR_BROWN"), (None, "NO", "PWR_RED"), (None, "NC", "NC")], extra="opto input, active low")
     x, y = sh.slot(0, 2, 0)
-    sh.chip(x, y, 200, "CON", "NES-001 (NES-CPU-10)", [
-        (None, "reset pad, high", "RST_PAD"), (None, "reset pad, GND", "RST_GND"),
-        (None, "DC jack, switched", "PWR_SW"), (None, "DC jack, straight", "PWR_RET")], [],
-        conn=True, extra="reset pads through J3, the 5 way breakout")
-    x, y = sh.slot(0, 2, 1)
-    sh.chip(x, y, 200, "PSU", "the console's adapter (9 V)", [], [
-        (None, "lead, cut", "PWR_IN"), (None, "lead, whole", "PWR_RET")],
-        conn=True, extra="the low-voltage cable only")
-    band2 = "6.2 RESET AND 6.3 POWER: WHAT THE STEPS METER FIRST, AND THE ONE SAFETY RULE"
+    sh.chip(x, y, 210, "J3", "front panel harness (breakout)", [
+        (1, "1 brown, power", "PWR_BROWN"), (2, "2 red, power", "PWR_RED"),
+        (None, "reset high: 3 or 4", "RST_HI"), (None, "reset low: 3 or 4", "RST_LO"),
+        (5, "5 white, LED", "NC")], [],
+        conn=True, extra="in parallel with the front panel's own wiring")
+    band2 = "WHAT THE HARNESS IS, MEASURED 2026-09-17, AND WHAT IS STILL TO METER"
     sh.note(*sh.slot(1, 0, label=band2), [
-        "J3, the power and reset breakout: five ways straight through, colour for colour with",
-        "the front panel's harness, 1 brown 2 red 3 orange 4 yellow 5 white, pin 1 at the back",
-        "(lab/06-breakout-map-power-reset.jpg). The reset pair is two of the five. Console on,",
-        "meter each way to the port's GND: the ground pad reads 0 V; the pulled-up pad reads",
-        "about 5 V and drops to 0 V while the reset button is held. Step 6.2 asks for both and",
-        "writes them in the lab log; nothing here guesses them. OK1 OUT lands on the pulled-up",
-        "way, OK1 GND on the ground way, VCC open. GPIO17 high holds the pad low for 100 ms:",
-        "the button, pressed by the head; the front panel's own button stays wired, in parallel."])
+        "J3 is five ways straight through, colour for colour with the front panel's harness, pin 1 at",
+        "the back (lab/06-breakout-map-power-reset.jpg), tapped in parallel with the front panel.",
+        "Metered unpowered by the user: 1 brown and 2 red are the power switch; 3 orange and 4 yellow",
+        "the reset button; 4 yellow and 5 white the LED. No pin is ground: the front panel is grounded",
+        "by its pad and the metal housing. OK1 is a switch with a polarity, so the side of the reset",
+        "button that reads HIGHER takes OUT and the other takes GND. Console on, meter orange against",
+        "yellow with the button released: the positive one is the high side. Step 6.2 records it.",
+        "GPIO17 high closes OK1: the reset button, pressed by the head."])
     sh.note(*sh.slot(1, 1), [
-        "The front panel's switch stays wired and latched ON; K1 is in series with it. Cut ONE conductor of",
-        "the adapter's low-voltage cable and put NO and COM in the cut; the other conductor",
-        "stays whole. The original adapter gives 9 V AC, a replacement often 9 V DC; the",
-        "contact takes either. GPIO27 low turns the relay on. NO is open with the Pi off or",
-        "rebooting, so the console's rest state is OFF, which is what the head wants.",
-        "Coil from the Pi's 5 V pin (position 2), about 80 mA; GND is position 6.",
-        "MAINS SAFETY: never the mains side, never both leads. Step 6.3 refuses to run",
-        "until the operator has said the contact is on the adapter side."])
-
+        "K1's contact is in parallel with the front panel's power switch: COM on brown, NO on red",
+        "(a contact has no polarity). Either closes the console's supply, so the front switch stays",
+        "OFF while the head runs the power, and does the power by hand while the relay rests open.",
+        "GPIO27 low closes K1; the Pi's boot config holds GPIO27 high, so the relay rests open from",
+        "power-up. Coil from the Pi's 5 V pin (position 2), about 80 mA; GND is position 6.",
+        "The pair carries the adapter's low voltage and the console's current, well inside the",
+        "contact's 10 A. MAINS SAFETY: nothing on this sheet is ever on the mains side."])
 
 def sheet_v1b():
     """One schematic on two landscape letter sheets, and a third for

@@ -210,6 +210,7 @@ def sheet_pinmap(p, cfg, spec):
 
     def widths_for(headers):
         if headers[0] == "UNO pin": return [0.08, 0.10, 0.14, 0.68]
+        if headers[-1] == "what it is": return [0.10, 0.22, 0.22, 0.46]
         return {5: [0.06, 0.10, 0.14, 0.14, 0.56], 3: [0.20, 0.40, 0.40], 4: [0.14, 0.12, 0.37, 0.37]}[len(headers)]
 
     def height(k):
