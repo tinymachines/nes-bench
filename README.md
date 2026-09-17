@@ -43,6 +43,11 @@ register's job, as it is in the pad.
   the console adds (pad, stack, PPU, picture). T0 to T4, before the code.
 - `docs/open-items.md`: what was seen and not closed, dated, with what
   closes each; struck through when done.
+- `docs/exercise.md` with `exercise-stack.svg`: the v1 bench exercised: the
+  two stacks as one logical diagram with every flow typed, the dialect layer
+  by layer, a regime of six steps each with its gate, and the three
+  programmes on top (the model's knobs, games learned from the pad, the
+  x-ray behind an encyclopedia of code patterns).
 - `docs/closed-cycle-plan.md`: one turn of the whole loop, the
   cartridge to the first disagreeing frame, mapped onto what is built
   and what is not, and the order it closes in (C0 to C3 over B0 to B3).

@@ -996,6 +996,304 @@ def sheet_pad():
     sh.done(OUT / "pad-adapter.svg")
 
 
+# ------------------------------------------------------------ the two stacks
+# Flow types on the exercise sheet, each a colour and a stroke. What an
+# arrow carries decides its class; the direction is the way the thing
+# actually moves. Control never flows up out of a comparator, and a
+# record never flows down into the console: a reader who sees a solid
+# black arrow pointing at the part knows a command is what moves there.
+FLOWS = {
+    "cmd":  ("#1f2328", "1.4", "none",  "command: a script word, a head op, a bridge line, a GPIO level, SCPI"),
+    "stim": ("#0a5b9c", "1.8", "none",  "stimulus: the pad's byte at a latch index, the console's only input"),
+    "sig":  ("#b3261e", "1.8", "none",  "signal: analogue video and audio; the part's side only"),
+    "rec":  ("#1a7f37", "1.4", "6 3",   "record: logs, captures, traces, verdicts; evidence, and it flows up, never down"),
+    "pic":  ("#6f42c1", "1.4", "none",  "picture: a frame on its way to a score or a window"),
+    "orc":  ("#a35c00", "1.3", "2 3",   "oracle: held to, every half-cycle; a comparison, not a flow"),
+    "new":  ("#57606a", "1.2", "4 4",   "proposed: drawn so the words exist, built by nothing yet"),
+}
+
+
+def sheet_exercise():
+    W, H = 1600, 1224
+    sh = Sheet(W, H, "nes-bench: the two stacks, and what flows between them",
+               "the physical stack and the virtual one under one script; every arrow typed by what it carries and pointed the way it moves. Dashed grey: proposed, not built.")
+    sh.add("<style>" + " ".join(
+        f".f-{k} {{ stroke: {c}; stroke-width: {w}; fill: none; stroke-dasharray: {d}; }} .t-{k} {{ fill: {c}; }}"
+        for k, (c, w, d, _) in FLOWS.items())
+        + " .fl { font-size: 9px; font-family: ui-sans-serif, system-ui, sans-serif; font-weight: 600; }"
+        + " .new { fill: #ffffff; stroke: #57606a; stroke-width: 1.2; stroke-dasharray: 4 4; }"
+        + " .gate { fill: #eaf7ee; stroke: #1a7f37; stroke-width: 1.3; }"
+        + "</style>")
+    sh.add("<defs>" + "".join(
+        f'<marker id="m-{k}" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto">'
+        f'<path d="M0,0 L10,5 L0,10 z" fill="{c}"/></marker>'
+        for k, (c, _, _, _) in FLOWS.items()) + "</defs>")
+
+    def box(x, y, w, h, ref, part, lines, cls="box"):
+        # A line that would run out through the wall is a bug in the
+        # drawing, not a smaller font: refuse it here.
+        for l in lines:
+            assert CHARW * len(l) <= w - 12, f"{ref}: '{l}' needs {CHARW * len(l):.0f} px in a {w} px box"
+        assert PART_CHARW * len(part) <= w - 12, f"{ref}: part line '{part}' does not fit"
+        assert 43 + len(lines) * 12 <= h + 2, f"{ref}: {len(lines)} lines do not fit {h} px"
+        sh.add(f'<rect class="{cls}" x="{x}" y="{y}" width="{w}" height="{h}" rx="4"/>')
+        sh.text(x + 8, y + 15, ref, "ref")
+        sh.text(x + 8, y + 27, part, "part")
+        for i, l in enumerate(lines):
+            sh.text(x + 8, y + 43 + i * 12, l, "pin")
+        return (x, y, w, h)
+
+    def side(b, s, f=0.5):
+        x, y, w, h = b
+        return {"L": (x, y + h * f), "R": (x + w, y + h * f), "T": (x + w * f, y), "B": (x + w * f, y + h)}[s]
+
+    def flow(kind, pts, label=None, lx=None, ly=None, anchor="middle", head=True):
+        d = "M" + " L".join(f"{x:.0f},{y:.0f}" for x, y in pts)
+        mk = f' marker-end="url(#m-{kind})"' if head else ""
+        sh.add(f'<path class="f-{kind}" d="{d}"{mk}/>')
+        if label:
+            if lx is None:
+                (x1, y1), (x2, y2) = pts[0], pts[-1]
+                lx, ly = (x1 + x2) / 2, (y1 + y2) / 2 - 4
+            sh.text(lx, ly, label, f"fl t-{kind}", anchor)
+
+    # ------------------------------------------------ band A: the driver
+    sh.zone(20, 66, 1560, 196, "THE DRIVER: one script, read by both sides; the regime above it; the regression beside it")
+    a1 = box(40, 96, 240, 130, "E", "the exercise (this notebook)", [
+        "a step = a script + a model run",
+        "         + a comparator + a gate",
+        "E0 regression .. E5 unattended,",
+        "each adding a word to the dialect",
+        "MUTATE: every gate must go red",
+        "on the sabotage it names"])
+    a2 = box(350, 96, 250, 130, "S", "the script, docs/script.md", [
+        "RESET   POWER ON|OFF",
+        "MODE PASS|INJECT   SET hh",
+        "AT n hh   TRIG n   WAIT n | s S",
+        "ARM name ch scale ..  CAPTURE",
+        "bytes by latch index: the one",
+        "history both sides can hold"])
+    a3 = box(670, 96, 240, 130, "W", "tools/bench.py, the workstation", [
+        "UDP JSON to the head:",
+        "  status run abort bridge runs",
+        "HTTP from the head: runs/<stamp>/",
+        "  bridge.log, captures, .toml",
+        "runs the model on the same file",
+        "and calls the comparators"])
+    a4 = box(980, 96, 270, 130, "M", "the model's runners (nes-console)", [
+        "pad-log     the L lines the part logs",
+        "trace       .pins .stim .events .overlay",
+        "capture-score   the frame at latch T",
+        "run-rom, picture-bench, cal-screens",
+        "the same SET and AT words, honoured",
+        "by latch index; the head's are skipped"])
+    a5 = box(1320, 96, 240, 130, "R", "the regression, after every change", [
+        "tools/rig-check.py: light, still,",
+        "  boards, side eyes (the cameras)",
+        "tools/bench-check.py: bridge, scope,",
+        "  polls, trigger, walk, reset, power",
+        "green before a step is believed;",
+        "baseline: docs/rig-baseline.json"])
+    flow("cmd", [side(a1, "R"), side(a2, "L")], "one script", 315, 157)
+    flow("cmd", [side(a2, "R"), side(a3, "L")], "to the part", 635, 157)
+    flow("cmd", [side(a2, "T", 0.7), (side(a2, "T", 0.7)[0], 88), (side(a4, "T", 0.3)[0], 88), side(a4, "T", 0.3)],
+         "the same words, to the model", 800, 85)
+    flow("rec", [side(a5, "L"), side(a4, "R")], "PASS or FAIL", 1285, 157)
+    sh.text(1285, 173, "by name", "fl t-rec", "middle")
+
+    # ------------------------------------------------ band B: the part
+    sh.zone(20, 300, 780, 560, "THE PART")
+    sh.note(40, 800, ["An NES-001, unmodified. The bench holds its controller port (the bridge), its front panel (the hands) and its",
+                      "outputs (the scope, the grabber, the sound card); the eyes watch the bench itself. Nothing here is on the mains side."])
+    b_head = box(40, 330, 250, 160, "PI", "Raspberry Pi 4, the head (headd.py)", [
+        "serial bridge on TCP 6545",
+        "GPIO17 reset, GPIO27 power",
+        "SCPI to the scope on the LAN",
+        "V4L2 grabber, ALSA sound card",
+        "runs/<stamp>/: bridge.log, the",
+        "captures (.u8 + .toml), frames, wav",
+        "MODE PASS rests; hands rest open",
+        "(GPIO27 high powers the console)"])
+    b_bridge = box(380, 330, 220, 120, "A1", "Arduino UNO, the bridge v1b", [
+        "74HC165 holds the byte, 74HCT04",
+        "inverts OUT0 into /PL, 74HC595",
+        "MODE PASS: the pad's bits",
+        "MODE INJECT: SET's byte or AT's",
+        "counts latches and clocks; TRIG",
+        "at latch n; one L line per latch"])
+    b_pad = box(640, 330, 150, 70, "PAD", "original controller", [
+        "the hand, in PASS",
+        "4021 in the pad"])
+    b_hands = box(40, 524, 250, 90, "OK1 K1", "the hands, on the front panel harness", [
+        "PC817 across the reset button",
+        "relay contact across the power",
+        "switch (J3 brown and red), in",
+        "parallel with the panel's own"])
+    b_con = box(380, 494, 220, 130, "NES", "NES-001, the part", [
+        "2A03: CPU core, APU, the DMA",
+        "2C02: the picture chip",
+        "the glue, the mapper on the cart",
+        "the cartridge: the dump's CRC",
+        "names it, not the label",
+        "reads $4016: latch, eight clocks"])
+    b_scope = box(640, 444, 150, 110, "SCOPE", "Rigol DS1054Z", [
+        "CH1 TRIG, CH2 latch",
+        "CH3 video, CH4 D0",
+        "single shot at a",
+        "known latch index",
+        "12 M points, .u8"])
+    b_grab = box(640, 584, 150, 100, "EYE", "Roxio grabber + C-Media", [
+        "720 by 480 frames,",
+        "the whole run, on",
+        "the Pi's clock",
+        "audio, the same"])
+    b_eyes = box(40, 644, 250, 90, "BRIO", "the board's eyes (three cameras)", [
+        "the bench's state, not the picture:",
+        "the hole map, the rings, the side",
+        "views; tools/eye.py, rig-check.py",
+        "frames to captures/ on the workstation"])
+    b_reader = box(380, 664, 220, 80, "OSCR", "the cartridge reader", [
+        "the dump: iNES file + CRC",
+        "the same bytes on both sides",
+        "is then a checkable fact"])
+    # the driver's two arrows across the band boundary
+    flow("cmd", [side(a3, "B", 0.5), (side(a3, "B", 0.5)[0], 276), (165, 276), side(b_head, "T", 0.5)], "the run: script lines", 600, 272)
+    flow("rec", [side(b_head, "T", 0.85), (side(b_head, "T", 0.85)[0], 292), (side(a3, "B", 0.85)[0], 292), side(a3, "B", 0.85)],
+         "runs/<stamp>/ back to the workstation", 300, 289, "start")
+    # the head and the bridge
+    flow("cmd", [(290, 362), (380, 362)], "bridge lines", 335, 358)
+    flow("rec", [(380, 392), (290, 392)], "L n hh clocks", 335, 403)
+    flow("stim", [(640, 350), (600, 350)], "bits", 620, 344)
+    flow("stim", [side(b_bridge, "B", 0.3), side(b_con, "T", 0.3)], "D0: the byte", 440, 466, "end")
+    flow("cmd", [side(b_con, "T", 0.7), side(b_bridge, "B", 0.7)], "OUT0, CLK x8", 540, 466, "start")
+    # the hands
+    flow("cmd", [side(b_head, "B", 0.5), side(b_hands, "T", 0.5)], "GPIO17, GPIO27", 172, 511, "start")
+    flow("cmd", [side(b_hands, "R", 0.5), side(b_con, "L", 0.6)], "reset, power", 335, 565)
+    # the outputs
+    flow("sig", [side(b_con, "R", 0.2), side(b_scope, "L", 0.85)], "video", 604, 514, "start")
+    flow("cmd", [side(b_bridge, "R", 0.55), (622, side(b_bridge, "R", 0.55)[1]), (622, 460), side(b_scope, "L", 0.15)], "TRIG at n", 626, 442, "start")
+    flow("cmd", [side(b_head, "R", 0.55), (335, side(b_head, "R", 0.55)[1]), (335, 472), (612, 472), (612, 499), side(b_scope, "L", 0.5)],
+         "ARM, single shot", 400, 484, "start")
+    flow("sig", [side(b_con, "R", 0.9), (622, side(b_con, "R", 0.9)[1]), (622, 634), side(b_grab, "L", 0.5)], "video, audio", 596, 640, "end")
+    flow("cmd", [side(b_reader, "T", 0.5), side(b_con, "B", 0.5)], "the cartridge, in", 498, 658, "start")
+    # the records, around the outside and into the head's left side
+    flow("rec", [side(b_scope, "R", 0.5), (796, side(b_scope, "R", 0.5)[1]), (796, 760), (30, 760), (30, 410), side(b_head, "L", 0.5)],
+         "records: the scope's .u8, the grabber's frames and wav; the eyes' frames go to the workstation's captures/", 200, 756, "start")
+    flow("rec", [side(b_grab, "R", 0.5), (796, side(b_grab, "R", 0.5)[1])], head=False)
+    flow("rec", [side(b_eyes, "B", 0.5), (side(b_eyes, "B", 0.5)[0], 760)], head=False)
+    flow("rec", [side(b_reader, "R", 0.5), (812, side(b_reader, "R", 0.5)[1]), (812, 365), (840, 365)], "the dump, one CRC", 700, 700)
+
+    # ------------------------------------------------ band C: the model
+    sh.zone(820, 300, 760, 560, "THE MODEL")
+    sh.note(1020, 800, ["Rust crates: the same bytes and the same",
+                        "schedule by latch, at nineteen times real",
+                        "time; every rung held to its die."])
+    c_rom = box(840, 330, 150, 70, "ROM", "the dump, as a file", [
+        "iNES, mapper 66",
+        "the reader's CRC"])
+    c_knobs = box(1080, 330, 480, 92, "K", "the knobs, externalised (proposed: one file per run)", [
+        "alignment cpu_phase ppu_phase (measured 4, 3)   decimal adjust off (2A03)",
+        "stack pointer at h=0 (measured)   RDY_RISE_SHIFT (experiment)   reset hold",
+        "CrtParams (authored)   differential phase (to fit)   power-on RAM (to fit)",
+        "every knob named measured, authored or fitted, with the run that set it"], "new")
+    c_con = box(840, 434, 330, 150, "NES", "nes-console: the console as code", [
+        "2A03 rung: v6502-micro core (adjust off,",
+        "  S seeded) + the APU as measured tables",
+        "2C02 fast: dot by dot on a measured schedule",
+        "nes-glue: the mainboard, the controller",
+        "  (set_pad at latch n), the mapper",
+        "Alignment { cpu_phase, ppu_phase }",
+        "run_frames, master_half_step, cpu_trace"])
+    c_ntsc = box(1210, 434, 350, 150, "CRT", "ntsc-crt: the signal path", [
+        "encoder (ntsc-source-nes): dots to",
+        "  composite, the burst, the palette phase",
+        "decoder: notch and comb, blargg checked",
+        "the television's stages: beam, scanlines,",
+        "  persistence, mask, geometry (CrtParams)",
+        "the same decoder reads the scope's .u8:",
+        "  one reader for both sides"])
+    c_rec = box(840, 624, 330, 104, "RUN", "the run as files", [
+        ".pins .stim: the CPU at its pins, the",
+        "  pin contract's own text",
+        ".events.json / .overlay: latches, reads,",
+        "  PPU writes, mapper writes, NMI edges",
+        "L lines, frames (.ppm), sound (f32)"])
+    c_orc = box(1210, 624, 350, 104, "ORACLE", "the switch-level chips, held to", [
+        "v2a03-sim, v2c02-sim: rung 0 of each die,",
+        "  the rungs held to them at build and test",
+        "v6502-sim on the RecordedBus: the console's",
+        "  record replayed on the 6502 die itself",
+        "the pin golden; the Halfshot and Trace pages"])
+    c_shell = box(1280, 754, 280, 70, "PLAY", "nes-shell / nes-wasm: the window", [
+        "the console in a window and at /nes/play",
+        "WebGPU encode and decode; pad by gamepad"])
+    flow("cmd", [side(a4, "B", 0.6), (side(a4, "B", 0.6)[0], 286), (1005, 286), side(c_con, "T", 0.5)],
+         "the same words: SET and AT become set_pad at latch n", 1012, 296, "start")
+    flow("cmd", [side(c_rom, "B", 0.5), side(c_con, "T", 0.23)], "bytes", 908, 420, "end")
+    flow("new", [side(c_knobs, "B", 0.1), side(c_con, "T", 0.87)], "knobs", 1135, 431, "start")
+    flow("new", [side(c_knobs, "B", 0.65), side(c_ntsc, "T", 0.52)])
+    flow("pic", [side(c_con, "R", 0.3), side(c_ntsc, "L", 0.3)], "dots", 1190, 474)
+    flow("rec", [side(c_con, "B", 0.5), side(c_rec, "T", 0.5)], "the trace, one line per half-cycle", 1012, 606, "start")
+    flow("pic", [side(c_ntsc, "B", 0.15), (side(c_ntsc, "B", 0.15)[0], 600), (side(c_rec, "T", 0.9)[0], 600), side(c_rec, "T", 0.9)],
+         "the frame at latch T, decoded", 1270, 614, "start")
+    flow("orc", [side(c_rec, "R", 0.73), side(c_orc, "L", 0.73)])
+    sh.text(1190, 742, "replayed on rung 0", "fl t-orc", "middle")
+    flow("pic", [side(c_ntsc, "R", 0.85), (1570, side(c_ntsc, "R", 0.85)[1]), (1570, side(c_shell, "R", 0.5)[1]), side(c_shell, "R", 0.5)],
+         "to the window", 1568, 748, "end")
+    flow("orc", [side(c_orc, "B", 0.3), side(c_shell, "T", 0.125)], "a .window of the run", 1322, 746, "start")
+
+    # ------------------------------------------------ band D: the comparators
+    sh.zone(20, 876, 1560, 166, "THE COMPARATORS")
+    d1 = box(40, 916, 280, 90, "compare-logs.py", "the L lines, part against model", [
+        "the first latch at which the byte or",
+        "the clock count differs, by index",
+        "(B0's eight clocks, B3's replay)"])
+    d2 = box(350, 916, 280, 90, "b1-score.py", "the capture at T against the frame at T", [
+        "luma, hue, saturation per flat region",
+        "through one decoder; the first region",
+        "that fails, named (N6's tolerances)"])
+    d3 = box(660, 916, 280, 90, "eyes.py, cal.py", "the grabber, the decoder, the model", [
+        "three pictures of one moment scored",
+        "against each other; the cal cart's",
+        "screens name themselves in the strip"])
+    d4 = box(970, 916, 280, 90, "replay-recorded", "the record on the die, and bisection", [
+        "a run replayed on rung 0, agreeing or",
+        "naming the half-cycle; B3 bisects the",
+        "trigger index to the first latch apart"])
+    d5 = box(1280, 916, 280, 90, "GATE", "green, or a row that differs by name", [
+        "MUTATE must go red: a gate that stays",
+        "green under sabotage is broken",
+        "a finding goes to open-items.md, dated"], "gate")
+    # the records bus: what the comparators read, and all they read
+    flow("rec", [(30, 760), (30, 900), (40, 900)], head=False)
+    flow("rec", [side(c_rec, "B", 0.5), (side(c_rec, "B", 0.5)[0], 900)], head=False)
+    flow("rec", [(40, 900), (1120, 900)], "the records: runs/<stamp>/ from the head, and the model's run files; frames ride in them", 580, 896, head=False)
+    for d in (d1, d2, d3, d4):
+        flow("rec", [(side(d, "T", 0.5)[0], 900), side(d, "T", 0.5)])
+    flow("orc", [side(c_orc, "B", 0.086), (side(c_orc, "B", 0.086)[0], side(d4, "T", 0.96)[1])], "rung 0, on the record", 1246, 870, "start")
+    # the verdicts: one bus into the gate
+    for d in (d1, d2, d3, d4):
+        flow("rec", [side(d, "B", 0.5), (side(d, "B", 0.5)[0], 1020)], head=False)
+    flow("rec", [(175, 1020), (1420, 1020), side(d5, "B", 0.5)], "each verdict: a row by name, or nothing to report", 700, 1034, head=True)
+
+    # ------------------------------------------------ the legend and the rule
+    sh.zone(20, 1054, 1560, 150, "WHAT AN ARROW CARRIES, and the two rules the whole sheet obeys")
+    y = 1082
+    for k, (c, w, d, what) in FLOWS.items():
+        sh.add(f'<path class="f-{k}" d="M40,{y} L120,{y}" marker-end="url(#m-{k})"/>')
+        sh.text(132, y + 3.5, what, "pin")
+        y += 15
+    sh.note(660, 1082, [
+        "Rule 1: control flows down from the script and never up out of a comparator. A comparator reads records and",
+        "answers with a row; nothing it says reaches the console or the model except through a person editing the script",
+        "or a knob, dated, with the run that justified it. Rule 2: a word means the same on both sides, or it names its",
+        "side. SET and AT hold on the part and the model alike; ARM and CAPTURE are the head's and the model skips them",
+        "by name; set_pad is the model's and the part has no such verb. A word that both sides cannot honour or refuse",
+        "by name does not enter the dialect. The regime in docs/exercise.md grows the dialect one word per step.",
+    ])
+    sh.done(OUT / "exercise-stack.svg")
+
+
 OUT = Path(sys.argv[1] if len(sys.argv) > 1 else ".")
 
 # The page a laid sheet is drawn to fit. Asked of the frame rather than
@@ -1013,3 +1311,4 @@ if __name__ == "__main__":
     sheet_v2b()
     sheet_logic()
     sheet_pad()
+    sheet_exercise()

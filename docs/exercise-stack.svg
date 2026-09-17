@@ -1,0 +1,352 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1224" width="1600" height="1224" role="img" aria-label="nes-bench: the two stacks, and what flows between them">
+
+  <style>
+    text { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; fill: #1f2328; }
+    .title { font-size: 15px; font-weight: 700; font-family: ui-sans-serif, system-ui, sans-serif; }
+    .sub { font-size: 11px; fill: #57606a; font-family: ui-sans-serif, system-ui, sans-serif; }
+    .ref { font-size: 12px; font-weight: 700; }
+    .part { font-size: 10px; fill: #57606a; }
+    .pin { font-size: 9.5px; }
+    .pinno { font-size: 9px; fill: #57606a; }
+    .linkflag { fill: #fdf3e3; stroke: #a35c00; stroke-width: 1.1; }
+    .linkno { font-size: 9px; fill: #a35c00; font-weight: 700; }
+    .net { font-size: 9.5px; fill: #0a5b9c; font-weight: 600; }
+    .rail5 { font-size: 9px; fill: #b3261e; font-weight: 700; }
+    .rail3 { font-size: 9px; fill: #b35c00; font-weight: 700; }
+    .gnd { font-size: 9px; fill: #1f2328; font-weight: 700; }
+    .note { font-size: 10px; fill: #57606a; font-family: ui-sans-serif, system-ui, sans-serif; }
+    .box { fill: #ffffff; stroke: #1f2328; stroke-width: 1.3; }
+    .offsheet { fill: #eaf3fb; stroke: #0a5b9c; stroke-width: 1.1; }
+    .conn { fill: #f3f5f7; stroke: #1f2328; stroke-width: 1.3; }
+    .zone { fill: none; stroke: #57606a; stroke-dasharray: 5 4; stroke-width: 1; }
+    .lead { stroke: #1f2328; stroke-width: 1; }
+    .wire { stroke: #0a5b9c; stroke-width: 1.2; fill: none; }
+    .w5 { stroke: #b3261e; stroke-width: 1.2; fill: none; }
+    .w3 { stroke: #b35c00; stroke-width: 1.2; fill: none; }
+    .wg { stroke: #1f2328; stroke-width: 1.2; fill: none; }
+    .lane { stroke: #1f2328; stroke-width: 1.4; fill: none; }
+    .lanelbl { font-size: 11px; font-weight: 700; }
+    .win { fill: #b3261e; fill-opacity: 0.10; stroke: none; }
+    .safe { fill: #1a7f37; fill-opacity: 0.12; stroke: none; }
+    .mark { stroke: #0a5b9c; stroke-width: 1.2; stroke-dasharray: 3 3; }
+    .auth { font-size: 9px; fill: #b3261e; font-family: ui-sans-serif, system-ui, sans-serif; font-style: italic; }
+  </style>
+
+<rect x="0" y="0" width="1600" height="1224" fill="#ffffff"/>
+<g class="sheet-heading" data-height="60">
+<text class="title" x="24" y="30">nes-bench: the two stacks, and what flows between them</text>
+<text class="sub" x="24" y="46">the physical stack and the virtual one under one script; every arrow typed by what it carries and pointed the way it moves. Dashed grey: proposed, not built.</text>
+</g>
+<style>.f-cmd { stroke: #1f2328; stroke-width: 1.4; fill: none; stroke-dasharray: none; } .t-cmd { fill: #1f2328; } .f-stim { stroke: #0a5b9c; stroke-width: 1.8; fill: none; stroke-dasharray: none; } .t-stim { fill: #0a5b9c; } .f-sig { stroke: #b3261e; stroke-width: 1.8; fill: none; stroke-dasharray: none; } .t-sig { fill: #b3261e; } .f-rec { stroke: #1a7f37; stroke-width: 1.4; fill: none; stroke-dasharray: 6 3; } .t-rec { fill: #1a7f37; } .f-pic { stroke: #6f42c1; stroke-width: 1.4; fill: none; stroke-dasharray: none; } .t-pic { fill: #6f42c1; } .f-orc { stroke: #a35c00; stroke-width: 1.3; fill: none; stroke-dasharray: 2 3; } .t-orc { fill: #a35c00; } .f-new { stroke: #57606a; stroke-width: 1.2; fill: none; stroke-dasharray: 4 4; } .t-new { fill: #57606a; } .fl { font-size: 9px; font-family: ui-sans-serif, system-ui, sans-serif; font-weight: 600; } .new { fill: #ffffff; stroke: #57606a; stroke-width: 1.2; stroke-dasharray: 4 4; } .gate { fill: #eaf7ee; stroke: #1a7f37; stroke-width: 1.3; }</style>
+<defs><marker id="m-cmd" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1f2328"/></marker><marker id="m-stim" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#0a5b9c"/></marker><marker id="m-sig" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#b3261e"/></marker><marker id="m-rec" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1a7f37"/></marker><marker id="m-pic" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#6f42c1"/></marker><marker id="m-orc" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#a35c00"/></marker><marker id="m-new" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#57606a"/></marker></defs>
+<rect class="zone" x="20" y="66" width="1560" height="196" rx="6"/>
+<text class="sub" x="28" y="80" text-anchor="start">THE DRIVER: one script, read by both sides; the regime above it; the regression beside it</text>
+<rect class="box" x="40" y="96" width="240" height="130" rx="4"/>
+<text class="ref" x="48" y="111" text-anchor="start">E</text>
+<text class="part" x="48" y="123" text-anchor="start">the exercise (this notebook)</text>
+<text class="pin" x="48" y="139" text-anchor="start">a step = a script + a model run</text>
+<text class="pin" x="48" y="151" text-anchor="start">         + a comparator + a gate</text>
+<text class="pin" x="48" y="163" text-anchor="start">E0 regression .. E5 unattended,</text>
+<text class="pin" x="48" y="175" text-anchor="start">each adding a word to the dialect</text>
+<text class="pin" x="48" y="187" text-anchor="start">MUTATE: every gate must go red</text>
+<text class="pin" x="48" y="199" text-anchor="start">on the sabotage it names</text>
+<rect class="box" x="350" y="96" width="250" height="130" rx="4"/>
+<text class="ref" x="358" y="111" text-anchor="start">S</text>
+<text class="part" x="358" y="123" text-anchor="start">the script, docs/script.md</text>
+<text class="pin" x="358" y="139" text-anchor="start">RESET   POWER ON|OFF</text>
+<text class="pin" x="358" y="151" text-anchor="start">MODE PASS|INJECT   SET hh</text>
+<text class="pin" x="358" y="163" text-anchor="start">AT n hh   TRIG n   WAIT n | s S</text>
+<text class="pin" x="358" y="175" text-anchor="start">ARM name ch scale ..  CAPTURE</text>
+<text class="pin" x="358" y="187" text-anchor="start">bytes by latch index: the one</text>
+<text class="pin" x="358" y="199" text-anchor="start">history both sides can hold</text>
+<rect class="box" x="670" y="96" width="240" height="130" rx="4"/>
+<text class="ref" x="678" y="111" text-anchor="start">W</text>
+<text class="part" x="678" y="123" text-anchor="start">tools/bench.py, the workstation</text>
+<text class="pin" x="678" y="139" text-anchor="start">UDP JSON to the head:</text>
+<text class="pin" x="678" y="151" text-anchor="start">  status run abort bridge runs</text>
+<text class="pin" x="678" y="163" text-anchor="start">HTTP from the head: runs/&lt;stamp>/</text>
+<text class="pin" x="678" y="175" text-anchor="start">  bridge.log, captures, .toml</text>
+<text class="pin" x="678" y="187" text-anchor="start">runs the model on the same file</text>
+<text class="pin" x="678" y="199" text-anchor="start">and calls the comparators</text>
+<rect class="box" x="980" y="96" width="270" height="130" rx="4"/>
+<text class="ref" x="988" y="111" text-anchor="start">M</text>
+<text class="part" x="988" y="123" text-anchor="start">the model's runners (nes-console)</text>
+<text class="pin" x="988" y="139" text-anchor="start">pad-log     the L lines the part logs</text>
+<text class="pin" x="988" y="151" text-anchor="start">trace       .pins .stim .events .overlay</text>
+<text class="pin" x="988" y="163" text-anchor="start">capture-score   the frame at latch T</text>
+<text class="pin" x="988" y="175" text-anchor="start">run-rom, picture-bench, cal-screens</text>
+<text class="pin" x="988" y="187" text-anchor="start">the same SET and AT words, honoured</text>
+<text class="pin" x="988" y="199" text-anchor="start">by latch index; the head's are skipped</text>
+<rect class="box" x="1320" y="96" width="240" height="130" rx="4"/>
+<text class="ref" x="1328" y="111" text-anchor="start">R</text>
+<text class="part" x="1328" y="123" text-anchor="start">the regression, after every change</text>
+<text class="pin" x="1328" y="139" text-anchor="start">tools/rig-check.py: light, still,</text>
+<text class="pin" x="1328" y="151" text-anchor="start">  boards, side eyes (the cameras)</text>
+<text class="pin" x="1328" y="163" text-anchor="start">tools/bench-check.py: bridge, scope,</text>
+<text class="pin" x="1328" y="175" text-anchor="start">  polls, trigger, walk, reset, power</text>
+<text class="pin" x="1328" y="187" text-anchor="start">green before a step is believed;</text>
+<text class="pin" x="1328" y="199" text-anchor="start">baseline: docs/rig-baseline.json</text>
+<path class="f-cmd" d="M280,161 L350,161" marker-end="url(#m-cmd)"/>
+<text class="fl t-cmd" x="315" y="157" text-anchor="middle">one script</text>
+<path class="f-cmd" d="M600,161 L670,161" marker-end="url(#m-cmd)"/>
+<text class="fl t-cmd" x="635" y="157" text-anchor="middle">to the part</text>
+<path class="f-cmd" d="M525,96 L525,88 L1061,88 L1061,96" marker-end="url(#m-cmd)"/>
+<text class="fl t-cmd" x="800" y="85" text-anchor="middle">the same words, to the model</text>
+<path class="f-rec" d="M1320,161 L1250,161" marker-end="url(#m-rec)"/>
+<text class="fl t-rec" x="1285" y="157" text-anchor="middle">PASS or FAIL</text>
+<text class="fl t-rec" x="1285" y="173" text-anchor="middle">by name</text>
+<rect class="zone" x="20" y="300" width="780" height="560" rx="6"/>
+<text class="sub" x="28" y="314" text-anchor="start">THE PART</text>
+<text class="note" x="40" y="800" text-anchor="start">An NES-001, unmodified. The bench holds its controller port (the bridge), its front panel (the hands) and its</text>
+<text class="note" x="40" y="813" text-anchor="start">outputs (the scope, the grabber, the sound card); the eyes watch the bench itself. Nothing here is on the mains side.</text>
+<rect class="box" x="40" y="330" width="250" height="160" rx="4"/>
+<text class="ref" x="48" y="345" text-anchor="start">PI</text>
+<text class="part" x="48" y="357" text-anchor="start">Raspberry Pi 4, the head (headd.py)</text>
+<text class="pin" x="48" y="373" text-anchor="start">serial bridge on TCP 6545</text>
+<text class="pin" x="48" y="385" text-anchor="start">GPIO17 reset, GPIO27 power</text>
+<text class="pin" x="48" y="397" text-anchor="start">SCPI to the scope on the LAN</text>
+<text class="pin" x="48" y="409" text-anchor="start">V4L2 grabber, ALSA sound card</text>
+<text class="pin" x="48" y="421" text-anchor="start">runs/&lt;stamp>/: bridge.log, the</text>
+<text class="pin" x="48" y="433" text-anchor="start">captures (.u8 + .toml), frames, wav</text>
+<text class="pin" x="48" y="445" text-anchor="start">MODE PASS rests; hands rest open</text>
+<text class="pin" x="48" y="457" text-anchor="start">(GPIO27 high powers the console)</text>
+<rect class="box" x="380" y="330" width="220" height="120" rx="4"/>
+<text class="ref" x="388" y="345" text-anchor="start">A1</text>
+<text class="part" x="388" y="357" text-anchor="start">Arduino UNO, the bridge v1b</text>
+<text class="pin" x="388" y="373" text-anchor="start">74HC165 holds the byte, 74HCT04</text>
+<text class="pin" x="388" y="385" text-anchor="start">inverts OUT0 into /PL, 74HC595</text>
+<text class="pin" x="388" y="397" text-anchor="start">MODE PASS: the pad's bits</text>
+<text class="pin" x="388" y="409" text-anchor="start">MODE INJECT: SET's byte or AT's</text>
+<text class="pin" x="388" y="421" text-anchor="start">counts latches and clocks; TRIG</text>
+<text class="pin" x="388" y="433" text-anchor="start">at latch n; one L line per latch</text>
+<rect class="box" x="640" y="330" width="150" height="70" rx="4"/>
+<text class="ref" x="648" y="345" text-anchor="start">PAD</text>
+<text class="part" x="648" y="357" text-anchor="start">original controller</text>
+<text class="pin" x="648" y="373" text-anchor="start">the hand, in PASS</text>
+<text class="pin" x="648" y="385" text-anchor="start">4021 in the pad</text>
+<rect class="box" x="40" y="524" width="250" height="90" rx="4"/>
+<text class="ref" x="48" y="539" text-anchor="start">OK1 K1</text>
+<text class="part" x="48" y="551" text-anchor="start">the hands, on the front panel harness</text>
+<text class="pin" x="48" y="567" text-anchor="start">PC817 across the reset button</text>
+<text class="pin" x="48" y="579" text-anchor="start">relay contact across the power</text>
+<text class="pin" x="48" y="591" text-anchor="start">switch (J3 brown and red), in</text>
+<text class="pin" x="48" y="603" text-anchor="start">parallel with the panel's own</text>
+<rect class="box" x="380" y="494" width="220" height="130" rx="4"/>
+<text class="ref" x="388" y="509" text-anchor="start">NES</text>
+<text class="part" x="388" y="521" text-anchor="start">NES-001, the part</text>
+<text class="pin" x="388" y="537" text-anchor="start">2A03: CPU core, APU, the DMA</text>
+<text class="pin" x="388" y="549" text-anchor="start">2C02: the picture chip</text>
+<text class="pin" x="388" y="561" text-anchor="start">the glue, the mapper on the cart</text>
+<text class="pin" x="388" y="573" text-anchor="start">the cartridge: the dump's CRC</text>
+<text class="pin" x="388" y="585" text-anchor="start">names it, not the label</text>
+<text class="pin" x="388" y="597" text-anchor="start">reads $4016: latch, eight clocks</text>
+<rect class="box" x="640" y="444" width="150" height="110" rx="4"/>
+<text class="ref" x="648" y="459" text-anchor="start">SCOPE</text>
+<text class="part" x="648" y="471" text-anchor="start">Rigol DS1054Z</text>
+<text class="pin" x="648" y="487" text-anchor="start">CH1 TRIG, CH2 latch</text>
+<text class="pin" x="648" y="499" text-anchor="start">CH3 video, CH4 D0</text>
+<text class="pin" x="648" y="511" text-anchor="start">single shot at a</text>
+<text class="pin" x="648" y="523" text-anchor="start">known latch index</text>
+<text class="pin" x="648" y="535" text-anchor="start">12 M points, .u8</text>
+<rect class="box" x="640" y="584" width="150" height="100" rx="4"/>
+<text class="ref" x="648" y="599" text-anchor="start">EYE</text>
+<text class="part" x="648" y="611" text-anchor="start">Roxio grabber + C-Media</text>
+<text class="pin" x="648" y="627" text-anchor="start">720 by 480 frames,</text>
+<text class="pin" x="648" y="639" text-anchor="start">the whole run, on</text>
+<text class="pin" x="648" y="651" text-anchor="start">the Pi's clock</text>
+<text class="pin" x="648" y="663" text-anchor="start">audio, the same</text>
+<rect class="box" x="40" y="644" width="250" height="90" rx="4"/>
+<text class="ref" x="48" y="659" text-anchor="start">BRIO</text>
+<text class="part" x="48" y="671" text-anchor="start">the board's eyes (three cameras)</text>
+<text class="pin" x="48" y="687" text-anchor="start">the bench's state, not the picture:</text>
+<text class="pin" x="48" y="699" text-anchor="start">the hole map, the rings, the side</text>
+<text class="pin" x="48" y="711" text-anchor="start">views; tools/eye.py, rig-check.py</text>
+<text class="pin" x="48" y="723" text-anchor="start">frames to captures/ on the workstation</text>
+<rect class="box" x="380" y="664" width="220" height="80" rx="4"/>
+<text class="ref" x="388" y="679" text-anchor="start">OSCR</text>
+<text class="part" x="388" y="691" text-anchor="start">the cartridge reader</text>
+<text class="pin" x="388" y="707" text-anchor="start">the dump: iNES file + CRC</text>
+<text class="pin" x="388" y="719" text-anchor="start">the same bytes on both sides</text>
+<text class="pin" x="388" y="731" text-anchor="start">is then a checkable fact</text>
+<path class="f-cmd" d="M790,226 L790,276 L165,276 L165,330" marker-end="url(#m-cmd)"/>
+<text class="fl t-cmd" x="600" y="272" text-anchor="middle">the run: script lines</text>
+<path class="f-rec" d="M252,330 L252,292 L874,292 L874,226" marker-end="url(#m-rec)"/>
+<text class="fl t-rec" x="300" y="289" text-anchor="start">runs/&lt;stamp>/ back to the workstation</text>
+<path class="f-cmd" d="M290,362 L380,362" marker-end="url(#m-cmd)"/>
+<text class="fl t-cmd" x="335" y="358" text-anchor="middle">bridge lines</text>
+<path class="f-rec" d="M380,392 L290,392" marker-end="url(#m-rec)"/>
+<text class="fl t-rec" x="335" y="403" text-anchor="middle">L n hh clocks</text>
+<path class="f-stim" d="M640,350 L600,350" marker-end="url(#m-stim)"/>
+<text class="fl t-stim" x="620" y="344" text-anchor="middle">bits</text>
+<path class="f-stim" d="M446,450 L446,494" marker-end="url(#m-stim)"/>
+<text class="fl t-stim" x="440" y="466" text-anchor="end">D0: the byte</text>
+<path class="f-cmd" d="M534,494 L534,450" marker-end="url(#m-cmd)"/>
+<text class="fl t-cmd" x="540" y="466" text-anchor="start">OUT0, CLK x8</text>
+<path class="f-cmd" d="M165,490 L165,524" marker-end="url(#m-cmd)"/>
+<text class="fl t-cmd" x="172" y="511" text-anchor="start">GPIO17, GPIO27</text>
+<path class="f-cmd" d="M290,569 L380,572" marker-end="url(#m-cmd)"/>
+<text class="fl t-cmd" x="335" y="565" text-anchor="middle">reset, power</text>
+<path class="f-sig" d="M600,520 L640,538" marker-end="url(#m-sig)"/>
+<text class="fl t-sig" x="604" y="514" text-anchor="start">video</text>
+<path class="f-cmd" d="M600,396 L622,396 L622,460 L640,460" marker-end="url(#m-cmd)"/>
+<text class="fl t-cmd" x="626" y="442" text-anchor="start">TRIG at n</text>
+<path class="f-cmd" d="M290,418 L335,418 L335,472 L612,472 L612,499 L640,499" marker-end="url(#m-cmd)"/>
+<text class="fl t-cmd" x="400" y="484" text-anchor="start">ARM, single shot</text>
+<path class="f-sig" d="M600,611 L622,611 L622,634 L640,634" marker-end="url(#m-sig)"/>
+<text class="fl t-sig" x="596" y="640" text-anchor="end">video, audio</text>
+<path class="f-cmd" d="M490,664 L490,624" marker-end="url(#m-cmd)"/>
+<text class="fl t-cmd" x="498" y="658" text-anchor="start">the cartridge, in</text>
+<path class="f-rec" d="M790,499 L796,499 L796,760 L30,760 L30,410 L40,410" marker-end="url(#m-rec)"/>
+<text class="fl t-rec" x="200" y="756" text-anchor="start">records: the scope's .u8, the grabber's frames and wav; the eyes' frames go to the workstation's captures/</text>
+<path class="f-rec" d="M790,634 L796,634"/>
+<path class="f-rec" d="M165,734 L165,760"/>
+<path class="f-rec" d="M600,704 L812,704 L812,365 L840,365" marker-end="url(#m-rec)"/>
+<text class="fl t-rec" x="700" y="700" text-anchor="middle">the dump, one CRC</text>
+<rect class="zone" x="820" y="300" width="760" height="560" rx="6"/>
+<text class="sub" x="828" y="314" text-anchor="start">THE MODEL</text>
+<text class="note" x="1020" y="800" text-anchor="start">Rust crates: the same bytes and the same</text>
+<text class="note" x="1020" y="813" text-anchor="start">schedule by latch, at nineteen times real</text>
+<text class="note" x="1020" y="826" text-anchor="start">time; every rung held to its die.</text>
+<rect class="box" x="840" y="330" width="150" height="70" rx="4"/>
+<text class="ref" x="848" y="345" text-anchor="start">ROM</text>
+<text class="part" x="848" y="357" text-anchor="start">the dump, as a file</text>
+<text class="pin" x="848" y="373" text-anchor="start">iNES, mapper 66</text>
+<text class="pin" x="848" y="385" text-anchor="start">the reader's CRC</text>
+<rect class="new" x="1080" y="330" width="480" height="92" rx="4"/>
+<text class="ref" x="1088" y="345" text-anchor="start">K</text>
+<text class="part" x="1088" y="357" text-anchor="start">the knobs, externalised (proposed: one file per run)</text>
+<text class="pin" x="1088" y="373" text-anchor="start">alignment cpu_phase ppu_phase (measured 4, 3)   decimal adjust off (2A03)</text>
+<text class="pin" x="1088" y="385" text-anchor="start">stack pointer at h=0 (measured)   RDY_RISE_SHIFT (experiment)   reset hold</text>
+<text class="pin" x="1088" y="397" text-anchor="start">CrtParams (authored)   differential phase (to fit)   power-on RAM (to fit)</text>
+<text class="pin" x="1088" y="409" text-anchor="start">every knob named measured, authored or fitted, with the run that set it</text>
+<rect class="box" x="840" y="434" width="330" height="150" rx="4"/>
+<text class="ref" x="848" y="449" text-anchor="start">NES</text>
+<text class="part" x="848" y="461" text-anchor="start">nes-console: the console as code</text>
+<text class="pin" x="848" y="477" text-anchor="start">2A03 rung: v6502-micro core (adjust off,</text>
+<text class="pin" x="848" y="489" text-anchor="start">  S seeded) + the APU as measured tables</text>
+<text class="pin" x="848" y="501" text-anchor="start">2C02 fast: dot by dot on a measured schedule</text>
+<text class="pin" x="848" y="513" text-anchor="start">nes-glue: the mainboard, the controller</text>
+<text class="pin" x="848" y="525" text-anchor="start">  (set_pad at latch n), the mapper</text>
+<text class="pin" x="848" y="537" text-anchor="start">Alignment { cpu_phase, ppu_phase }</text>
+<text class="pin" x="848" y="549" text-anchor="start">run_frames, master_half_step, cpu_trace</text>
+<rect class="box" x="1210" y="434" width="350" height="150" rx="4"/>
+<text class="ref" x="1218" y="449" text-anchor="start">CRT</text>
+<text class="part" x="1218" y="461" text-anchor="start">ntsc-crt: the signal path</text>
+<text class="pin" x="1218" y="477" text-anchor="start">encoder (ntsc-source-nes): dots to</text>
+<text class="pin" x="1218" y="489" text-anchor="start">  composite, the burst, the palette phase</text>
+<text class="pin" x="1218" y="501" text-anchor="start">decoder: notch and comb, blargg checked</text>
+<text class="pin" x="1218" y="513" text-anchor="start">the television's stages: beam, scanlines,</text>
+<text class="pin" x="1218" y="525" text-anchor="start">  persistence, mask, geometry (CrtParams)</text>
+<text class="pin" x="1218" y="537" text-anchor="start">the same decoder reads the scope's .u8:</text>
+<text class="pin" x="1218" y="549" text-anchor="start">  one reader for both sides</text>
+<rect class="box" x="840" y="624" width="330" height="104" rx="4"/>
+<text class="ref" x="848" y="639" text-anchor="start">RUN</text>
+<text class="part" x="848" y="651" text-anchor="start">the run as files</text>
+<text class="pin" x="848" y="667" text-anchor="start">.pins .stim: the CPU at its pins, the</text>
+<text class="pin" x="848" y="679" text-anchor="start">  pin contract's own text</text>
+<text class="pin" x="848" y="691" text-anchor="start">.events.json / .overlay: latches, reads,</text>
+<text class="pin" x="848" y="703" text-anchor="start">  PPU writes, mapper writes, NMI edges</text>
+<text class="pin" x="848" y="715" text-anchor="start">L lines, frames (.ppm), sound (f32)</text>
+<rect class="box" x="1210" y="624" width="350" height="104" rx="4"/>
+<text class="ref" x="1218" y="639" text-anchor="start">ORACLE</text>
+<text class="part" x="1218" y="651" text-anchor="start">the switch-level chips, held to</text>
+<text class="pin" x="1218" y="667" text-anchor="start">v2a03-sim, v2c02-sim: rung 0 of each die,</text>
+<text class="pin" x="1218" y="679" text-anchor="start">  the rungs held to them at build and test</text>
+<text class="pin" x="1218" y="691" text-anchor="start">v6502-sim on the RecordedBus: the console's</text>
+<text class="pin" x="1218" y="703" text-anchor="start">  record replayed on the 6502 die itself</text>
+<text class="pin" x="1218" y="715" text-anchor="start">the pin golden; the Halfshot and Trace pages</text>
+<rect class="box" x="1280" y="754" width="280" height="70" rx="4"/>
+<text class="ref" x="1288" y="769" text-anchor="start">PLAY</text>
+<text class="part" x="1288" y="781" text-anchor="start">nes-shell / nes-wasm: the window</text>
+<text class="pin" x="1288" y="797" text-anchor="start">the console in a window and at /nes/play</text>
+<text class="pin" x="1288" y="809" text-anchor="start">WebGPU encode and decode; pad by gamepad</text>
+<path class="f-cmd" d="M1142,226 L1142,286 L1005,286 L1005,434" marker-end="url(#m-cmd)"/>
+<text class="fl t-cmd" x="1012" y="296" text-anchor="start">the same words: SET and AT become set_pad at latch n</text>
+<path class="f-cmd" d="M915,400 L916,434" marker-end="url(#m-cmd)"/>
+<text class="fl t-cmd" x="908" y="420" text-anchor="end">bytes</text>
+<path class="f-new" d="M1128,422 L1127,434" marker-end="url(#m-new)"/>
+<text class="fl t-new" x="1135" y="431" text-anchor="start">knobs</text>
+<path class="f-new" d="M1392,422 L1392,434" marker-end="url(#m-new)"/>
+<path class="f-pic" d="M1170,479 L1210,479" marker-end="url(#m-pic)"/>
+<text class="fl t-pic" x="1190" y="474" text-anchor="middle">dots</text>
+<path class="f-rec" d="M1005,584 L1005,624" marker-end="url(#m-rec)"/>
+<text class="fl t-rec" x="1012" y="606" text-anchor="start">the trace, one line per half-cycle</text>
+<path class="f-pic" d="M1262,584 L1262,600 L1137,600 L1137,624" marker-end="url(#m-pic)"/>
+<text class="fl t-pic" x="1270" y="614" text-anchor="start">the frame at latch T, decoded</text>
+<path class="f-orc" d="M1170,700 L1210,700" marker-end="url(#m-orc)"/>
+<text class="fl t-orc" x="1190" y="742" text-anchor="middle">replayed on rung 0</text>
+<path class="f-pic" d="M1560,562 L1570,562 L1570,789 L1560,789" marker-end="url(#m-pic)"/>
+<text class="fl t-pic" x="1568" y="748" text-anchor="end">to the window</text>
+<path class="f-orc" d="M1315,728 L1315,754" marker-end="url(#m-orc)"/>
+<text class="fl t-orc" x="1322" y="746" text-anchor="start">a .window of the run</text>
+<rect class="zone" x="20" y="876" width="1560" height="166" rx="6"/>
+<text class="sub" x="28" y="890" text-anchor="start">THE COMPARATORS</text>
+<rect class="box" x="40" y="916" width="280" height="90" rx="4"/>
+<text class="ref" x="48" y="931" text-anchor="start">compare-logs.py</text>
+<text class="part" x="48" y="943" text-anchor="start">the L lines, part against model</text>
+<text class="pin" x="48" y="959" text-anchor="start">the first latch at which the byte or</text>
+<text class="pin" x="48" y="971" text-anchor="start">the clock count differs, by index</text>
+<text class="pin" x="48" y="983" text-anchor="start">(B0's eight clocks, B3's replay)</text>
+<rect class="box" x="350" y="916" width="280" height="90" rx="4"/>
+<text class="ref" x="358" y="931" text-anchor="start">b1-score.py</text>
+<text class="part" x="358" y="943" text-anchor="start">the capture at T against the frame at T</text>
+<text class="pin" x="358" y="959" text-anchor="start">luma, hue, saturation per flat region</text>
+<text class="pin" x="358" y="971" text-anchor="start">through one decoder; the first region</text>
+<text class="pin" x="358" y="983" text-anchor="start">that fails, named (N6's tolerances)</text>
+<rect class="box" x="660" y="916" width="280" height="90" rx="4"/>
+<text class="ref" x="668" y="931" text-anchor="start">eyes.py, cal.py</text>
+<text class="part" x="668" y="943" text-anchor="start">the grabber, the decoder, the model</text>
+<text class="pin" x="668" y="959" text-anchor="start">three pictures of one moment scored</text>
+<text class="pin" x="668" y="971" text-anchor="start">against each other; the cal cart's</text>
+<text class="pin" x="668" y="983" text-anchor="start">screens name themselves in the strip</text>
+<rect class="box" x="970" y="916" width="280" height="90" rx="4"/>
+<text class="ref" x="978" y="931" text-anchor="start">replay-recorded</text>
+<text class="part" x="978" y="943" text-anchor="start">the record on the die, and bisection</text>
+<text class="pin" x="978" y="959" text-anchor="start">a run replayed on rung 0, agreeing or</text>
+<text class="pin" x="978" y="971" text-anchor="start">naming the half-cycle; B3 bisects the</text>
+<text class="pin" x="978" y="983" text-anchor="start">trigger index to the first latch apart</text>
+<rect class="gate" x="1280" y="916" width="280" height="90" rx="4"/>
+<text class="ref" x="1288" y="931" text-anchor="start">GATE</text>
+<text class="part" x="1288" y="943" text-anchor="start">green, or a row that differs by name</text>
+<text class="pin" x="1288" y="959" text-anchor="start">MUTATE must go red: a gate that stays</text>
+<text class="pin" x="1288" y="971" text-anchor="start">green under sabotage is broken</text>
+<text class="pin" x="1288" y="983" text-anchor="start">a finding goes to open-items.md, dated</text>
+<path class="f-rec" d="M30,760 L30,900 L40,900"/>
+<path class="f-rec" d="M1005,728 L1005,900"/>
+<path class="f-rec" d="M40,900 L1120,900"/>
+<text class="fl t-rec" x="580" y="896" text-anchor="middle">the records: runs/&lt;stamp>/ from the head, and the model's run files; frames ride in them</text>
+<path class="f-rec" d="M180,900 L180,916" marker-end="url(#m-rec)"/>
+<path class="f-rec" d="M490,900 L490,916" marker-end="url(#m-rec)"/>
+<path class="f-rec" d="M800,900 L800,916" marker-end="url(#m-rec)"/>
+<path class="f-rec" d="M1110,900 L1110,916" marker-end="url(#m-rec)"/>
+<path class="f-orc" d="M1240,728 L1240,916" marker-end="url(#m-orc)"/>
+<text class="fl t-orc" x="1246" y="870" text-anchor="start">rung 0, on the record</text>
+<path class="f-rec" d="M180,1006 L180,1020"/>
+<path class="f-rec" d="M490,1006 L490,1020"/>
+<path class="f-rec" d="M800,1006 L800,1020"/>
+<path class="f-rec" d="M1110,1006 L1110,1020"/>
+<path class="f-rec" d="M175,1020 L1420,1020 L1420,1006" marker-end="url(#m-rec)"/>
+<text class="fl t-rec" x="700" y="1034" text-anchor="middle">each verdict: a row by name, or nothing to report</text>
+<rect class="zone" x="20" y="1054" width="1560" height="150" rx="6"/>
+<text class="sub" x="28" y="1068" text-anchor="start">WHAT AN ARROW CARRIES, and the two rules the whole sheet obeys</text>
+<path class="f-cmd" d="M40,1082 L120,1082" marker-end="url(#m-cmd)"/>
+<text class="pin" x="132" y="1085.5" text-anchor="start">command: a script word, a head op, a bridge line, a GPIO level, SCPI</text>
+<path class="f-stim" d="M40,1097 L120,1097" marker-end="url(#m-stim)"/>
+<text class="pin" x="132" y="1100.5" text-anchor="start">stimulus: the pad's byte at a latch index, the console's only input</text>
+<path class="f-sig" d="M40,1112 L120,1112" marker-end="url(#m-sig)"/>
+<text class="pin" x="132" y="1115.5" text-anchor="start">signal: analogue video and audio; the part's side only</text>
+<path class="f-rec" d="M40,1127 L120,1127" marker-end="url(#m-rec)"/>
+<text class="pin" x="132" y="1130.5" text-anchor="start">record: logs, captures, traces, verdicts; evidence, and it flows up, never down</text>
+<path class="f-pic" d="M40,1142 L120,1142" marker-end="url(#m-pic)"/>
+<text class="pin" x="132" y="1145.5" text-anchor="start">picture: a frame on its way to a score or a window</text>
+<path class="f-orc" d="M40,1157 L120,1157" marker-end="url(#m-orc)"/>
+<text class="pin" x="132" y="1160.5" text-anchor="start">oracle: held to, every half-cycle; a comparison, not a flow</text>
+<path class="f-new" d="M40,1172 L120,1172" marker-end="url(#m-new)"/>
+<text class="pin" x="132" y="1175.5" text-anchor="start">proposed: drawn so the words exist, built by nothing yet</text>
+<text class="note" x="660" y="1082" text-anchor="start">Rule 1: control flows down from the script and never up out of a comparator. A comparator reads records and</text>
+<text class="note" x="660" y="1095" text-anchor="start">answers with a row; nothing it says reaches the console or the model except through a person editing the script</text>
+<text class="note" x="660" y="1108" text-anchor="start">or a knob, dated, with the run that justified it. Rule 2: a word means the same on both sides, or it names its</text>
+<text class="note" x="660" y="1121" text-anchor="start">side. SET and AT hold on the part and the model alike; ARM and CAPTURE are the head's and the model skips them</text>
+<text class="note" x="660" y="1134" text-anchor="start">by name; set_pad is the model's and the part has no such verb. A word that both sides cannot honour or refuse</text>
+<text class="note" x="660" y="1147" text-anchor="start">by name does not enter the dialect. The regime in docs/exercise.md grows the dialect one word per step.</text>
+</svg>
