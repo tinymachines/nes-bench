@@ -1,0 +1,17 @@
+# E2 on a game (docs/exercise.md): the multicart's menu, Start, the
+# game's title. The bridge holds 00 from the reset; Start (bit 3) at
+# latch 200 for two latches; the scope stops on the bridge's TRIG at
+# latch 300 with the video on CH3 at 200 mV a division (a 0..0.76 V
+# picture into the scope's megohm uses 100 of the 256 levels; 500 mV a
+# division used 43 and read the luma one level low) and TRIG itself on
+# CH1 beside it, clipping harmlessly (the DS1054Z has no EXT input).
+# Played 2026-09-18: runs 20260918-000139 (500 mV) and -000521 (200 mV).
+MODE INJECT
+SET 00
+RESET
+AT 200 08
+AT 202 00
+ARM title-t300 1,3 0.2 -0.5 CH1
+TRIG 300
+WAIT 320
+CAPTURE

@@ -47,7 +47,9 @@ register's job, as it is in the pad.
   two stacks as one logical diagram with every flow typed, the dialect layer
   by layer, a regime of six steps each with its gate, and the three
   programmes on top (the model's knobs, games learned from the pad, the
-  x-ray behind an encyclopedia of code patterns).
+  x-ray behind an encyclopedia of code patterns). E2 played 2026-09-18,
+  twice, its script in `exercise/`: the first failing region named, the
+  hue miss repeatable, the luma miss one scope level wide.
 - `docs/closed-cycle-plan.md`: one turn of the whole loop, the
   cartridge to the first disagreeing frame, mapped onto what is built
   and what is not, and the order it closes in (C0 to C3 over B0 to B3).

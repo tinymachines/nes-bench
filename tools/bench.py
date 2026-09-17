@@ -76,8 +76,19 @@ def main():
         stamp = rep["stamp"]
         print(f"run {stamp}")
         last = None
+        quiet = 0
         while True:
-            st = ask(host, port, {"op": "status"})
+            # The head answers nothing for about a minute while it reads a
+            # 12 M point record off the scope (the first E2 run, 2026-09-18:
+            # the client died at "reading" with the capture half fetched).
+            try:
+                st = ask(host, port, {"op": "status"})
+            except socket.timeout:
+                quiet += 1
+                if quiet > 120:
+                    raise
+                continue
+            quiet = 0
             run = st.get("run")
             if run is None:
                 break

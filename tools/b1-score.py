@@ -2,7 +2,7 @@
 """B1: a run's triggered capture against the model's frame at the same
 poll, through the roundtrip.
 
-  python3 tools/b1-score.py runs/<stamp> rom.nes [capture-name] [--nes ../nes]
+  python3 tools/b1-score.py runs/<stamp> rom.nes [capture-name] [--channel 3] [--nes ../nes]
 
 Reads the run's `script.txt` for its `TRIG n` (the latch the capture
 was triggered at) and the capture's `.toml` for the sample rate and the
@@ -11,7 +11,13 @@ SCRIPT=script.txt, LATCH=n and TRIGGER_SAMPLE=i on the ROM: the model
 plays the same SET and AT lines to the first frame after latch n, the
 record is sliced from the trigger on so the recovery's first full frame
 is that frame on the part, and the regions are scored (luma, hue,
-saturation per flat region, the N6 tolerances). Real captures are
+saturation per flat region, the N6 tolerances). A capture armed on
+several channels (the DS1054Z has no external trigger input, so the
+bridge's TRIG rides on CH1 beside the video on CH3) names each as
+`chN = "..."` in its `.toml`; the video is `--channel` (3, where the
+bench's video probe sits), and a capture that has no such channel is
+refused rather than scored on the trigger line, which is what the
+first E2 run of 2026-09-18 would have done through the `file =` line. Real captures are
 recorded, not held: the exit status is the scorer's own, and the first
 region that misses is named in its table.
 
@@ -33,10 +39,13 @@ def main():
     ap.add_argument("rom")
     ap.add_argument("capture", nargs="?", default=None, help="the capture's name (default: the run's only one)")
     ap.add_argument("--nes", default=str(Path(__file__).resolve().parent.parent.parent / "nes"))
+    ap.add_argument("--channel", type=int, default=3, help="the video channel in a multi-channel capture")
     ap.add_argument("--frames", type=int, default=2000, help="a ceiling on the frames the model runs to reach the latch")
     ap.add_argument("--synthetic", action="store_true")
     a = ap.parse_args()
-    run = Path(a.run)
+    # Absolute: the scorer runs in the model's checkout, and a run named
+    # relative to this one vanished there (the first E2 run, 2026-09-18).
+    run = Path(a.run).resolve()
     script = run / "script.txt"
     trig = None
     if script.exists():
@@ -60,7 +69,14 @@ def main():
         meta = tomls[0].read_text()
         rate = float(re.search(r"rate_hz\s*=\s*([0-9.]+)", meta).group(1))
         ts = re.search(r"trigger_sample\s*=\s*(\d+)", meta)
-        u8 = run / re.search(r'file\s*=\s*"([^"]+)"', meta).group(1)
+        chans = dict(re.findall(r'^ch(\d+)\s*=\s*"([^"]+)"', meta, re.M))
+        if chans:
+            if str(a.channel) not in chans:
+                print(f"{tomls[0].name}: channels {', '.join(sorted(chans))}; no CH{a.channel} (the video) to score", file=sys.stderr)
+                return 2
+            u8 = run / chans[str(a.channel)]
+        else:
+            u8 = run / re.search(r'file\s*=\s*"([^"]+)"', meta).group(1)
         cmd += [str(u8), f"{rate:.1f}"]
         if ts:
             env["TRIGGER_SAMPLE"] = ts.group(1)

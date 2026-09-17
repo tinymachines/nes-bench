@@ -115,6 +115,85 @@ clock, which is a probe and a sitting. E5 is a list and a cron entry
 once the steps are scripts, and it is where the platform starts: a step
 is a file, a run is a directory, and the report is the rows.
 
+## E2, played: 2026-09-18
+
+The first step past E0 ran the night the regime was written, twice, on
+the multicart's Super Mario Bros. title: `exercise/e2-title.txt`, the
+script above the head and the model share, `MODE INJECT`, `SET 00`,
+`RESET`, Start (`08`) at latches 200 and 201, the scope armed on CH1
+with the video on CH3, `TRIG 300`, the capture. In the order the
+diagram's flows run:
+
+- **The head became a unit.** `head/setup.sh --bridge /dev/ttyACM0
+  --baud 115200 --scope <ip>` on the Pi: `nes-bench-head.service`,
+  enabled, which conflicts with `serial-bridge.service` (the two open
+  one port, and Linux lets two readers split its bytes without a word)
+  and puts both pins back at the boot levels when it stops.
+- **E0 first.** `hands-head.sh --no-walk`: bridge, scope, polls (1203
+  in 20 s, eight clocks each), trigger and reset (the polls paused
+  2.50 s from GPIO17) PASS; power FAIL, no pause in 30 s. The console's
+  front switch was on, bypassing the relay: a fact about the switch,
+  not the relay, which paused the console twice the day before with the
+  switch off. E2 needs the reset hand only, so it ran with the switch
+  on.
+- **The part.** Run `20260918-000139`: reset, Start at 200 and 201,
+  the trigger at latch 300, 12 M points on CH1 and CH3 at 50 MSa/s, the
+  trigger at sample 5,000,000 with 140 ms of record behind it, read off
+  the scope in 58 s. The bridge's log against `pad-log` for the same
+  script: 315 latches, bytes and clocks agreeing on every one.
+- **The model.** `b1-score.py` runs `capture-score` to the first frame
+  after latch 300: two flat regions in the model's frame, `$17` (the
+  title box, rows 40..68, x 128..215) and `$22` (the sky, rows 32..127,
+  x 216..256). The part's frame decoded from the trigger: recovered
+  -4.1 ppm, worst burst residual 0.028, anchor line 266.
+- **The second run**, `20260918-000521`, the same script with the
+  video at 200 mV a division instead of 500: residual 0.009, anchor
+  line 268, the same regions.
+
+| region | record | dY | dsat | dhue |
+|---|---|---|---|---|
+| `$17` rows 40..68 | 500 mV/div | -0.039 | -0.045 | -3.0 deg |
+| `$22` rows 32..127 | 500 mV/div | -0.039 | -0.060 | -9.1 deg |
+| `$17` rows 40..68 | 200 mV/div | -0.054 | -0.062 | -3.1 deg |
+| `$22` rows 32..127 | 200 mV/div | -0.067 | -0.079 | -9.1 deg |
+
+The gate as the table above states it: the first region that fails,
+named. `$17`, rows 40..68, on every axis; and `$22` behind it. What
+the two records say beyond the verdict:
+
+1. **The hue repeats to a tenth of a degree** across two captures and
+   two vertical scales: the model's sky is nine degrees bluer than the
+   part's, its brown three degrees warmer, the same sign and about the
+   size the two eyes measured on the title in September (`eyes.py`,
+   12.6 and 14.1 degrees). Three instruments now agree that the model's
+   picture chain is the odd one out; the open item under Programme 1
+   (the encoder's level-dependent phase) has a number on the part to
+   be held to.
+2. **Luma and saturation move with the scope's scale**, by 0.015 to
+   0.02, which is one level of the coarse record: at 500 mV a division
+   the picture covered 43 of the 256 levels, at 200 mV 100. In volts
+   the two records agree (sync tip near 0 V, blanking 0.40 V, peak
+   0.76 V into the scope's megohm), so the finer record is the one to
+   believe, the script now arms at 200 mV, and the level a recovery
+   reads off a coarse record is a knob-sized error of its own. The
+   remaining miss (luma -0.05 to -0.07, saturation -0.06 to -0.08)
+   is not settled here: the same sky read saturation 28 percent hot
+   through the direct capture of 2026-09-02, and two readings of one
+   part through one scope that disagree by that much put the probe,
+   the coupling and the termination inside the number. E1's terminated
+   bars capture is what decides it, and it waits on the flash chips.
+3. **Three tools broke on the first real run and were fixed that
+   night**, which is what the rehearsal on synthetic runs could not
+   do: `b1-score.py` scored the trigger line (the `file =` line of a
+   two-channel capture names CH1) until it learned `--channel`, and
+   refuses a capture without the channel by name; it handed the model
+   a path relative to the wrong checkout; `bench.py` died when the
+   head fell silent for the minute it spends reading the scope.
+4. **The word.** An *episode* is one script played from its `RESET` to
+   its last capture on one ROM: the run directory, keyed by the ROM's
+   CRC, the script and the captures. Two episodes were played; every
+   later step is made of them.
+
 ## Programme 1: the virtual stack tuned to the part
 
 The model is not a picture of the console; it is the console's chips at
@@ -247,15 +326,18 @@ The words added: `xray`, `diverge` (the first half-cycle apart),
 | one script, both sides | holds; `SET` and `AT` by latch on the part and in the model's runners |
 | the trigger and the capture | hold; the decode through `ntsc-crt` |
 | the model's trace, the recorded bus, windows on the die's pages | hold (T0 to T3) |
-| the comparators | built and rehearsed on synthetic runs (`bench-report.md`); `b1-score.py` waits on a terminated capture |
+| the comparators | `compare-logs.py` and `b1-score.py` have met the part (E2, twice); the terminated capture is still E1's |
+| E2 | played 2026-09-18, twice: the first failing region named (`$17`, every axis), the hue miss repeatable to 0.1 deg, the luma miss one scope level wide (section above) |
 | the calibration cartridge | the model side done, the part side waits on the flash chips |
 | the knobs file | proposed |
-| screens, episodes, the search | proposed |
+| screens, the search | proposed; `episode` is a word since E2 |
 | the x-ray diff and the encyclopedia | proposed; the trace and the window exist |
 
 The first three moves, in order: E2 on a game, because it needs nothing
-that does not exist and it is the loop every programme runs inside; the
-knobs file, because E4's first measured knobs need somewhere to land
-that is not a source edit; and the x-ray diff on the pad cartridge,
-whose source is ours, so the first encyclopedia entry (the poll routine)
-can be published with its code.
+that does not exist and it is the loop every programme runs inside
+(played, above); the knobs file, because E4's first measured knobs need
+somewhere to land that is not a source edit, and E2 has already
+produced two candidates (the hue offset, the capture's vertical scale);
+and the x-ray diff on the pad cartridge, whose source is ours, so the
+first encyclopedia entry (the poll routine) can be published with its
+code.

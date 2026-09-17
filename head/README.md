@@ -18,14 +18,16 @@ which Raspberry Pi OS ships. The script's words are in
 `docs/script.md`. Addresses (the Pi's, the scope's) go on the command
 line or in `bench.local.md`, which git ignores.
 
-What has run: the whole loop against `tools/fake-bridge.py` (a script
-with MODE, SET, RESET, AT, TRIG and WAIT; the fetched `bridge.log`
-diffed against the model's `pad-log` for the same script by
-`tools/compare-logs.py`, every latch agreeing). What has not: the
-relays (no Pi wired yet) and the scope's arm-and-capture, which uses
-the dialect `ntsc-crt/tools/scope-capture.py` proved on the same
-DS1054Z but adds the external-trigger single shot, untested until the
-scope is back on the LAN with the bridge's trigger line on EXT TRIG.
+What has run: the whole loop against `tools/fake-bridge.py`, and since
+2026-09-18 the whole loop on the bench: the head as a unit on the Pi,
+`exercise/e2-title.txt` played twice with the reset from GPIO17, the
+trigger at latch 300 on CH1 (the DS1054Z has no EXT input; `ARM` on
+`EXT` is refused by name) and a two-channel 12 M point capture read off
+the scope in about a minute, during which the head answers no request
+(`bench.py run` waits through it). The account is in
+`docs/exercise.md`. Not yet under the head: `POWER` against the console
+with its switch off (`bench-check.py --hands head` has done it twice
+with pinctrl; that night the switch was on).
 
 On the Pi, one command installs the head as a service from this
 checkout (packages, the dialout group, the runs directory, a systemd
@@ -34,11 +36,20 @@ pull to restart on new code):
 
 ```
 git clone https://github.com/tinymachines/nes-bench && cd nes-bench
-bash head/setup.sh --bridge /dev/ttyUSB0 --scope <ip>      # or --no-scope
-bash head/setup.sh --dry-run --bridge /dev/ttyUSB0 --scope <ip>   # the steps, run none
+bash head/setup.sh --bridge /dev/ttyACM0 --baud 115200 --scope <ip>   # the UNO bridge; or --no-scope
+bash head/setup.sh --dry-run --bridge /dev/ttyACM0 --baud 115200 --scope <ip>   # the steps, run none
 ```
 
-Tested here with `--dry-run` only; the first real run is the bench's.
+Installed for real on 2026-09-18. `--baud` is the firmware's: the UNO
+bridge v1b talks at 115200, the ESP32 sheet at 921600, which is
+`headd.py`'s default. The unit `Conflicts=serial-bridge.service`, so
+starting the head stops the serial bridge and `sudo systemctl start
+serial-bridge` (for `bringup.py` or `bench-check.py` over port 6545)
+stops the head; `sudo systemctl start nes-bench-head` takes the port
+back. When the head stops, `ExecStopPost` puts GPIO17 and GPIO27 back
+low with pinctrl (reset released, the console off), because gpiozero
+leaves the pins as inputs on exit and a floating relay input is a
+console that may power itself.
 
 ## The Arduino on the Pi, reached from the workstation
 

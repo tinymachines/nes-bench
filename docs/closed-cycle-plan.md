@@ -51,7 +51,7 @@ missing between here and the first full turn.
 
 | piece | state |
 |---|---|
-| the head (`head/headd.py`): script words, relays, scope, runs served | built, run against fakes; not started on the Pi because the bridge's serial port is held by the bring-up bridge |
+| the head (`head/headd.py`): script words, relays, scope, runs served | runs on the Pi as `nes-bench-head.service` since 2026-09-18, conflicting with the serial bridge for the port; E2 played through it (`exercise.md`) |
 | the bridge firmware (`firmware/bridge-uno`) | on the UNO, answers `STATUS`; B0 sniff mode |
 | the register, the pad on the bridge, the relays | not wired: sittings 3, 4 and 5 are the user's |
 | the scope over SCPI | proven; `eyes.py pair` uses the same dialect |
