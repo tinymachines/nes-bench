@@ -229,6 +229,29 @@ doing anything. Nothing is tuned by eye. A knob whose fit would improve
 the score without a mechanism named for it stays authored, and the
 mismatch goes to `open-items.md`.
 
+**Built 2026-09-18, the second move.** The file is `knobs.toml` in
+`runs/<stamp>/`, written by `tools/knobs.py init` from the model's
+measured defaults and the run's `ARM` line, and read by every runner
+in `nes-console` from `KNOBS=path` (`nes-console/src/knobs.rs`, the
+flat subset of TOML the bench writes, no dependency). Two tables
+today, each with `source` and `by`: `[alignment]`, measured off the two
+dies' clock recipes until E4 sets it from the part, and `[capture]`,
+the scope's window on the video from the script, which the scorer
+takes its channel from. `init` refuses to overwrite; the reader refuses
+a table or key it does not know by name (`ppu_phaze` names itself), a
+missing source, a fitted knob without its residual, a value out of
+range; `tools/knobs.py check` runs that reader on a run's file. The
+one knob the model acts on is proven to act: moved, the scheduler's
+CPU half-cycle count at the first frame's end moves with it, and
+`MUTATE=1` on that test is red. `b1-score.py` writes the file for a run
+that has none and its report now opens with the knobs and their
+sources, which is what the two E2 runs print. What is not in the file,
+deliberately: the hue. E2 measured it at two levels on the part, and
+two points fit a line with no residual, so it stays an open item with
+its numbers until the bars cartridge gives it every level (E1). The
+reset hold stays a labelled constant in `nes-glue`: nothing in the
+console reads it yet, and a knob that reaches nothing is not a knob.
+
 ## Programme 2: games learned from the pad to the picture
 
 The console has one input, the pad's byte at each latch, and two
@@ -332,15 +355,14 @@ The words added: `xray`, `diverge` (the first half-cycle apart),
 | the comparators | `compare-logs.py` and `b1-score.py` have met the part (E2, twice); the terminated capture is still E1's |
 | E2 | played 2026-09-18, twice: the first failing region named (`$17`, every axis), the hue miss repeatable to 0.1 deg, the luma miss one scope level wide (section above) |
 | the calibration cartridge | the model side done, the part side waits on the flash chips |
-| the knobs file | proposed |
+| the knobs file | built 2026-09-18: `tools/knobs.py`, `nes-console/src/knobs.rs`, two tables with sources, refusals by name, the alignment knob proven to reach the scheduler (Programme 1) |
 | screens, the search | proposed; `episode` is a word since E2 |
 | the x-ray diff and the encyclopedia | proposed; the trace and the window exist |
 
 The first three moves, in order: E2 on a game, because it needs nothing
 that does not exist and it is the loop every programme runs inside
 (played, above); the knobs file, because E4's first measured knobs need
-somewhere to land that is not a source edit, and E2 has already
-produced two candidates (the hue offset, the capture's vertical scale);
-and the x-ray diff on the pad cartridge, whose source is ours, so the
-first encyclopedia entry (the poll routine) can be published with its
-code.
+somewhere to land that is not a source edit (built, Programme 1: the
+capture's window is in it, the hue is not, on purpose); and the x-ray
+diff on the pad cartridge, whose source is ours, so the first
+encyclopedia entry (the poll routine) can be published with its code.

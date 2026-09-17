@@ -60,6 +60,14 @@ entry is the one that raised it, with its date.
   with: the bars cartridge captured under the eyes' load and with the
   scope alone, and the wiki's voltage-dependent RC stage in the
   encoder with its constant fitted per load, MUTATE red.
+  ON THE SCOPE 2026-09-18 (E2, `exercise.md`): the part's title
+  decoded from a triggered capture at latch 300 against the model's
+  frame at the same latch, twice, at two vertical scales: `$22` (the
+  sky) -9.1 degrees both times, `$17` (the title box) -3.0 and -3.1;
+  level-dependent, as the eyes' finding said. Two points on the part
+  fit a line with no residual, so the number is recorded here and not
+  in `knobs.toml` (Programme 1's rule) until the bars cartridge gives
+  every level.
   Where in the chain: the encoder's palette phase
   (`ntsc-source-nes`), the burst the model synthesises, or the decoder
   reading its own synthesis. Closes with: one flat colour encoded and

@@ -2,7 +2,7 @@
 """B1: a run's triggered capture against the model's frame at the same
 poll, through the roundtrip.
 
-  python3 tools/b1-score.py runs/<stamp> rom.nes [capture-name] [--channel 3] [--nes ../nes]
+  python3 tools/b1-score.py runs/<stamp> rom.nes [capture-name] [--channel N] [--nes ../nes]
 
 Reads the run's `script.txt` for its `TRIG n` (the latch the capture
 was triggered at) and the capture's `.toml` for the sample rate and the
@@ -17,7 +17,12 @@ bridge's TRIG rides on CH1 beside the video on CH3) names each as
 `chN = "..."` in its `.toml`; the video is `--channel` (3, where the
 bench's video probe sits), and a capture that has no such channel is
 refused rather than scored on the trigger line, which is what the
-first E2 run of 2026-09-18 would have done through the `file =` line. Real captures are
+first E2 run of 2026-09-18 would have done through the `file =` line.
+
+The run's `knobs.toml` (tools/knobs.py) is written if the run has none
+and handed to the scorer as KNOBS=, so its report opens with the
+model's alignment and its source; `--channel` defaults to the file's
+`[capture] channel`. Real captures are
 recorded, not held: the exit status is the scorer's own, and the first
 region that misses is named in its table.
 
@@ -32,6 +37,9 @@ import subprocess
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import knobs  # noqa: E402
+
 
 def main():
     ap = argparse.ArgumentParser()
@@ -39,7 +47,7 @@ def main():
     ap.add_argument("rom")
     ap.add_argument("capture", nargs="?", default=None, help="the capture's name (default: the run's only one)")
     ap.add_argument("--nes", default=str(Path(__file__).resolve().parent.parent.parent / "nes"))
-    ap.add_argument("--channel", type=int, default=3, help="the video channel in a multi-channel capture")
+    ap.add_argument("--channel", type=int, default=None, help="the video channel in a multi-channel capture (default: the knobs file's)")
     ap.add_argument("--frames", type=int, default=2000, help="a ceiling on the frames the model runs to reach the latch")
     ap.add_argument("--synthetic", action="store_true")
     a = ap.parse_args()
@@ -54,13 +62,23 @@ def main():
     env = dict(os.environ)
     if script.exists():
         env["SCRIPT"] = str(script)
+    if not a.synthetic:
+        kpath = run / "knobs.toml"
+        if not kpath.exists():
+            print(f"b1-score: wrote {knobs.init(run)}")
+        env["KNOBS"] = str(kpath)
+        if a.channel is None:
+            m = re.search(r"^channel\s*=\s*(\d+)", kpath.read_text(), re.M)
+            a.channel = int(m.group(1)) if m else knobs.VIDEO_CHANNEL
+    elif a.channel is None:
+        a.channel = knobs.VIDEO_CHANNEL
     if trig is not None:
         env["LATCH"] = str(trig)
     cmd = ["cargo", "run", "--release", "-p", "nes-console", "--example", "capture-score", "--", a.rom, str(a.frames)]
     if a.synthetic:
         env["SYNTH_TRIGGER"] = "1"
     else:
-        tomls = sorted(run.glob("*.toml"))
+        tomls = sorted(t for t in run.glob("*.toml") if t.name != "knobs.toml")
         if a.capture:
             tomls = [run / f"{a.capture}.toml"]
         if len(tomls) != 1:
