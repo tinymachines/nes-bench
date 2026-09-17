@@ -699,3 +699,32 @@ hands lines over in 100 ms batches, so the short pulses are unproven rather
 than ineffective. The head daemon holds reset 0.5 s until the scope settles
 it on the latch line.
 
+
+## Where this pauses, 2026-09-17 evening
+
+The head's hands hold from the workstation, twice end to end, and the same
+run from the Pi itself holds everything but the power, which skipped
+because the front panel's POWER switch was on and bypassing K1. Two faults
+in the tool were found by running it on the Pi and are fixed: it ssh'd to
+127.0.0.1, which a Pi refuses on its own host key, so the pin was never
+driven; and the register walk raised on Pillow, which the Pi does not have,
+instead of skipping. A head run now opens the relay first and says when the
+switch is bypassing it.
+
+To pick this up:
+
+1. `scripts/hands-head.sh` on either machine with the console's POWER
+   switch OFF. From the workstation it does the register walk too.
+2. `scripts/hands-manual.sh` with the switch ON, which is the same two
+   measurements by hand and the thing that proves the front panel still
+   works in parallel with both modules.
+3. The eye's baseline, which is stale: the boards and the camera moved
+   three times on 2026-09-17. When the layout is final, read both boards
+   off fresh zoom-250 frames (`board-overlay.py --read-boards --frames
+   ...`), look at the rings on the holes, then `rig-check.py --baseline`.
+4. Then the milestone's order: the pad through the bridge (4.2, 5.2), which
+   settles J2's lead order and the last five checks on the as-built sheet,
+   and B1, the first recording.
+
+Left as found: GPIO27 low (the relay open), GPIO17 low, the bridge in MODE
+PASS, the scope on CH2 rising at 5 ms a division with all four channels on.
