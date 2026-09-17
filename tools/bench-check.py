@@ -242,6 +242,33 @@ class Scope:
                 self.cmd(f"{k} {v}")
 
 
+def have_pillow():
+    try:
+        import PIL  # noqa: F401
+        return True
+    except ImportError:
+        return False
+
+
+def on_the_pi(host):
+    """Whether the Pi's pins are this machine's. A Pi cannot always ssh to
+    itself (host key verification failed, 2026-09-17, which left the pin
+    undriven and the run confused), and it does not need to: the same
+    commands run here."""
+    import shutil
+    return host in ("127.0.0.1", "localhost", "::1", "") or shutil.which("pinctrl") is not None
+
+
+def pi_run(host, cmd, timeout=60, background=False):
+    """A shell command where the Pi's pins are: locally on the Pi, over ssh
+    from anywhere else."""
+    argv = ["bash", "-c", cmd] if on_the_pi(host) else [
+        "ssh", "-o", "ConnectTimeout=8", "-o", "BatchMode=yes", host, cmd]
+    if background:
+        return subprocess.Popen(argv, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    return subprocess.run(argv, capture_output=True, text=True, timeout=timeout)
+
+
 def load_png(path):
     from PIL import Image
     d = Path(path).read_bytes()
@@ -323,15 +350,17 @@ def main():
     pi = a.pi or baddr.rsplit(":", 1)[0]
     k1_was = None
     if a.hands == "head":
-        r = subprocess.run(["ssh", "-o", "ConnectTimeout=8", "-o", "BatchMode=yes", pi,
-                            # 12 s, not 6: two polls of 1199 carried nine clocks when the
-                            # window opened 6 s after the relay powered the console
-                            # (MEASURED 2026-09-17; four later windows, 4886 polls, all
-                            # eight). The gate stays strict and the game gets to boot.
-                            "pinctrl get 27; pinctrl set 27 op dh; sleep 12"], capture_output=True, text=True, timeout=60)
+        # 12 s, not 6: two polls of 1199 carried nine clocks when the window
+        # opened 6 s after the relay powered the console (MEASURED 2026-09-17;
+        # four later windows, 4886 polls, all eight). The gate stays strict
+        # and the game gets to boot.
+        r = pi_run(pi, "pinctrl get 27; pinctrl set 27 op dh; sleep 12", timeout=60)
         k1_was = "hi" if "| hi" in r.stdout else "lo" if "| lo" in r.stdout else None
         result["k1_found"] = k1_was
-        print(f"  console powered from the Pi, GPIO27 high (it was {k1_was}); waiting for the game")
+        if k1_was is None:
+            print(f"  GPIO27 could not be read or driven: {(r.stderr or r.stdout).strip()[:160]}")
+        else:
+            print(f"  console powered from the Pi, GPIO27 high (it was {k1_was}); waiting for the game")
 
     # polls: MODE PASS, the console's own polling through the bridge
     br.send("MODE PASS")
@@ -387,6 +416,8 @@ def main():
             check("walk", "SKIP", "no scope")
         elif not console:
             check("walk", "SKIP", "no polls: the console clocks the register")
+        elif not have_pillow():
+            check("walk", "SKIP", "no Pillow here: the walk reads the scope's screenshots (run it from the workstation)")
         else:
             import numpy as np
             sc.cmd(":CHANnel3:DISPlay OFF")
@@ -516,9 +547,11 @@ def main():
                     print(f"\n  {name}: {manual}, any time in the next {wait:.0f} s (listening now)")
                     gap, resumed, n = poll_gap(br, wait)
                     how = "by hand"
+                elif k1_was is None and name == "power":
+                    check(name, "FAIL", "GPIO27 was never driven: the message above says why")
+                    continue
                 else:
-                    proc = subprocess.Popen(["ssh", "-o", "ConnectTimeout=8", "-o", "BatchMode=yes", pi, head],
-                                            stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+                    proc = pi_run(pi, head, background=True)
                     gap, resumed, n = poll_gap(br, wait)
                     _out, err = proc.communicate(timeout=30)
                     how = f"from the Pi's GPIO{'17' if name == 'reset' else '27'}"
