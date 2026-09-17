@@ -25,9 +25,11 @@ trigger at latch 300 on CH1 (the DS1054Z has no EXT input; `ARM` on
 `EXT` is refused by name) and a two-channel 12 M point capture read off
 the scope in about a minute, during which the head answers no request
 (`bench.py run` waits through it). The account is in
-`docs/exercise.md`. Not yet under the head: `POWER` against the console
-with its switch off (`bench-check.py --hands head` has done it twice
-with pinctrl; that night the switch was on).
+`docs/exercise.md`, and, once the console's switch was off, `POWER ON`
+and `POWER OFF` from a head script: the console silent with the relay
+open, 713 polls in the 12 s it was on, silent again after (run
+`20260918-004151`). Every word in `docs/script.md` has now run on the
+part.
 
 On the Pi, one command installs the head as a service from this
 checkout (packages, the dialout group, the runs directory, a systemd

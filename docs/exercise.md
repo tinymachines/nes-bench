@@ -135,7 +135,10 @@ diagram's flows run:
   front switch was on, bypassing the relay: a fact about the switch,
   not the relay, which paused the console twice the day before with the
   switch off. E2 needs the reset hand only, so it ran with the switch
-  on.
+  on. Later that night, the switch off: no poll in 3 s with the relay
+  open, then a head script (`MODE PASS`, `RESET`, `POWER ON`, `WAIT 12
+  S`, `POWER OFF`) logged 713 polls, the console quiet again after
+  the off. Both hands hold under the head, which is what E1 needs.
 - **The part.** Run `20260918-000139`: reset, Start at 200 and 201,
   the trigger at latch 300, 12 M points on CH1 and CH3 at 50 MSa/s, the
   trigger at sample 5,000,000 with 140 ms of record behind it, read off
