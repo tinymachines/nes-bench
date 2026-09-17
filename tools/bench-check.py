@@ -72,8 +72,9 @@ import zlib
 from collections import Counter
 from pathlib import Path
 
-import numpy as np
-from PIL import Image
+# numpy and Pillow are imported where they are used, which is the register
+# walk's screenshot reading. Everything else here is sockets and text, so
+# this runs on the Pi, which has no Pillow (2026-09-17).
 
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "captures" / "bench"
@@ -218,6 +219,7 @@ class Scope:
 
 
 def load_png(path):
+    from PIL import Image
     d = Path(path).read_bytes()
     out, i = d[:8], 8
     while i < len(d):
@@ -231,6 +233,7 @@ def load_png(path):
 def trace(im, want):
     """The screen row of a channel's trace at every column, by its colour
     (CH4 blue, CH2 cyan), NaN where the trace is not drawn."""
+    import numpy as np
     a = np.asarray(im).astype(int)
     r, g, b = a[..., 0], a[..., 1], a[..., 2]
     m = (b > 150) & (r < 120) & (g < 150) if want == "blue" else (g > 150) & (b > 150) & (r < 120)
@@ -252,7 +255,10 @@ def main():
     ap.add_argument("--pi", help="user@host of the Pi, for --hands head (default: the bridge's host)")
     a = ap.parse_args()
     OUT.mkdir(parents=True, exist_ok=True)
-    bu = load(ROOT / "tools" / "bringup.py", "bringup")
+    try:
+        bu = load(ROOT / "tools" / "bringup.py", "bringup")
+    except Exception:          # bringup wants numpy; on the Pi pass --scope
+        bu = None
     rows, result = [], {"at": time.strftime("%Y-%m-%d %H:%M %Z"), "checks": []}
 
     def check(name, state, detail):
@@ -276,7 +282,7 @@ def main():
     # scope
     sc = None
     if not a.no_scope:
-        saddr = bu.scope_address(a.scope)
+        saddr = bu.scope_address(a.scope) if bu else a.scope
         if not saddr:
             check("scope", "SKIP", "no address (pass --scope, set $SCOPE, or bench.local.md)")
         else:
@@ -358,6 +364,7 @@ def main():
         elif not console:
             check("walk", "SKIP", "no polls: the console clocks the register")
         else:
+            import numpy as np
             sc.cmd(":CHANnel3:DISPlay OFF")
             sc.cmd(":CHANnel1:DISPlay OFF")
             for ch in (2, 4):
