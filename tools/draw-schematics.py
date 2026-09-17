@@ -595,7 +595,7 @@ def _v1b_body_3(sh):
     x, y = sh.slot(0, 2, 0)
     sh.chip(x, y, 210, "J3", "front panel harness (breakout)", [
         (1, "1 brown, power", "PWR_BROWN"), (2, "2 red, power", "PWR_RED"),
-        (None, "reset high: 3 or 4", "RST_HI"), (None, "reset low: 3 or 4", "RST_LO"),
+        (3, "3 orange, reset +", "RST_HI"), (4, "4 yellow, reset -", "RST_LO"),
         (5, "5 white, LED", "NC")], [],
         conn=True, extra="in parallel with the front panel's own wiring")
     band2 = "WHAT THE HARNESS IS, MEASURED 2026-09-17, AND WHAT IS STILL TO METER"
@@ -604,10 +604,10 @@ def _v1b_body_3(sh):
         "the back (lab/06-breakout-map-power-reset.jpg), tapped in parallel with the front panel.",
         "Metered unpowered by the user: 1 brown and 2 red are the power switch; 3 orange and 4 yellow",
         "the reset button; 4 yellow and 5 white the LED. No pin is ground: the front panel is grounded",
-        "by its pad and the metal housing. OK1 is a switch with a polarity, so the side of the reset",
-        "button that reads HIGHER takes OUT and the other takes GND. Console on, meter orange against",
-        "yellow with the button released: the positive one is the high side. Step 6.2 records it.",
-        "GPIO17 high closes OK1: the reset button, pressed by the head."])
+        "by its pad and the metal housing. OK1's output is a transistor and has a polarity. MEASURED",
+        "2026-09-17, console on and the button released: orange sits 4.40 V above yellow, so OUT goes",
+        "on orange and GND on yellow. Held, the button reads about 200 ohms between them, which a",
+        "saturated transistor beats. GPIO17 high closes OK1: the reset button, pressed by the head."])
     sh.note(*sh.slot(1, 1), [
         "K1's contact is in parallel with the front panel's power switch: COM on brown, NO on red",
         "(a contact has no polarity). Either closes the console's supply, so the front switch stays",

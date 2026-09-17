@@ -260,7 +260,8 @@ def head_pinmap(sheet="bench-v1b-head"):
     pwr = ("The power and reset breakout, J3",
            "Five ways straight through, colour for colour with the front panel's harness, pin 1 at "
            "the back, tapped in parallel with the panel. What each way is was metered 2026-09-17; "
-           "no way is ground. Which of orange and yellow is the reset button's high side is step 6.2's.",
+           "no way is ground. Orange sits 4.40 V above yellow with the console on and the button "
+           "released (2026-09-17), so OK1's OUT goes on orange and its GND on yellow.",
            ["pin", "NES harness", "breakout lead", "what it is"], prows)
     wrows = []
     for net in sorted(nets, key=lambda k: (k in nl.RAILS, k)):
@@ -269,8 +270,8 @@ def head_pinmap(sheet="bench-v1b-head"):
             ends.append(nl.OFFSHEET[net])     # a cable off the sheet, named by where it goes
         wrows.append([net, ends[0], "; ".join(ends[1:])])
     wiring = ("Every wire on sheet 3",
-              "One row per net, read off the schematic. RST_HI and RST_LO are orange and yellow, the "
-              "reset button, in whichever order step 6.2 meters. PWR_BROWN and PWR_RED put the relay "
+              "One row per net, read off the schematic. RST_HI is 3 orange and RST_LO is 4 yellow, the "
+              "reset button, orange the higher of the two. PWR_BROWN and PWR_RED put the relay "
               "across the front panel's power switch, which stays off while the head runs the power.",
               ["net", "from", "to"], wrows)
     return [wiring, head, pwr]

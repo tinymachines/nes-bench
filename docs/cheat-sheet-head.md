@@ -12,7 +12,7 @@ Sheet: `bench-v1b-head`.
 
 ## Every wire on sheet 3
 
-One row per net, read off the schematic. RST_HI and RST_LO are orange and yellow, the reset button, in whichever order step 6.2 meters. PWR_BROWN and PWR_RED put the relay across the front panel's power switch, which stays off while the head runs the power.
+One row per net, read off the schematic. RST_HI is 3 orange and RST_LO is 4 yellow, the reset button, orange the higher of the two. PWR_BROWN and PWR_RED put the relay across the front panel's power switch, which stays off while the head runs the power.
 
 | net | from | to |
 |---|---|---|
@@ -22,8 +22,8 @@ One row per net, read off the schematic. RST_HI and RST_LO are orange and yellow
 | PWR_DRIVE | PI GPIO27 (position 13) | K1 IN |
 | PWR_RED | K1 NO | J3-2 2 red, power |
 | RST_DRIVE | PI GPIO17 (position 11) | OK1 INPUT + |
-| RST_HI | OK1 OUT | J3 reset high: 3 or 4 |
-| RST_LO | OK1 GND | J3 reset low: 3 or 4 |
+| RST_HI | OK1 OUT | J3-3 3 orange, reset + |
+| RST_LO | OK1 GND | J3-4 4 yellow, reset - |
 | GND | PI GND (position 6) | OK1 INPUT -; K1 GND |
 | PI_5V | PI 5V (position 2) | K1 VCC |
 
@@ -40,14 +40,14 @@ Four Dupont leads off the Pi's header, no breakout (2026-09-10). Positions are t
 
 ## The power and reset breakout, J3
 
-Five ways straight through, colour for colour with the front panel's harness, pin 1 at the back, tapped in parallel with the panel. What each way is was metered 2026-09-17; no way is ground. Which of orange and yellow is the reset button's high side is step 6.2's.
+Five ways straight through, colour for colour with the front panel's harness, pin 1 at the back, tapped in parallel with the panel. What each way is was metered 2026-09-17; no way is ground. Orange sits 4.40 V above yellow with the console on and the button released (2026-09-17), so OK1's OUT goes on orange and its GND on yellow.
 
 | pin | NES harness | breakout lead | what it is |
 |---|---|---|---|
 | 1 | brown | brown | power switch |
 | 2 | red | red | power switch |
-| 3 | orange | orange | reset button |
-| 4 | yellow | yellow | reset button and LED |
+| 3 | orange | orange | reset, + side (4.40 V) |
+| 4 | yellow | yellow | reset, - side, and LED |
 | 5 | white | white | LED |
 
 ## OK1: PC817 module
@@ -58,8 +58,8 @@ One optocoupler on a carrier: an LED behind a series resistor on the input side,
 |---|---|---|---|
 | input | INPUT + | LED anode via the series resistor: high turns it on | RST_DRIVE: PI GPIO17 (position 11) |
 | input | INPUT - | LED cathode, the input side's return | the GND rail |
-| output | OUT | collector: pulled to GND while the LED is lit | RST_HI: J3 reset high: 3 or 4 |
-| output | GND | emitter, the output side's own ground | RST_LO: J3 reset low: 3 or 4 |
+| output | OUT | collector: pulled to GND while the LED is lit | RST_HI: J3-3 |
+| output | GND | emitter, the output side's own ground | RST_LO: J3-4 |
 | output | VCC | pull-up supply for OUT; open, so OUT is open collector | no connection: left open on purpose |
 
 ## K1: relay module, 5 V coil
@@ -85,8 +85,8 @@ cd ~/nes-bench && yes '' | python3 tools/bringup.py --step 6.2 --bridge /dev/tty
 
 **6.2 The reset optocoupler pulses the console**
 
-- The breakout J3 is five ways straight through, colour for colour (1 brown, 2 red, 3 orange, 4 yellow, 5 white); 3 orange and 4 yellow are the reset button (metered 2026-09-17). Console on, button released: meter orange against yellow. The positive one is the button's high side.
-- PC817 module: OUT to the high side, its GND to the other, VCC unconnected, and the Pi's GPIO17 to INPUT + with INPUT - to the Pi's GND. The front panel's button stays wired in parallel.
+- The breakout J3 is five ways straight through, colour for colour (1 brown, 2 red, 3 orange, 4 yellow, 5 white); 3 orange and 4 yellow are the reset button, orange 4.40 V above yellow with the console on (MEASURED 2026-09-17).
+- PC817 module: OUT to 3 orange, its GND to 4 yellow, VCC unconnected, and the Pi's GPIO17 to INPUT + with INPUT - to the Pi's GND. The front panel's button stays wired in parallel.
 
 **6.3 The power relay switches the console**
 

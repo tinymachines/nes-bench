@@ -33,8 +33,8 @@ Five ways straight through, colour for colour with the front panel's harness (do
 |---|---|---|---|
 | 1 | brown | brown | power switch |
 | 2 | red | red | power switch |
-| 3 | orange | orange | reset button |
-| 4 | yellow | yellow | reset button and LED |
+| 3 | orange | orange | reset, + side (4.40 V) |
+| 4 | yellow | yellow | reset, - side, and LED |
 | 5 | white | white | LED |
 
 ## The head's four jumpers

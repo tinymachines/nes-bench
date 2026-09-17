@@ -95,9 +95,11 @@
 <text class="pin" x="821.5" y="372.0" text-anchor="start" transform="rotate(-90 821.5 372.0)">2 red, power</text>
 <text class="pinno" x="822.0" y="398.0" text-anchor="start">2</text>
 <line class="stub" x1="848.0" y1="384.0" x2="848.0" y2="402.0"/>
-<text class="pin" x="851.5" y="372.0" text-anchor="start" transform="rotate(-90 851.5 372.0)">reset high: 3 or 4</text>
+<text class="pin" x="851.5" y="372.0" text-anchor="start" transform="rotate(-90 851.5 372.0)">3 orange, reset +</text>
+<text class="pinno" x="852.0" y="398.0" text-anchor="start">3</text>
 <line class="stub" x1="878.0" y1="384.0" x2="878.0" y2="402.0"/>
-<text class="pin" x="881.5" y="372.0" text-anchor="start" transform="rotate(-90 881.5 372.0)">reset low: 3 or 4</text>
+<text class="pin" x="881.5" y="372.0" text-anchor="start" transform="rotate(-90 881.5 372.0)">4 yellow, reset -</text>
+<text class="pinno" x="882.0" y="398.0" text-anchor="start">4</text>
 <line class="stub" x1="908.0" y1="384.0" x2="908.0" y2="402.0"/>
 <text class="pin" x="911.5" y="372.0" text-anchor="start" transform="rotate(-90 911.5 372.0)">5 white, LED</text>
 <text class="pinno" x="912.0" y="398.0" text-anchor="start">5</text>

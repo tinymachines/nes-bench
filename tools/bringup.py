@@ -346,7 +346,10 @@ POWER_RESET_LEADS = [(1, "brown"), (2, "red"), (3, "orange"), (4, "yellow"), (5,
 # with the power switch, 3 and 4 with the reset button, 4 and 5 are the LED.
 # No way is ground (the front panel is grounded by its pad and housing).
 # Which of 3 and 4 is the reset button's HIGH side is step 6.2's question.
-POWER_RESET_ROLES = {1: "power switch", 2: "power switch", 3: "reset button", 4: "reset button and LED", 5: "LED"}
+# Which of 3 and 4 is the button's high side: MEASURED 2026-09-17, console
+# on and the button released, orange 4.40 V above yellow.
+POWER_RESET_ROLES = {1: "power switch", 2: "power switch", 3: "reset, + side (4.40 V)",
+                     4: "reset, - side, and LED", 5: "LED"}
 
 # The ribbon from the UNO's digital header, read off the header in the
 # photographs of 2026-09-11 (docs/as-built-v1b.md). Nine wires on
@@ -455,8 +458,8 @@ STEPS = [
       "trigger_reaches_scope",
       photos=["06-trigger-cable.jpg"]),
     S("6.2", "The head's hands", "The reset optocoupler pulses the console",
-      [f"The breakout J3 is five ways straight through, colour for colour ({POWER_RESET_WORDS}); 3 orange and 4 yellow are the reset button (metered 2026-09-17). Console on, button released: meter orange against yellow. The positive one is the button's high side.",
-       "PC817 module: OUT to the high side, its GND to the other, VCC unconnected, and the Pi's GPIO17 to INPUT + with INPUT - to the Pi's GND. The front panel's button stays wired in parallel."],
+      [f"The breakout J3 is five ways straight through, colour for colour ({POWER_RESET_WORDS}); 3 orange and 4 yellow are the reset button, orange 4.40 V above yellow with the console on (MEASURED 2026-09-17).",
+       "PC817 module: OUT to 3 orange, its GND to 4 yellow, VCC unconnected, and the Pi's GPIO17 to INPUT + with INPUT - to the Pi's GND. The front panel's button stays wired in parallel."],
       "reset_pulse",
       photos=["06-reset-pads.jpg", "06-breakout-map-power-reset.jpg"]),
     S("6.3", "The head's hands", "The power relay switches the console",
@@ -872,9 +875,9 @@ def check_trigger_reaches_scope(bench, step):
 
 
 def check_reset_pulse(bench, step):
-    say(f"  {DIM}Console on, button released: meter orange (3) against yellow (4).{OFF}")
-    gnd = ask("  which of the two is the LOW side, orange or yellow")
-    v = ask_float("  the high side's level against the low side", "V")
+    say(f"  {DIM}Console on, button released: orange (3) reads 4.40 V above yellow (4), MEASURED 2026-09-17.{OFF}")
+    gnd = ask("  which way is OK1's GND on (yellow, unless this console differs)")
+    v = ask_float("  orange against yellow, button released", "V")
     say(f"  {DIM}Now drive it. On the Pi: gpioset (or the head's RESET word).{OFF}")
     ok = ask_yes("  did the console reset when the pin was pulsed")
     d = {"ground_pad": gnd, "pulled_up_v": v, "console_reset": ok}

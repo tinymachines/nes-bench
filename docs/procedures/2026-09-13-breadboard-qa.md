@@ -640,3 +640,9 @@ A resistance says nothing about which side is high; that still takes the
 powered reading. It does say the button is not a dead short, which OK1's
 transistor does not need to match: saturated, it sits well under the
 button's 200 ohms at the few milliamps a pulled-up line draws.
+
+MEASURED 2026-09-17 (the user), console on and the button released: orange
+sits 4.40 V above yellow. So orange is the reset button's high side and
+takes OK1's OUT; yellow takes OK1's GND. The sheets number those two pins
+now and the bring-up's 6.2 says the same. The reading also bounds what the
+coupler stands off: 4.4 V across a part rated about 35 V.

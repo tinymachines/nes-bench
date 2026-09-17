@@ -135,11 +135,13 @@
 <path class="wire" d="M843.4000000000001,174.0 l-6,-6 h-53.4 v12 h53.4 z"/>
 <text class="net" x="834.4000000000001" y="177.5" text-anchor="end">PWR_RED</text>
 <line class="lead" x1="843.4000000000001" y1="200.0" x2="869.4000000000001" y2="200.0"/>
-<text class="pin" x="874.4000000000001" y="203.5" text-anchor="start">reset high: 3 or 4</text>
+<text class="pin" x="874.4000000000001" y="203.5" text-anchor="start">3 orange, reset +</text>
+<text class="pinno" x="865.4000000000001" y="198.0" text-anchor="end">3</text>
 <path class="wire" d="M843.4000000000001,200.0 l-6,-6 h-47.2 v12 h47.2 z"/>
 <text class="net" x="834.4000000000001" y="203.5" text-anchor="end">RST_HI</text>
 <line class="lead" x1="843.4000000000001" y1="226.0" x2="869.4000000000001" y2="226.0"/>
-<text class="pin" x="874.4000000000001" y="229.5" text-anchor="start">reset low: 3 or 4</text>
+<text class="pin" x="874.4000000000001" y="229.5" text-anchor="start">4 yellow, reset -</text>
+<text class="pinno" x="865.4000000000001" y="224.0" text-anchor="end">4</text>
 <path class="wire" d="M843.4000000000001,226.0 l-6,-6 h-47.2 v12 h47.2 z"/>
 <text class="net" x="834.4000000000001" y="229.5" text-anchor="end">RST_LO</text>
 <line class="lead" x1="843.4000000000001" y1="252.0" x2="869.4000000000001" y2="252.0"/>
@@ -150,10 +152,10 @@
 <text class="note" x="48.0" y="574.0" text-anchor="start">the back (lab/06-breakout-map-power-reset.jpg), tapped in parallel with the front panel.</text>
 <text class="note" x="48.0" y="587.0" text-anchor="start">Metered unpowered by the user: 1 brown and 2 red are the power switch; 3 orange and 4 yellow</text>
 <text class="note" x="48.0" y="600.0" text-anchor="start">the reset button; 4 yellow and 5 white the LED. No pin is ground: the front panel is grounded</text>
-<text class="note" x="48.0" y="613.0" text-anchor="start">by its pad and the metal housing. OK1 is a switch with a polarity, so the side of the reset</text>
-<text class="note" x="48.0" y="626.0" text-anchor="start">button that reads HIGHER takes OUT and the other takes GND. Console on, meter orange against</text>
-<text class="note" x="48.0" y="639.0" text-anchor="start">yellow with the button released: the positive one is the high side. Step 6.2 records it.</text>
-<text class="note" x="48.0" y="652.0" text-anchor="start">GPIO17 high closes OK1: the reset button, pressed by the head.</text>
+<text class="note" x="48.0" y="613.0" text-anchor="start">by its pad and the metal housing. OK1's output is a transistor and has a polarity. MEASURED</text>
+<text class="note" x="48.0" y="626.0" text-anchor="start">2026-09-17, console on and the button released: orange sits 4.40 V above yellow, so OUT goes</text>
+<text class="note" x="48.0" y="639.0" text-anchor="start">on orange and GND on yellow. Held, the button reads about 200 ohms between them, which a</text>
+<text class="note" x="48.0" y="652.0" text-anchor="start">saturated transistor beats. GPIO17 high closes OK1: the reset button, pressed by the head.</text>
 <text class="note" x="580.2" y="561.0" text-anchor="start">K1's contact is in parallel with the front panel's power switch: COM on brown, NO on red</text>
 <text class="note" x="580.2" y="574.0" text-anchor="start">(a contact has no polarity). Either closes the console's supply, so the front switch stays</text>
 <text class="note" x="580.2" y="587.0" text-anchor="start">OFF while the head runs the power, and does the power by hand while the relay rests open.</text>

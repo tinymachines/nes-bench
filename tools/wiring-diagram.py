@@ -109,8 +109,8 @@ ROW_HEAD = [
             "bottom": [(None, "COM"), (None, "NO"), (None, "NC")]}),
     ("J3", {"kind": "header", "label": "J3 front panel", "sub": "the breakout, in parallel with the panel", "label_at": "top",
             "top": [],
-            "bottom": [(1, "1 brown, power"), (2, "2 red, power"), (None, "reset high: 3 or 4"),
-                       (None, "reset low: 3 or 4"), (5, "5 white, LED")]}),
+            "bottom": [(1, "1 brown, power"), (2, "2 red, power"), (3, "3 orange, reset +"),
+                       (4, "4 yellow, reset -"), (5, "5 white, LED")]}),
 ]
 
 # What differs between the two sheets: the netlist, the row, the rails,

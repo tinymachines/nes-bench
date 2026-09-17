@@ -281,8 +281,8 @@ Photographs:
 
 ### 6.2  The reset optocoupler pulses the console
 
-- The breakout J3 is five ways straight through, colour for colour (1 brown, 2 red, 3 orange, 4 yellow, 5 white); 3 orange and 4 yellow are the reset button (metered 2026-09-17). Console on, button released: meter orange against yellow. The positive one is the button's high side.
-- PC817 module: OUT to the high side, its GND to the other, VCC unconnected, and the Pi's GPIO17 to INPUT + with INPUT - to the Pi's GND. The front panel's button stays wired in parallel.
+- The breakout J3 is five ways straight through, colour for colour (1 brown, 2 red, 3 orange, 4 yellow, 5 white); 3 orange and 4 yellow are the reset button, orange 4.40 V above yellow with the console on (MEASURED 2026-09-17).
+- PC817 module: OUT to 3 orange, its GND to 4 yellow, VCC unconnected, and the Pi's GPIO17 to INPUT + with INPUT - to the Pi's GND. The front panel's button stays wired in parallel.
 
 Then it records which reset pad is ground and checks the pulse resets the console.
 
