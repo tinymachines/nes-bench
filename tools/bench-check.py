@@ -348,15 +348,28 @@ def main():
     # the head's power: with the front switch off the console is dark until
     # K1 closes, so --hands head closes it first and puts it back after
     pi = a.pi or baddr.rsplit(":", 1)[0]
-    k1_was = None
+    k1_was, bypassed = None, False
     if a.hands == "head":
         # 12 s, not 6: two polls of 1199 carried nine clocks when the window
         # opened 6 s after the relay powered the console (MEASURED 2026-09-17;
         # four later windows, 4886 polls, all eight). The gate stays strict
         # and the game gets to boot.
-        r = pi_run(pi, "pinctrl get 27; pinctrl set 27 op dh; sleep 12", timeout=60)
+        r = pi_run(pi, "pinctrl get 27; pinctrl set 27 op dl; sleep 3", timeout=40)
         k1_was = "hi" if "| hi" in r.stdout else "lo" if "| lo" in r.stdout else None
         result["k1_found"] = k1_was
+        # With the relay open the console should be dark. If it polls anyway,
+        # the front panel's switch is on and bypassing the relay: the head can
+        # switch nothing, and the power check would fail for a reason that has
+        # nothing to do with the wiring (seen 2026-09-17 on the Pi).
+        br0 = Bridge(baddr)
+        br0.send("MODE PASS")
+        bypassed = len([l for l in br0.read(3.0) if l.startswith("L ")]) > 20
+        br0.close()
+        result["switch_bypass"] = bypassed
+        if bypassed:
+            print("  the console polls with the relay open: the front panel's POWER switch is ON,"
+                  "\n  which bypasses K1. Turn it off for a head run.")
+        r = pi_run(pi, "pinctrl set 27 op dh; sleep 12", timeout=60)
         if k1_was is None:
             print(f"  GPIO27 could not be read or driven: {(r.stderr or r.stdout).strip()[:160]}")
         else:
@@ -549,6 +562,9 @@ def main():
                     how = "by hand"
                 elif k1_was is None and name == "power":
                     check(name, "FAIL", "GPIO27 was never driven: the message above says why")
+                    continue
+                elif bypassed and name == "power":
+                    check(name, "SKIP", "the front panel's POWER switch is on, bypassing K1: nothing for the head to switch")
                     continue
                 else:
                     proc = pi_run(pi, head, background=True)
