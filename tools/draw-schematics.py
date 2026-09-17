@@ -591,7 +591,7 @@ def _v1b_body_3(sh):
             extra="open collector across the reset button")
     x, y = sh.slot(0, 1, 1)
     sh.chip(x, y, 150, "K1", "relay module, 5 V coil", [(None, "IN", "PWR_DRIVE"), (None, "GND", "GND"), (None, "VCC", "PI_5V")],
-            [(None, "COM", "PWR_BROWN"), (None, "NO", "PWR_RED"), (None, "NC", "NC")], extra="opto input, active low")
+            [(None, "COM", "PWR_BROWN"), (None, "NO", "PWR_RED"), (None, "NC", "NC")], extra="MEASURED: GPIO27 high powers the console")
     x, y = sh.slot(0, 2, 0)
     sh.chip(x, y, 210, "J3", "front panel harness (breakout)", [
         (1, "1 brown, power", "PWR_BROWN"), (2, "2 red, power", "PWR_RED"),
@@ -612,8 +612,9 @@ def _v1b_body_3(sh):
         "K1's contact is in parallel with the front panel's power switch: COM on brown, NO on red",
         "(a contact has no polarity). Either closes the console's supply, so the front switch stays",
         "OFF while the head runs the power, and does the power by hand while the relay rests open.",
-        "GPIO27 low closes K1; the Pi's boot config holds GPIO27 high, so the relay rests open from",
-        "power-up. Coil from the Pi's 5 V pin (position 2), about 80 mA; GND is position 6.",
+        "MEASURED 2026-09-17 at the console, not read off the module: GPIO27 HIGH powers it (video",
+        "0.88 Vpp, the port's latch idling at 4.3 V) and LOW turns it off, so the boot config holds",
+        "GPIO27 LOW and the console rests off. Coil from the Pi's 5 V pin (position 2); GND is 6.",
         "The pair carries the adapter's low voltage and the console's current, well inside the",
         "contact's 10 A. MAINS SAFETY: nothing on this sheet is ever on the mains side."])
 

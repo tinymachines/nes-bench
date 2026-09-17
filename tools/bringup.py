@@ -464,7 +464,7 @@ STEPS = [
       photos=["06-reset-pads.jpg", "06-breakout-map-power-reset.jpg"]),
     S("6.3", "The head's hands", "The power relay switches the console",
       ["The relay's COM and NO across J3's 1 brown and 2 red, the front panel's power switch (metered 2026-09-17), in parallel with it. The front switch stays OFF for this step. MAINS SAFETY: nothing here is ever on the mains side.",
-       "Relay module VCC to the Pi's 5V pin, IN to GPIO27 (active low), GND to the Pi's GND."],
+       "Relay module VCC to the Pi's 5V pin, IN to GPIO27 (high powers the console, MEASURED 2026-09-17), GND to the Pi's GND."],
       "power_relay",
       photos=["06-relay-inline.jpg"]),
 ]

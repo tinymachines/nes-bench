@@ -44,7 +44,7 @@ Four Dupont leads off the Pi's header, no breakout (2026-09-10). Header position
 | Pi pin | pos. | to | role |
 |---|---|---|---|
 | GPIO17 | 11 | PC817 module INPUT + | reset, 100 ms high |
-| GPIO27 | 13 | relay module IN | power, active low |
+| GPIO27 | 13 | relay module IN | power: high is on |
 | 5V | 2 | relay module VCC | the coil's supply |
 | GND | 6 | PC817 IN-, relay GND | the one ground lent |
 

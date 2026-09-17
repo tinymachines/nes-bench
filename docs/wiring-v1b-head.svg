@@ -70,7 +70,7 @@
 <line class="stub" x1="399.0" y1="415.0" x2="409.0" y2="405.0"/>
 <rect class="hdr" x="544" y="214" width="104" height="170" rx="4"/>
 <text class="ref" x="596.0" y="297.0" text-anchor="middle">K1 relay module</text>
-<text class="note" x="596.0" y="312.0" text-anchor="middle">5 V coil, IN active low</text>
+<text class="note" x="596.0" y="312.0" text-anchor="middle">5 V coil; GPIO27 high powers the console</text>
 <line class="stub" x1="566.0" y1="214.0" x2="566.0" y2="196.0"/>
 <text class="pin" x="569.5" y="226.0" text-anchor="end" transform="rotate(-90 569.5 226.0)">VCC</text>
 <line class="stub" x1="596.0" y1="214.0" x2="596.0" y2="196.0"/>

@@ -126,7 +126,7 @@ CHIPS = {
 # inside row, and is what a jumper actually lands on.
 PI_HEADER = [
     ("GPIO17", 11, "PC817 module INPUT +", "reset, 100 ms high"),
-    ("GPIO27", 13, "relay module IN", "power, active low"),
+    ("GPIO27", 13, "relay module IN", "power: high is on"),
     ("5V", 2, "relay module VCC", "the coil's supply"),
     ("GND", 6, "PC817 IN-, relay GND", "the one ground lent"),
 ]
@@ -154,15 +154,15 @@ MODULES = {
         ],
     },
     "relay module, 5 V coil": {
-        "what": ("A 5 V coil relay on a carrier with an opto-isolated, active-low input: IN low "
-                 "lights the carrier's optocoupler, which drives the coil's transistor, and the "
-                 "contact moves. The coil takes about 80 mA from VCC, which is why it is on the "
-                 "Pi's 5 V pin and not a GPIO. The contact is a changeover: COM meets NO while the "
-                 "coil is on and NC while it is off, so with the Pi off or rebooting NO is open."),
+        "what": ("A 5 V coil relay on a carrier with an opto-isolated input, driving the coil's "
+                 "transistor. The coil takes about 80 mA from VCC, which is why it is on the Pi's "
+                 "5 V pin and not a GPIO. The contact is a changeover, COM to NO or NC. MEASURED "
+                 "2026-09-17 at the console rather than read off the module: GPIO27 HIGH powers "
+                 "the console and LOW turns it off, which is why the boot config rests it low."),
         "pins": [
             ("coil", "VCC", "coil and carrier supply, 5 V"),
             ("coil", "GND", "coil and carrier return"),
-            ("coil", "IN", "control, active low: low turns the relay on"),
+            ("coil", "IN", "control: GPIO27 high is the console on (measured)"),
             ("contact", "COM", "the contact's common"),
             ("contact", "NO", "normally open: meets COM while the coil is on"),
             ("contact", "NC", "normally closed: meets COM while the coil is off"),

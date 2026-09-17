@@ -104,7 +104,7 @@ ROW_HEAD = [
     ("OK1", {"kind": "header", "label": "OK1 PC817 module", "sub": "the reset button, pressed by the head",
              "top": [(None, "INPUT +"), (None, "INPUT -")],
              "bottom": [(None, "OUT"), (None, "GND"), (None, "VCC")]}),
-    ("K1", {"kind": "header", "label": "K1 relay module", "sub": "5 V coil, IN active low",
+    ("K1", {"kind": "header", "label": "K1 relay module", "sub": "5 V coil; GPIO27 high powers the console",
             "top": [(None, "VCC"), (None, "GND"), (None, "IN")],
             "bottom": [(None, "COM"), (None, "NO"), (None, "NC")]}),
     ("J3", {"kind": "header", "label": "J3 front panel", "sub": "the breakout, in parallel with the panel", "label_at": "top",

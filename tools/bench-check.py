@@ -37,9 +37,9 @@ in the next experiment's result.
   power     with --hands: the console goes off and comes back. Manual:
             you throw the front panel's switch off, count three, and on,
             with the relay resting open. Head: the front switch stays
-            OFF; the Pi closes K1 before the run (GPIO27 low: the input
-            is active low), opens it for three seconds and closes it
-            again. K1 is in parallel with the front switch (J3 brown and
+            OFF; the Pi powers the console before the run (GPIO27 high,
+            MEASURED 2026-09-17), drops it for three seconds and brings
+            it back. K1 is in parallel with the front switch (J3 brown and
             red), so either one powers the console. The stream stops and
             resumes, a gap of at least a second and a half. The pin is
             put back as it was found at the end.
@@ -65,6 +65,7 @@ import os
 import re
 import socket
 import struct
+import subprocess
 import sys
 import time
 import zlib
@@ -79,14 +80,21 @@ OUT = ROOT / "captures" / "bench"
 sys.path.insert(0, str(ROOT / "tools"))
 from loadmod import load  # noqa: E402
 
-WALK = ("00", "ff", "01", "02", "04", "08", "10", "20", "40", "80", "06", "7f", "55", "aa", "1b")
+# 55 and aa first: their bits alternate, so their own transitions give the
+# clock period and the first slot boundary for the rest of the run.
+WALK = ("55", "aa", "00", "ff", "01", "02", "04", "08", "10", "20", "40", "80", "06", "7f", "1b")
 # The screen's geometry at 20 us/div with the trigger 80 us from the left
 # edge: the graticule runs x 84..684 for 200 us, so 3 px a microsecond.
 # The bit slots after the latch's fall: the first clock about 7 us after
 # it and one every 13 us; the first bit is read at 3.5 us, the others
 # 6.5 us into their slot. MEASURED 2026-09-15 on the walk's screenshots.
 PX_PER_US = 3.0
-MIDS_US = [3.5] + [7 + 13 * k + 6.5 for k in range(7)]
+# The authored fallback, from the walk of 2026-09-15: the first clock about
+# 7 us after the latch's fall and one every 13 us. The game does not clock
+# every poll alike, and a different game state clocks faster (MEASURED
+# 2026-09-17: byte 00 read as if two bits past the eighth clock), so the
+# timing is taken from each capture's own transitions where it can be.
+FIRST_US, PERIOD_US = 7.0, 13.0
 TRACE_LOW_Y = 230        # a trace centre below this screen row is the high level
 
 
@@ -144,6 +152,7 @@ class Scope:
         time.sleep(0.06)
 
     def ask(self, c):
+        self.drain()
         self.s.sendall((c + "\n").encode())
         out = b""
         self.s.settimeout(3)
@@ -154,10 +163,29 @@ class Scope:
             pass
         return out.decode(errors="replace").strip()
 
+    def drain(self):
+        """Whatever the instrument still had to say. A query whose answer
+        arrived late leaves a line in the socket, and the next read takes
+        it for the head of its own answer: a screenshot read came back as
+        b'OP\\n#90000...', the tail of an earlier :TRIGger:STATus?."""
+        self.s.settimeout(0.05)
+        out = b""
+        try:
+            while True:
+                c = self.s.recv(1 << 16)
+                if not c:
+                    break
+                out += c
+        except (socket.timeout, OSError):
+            pass
+        return out
+
     def shot(self, path):
         """A screenshot as the scope sends it (its PNG chunk CRCs are wrong;
-        load() rewrites them)."""
+        load() rewrites them). The TMC block is found in the stream rather
+        than assumed to start it."""
         for _ in range(3):
+            self.drain()
             self.s.sendall(b":DISPlay:DATA? ON,OFF,PNG\n")
             buf, t1 = b"", time.time()
             self.s.settimeout(4)
@@ -169,11 +197,13 @@ class Scope:
                 if not c:
                     break
                 buf += c
-                if len(buf) > 11 and len(buf) >= 11 + int(buf[2:11]):
+                i = buf.find(b"#9")
+                if i >= 0 and len(buf) >= i + 11 and buf[i + 2:i + 11].isdigit() and len(buf) >= i + 11 + int(buf[i + 2:i + 11]):
                     break
-            if len(buf) > 11:
-                n = int(buf[2:11])
-                Path(path).write_bytes(buf[11:11 + n])
+            i = buf.find(b"#9")
+            if i >= 0 and len(buf) >= i + 11 and buf[i + 2:i + 11].isdigit():
+                n = int(buf[i + 2:i + 11])
+                Path(path).write_bytes(buf[i + 11:i + 11 + n])
                 return n
             time.sleep(0.5)
         return 0
@@ -264,10 +294,14 @@ def main():
     k1_was = None
     if a.hands == "head":
         r = subprocess.run(["ssh", "-o", "ConnectTimeout=8", "-o", "BatchMode=yes", pi,
-                            "pinctrl get 27; pinctrl set 27 op dl; sleep 4"], capture_output=True, text=True, timeout=40)
+                            # 12 s, not 6: two polls of 1199 carried nine clocks when the
+                            # window opened 6 s after the relay powered the console
+                            # (MEASURED 2026-09-17; four later windows, 4886 polls, all
+                            # eight). The gate stays strict and the game gets to boot.
+                            "pinctrl get 27; pinctrl set 27 op dh; sleep 12"], capture_output=True, text=True, timeout=60)
         k1_was = "hi" if "| hi" in r.stdout else "lo" if "| lo" in r.stdout else None
         result["k1_found"] = k1_was
-        print(f"  K1 closed from the Pi (GPIO27 was {k1_was}); waiting for the game")
+        print(f"  console powered from the Pi, GPIO27 high (it was {k1_was}); waiting for the game")
 
     # polls: MODE PASS, the console's own polling through the bridge
     br.send("MODE PASS")
@@ -336,10 +370,19 @@ def main():
             br.read(0.3)
             res, wrong, missing, retaken = {}, [], [], []
 
+            timing = {"first": FIRST_US, "period": PERIOD_US, "from": "authored 2026-09-15"}
+
             def read_byte(byte, path):
                 """One poll: the scope stopped on the latch's fall, D0 read
-                at the eight mid-slots. Returns the pressed bits, or None
-                when the scope did not stop."""
+                at the middle of each of the eight bit slots. Returns the
+                pressed bits, or None when the scope did not stop.
+
+                The slots come from the capture's own D0 transitions when
+                it has enough of them (55 and aa alternate every bit, so
+                they always do): every transition sits on a clock edge, so
+                the median gap is the clock period and the first one is the
+                first slot boundary. A byte with few transitions uses the
+                last timing measured in this run."""
                 sc.cmd(":SINGle")
                 time.sleep(0.9)
                 if sc.ask(":TRIGger:STATus?") != "STOP":
@@ -352,11 +395,38 @@ def main():
                 lvl = np.where(np.isnan(d0), np.nan, (d0 < TRACE_LOW_Y).astype(float))
                 valid = ~np.isnan(lvl)
 
+                # every transition after the latch's fall, in us from it
+                edges = [(x - fall) / PX_PER_US for x in range(fall + 2, 684)
+                         if valid[x] and valid[x - 1] and lvl[x] != lvl[x - 1]]
+                inside = [e for e in edges if 2.0 < e < 160.0]
+                # Every transition sits on a clock edge, so the clock is the
+                # (first, period) that explains all of them: a search over
+                # both, scored by how close each transition lands to a clock.
+                # A median of the gaps is not enough (on a byte whose bits do
+                # not alternate a gap is several clocks, and even on 55 a
+                # median put the last two samples on a slot boundary,
+                # 2026-09-17). Five transitions is the floor; a byte with
+                # fewer keeps the last clock measured in this run.
+                if len(inside) >= 5:
+                    best = None
+                    for per in np.arange(8.0, 16.01, 0.05):
+                        for fst in np.arange(3.0, 26.01, 0.25):
+                            clocks = fst + per * np.arange(8)
+                            err = sum(min(abs(e - c) for c in clocks) for e in inside)
+                            if best is None or err < best[0]:
+                                best = (err, fst, per)
+                    err, fst, per = best
+                    if err / len(inside) < 1.5:      # us of slop per transition
+                        timing.update(first=float(fst), period=float(per),
+                                      **{"from": f"fitted on {byte}, {err / len(inside):.2f} us per edge"})
+                first, period = timing["first"], timing["period"]
+                mids = [first / 2.0] + [first + (k + 0.5) * period for k in range(7)]
+
                 def level_at(us):
                     x = int(round(fall + us * PX_PER_US))
                     v = [lvl[i] for i in range(x - 1, x + 2) if 0 <= i < len(lvl) and valid[i]]
                     return int(round(np.mean(v))) if v else None
-                bits = [level_at(m) for m in MIDS_US]
+                bits = [level_at(m) for m in mids]
                 return [i for i, v in enumerate(bits) if v == 0]
 
             for byte in WALK:
@@ -388,8 +458,10 @@ def main():
                     wrong.append(f"{byte}: read {pressed}, set {want}")
             result["walk"] = res
             result["walk_retaken"] = retaken
+            result["walk_timing"] = dict(timing)
             n_ok = sum(1 for v in res.values() if v["pressed"] == v["want"])
-            note = f" (retaken: {', '.join(retaken)})" if retaken else ""
+            note = (f", slots {timing['period']:.1f} us from {timing['first']:.1f} us ({timing['from']})"
+                    + (f", retaken: {', '.join(retaken)}" if retaken else ""))
             if not wrong and not missing:
                 check("walk", "PASS", f"{n_ok} of {len(WALK)} bytes read back as set, D0 at the eight mid-slots off the screen{note}")
             else:
@@ -408,7 +480,7 @@ def main():
                     ("reset", 1.0, 12.0, "press the console's RESET button and HOLD it for two full seconds",
                      "sleep 3; pinctrl set 17 op dh; sleep 2; pinctrl set 17 op dl", 15.0),
                     ("power", 1.5, 20.0, "throw the console's POWER switch off, count three, and back on",
-                     "sleep 3; pinctrl set 27 op dh; sleep 3; pinctrl set 27 op dl", 30.0)):
+                     "sleep 3; pinctrl set 27 op dl; sleep 3; pinctrl set 27 op dh", 30.0)):
                 if a.hands == "manual":
                     print(f"\n  {name}: {manual}, any time in the next {wait:.0f} s (listening now)")
                     gap, resumed, n = poll_gap(br, wait)
@@ -434,7 +506,7 @@ def main():
         if k1_was is not None:
             subprocess.run(["ssh", "-o", "ConnectTimeout=8", "-o", "BatchMode=yes", pi,
                             f"pinctrl set 27 op d{'h' if k1_was == 'hi' else 'l'}"], capture_output=True, text=True, timeout=30)
-            print(f"  GPIO27 put back {k1_was} (relay {'open' if k1_was == 'hi' else 'closed'})")
+            print(f"  GPIO27 put back {k1_was} (the console {'on' if k1_was == 'hi' else 'off'})")
         br.send("MODE PASS")
         br.send("RESET")
         br.read(0.3)

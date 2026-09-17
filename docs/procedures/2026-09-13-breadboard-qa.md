@@ -646,3 +646,48 @@ sits 4.40 V above yellow. So orange is the reset button's high side and
 takes OK1's OUT; yellow takes OK1's GND. The sheets number those two pins
 now and the bring-up's 6.2 says the same. The reading also bounds what the
 coupler stands off: 4.4 V across a part rated about 35 V.
+
+## The head's two hands hold, 2026-09-17 evening
+
+Everything wired, and `bench-check.py --hands head` ran twice end to end
+with the same result: the bridge and the scope answer, 1213 and 1203 polls
+in twenty seconds with eight clocks in every one, TRIG 20 stops the scope
+on CH1, the fifteen-byte register walk reads back 15 of 15, a reset from
+GPIO17 pauses the polls 2.00 s and they come back, and a power cycle from
+GPIO27 pauses them 3.25 s and 2.75 s and they come back. No regression.
+
+Three things the run found, none of them the wiring:
+
+**The relay goes the other way.** MEASURED at the console, not read off the
+module: GPIO27 HIGH powers it (video 0.88 Vpp on CH3, the port's latch
+idling at 4.3 V) and LOW turns it off. The first full run drove the pin low
+to power on and switched the console off instead, and every check after it
+skipped for want of polls. The module's own LED agrees: lit with the pin
+high. Whether that is the module's input sense or its contact wired COM to
+NC does not matter to the bench, and the sheets, the cheat sheets, the head
+daemon and the Pi's boot config (`gpio=27=op,dl`, so the console rests off)
+all say the measured thing now.
+
+**A stale reply can become the head of the next answer.** A screenshot read
+came back as `OP\n#90000...`, the tail of an earlier `:TRIGger:STATus?`
+that arrived after its read timed out. Every scope read drains the socket
+first, and the screenshot finds the block header in the stream rather than
+assuming it starts it.
+
+**The walk's sample points cannot be authored.** The game does not clock
+every poll alike and a different game state clocks faster, which put byte
+00's last two samples past the eighth clock (read as bits 6 and 7 pressed).
+Every transition on D0 sits on a clock edge, so the walk now fits the clock
+to a capture's own transitions: a search over the first edge and the period,
+scored by how far each transition lands from a clock, five transitions the
+floor, a byte with fewer keeping the last clock measured in the run. The
+fits come out at 13.0 and 13.1 us from 7.2 to 8.0 us, within 0.13 us an
+edge, which is the authored figure measured rather than assumed. A median of
+the gaps is not enough: on a byte whose bits do not alternate a gap is
+several clocks, and it read 26 us for a 13 us clock.
+
+Also seen: two polls of 1199 carried nine clocks when the poll window opened
+six seconds after the relay powered the console. Four later windows, 4886
+polls, were all eight, so the window now opens twelve seconds after power-up
+and the gate stays strict.
+

@@ -7,12 +7,13 @@ entry is the one that raised it, with its date.
 
 ## The bench (milestone 2026-09-15, `milestone-2026-09-15-rig-and-bridge.md`)
 
-- **Reset and power from the head OPEN** (bring-up 6.2, 6.3): the
-  console cannot yet be brought to a known state without a hand.
-  Closes with the PC817 across the reset button (J3 3 orange to OUT,
-  4 yellow to GND: orange is 4.40 V the higher, 2026-09-17) and the relay
-  across the power switch (J3 1 brown and 2 red), both held by the
-  bring-up.
+- ~~**Reset and power from the head OPEN** (bring-up 6.2, 6.3)~~ DONE
+  2026-09-17: OK1 across the reset button (J3 3 orange to OUT, 4 yellow
+  to GND) and K1 across the power switch (J3 1 brown and 2 red), both
+  driven from the Pi and both held twice end to end by
+  `bench-check.py --hands head`: the polls pause 2.0 s on a reset and
+  about 3 s on a power cycle and come back. The console can be brought
+  to a known state with no hand on it.
 - **The pad through the bridge OPEN** (4.2, 5.2), and with it J2's
   lead order, the last check on the as-built sheet.
 - **CH2's original lead broke 2026-09-15**; a new lead is on the latch.

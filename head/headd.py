@@ -142,12 +142,13 @@ class Relays:
         if real:
             from gpiozero import DigitalOutputDevice  # Raspberry Pi OS ships it
             self.reset = DigitalOutputDevice(reset_pin, initial_value=False)
-            # The relay module's IN is active low (the cheat sheet, the
-            # v1b sheet 3): on() must drive the pin LOW, and the pin must
-            # rest HIGH so the relay rests open. Until 2026-09-15 this was
-            # active high, which would have powered the console the moment
-            # the head asked for off.
-            self.power = DigitalOutputDevice(power_pin, active_high=False, initial_value=False)
+            # MEASURED 2026-09-17 at the console, not read off the module:
+            # GPIO27 HIGH powers the console (video 0.88 Vpp, the port's
+            # latch idling at 4.3 V) and LOW turns it off. Whether that is
+            # the module's input sense or its contact wired COM to NC does
+            # not matter here: on() drives the pin high, and the pin rests
+            # low, which is the console off.
+            self.power = DigitalOutputDevice(power_pin, initial_value=False)
 
     def pulse_reset(self, hold=RESET_HOLD_S):
         if self.real:

@@ -36,7 +36,7 @@ Four Dupont leads off the Pi's header, no breakout (2026-09-10). Positions are t
 | 5V | 2 | the PI_5V rail | the coil's supply |
 | GND | 6 | the GND rail | the one ground lent |
 | GPIO17 | 11 | OK1 INPUT + | reset, 100 ms high |
-| GPIO27 | 13 | K1 IN | power, active low |
+| GPIO27 | 13 | K1 IN | power: high is on |
 
 ## The power and reset breakout, J3
 
@@ -64,13 +64,13 @@ One optocoupler on a carrier: an LED behind a series resistor on the input side,
 
 ## K1: relay module, 5 V coil
 
-A 5 V coil relay on a carrier with an opto-isolated, active-low input: IN low lights the carrier's optocoupler, which drives the coil's transistor, and the contact moves. The coil takes about 80 mA from VCC, which is why it is on the Pi's 5 V pin and not a GPIO. The contact is a changeover: COM meets NO while the coil is on and NC while it is off, so with the Pi off or rebooting NO is open.
+A 5 V coil relay on a carrier with an opto-isolated input, driving the coil's transistor. The coil takes about 80 mA from VCC, which is why it is on the Pi's 5 V pin and not a GPIO. The contact is a changeover, COM to NO or NC. MEASURED 2026-09-17 at the console rather than read off the module: GPIO27 HIGH powers the console and LOW turns it off, which is why the boot config rests it low.
 
 | side | pin | on the part | on this bench |
 |---|---|---|---|
 | coil | VCC | coil and carrier supply, 5 V | the PI_5V rail |
 | coil | GND | coil and carrier return | the GND rail |
-| coil | IN | control, active low: low turns the relay on | PWR_DRIVE: PI GPIO27 (position 13) |
+| coil | IN | control: GPIO27 high is the console on (measured) | PWR_DRIVE: PI GPIO27 (position 13) |
 | contact | COM | the contact's common | PWR_BROWN: J3-1 |
 | contact | NO | normally open: meets COM while the coil is on | PWR_RED: J3-2 |
 | contact | NC | normally closed: meets COM while the coil is off | no connection: left open on purpose |
@@ -91,4 +91,4 @@ cd ~/nes-bench && yes '' | python3 tools/bringup.py --step 6.2 --bridge /dev/tty
 **6.3 The power relay switches the console**
 
 - The relay's COM and NO across J3's 1 brown and 2 red, the front panel's power switch (metered 2026-09-17), in parallel with it. The front switch stays OFF for this step. MAINS SAFETY: nothing here is ever on the mains side.
-- Relay module VCC to the Pi's 5V pin, IN to GPIO27 (active low), GND to the Pi's GND.
+- Relay module VCC to the Pi's 5V pin, IN to GPIO27 (high powers the console, MEASURED 2026-09-17), GND to the Pi's GND.
