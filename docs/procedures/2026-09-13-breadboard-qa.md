@@ -575,3 +575,24 @@ the latch's 3.6 us pulse is there whatever is held), so CH2 is the
 latch and CH4 is D0, as the cheat sheet has them. And two inert
 pointers laid on the board read as probe bodies from above; the sheet
 now says where each probe is, and a pointer is a pointer.
+
+## The relay answers the Pi, 2026-09-17 10:08
+
+The two head modules laid out beside the UNO (called out in
+`lab/06-modules-laid-out.jpg`). Three on-off cycles, a second each, driven
+from the Pi's GPIO27 as an active-low output: the user heard all of them.
+The input side of K1 is right: GPIO27 on S, the Pi's 5 V and GND on the
+header's other two pins.
+
+The Pi's pin said the same thing before anyone listened. Unclaimed at the
+start it read low under the Pi's own pull-down; released after the run,
+with the pull off, it read high, which nothing on the Pi drives, so the
+module's input circuit was pulling it up. The consequence stands as an
+open item: from power-up until something claims GPIO27 the pull-down holds
+the relay ON. `gpio=27=op,dh` in the Pi's boot config makes it rest off
+from power-up; it needs a reboot of the Pi and is not set yet.
+
+Not done yet: K1's contact side (meter the screw terminal for COM and NO,
+then into one cut conductor of the adapter's low-voltage lead), OK1 on the
+reset pads (step 6.2 meters which two ways of J3 they are), and
+`bench-check.py --hands head`.
