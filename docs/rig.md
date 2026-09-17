@@ -89,8 +89,16 @@ frames are `captures/rig/baseline-*.jpg`.
 ### The signal paths, the same way
 
 ```
-python3 tools/bench-check.py
+scripts/hands-head.sh          # the Pi's hands; the console's switch OFF
+scripts/hands-manual.sh        # your hand on the panel; the switch ON
+python3 tools/bench-check.py   # the same tool, without the hands
 ```
+
+The two scripts are the same check with a different hand on the button.
+They read the bridge's and the scope's addresses out of `bench.local.md`,
+say which switch position they want before they start, and pass anything
+else through. The manual one skips the register walk unless given
+`--walk`, since the head's run covers it.
 
 The eye's check says nothing about the electrons. This one runs the
 measurements the bring-up and the register walk held: the bridge answers
