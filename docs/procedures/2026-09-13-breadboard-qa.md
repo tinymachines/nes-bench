@@ -633,3 +633,10 @@ prompts, both cheat sheets' J3 table (a column for what each way is), and
 `bench-check.py --hands head`, which now closes K1 before it listens
 (`pinctrl`, so the level stays after the command exits) and puts GPIO27
 back as it found it.
+
+MEASURED 2026-09-17 (the user), unpowered: orange to yellow reads about
+200 ohms with the reset button held, on the console's side of the harness.
+A resistance says nothing about which side is high; that still takes the
+powered reading. It does say the button is not a dead short, which OK1's
+transistor does not need to match: saturated, it sits well under the
+button's 200 ohms at the few milliamps a pulled-up line draws.
