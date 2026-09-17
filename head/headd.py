@@ -47,7 +47,12 @@ try:
 except ImportError:  # the fake bridge's pty works through os as well
     serial = None
 
-RESET_HOLD_S = 0.1
+RESET_HOLD_S = 0.5   # MEASURED 2026-09-17: a 100 ms and a 250 ms hold left no
+                     # mark the bench could see, a 500 ms one paused the console's
+                     # polls 0.5 s. The instrument's floor is about half a second
+                     # (the Pi's bridge hands poll lines over in ~100 ms batches),
+                     # so a shorter pulse may well reset it; 0.5 s is the shortest
+                     # hold this bench can confirm
 PCNT_LIMIT = None  # the firmware's business; the head only reads its lines
 
 

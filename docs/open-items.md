@@ -14,6 +14,14 @@ entry is the one that raised it, with its date.
   `bench-check.py --hands head`: the polls pause 2.0 s on a reset and
   about 3 s on a power cycle and come back. The console can be brought
   to a known state with no hand on it.
+- **A short reset pulse is under the instrument's floor (2026-09-17).** A
+  100 ms and a 250 ms hold on GPIO17 left no mark in the poll stream; a
+  500 ms hold paused it 0.5 s. The poll stream cannot resolve less than
+  about half a second, because the Pi's bridge hands lines over in
+  100 ms batches, so this says nothing about whether the console reset.
+  The head's hold is 0.5 s for now. Closes with the scope on the latch
+  line at 50 ms a division, where a 100 ms gap in the latch train is
+  plain, or with the grabber watching the game restart.
 - **The pad through the bridge OPEN** (4.2, 5.2), and with it J2's
   lead order, the last check on the as-built sheet.
 - **CH2's original lead broke 2026-09-15**; a new lead is on the latch.

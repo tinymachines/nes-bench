@@ -691,3 +691,11 @@ six seconds after the relay powered the console. Four later windows, 4886
 polls, were all eight, so the window now opens twelve seconds after power-up
 and the gate stays strict.
 
+MEASURED 2026-09-17, the reset hold, console powered by the head: a 100 ms
+pulse on GPIO17 and a 250 ms one left no pause the poll stream could show
+(876 and 875 polls in fifteen seconds, no quiet run); a 500 ms pulse paused
+it 0.50 s. The stream's floor is about half a second, since the bridge
+hands lines over in 100 ms batches, so the short pulses are unproven rather
+than ineffective. The head daemon holds reset 0.5 s until the scope settles
+it on the latch line.
+
