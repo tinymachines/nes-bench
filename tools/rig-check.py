@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 """The rig's regression check: run it after every change to the bench.
 
-  python3 tools/rig-check.py --pi HOST              # the sequence; exit 1 on any FAIL
-  python3 tools/rig-check.py --pi HOST --baseline   # accept what the cameras see now as the reference
-  python3 tools/rig-check.py --pi HOST --no-side    # the BRIO only
+  python3 tools/rig-check.py                        # the sequence; exit 1 on any FAIL
+  python3 tools/rig-check.py --baseline             # accept what the cameras see now as the reference
+  python3 tools/rig-check.py --no-side              # the BRIO only
+
+The Pi comes from --pi, or PI in the bench's .env (gitignored).
 
 What it checks, in order, each a PASS or a FAIL with the number that decided it:
 
@@ -150,13 +152,16 @@ def compare_board(m_ref, m_new, name):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--pi", required=True, help="user@host of the Pi the cameras are on")
+    ap.add_argument("--pi", help="user@host of the Pi the cameras are on; the default is PI in .env")
     ap.add_argument("--baseline", action="store_true", help="keep these frames as the reference instead of comparing")
     ap.add_argument("--no-side", action="store_true", help="skip the side eyes")
     ap.add_argument("--settle", type=int, default=30, help="BRIO frames to stream before keeping one")
     a = ap.parse_args()
-    RIG.mkdir(parents=True, exist_ok=True)
     bo = load(ROOT / "tools" / "board-overlay.py", "bo")
+    a.pi = a.pi or load(ROOT / "tools" / "bench-check.py", "bench_check").dotenv(ROOT).get("PI")
+    if not a.pi:
+        sys.exit("no Pi: pass --pi user@host, or put PI= in .env (.env.example is the shape)")
+    RIG.mkdir(parents=True, exist_ok=True)
     m = json.loads(MAP.read_text())
     base = json.loads(BASE.read_text()) if BASE.exists() else None
     if not a.baseline and base is None:

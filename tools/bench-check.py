@@ -54,9 +54,9 @@ is left in MODE PASS after a RESET. The walk's screenshots are kept in
 captures/bench/walk-XX.png so a difference can be looked at. The result
 also goes to captures/bench/last-check.json.
 
-Addresses: the scope's as tools/bringup.py finds it (--scope, $SCOPE,
-bench.local.md); the bridge's from --bridge, $BRIDGE, or the first
-address with :6545 on it in bench.local.md. Neither lives in a commit.
+Addresses, in order: the flag, the environment, the bench's own .env
+(gitignored; .env.example is its shape), then bench.local.md. Nothing in
+that list reaches a commit, which is the point of it.
 """
 import argparse
 import io
@@ -99,11 +99,35 @@ FIRST_US, PERIOD_US = 7.0, 13.0
 TRACE_LOW_Y = 230        # a trace centre below this screen row is the high level
 
 
+def dotenv(root=None):
+    """KEY=VALUE lines from the bench's own .env, if it has one.
+
+    Gitignored, as bench.local.md is: the addresses of the Pi and the scope
+    are host-specific and belong in no commit. A real environment variable
+    beats the file, so a one-off run needs no edit. .env.example is the
+    shape, and that is committed."""
+    from pathlib import Path as _P
+    root = _P(root or ROOT)
+    out = {}
+    f = root / ".env"
+    if f.exists():
+        for line in f.read_text().splitlines():
+            line = line.strip()
+            if line and not line.startswith("#") and "=" in line:
+                k, v = line.split("=", 1)
+                out[k.strip()] = v.strip().strip('"').strip("'")
+    for k in ("BRIDGE", "SCOPE", "PI"):
+        if os.environ.get(k):
+            out[k] = os.environ[k]
+    return out
+
+
 def bridge_address(explicit=None):
     if explicit:
         return explicit
-    if os.environ.get("BRIDGE"):
-        return os.environ["BRIDGE"]
+    env = dotenv()
+    if env.get("BRIDGE"):
+        return env["BRIDGE"]
     local = ROOT / "bench.local.md"
     if local.exists():
         m = re.search(r"\b(\d{1,3}(?:\.\d{1,3}){3}:6545)\b", local.read_text())
@@ -282,7 +306,7 @@ def main():
     # scope
     sc = None
     if not a.no_scope:
-        saddr = bu.scope_address(a.scope) if bu else a.scope
+        saddr = a.scope or dotenv().get("SCOPE") or (bu.scope_address(None) if bu else None)
         if not saddr:
             check("scope", "SKIP", "no address (pass --scope, set $SCOPE, or bench.local.md)")
         else:

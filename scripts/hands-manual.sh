@@ -26,6 +26,16 @@ LOCAL="$ROOT/bench.local.md"
 WALK="--no-walk"
 if [ "${1:-}" = "--walk" ]; then WALK=""; shift; fi
 
+# The bench's own .env first (gitignored; .env.example is the shape), then
+# bench.local.md. Anything already in the environment wins over both.
+if [ -f "$ROOT/.env" ]; then
+  while IFS='=' read -r k v; do
+    case "$k" in ''|\#*) continue;; esac
+    eval ": \${$k:=\$v}" 2>/dev/null || true
+    export "$k" 2>/dev/null || true
+  done < "$ROOT/.env"
+fi
+
 pick() {   # first address in bench.local.md matching a pattern
   [ -f "$LOCAL" ] || return 0
   grep -oE "$1" "$LOCAL" | head -1

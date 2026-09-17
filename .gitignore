@@ -4,6 +4,10 @@ roms/
 *.bin
 *.wav
 bench.local.md
+
+# The bench's addresses, one file per machine. .env.example is the shape
+# and is committed; the file itself is not.
+.env
 runs/
 __pycache__/
 *.pyc

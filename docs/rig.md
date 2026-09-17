@@ -56,6 +56,18 @@ frame: the UNO, the Pi, the console's mainboard and the modulator,
 which is what the timed grabs want as a record. What it costs is the
 fine read of a housing across two columns, which the side eye is for.
 
+## Where the addresses live
+
+Three keys, in `.env` beside the tools: `BRIDGE` (the UNO through the Pi's
+serial bridge, host:port), `SCOPE` (the instrument, no port) and `PI`
+(user@host for the tools that run something over there). The file is
+gitignored, as `bench.local.md` is; `.env.example` carries its shape and is
+committed. A flag beats the environment, the environment beats the file,
+and the file beats `bench.local.md`, so `tools/rig-check.py` and
+`tools/bench-check.py` now take no addresses at all on a machine that has
+one. On the Pi itself `BRIDGE` is the loopback, since the bridge is local
+there.
+
 ## After every change: the regression check
 
 ```
@@ -95,7 +107,8 @@ python3 tools/bench-check.py   # the same tool, without the hands
 ```
 
 The two scripts are the same check with a different hand on the button.
-They read the bridge's and the scope's addresses out of `bench.local.md`,
+They read the bridge's and the scope's addresses out of `.env`, then
+`bench.local.md`,
 say which switch position they want before they start, and pass anything
 else through. The manual one skips the register walk unless given
 `--walk`, since the head's run covers it.
