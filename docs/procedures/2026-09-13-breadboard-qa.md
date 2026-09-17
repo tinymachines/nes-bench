@@ -596,3 +596,17 @@ Not done yet: K1's contact side (meter the screw terminal for COM and NO,
 then into one cut conductor of the adapter's low-voltage lead), OK1 on the
 reset pads (step 6.2 meters which two ways of J3 they are), and
 `bench-check.py --hands head`.
+
+## The head's pins rest off from power-up, 2026-09-17 11:56
+
+Two lines in the Pi's boot config, the file as it was kept beside it:
+`gpio=27=op,dh` (K1's input is active low, so the relay rests open) and
+`gpio=17=op,dl` (OK1 rests off; the pull-down already held it low, the
+line makes it a stated output). The Pi rebooted at 11:56 and was back in
+about twenty seconds. Read back with `pinctrl`: GPIO27 an output, high;
+GPIO17 an output, low. The serial bridge service came back on its own and
+the UNO answered STATUS with its banner; no polls, the console being off
+while the relay's contact side is wired. The head daemon claims the same
+two pins with the same rest values (`headd.py`, Relays), so nothing
+changes state when it starts.
+

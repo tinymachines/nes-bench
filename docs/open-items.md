@@ -14,10 +14,12 @@ entry is the one that raised it, with its date.
 - **The pad through the bridge OPEN** (4.2, 5.2), and with it J2's
   lead order, the last check on the as-built sheet.
 - **CH2's original lead broke 2026-09-15**; a new lead is on the latch.
-- **The Pi's GPIO27 rests with a pull-down (2026-09-17)**, which is the relay
-  ON from power-up until the head claims the pin. The relay clicks under the
-  Pi's hand, so the module is wired right; closes with `gpio=27=op,dh` in the
-  Pi's boot config, a reboot, and the relay metered open before the head runs.
+- ~~**The Pi's GPIO27 rests with a pull-down (2026-09-17)**, which is the relay
+  ON from power-up until the head claims the pin.~~ DONE 2026-09-17 11:56 EDT:
+  `gpio=27=op,dh` and `gpio=17=op,dl` in the Pi's boot config (the old file
+  kept beside it), the Pi rebooted, and both pins read back as outputs, GPIO27
+  high (relay open) and GPIO17 low (reset not pressed). Still to meter: the
+  relay's contact open across COM and NO with the Pi freshly booted.
 
 ## The calibration cartridge (plan 2026-09-13)
 
