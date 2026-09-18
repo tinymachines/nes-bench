@@ -183,7 +183,7 @@ before its `RTI`, so a long frame is dropped and never re-entered.
 
 **Found in.** Super Mario Bros. (`mario-dissection.md`): `JMP $8057`
 at `$8057`, 5,800 spins a frame, 58 percent of it; the handler at
-`$8082`, `$2000 <- 10` at line 241 dot 149, `$2000 <- 90` at line 87,
+`$8082`, `$2000 <- 10` at line 241 dot 79, `$2000 <- 90` at line 89,
 `RTI` at `$8181`.
 
 **Signature.** An idle loop of one instruction that every frame's
@@ -202,9 +202,10 @@ fixed status bar, then writes the level's scroll, so the bar stays and
 the world moves under it.
 
 **Found in.** Super Mario Bros.: `$2002` read once at `$813D` (the flag
-clear), `LDA $2002 / AND #.. / BEQ` at `$8150` spun 171 times from line
+clear), `LDA $2002 / AND #.. / BEQ` at `$8150` spun 178 times from line
 16 to line 30, a `DEY / BNE` delay of 19 at `$8159`, `$2005` twice at
-line 31 dot 173, `$2000` at dot 230.
+line 31 dot 100, `$2000` at dot 157 (the PPU's own lines and dots
+since 2026-09-18; `dissect.py` had them up to 0.7 line high).
 
 **Signature.** A spin on `$2002` that ends at the same line every frame
 (30 here, the bar being 32 lines), a short counted delay into the

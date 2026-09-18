@@ -40,36 +40,41 @@ column to load):
 
 | line | dot | what | where |
 |---|---|---|---|
-| 241 | 98 | NMI vector taken | `$8082` |
-| 241 | 149 | `$2000 <- 10`: NMIs off, nametable 0 | |
-| 241 | 233 | `$2001 <- 06`: rendering off for the blank's work | |
-| 241 | 245 | `$2002` read: the status cleared | `$80A6` |
-| 241 | 281 | `$2005 <- 00, 00`: the scroll zeroed for the status bar | |
-| 241 | 323 | `$2003 <- 00`, then `$4014 <- 02`: sprite DMA from `$0200` | |
-| 242 | 2 | the DMA's 256 writes of `$2004`, to line 246 dot 178 | |
-| 246 | 262 | `$2002` read, the VRAM buffer drained (none this frame) | `$8EDD` |
-| 246 | 301 | `$2005 <- 00, 00` | |
-| 247 | 107 | `$2001 <- 1e`: rendering on | |
-| 251 | 210 | the pad polled, latch 585, 16 reads (both ports) | `STA $4016` at `$8E63` |
-| 256 | 267 | a scan of `$0780,X` downward, ten steps | `$810E` |
-| 2 | 147 | `$2002` read once: the sprite-0 flag seen clear | `$813D` |
-| 16 | 322 | `LDA $2002 / AND #.. / BEQ` spun 171 times: waiting for sprite 0 | `$8150` |
-| 30 | 165 | the hit; `DEY / BNE` 19 times, a delay into the blank | `$8159` |
-| 31 | 173 | `$2005 <- 11, 00`: the level's scroll set below the status bar | |
-| 31 | 230 | `$2000 <- 10`: the nametable for the level | |
-| 31 to 87 | | the game's logic: the operation-mode tree | `$8212` from `$8175` |
-| 87 | 283 | `$2002` read, `$2000 <- 90`: NMIs on | `$8178` |
-| 88 | 0 | `RTI`, and the spin at `$8057` until line 241 | `$8181` |
+| 1 | 226 | `$2002` read once: the sprite-0 flag seen clear | `$813D` |
+| 16 | 60 | `LDA $2002 / AND #.. / BEQ` spun 178 times: waiting for sprite 0, to line 30 dot 92 | `$8150` |
+| 30 | 122 | the hit; `DEY / BNE` 19 times, a delay to line 31 dot 66 | `$8159` |
+| 31 | 100 | `$2005 <- 02, 00`: the level's scroll set below the status bar | |
+| 31 | 157 | `$2000 <- 10`: the nametable for the level | |
+| 31 to 89 | | the game's logic: the operation-mode tree | `$8212` from `$8175` |
+| 89 | 26 | `$2002` read, `$2000 <- 90`: NMIs on | `$8178` |
+| 89 | 58 | `RTI`, and the spin at `$8057` until line 241 dot 12 | `$8181` |
+| 241 | 28 | NMI vector taken | `$8082` |
+| 241 | 79 | `$2000 <- 10`: NMIs off, nametable 0 | |
+| 241 | 163 | `$2001 <- 06`: rendering off for the blank's work | |
+| 241 | 175 | `$2002` read: the status cleared | `$80A6` |
+| 241 | 211 | `$2005 <- 00, 00`: the scroll zeroed for the status bar | |
+| 241 | 253 | `$2003 <- 00`, then `$4014 <- 02`: sprite DMA from `$0200` | |
+| 241 | 273 | the DMA's 256 writes of `$2004`, to line 246 dot 105 | |
+| 246 | 189 | `$2002` read, the VRAM buffer drained (none this frame) | `$8EDD` |
+| 246 | 228 | `$2005 <- 00, 00` | |
+| 247 | 34 | `$2001 <- 1e`: rendering on | |
+| 250 | 295 | the pad polled (the strobe's fall), 16 reads (both ports) | `STA $4016` at `$8E63` |
 
-So the blank is spent on the DMA, the VRAM buffer and the sound and
-pad routines; the top of the picture is spent waiting for the sprite-0
-hit at the bottom of the status bar (lines 16 to 30, the bar being 32
-lines tall); the scroll for the level is written at line 31, which is
-the split; and the game's own logic runs during the visible frame from
-line 31 to about line 87. A frame that loads a column of the next
-screen (frame 615: 26 bytes to `$2490`) puts rendering on at line 252
-instead of 247 and ends its handler at line 108; the logic's budget is
-what is left of the picture.
+The table runs in the PPU's order: the frame begins with the pre-render
+line and the picture, and ends with the blank, so the handler that
+draws frame 585's picture ran at the end of frame 584. (Lines and dots
+are the PPU's own since 2026-09-18: `dissect.py` had numbered the
+pre-render line 0 and drifted a dot for every dot a rendered odd frame
+skips, which put its lines up to 0.7 high; see "Done on the part".) So
+the blank is spent on the DMA, the VRAM buffer and the sound and pad
+routines; the top of the picture is spent waiting for the sprite-0 hit
+at the bottom of the status bar (lines 16 to 30, the bar being 32 lines
+tall); the scroll for the level is written at line 31, which is the
+split; and the game's own logic runs during the visible frame from line
+31 to about line 89. A frame that loads a column of the next screen
+(frame 615: 26 bytes to `$2490`) puts rendering on at line 252 instead
+of 247 and ends its handler at line 98; the logic's budget is what is
+left of the picture.
 
 Over frames 560 to 659: the NMI at line 241 every frame; rendering on
 at 247 (249 with a 4-byte burst, 252 with a column); the `RTI` at 87
@@ -194,23 +199,48 @@ Done, below ("The split").
 
 ## Done on the part, the same night
 
-**The poll's scanline** (`tools/poll-line.py`, `exercise/poll-line.txt`):
-the latch line on scope channel two beside the video on three, one
-capture holding fourteen polls, each placed against the vertical sync
-before it with the line period measured off the record's own
-horizontal syncs (63.500 us). On the multicart's menu every one of the
-fourteen rises 136.55 lines after the sync's first row, a spread of
-0.08 line; with the encoder's sync rows (245 to 247) that is PPU line
-119 dot 188. The model's menu polls at line 120 dot 50, on every
-frame. In the game (a run that reached it, below) the part's poll
-rises at line 250 on twelve frames of fourteen, 251 and 252 once each;
-the model's falls at 251 on 68 frames of 100 and later on the rest.
-Two screens, two poll routines, and the same six tenths of a line
-between part and model both times: a constant, which is what an
-encoder's line-granular vertical sync would leave, and which the
-switch-level PPU can settle by saying on which dot its sync begins.
-The game's two extra values on the part are the frames a VRAM burst
-pushed the poll, as the model's spread is.
+**The poll's scanline** (`tools/poll-line.py`, `exercise/poll-line.txt`,
+`exercise/menu-warm-poll.txt`): the latch line on scope channel two
+beside the video on three, one capture holding fourteen polls, each
+placed against the vertical sync before it with the line period
+measured off the record's own horizontal syncs (63.500 us). The
+measurement was made that night and read wrong on both sides, and
+read right the afternoon after; both readings are kept here because
+the wrong one is how the two errors were found.
+
+That night: with the encoder's vertical sync (rows 245 to 247 from dot
+0) the part's menu poll placed at PPU line 119.6 against the model's
+120.15, and the game's at 250 against 251, the same six tenths of a
+line on two screens. Neither number was right. The encoder's sync had
+been authored at line granularity and never measured; asked
+(`2c02`'s `vsync-probe`, the DAC's sync-tip leg every half-step through
+a frame), the die begins its vertical sync where row 244's horizontal
+sync begins, dot 280, and this record shows the same (the broad pulse
+exactly one line after the preceding horizontal sync, 0.934 line long,
+three a line apart), so the part's lines were 0.18 too high. And the
+model's lines came from `dissect.py`'s arithmetic on the trace's dot
+count, which numbered the pre-render line 0 and drifted a dot for
+every dot a rendered odd frame skips: 0.3 line high at the menu's
+frame 212 (and read from the menu's first two seconds, which poll half
+a line later than the rest of it), 0.15 at frame 585.
+
+The afternoon after, with the encoder held to the die (ntsc-crt
+v0.2.10), `poll-line.py` placing the onset at 244 + 280/341, and the
+model's positions read where its own strobe rises (`POSITIONS=1
+pad-log`, the board recording the PPU's position at every `$4016`
+write), not derived:
+
+| screen | part, the rise (median of 14) | model, the rise (median over the same latches) |
+|---|---|---|
+| the menu, cold, five records at latches 554 to 568 | 119.375 (spread 0.08) | 119.358 (latches 294 to 308 and on; 119.83 for the first 127 latches, then this) |
+| the menu, warm reset, latches 294 to 308 | 119.369 (spread 0.08) | 119.358 |
+| the game, latches 554 to 568 | 250.733 (spread 1.7: the VRAM bursts) | 250.710 (spread the same) |
+
+Two screens, two poll routines, and part and model agree to a
+hundredth of a line on the menu and three hundredths in the game, the
+strobe's rise 24 dots before its fall on both. The menu's poll moves
+half a line later in its first two seconds on the model (latches 0 to
+126); no part record covers those latches yet.
 
 **A finding on the way there.** Cold-powered by the relay, the part's
 menu takes Select (the cursor moved to Duck Hunt, seen in the decoded
@@ -255,19 +285,23 @@ write, taking effect from row 32, is inside the bracket.
 The third comparison, the part's triggered frame against the model's
 F-1 to F+2 (the bar's rows giving the constant offset between the two
 pictures, the level's rows the scroll beyond it), named the model's
-**F+1**, not F: the level sat 1.27 dots further on than the model's F,
-0.11 from its F+1. That is the trigger convention, not the game. The
-model's F is the first frame drawn from the input at latch 600. On the
-part the poll is at line 251, after the encoder's sync rows (245 to
-247), so the trigger lands past that frame's sync, the recovery
-anchors on the next sync, and the frame it hands back is the picture
-after the first one drawn from the latch. `capture-score` assumed a
-poll before the sync; E2's title, a still picture, could not have
-shown the difference, and a scrolling frame does at once. Recorded in
-both tools' headers and in `open-items.md`. The synthetic roundtrip
-(the part synthesised from the model's own frames) holds to the same
-bracket, the same advance within a quarter dot and F, and goes red
-when synthesised one frame late or from one frame twice.
+**F+1** under the rule the tools had that afternoon: the level sat
+1.27 dots further on than the model's F, 0.11 from its F+1. That was
+the trigger convention, not the game. The rule took the picture after
+the frame the latch fell in, which is right for a game that polls at
+the top of the blank; this one polls at line 250, after the vertical
+sync's onset (row 244 dot 280), so the trigger lands past that frame's
+sync, the recovery anchors on the next one, and the picture it hands
+back is the one after that. `Console::run_to_picture_after_latch` now
+decides from the latch's recorded position (nes @ efbcc46,
+`tests/latch_frame.rs`, its onset pinned a dot either side and
+MUTATE=1 red), `capture-score` and `split-score` share it, and this
+record names **F+0**, the level 0.11 dots beyond the bar. E2's title, a
+still picture, could not have shown the difference; a scrolling frame
+did at once. The synthetic roundtrip (the part synthesised from the
+model's own frames) holds to the same bracket, the same advance within
+a quarter dot and F, and goes red when synthesised one frame late or
+from one frame twice.
 
 ## What it seeds
 

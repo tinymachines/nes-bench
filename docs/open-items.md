@@ -68,26 +68,27 @@ entry is the one that raised it, with its date.
   PPU's first frame). Closes with: a cartridge of our own that shows
   the part's RAM, OAM and VRAM at power-on (Programme 1's proposal,
   widened), or the logic analyser on the bus for one cold press.
-- **The vertical sync's first dot (2026-09-18).** The part's poll sits
-  six tenths of a line earlier than the model's on two different
-  screens (`mario-dissection.md`, "Done on the part"): a constant,
-  and the encoder places its sync at line granularity (rows 245 to
-  247). Closes with: the switch-level 2C02's composite output read
-  for the dot its vertical sync begins on, and the encoder held to it.
+- **The vertical sync's first dot: CLOSED 2026-09-18.** Measured on
+  the switch-level 2C02 (`2c02`'s `vsync-probe`): the sync begins where
+  row 244's horizontal sync begins, dot 280, three broad pulses a row
+  apart, and the part's record shows the same shape. The encoder had it
+  64 dots late (ntsc-crt v0.2.10 holds it to the die); `poll-line.py`
+  places from it. The six tenths of a line was that plus `dissect.py`'s
+  line arithmetic (the pre-render line numbered 0 and a dot's drift per
+  skipped dot, fixed the same day); with both right the part's poll
+  agrees with the model's own recorded strobe position to 0.01 line on
+  the menu and 0.03 in the game (`mario-dissection.md`, "Done on the
+  part").
 
 - **The triggered frame is one picture late for a game that polls
-  after the sync rows (2026-09-18).** `split-score` on the first
-  scrolling frame (`mario-dissection.md`, "The split") found the part's
-  triggered frame to be the model's F+1: Super Mario Bros. polls at
-  line 251, after the encoder's vertical sync (rows 245 to 247), so
-  the bridge's `TRIG` lands past that frame's sync and the recovery
-  anchors on the next one. `capture-score`'s LATCH convention assumed
-  a poll before the sync, and E2's still title could not show it. Both
-  headers say so. Closes with: the model's runners placing the frame
-  from where the poll falls against the sync rows (the trace has the
-  line) rather than assuming, and E2 rerun to show its numbers did not
-  move. Until then a scrolling frame scored by `b1-score.py` is one
-  frame off and `split-score.py` says by how much.
+  after the sync rows: CLOSED 2026-09-18.** Found by `split-score` on
+  the first scrolling record (F+1). The console now records every
+  latch's PPU position and `run_to_picture_after_latch` places the
+  frame from it against the die's onset (nes @ efbcc46,
+  `tests/latch_frame.rs`, MUTATE=1 red); `capture-score` and
+  `split-score` share the rule and the record names F+0. E2's numbers
+  were on a still picture and did not depend on it; rerunning E2 on
+  the fixed rule is a check worth making when the console is next on.
 
 - **The model's hue against the part (2026-09-12).** On the title
   screen the two eyes agree to 0.7 degrees and the model sits 12.6 and

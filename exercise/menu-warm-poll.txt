@@ -1,0 +1,17 @@
+# The menu's poll after a warm reset, to set beside the cold-boot runs
+# (poll-line.txt and its kin, 2026-09-18 02:40-03:20, five records all
+# at PPU line 119.375 against the die's sync onset) and the model's
+# 119.830: the same recipe that makes Start take (POWER ON, 5 s, RESET,
+# 5 s, RESET), no press, the scope armed on the latch line with the
+# video beside it once the menu has polled 300 times.
+POWER ON
+WAIT 5 S
+MODE INJECT
+SET 00
+RESET
+WAIT 5 S
+RESET
+WAIT 300
+ARM menu-warm 2,3 0.2 -0.5 CH2
+CAPTURE
+POWER OFF

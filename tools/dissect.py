@@ -66,18 +66,24 @@ class Frame:
         fr = ev["frames"][idx]
         self.h_hi = fr["h_end"]
         self.h_lo = ev["frames"][idx - 1]["h_end"] + 1 if idx else 0
-        self.dots_per = 341 * 262
+        self.dots_start = ev["frames"][idx - 1]["dots_end"] if idx else 0
         self.dots_end = fr["dots_end"]
         self.master_end = fr["master_end"]
 
     def line_of(self, h):
-        """The scanline and dot of a half-cycle, from the frame's end
-        counted back (h counts CPU half-cycles at 12 master half-steps a
-        CPU half-cycle... a CPU half-cycle is 6 master half-steps, a dot
-        4, so 1.5 dots per CPU half-cycle)."""
-        d = self.dots_end - (self.h_hi - h) * 1.5
-        d = int(d) % self.dots_per
-        return d // 341, d % 341
+        """The PPU's scanline and dot at a half-cycle, from the frame's
+        end counted back (a CPU half-cycle is 6 master half-steps, a dot
+        4, so 1.5 dots per CPU half-cycle) and from the frame's own
+        start counted forward. The PPU's frame runs the pre-render line
+        261 first, then 0..=260, and a rendered odd frame is a dot
+        short; until 2026-09-18 this took the absolute dot count modulo
+        a full frame and numbered the pre-render line 0, so every line
+        it printed was one high less a dot per skipped dot (0.7 line by
+        the menu's frame 212, 0.15 by frame 585), which is where most of
+        the part's "0.6 line early" poll came from (poll-line.py; the
+        model's own latch positions are `POSITIONS=1 pad-log`)."""
+        d = int(self.dots_end - (self.h_hi - h) * 1.5) - self.dots_start
+        return (d // 341 + 261) % 262, d % 341
 
 
 def main():
