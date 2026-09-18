@@ -104,8 +104,10 @@ class Instr:
 
 
 def parse_row(line):
+    """(h, clk0, ab, db, rw, sync, rdy): rdy is the fourth input pin; a
+    SYNC held through a DMA's halt is not an instruction fetch."""
     f = line.split()
-    return (int(f[0]), int(f[1]), int(f[2], 16), int(f[3], 16), int(f[4]), int(f[5]))
+    return (int(f[0]), int(f[1]), int(f[2], 16), int(f[3], 16), int(f[4]), int(f[5]), int(f[6][3]))
 
 
 def diff_records(base_path, act_path):
@@ -123,7 +125,7 @@ def diff_records(base_path, act_path):
         la = (l for l in fa if l[0].isdigit())
         for x, y in zip(lb, la):
             ry = parse_row(y)
-            if ry[5] == 1 and ry[1] == 0:
+            if ry[5] == 1 and ry[1] == 0 and ry[6] == 1:
                 instr = Instr(n, ry[0], ry[2], ry[3])
                 syncs += 1
             elif instr is not None and ry[1] == 1 and ry[4] == 1 and len(instr.ops) < 2 and ry[2] == (instr.pc + 1 + len(instr.ops)) & 0xffff and n > instr.row + 1:
@@ -169,16 +171,30 @@ def main():
     ap.add_argument("--chip", default=str(ROOT.parent / "6502"))
     ap.add_argument("--reuse", action="store_true", help="the traces in --out are current: do not trace again")
     ap.add_argument("--spans", type=int, default=24, help="spans to print before the rest is a histogram")
+    ap.add_argument("--script", default=None, help="a bench script both runs play (the way into the game); the action run adds the byte at the latch on top of it")
     a = ap.parse_args()
     byte = int(a.byte, 16)
     out = Path(a.out or ROOT / "runs" / "xray" / a.name).resolve()
     out.mkdir(parents=True, exist_ok=True)
     table = opcode_table(a.chip)
     rom = Path(a.rom).resolve()
-    (out / "base.txt").write_text("SET 00\n")
-    (out / "act.txt").write_text(f"SET 00\nAT {a.latch} {byte:02x}\nAT {a.latch + 1} 00\n")
+    base_lines = ["SET 00"]
+    if a.script:
+        base_lines = [l.rstrip() for l in Path(a.script).read_text().splitlines() if l.split("#")[0].strip()]
+    # The byte in force at the latch under the base script, restored after.
+    held = 0
+    for l in base_lines:
+        w = l.split()
+        if w[0].upper() == "SET":
+            held = int(w[1], 16)
+        elif w[0].upper() == "AT" and int(w[1]) <= a.latch + 1:
+            held = int(w[2], 16)
+    act_lines = [l for l in base_lines if not (l.split()[0].upper() == "AT" and int(l.split()[1]) in (a.latch, a.latch + 1))]
+    act_lines += [f"AT {a.latch} {byte | held:02x}", f"AT {a.latch + 1} {held:02x}"]
+    (out / "base.txt").write_text("\n".join(base_lines) + "\n")
+    (out / "act.txt").write_text("\n".join(act_lines) + "\n")
     frames = a.frames or (a.latch // 60 + 4)   # a game polls about once a frame after it starts
-    report = [f"x-ray {a.name}: {rom.name}, {byte:02X} at latch {a.latch} against 00, {frames} frames"]
+    report = [f"x-ray {a.name}: {rom.name}, {byte:02X} at latch {a.latch} on top of {held:02X}" + (f" under {Path(a.script).name}" if a.script else "") + f", {frames} frames"]
     if not a.reuse:
         for n in ("base", "act"):
             report.append("  " + trace(a.nes, rom, n, frames, out / f"{n}.txt", out))
@@ -245,7 +261,7 @@ def main():
         what = []
         for k in range(lo, hi + 1):
             _, bx, ay, _ = diffs[k]
-            h, c, ab, db, rw, sync = ay
+            h, c, ab, db, rw, sync, _ = ay
             bdb = bx[3]
             if db != bdb and c == 1:
                 if rw == 0 and ab < 0x2000:
