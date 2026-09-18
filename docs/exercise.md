@@ -159,6 +159,28 @@ diagram's flows run:
 | `$22` rows 32..127 | 500 mV/div | -0.039 | -0.060 | -9.1 deg |
 | `$17` rows 40..68 | 200 mV/div | -0.054 | -0.062 | -3.1 deg |
 | `$22` rows 32..127 | 200 mV/div | -0.067 | -0.079 | -9.1 deg |
+| `$17` rows 40..68 | 200 mV/div, `20260918-152924`, cold power + warm reset | -0.038 | -0.046 | -3.5 deg |
+| `$22` rows 32..127 | 200 mV/div, `20260918-152924`, cold power + warm reset | -0.037 | -0.061 | -9.3 deg |
+
+**Rerun 2026-09-18, afternoon, under the frame rule** (the model's
+picture placed from the latch's position against the vertical sync,
+`mario-dissection.md` "The split"; nes @ efbcc46). Two checks. The
+morning's 200 mV record rescored: latch 300 falls at PPU line 249 dot
+65, after the onset, so the model's picture moved one frame, and every
+number in its two rows above came back to the thousandth (a still
+picture cannot tell the frames apart, which is the claim). And a
+third record, `exercise/e2-title-warm.txt` (the console cold-powered
+by the relay, the warm-reset recipe, the same press and trigger; the
+morning's console had been running an hour): the third pair of rows.
+The hue repeats again, to four tenths of a degree, on a third capture.
+Luma and saturation land 0.017 to 0.03 from the morning's 200 mV
+record, the same size as the difference the two scales had been
+credited with under point 2 below, so that attribution does not stand
+alone: two records at one scale differ by as much, and what else
+differs is the console's warmth (an hour running against seconds) and
+the record's rate error (-4.3 against -8.0 ppm). Recorded, not fitted;
+the E1 bars cartridge with the scope alone is where the luma level
+gets a number of its own.
 
 The gate as the table above states it: the first region that fails,
 named. `$17`, rows 40..68, on every axis; and `$22` behind it. What

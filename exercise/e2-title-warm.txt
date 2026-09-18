@@ -1,0 +1,20 @@
+# E2's title on a cold-powered console: e2-title.txt through the
+# warm-reset recipe (the multicart's menu ignores Start until a reset,
+# open-items), then the same press and trigger. Played 2026-09-18 to
+# rerun E2 under the frame rule that places the model's picture from
+# the latch's position against the vertical sync (nes @ efbcc46): a
+# still picture, so the regions should score as run 20260918-000521 did.
+POWER ON
+WAIT 5 S
+MODE INJECT
+SET 00
+RESET
+WAIT 5 S
+RESET
+AT 200 08
+AT 202 00
+ARM title-t300 1,3 0.2 -0.5 CH1
+TRIG 300
+WAIT 320
+CAPTURE
+POWER OFF

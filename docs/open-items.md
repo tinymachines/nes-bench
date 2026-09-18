@@ -87,8 +87,9 @@ entry is the one that raised it, with its date.
   frame from it against the die's onset (nes @ efbcc46,
   `tests/latch_frame.rs`, MUTATE=1 red); `capture-score` and
   `split-score` share the rule and the record names F+0. E2's numbers
-  were on a still picture and did not depend on it; rerunning E2 on
-  the fixed rule is a check worth making when the console is next on.
+  were on a still picture and did not depend on it: rerun the same
+  afternoon, the morning's record rescores to the thousandth and a
+  third record repeats the hue (`exercise.md`, E2's rerun).
 
 - **The model's hue against the part (2026-09-12).** On the title
   screen the two eyes agree to 0.7 degrees and the model sits 12.6 and
