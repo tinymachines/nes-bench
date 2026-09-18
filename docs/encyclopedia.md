@@ -121,10 +121,10 @@ the path: 27570 half-cycles differ in 2 span(s) over 27574 half-cycles before th
   (echo) h 12595254..13222545  LDA #$.. at $8091: a different code path from $8092: 277692 fetches differ; ...; PPU: 5606 writes ($2001 <- 00, ...); cart: 1 writes (cart $BF00 <- 00 (base 20))
 rejoin: never; the action run is 3 half-cycles longer than the base run over the same frames
 after the path, to the end of the record:
-  ppu 12595265 $2001 <- 00 at frame 211 line 122
+  ppu 12595265 $2001 <- 00 at frame 211 line 121
   cart 12595319 $bf00 <- 00 (a mapper register) at frame 211
-  ppu 12755981 $2001 <- 06 at frame 214 line 43
-  ppu 12758123 $2000 <- 10 at frame 214 line 53
+  ppu 12755981 $2001 <- 06 at frame 214 line 42
+  ppu 12758123 $2000 <- 10 at frame 214 line 52
   ...
   sprite DMAs ($4014) after the path: 6
 signature: code at $8172..$8177, RAM touched $0000, $0003, $0004, $0005, $0022, $0047, $0050, $0051, $0060, $00E0, $01F7, $01F8 and 7 more, 5 pad reads, 3 PPU writes, 0 cart writes on the path
@@ -141,9 +141,9 @@ times, the stack, `$0060`) and ends in the sprite DMA like every
 other. At the next latch the byte comes back out of RAM (`$0004`,
 `$0047`), the dispatch at `$8089` reads it, and the switch follows
 within 60 half-cycles: rendering off (`$2001 <- 00` at frame 211 line
-122), then the mapper register (`$BF00 <- 00`: both banks to zero, the
+121), then the mapper register (`$BF00 <- 00`: both banks to zero, the
 first game) 54 half-cycles later, then a code path that never rejoins
-(the game's own reset), rendering back on at frame 214 line 43 (`$2001
+(the game's own reset), rendering back on at frame 214 line 42 (`$2001
 <- 06`, then `$2000 <- 10`, the game's NMI on) and a frame loop that
 toggles `$2000` between `90` and `10` around each frame's DMA.
 
