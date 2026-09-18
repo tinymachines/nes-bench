@@ -190,6 +190,7 @@ the frame at which the scroll moves, and the sound. The one claim here
 the bench can test directly is the split: a capture triggered at a
 running latch, decoded, must show the status bar unscrolled above line
 32 and the level scrolled below it, on the same frame the model shows.
+Done, below ("The split").
 
 ## Done on the part, the same night
 
@@ -228,6 +229,45 @@ that fires the switch; Select goes another way. What a cold boot
 changes that a warm reset does not, and RAM does not, is in
 `open-items.md`; the state-showing cartridge and the logic analyser
 are what close it.
+
+**The split** (`tools/split-score.py`, `exercise/split.txt`, run
+`20260918-135721`, the afternoon after). The game reached by the
+warm-reset recipe, Right held from latch 520, the scope stopped on the
+bridge's `TRIG` at latch 600 with the video on CH3: eight frames of
+Mario walking right. The measurement is the one the claim above asks
+for, made without telling either side where the split is: every
+picture row's horizontal shift between two frames two apart, from the
+decoded luma (the peak of the row's cross-correlation, interpolated,
+in dots), on the part's record and on the model's frames. A row of
+the status bar does not move; a row of the level moves by the
+scroll's advance; a row with nothing on it has no answer and is
+reported flat. Part and model gave the same picture row for row: rows
+15 to 32 still (the bar's text, with the comb's reach one row past
+it), rows 33 to 46 flat (sky above the first cloud), rows 47 down
+moving, 1.94 dots on the part against 1.89 on the model over two
+frames, 4.34 against 4.30 over four, and the same flat bands through
+the level (73 to 142, 161 to 173). So the bar is unscrolled through
+row 32 and the level scrolled from row 47 on both, and the split lies
+between: the fourteen flat rows are the picture's, and no measurement
+of this frame can put it tighter than that. The dissection's line 31
+write, taking effect from row 32, is inside the bracket.
+
+The third comparison, the part's triggered frame against the model's
+F-1 to F+2 (the bar's rows giving the constant offset between the two
+pictures, the level's rows the scroll beyond it), named the model's
+**F+1**, not F: the level sat 1.27 dots further on than the model's F,
+0.11 from its F+1. That is the trigger convention, not the game. The
+model's F is the first frame drawn from the input at latch 600. On the
+part the poll is at line 251, after the encoder's sync rows (245 to
+247), so the trigger lands past that frame's sync, the recovery
+anchors on the next sync, and the frame it hands back is the picture
+after the first one drawn from the latch. `capture-score` assumed a
+poll before the sync; E2's title, a still picture, could not have
+shown the difference, and a scrolling frame does at once. Recorded in
+both tools' headers and in `open-items.md`. The synthetic roundtrip
+(the part synthesised from the model's own frames) holds to the same
+bracket, the same advance within a quarter dot and F, and goes red
+when synthesised one frame late or from one frame twice.
 
 ## What it seeds
 

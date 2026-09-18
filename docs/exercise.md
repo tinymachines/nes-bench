@@ -74,8 +74,8 @@ exist, with who honours them:
 | the wires | the bridge's lines `MODE PASS`, `MODE INJECT`, `SET hh`, `AT n hh`, `TRIG n`, `RESET`, `STATUS`; GPIO levels; SCPI | the UNO's firmware; `pinctrl` on the Pi; the scope |
 | the head | the ops `status`, `run`, `abort`, `bridge`, `runs` over UDP JSON; `runs/<stamp>/` over HTTP | `head/headd.py` |
 | the script | `RESET`, `POWER ON`, `POWER OFF`, `MODE`, `SET`, `AT`, `TRIG`, `ARM`, `CAPTURE`, `WAIT` | the head plays all of them; the model's runners honour `SET` and `AT` by latch index and skip the rest by name |
-| the model | `set_pad`, `run_frames`, `master_half_step`, `cpu_trace`, `Alignment`; the runners `pad-log`, `trace`, `capture-score`, `run-rom` | `nes-console` |
-| the comparators | `compare-logs.py`, `b1-score.py`, `eyes.py`, `cal.py`, `replay-recorded` | the workstation |
+| the model | `set_pad`, `run_frames`, `master_half_step`, `cpu_trace`, `Alignment`; the runners `pad-log`, `trace`, `capture-score`, `split-score`, `run-rom` | `nes-console` |
+| the comparators | `compare-logs.py`, `b1-score.py`, `split-score.py`, `eyes.py`, `cal.py`, `replay-recorded` | the workstation |
 | the regression | `rig-check.py` and `bench-check.py`, each answer `PASS`, `FAIL` or `SKIP` by the check's name | the workstation, or the Pi for the hands |
 
 The layer above the script is the one this regime builds, and it has no

@@ -1,0 +1,25 @@
+# The split on the part (docs/mario-dissection.md): the game reached by
+# the warm-reset recipe (a cold multicart menu never takes Start, see
+# open-items), Right held from latch 520 so the level scrolls, and the
+# scope stopped on the bridge's TRIG at latch 600 with TRIG on CH1 and
+# the video on CH3, as E2's title was. 12 M points at 50 MS/s hold
+# eight frames after the trigger: the triggered frame and one a few
+# frames on are what tools/split-score.py measures the rows' motion
+# between.
+POWER ON
+WAIT 5 S
+MODE INJECT
+SET 00
+RESET
+WAIT 5 S
+RESET
+AT 200 08
+AT 202 00
+AT 330 08
+AT 332 00
+AT 520 80
+ARM split-t600 1,3 0.2 -0.5 CH1
+TRIG 600
+WAIT 620
+CAPTURE
+POWER OFF

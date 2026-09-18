@@ -41,6 +41,55 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import knobs  # noqa: E402
 
 
+def run_env(run, synthetic, channel):
+    """The environment a run hands the model's scorers: SCRIPT, LATCH
+    (the script's last TRIG), KNOBS (written if the run has none), and
+    the video channel resolved from the knobs file when none is named.
+    Returns (env, channel)."""
+    script = run / "script.txt"
+    env = dict(os.environ)
+    if script.exists():
+        m = re.findall(r"^\s*TRIG\s+(\d+)", script.read_text(), re.M)
+        if m:
+            env["LATCH"] = m[-1]
+        env["SCRIPT"] = str(script)
+    if not synthetic:
+        kpath = run / "knobs.toml"
+        if not kpath.exists():
+            print(f"{Path(sys.argv[0]).name}: wrote {knobs.init(run)}")
+        env["KNOBS"] = str(kpath)
+        if channel is None:
+            m = re.search(r"^channel\s*=\s*(\d+)", kpath.read_text(), re.M)
+            channel = int(m.group(1)) if m else knobs.VIDEO_CHANNEL
+    elif channel is None:
+        channel = knobs.VIDEO_CHANNEL
+    return env, channel
+
+
+def run_capture(run, capture, channel):
+    """The run's one capture (or the named one): the video channel's
+    .u8 file, its rate and its trigger's sample (None when the .toml
+    has none). Refuses a capture without the video channel, and a run
+    with several captures and no name. Raises SystemExit with the
+    reason."""
+    tomls = sorted(t for t in run.glob("*.toml") if t.name != "knobs.toml")
+    if capture:
+        tomls = [run / f"{capture}.toml"]
+    if len(tomls) != 1:
+        raise SystemExit(f"{run}: {len(tomls)} captures; name one")
+    meta = tomls[0].read_text()
+    rate = float(re.search(r"rate_hz\s*=\s*([0-9.]+)", meta).group(1))
+    ts = re.search(r"trigger_sample\s*=\s*(\d+)", meta)
+    chans = dict(re.findall(r'^ch(\d+)\s*=\s*"([^"]+)"', meta, re.M))
+    if chans:
+        if str(channel) not in chans:
+            raise SystemExit(f"{tomls[0].name}: channels {', '.join(sorted(chans))}; no CH{channel} (the video) to score")
+        u8 = run / chans[str(channel)]
+    else:
+        u8 = run / re.search(r'file\s*=\s*"([^"]+)"', meta).group(1)
+    return u8, rate, (int(ts.group(1)) if ts else None)
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("run")
@@ -54,50 +103,19 @@ def main():
     # Absolute: the scorer runs in the model's checkout, and a run named
     # relative to this one vanished there (the first E2 run, 2026-09-18).
     run = Path(a.run).resolve()
-    script = run / "script.txt"
-    trig = None
-    if script.exists():
-        m = re.findall(r"^\s*TRIG\s+(\d+)", script.read_text(), re.M)
-        trig = int(m[-1]) if m else None
-    env = dict(os.environ)
-    if script.exists():
-        env["SCRIPT"] = str(script)
-    if not a.synthetic:
-        kpath = run / "knobs.toml"
-        if not kpath.exists():
-            print(f"b1-score: wrote {knobs.init(run)}")
-        env["KNOBS"] = str(kpath)
-        if a.channel is None:
-            m = re.search(r"^channel\s*=\s*(\d+)", kpath.read_text(), re.M)
-            a.channel = int(m.group(1)) if m else knobs.VIDEO_CHANNEL
-    elif a.channel is None:
-        a.channel = knobs.VIDEO_CHANNEL
-    if trig is not None:
-        env["LATCH"] = str(trig)
+    env, a.channel = run_env(run, a.synthetic, a.channel)
     cmd = ["cargo", "run", "--release", "-p", "nes-console", "--example", "capture-score", "--", a.rom, str(a.frames)]
     if a.synthetic:
         env["SYNTH_TRIGGER"] = "1"
     else:
-        tomls = sorted(t for t in run.glob("*.toml") if t.name != "knobs.toml")
-        if a.capture:
-            tomls = [run / f"{a.capture}.toml"]
-        if len(tomls) != 1:
-            print(f"{run}: {len(tomls)} captures; name one", file=sys.stderr)
+        try:
+            u8, rate, ts = run_capture(run, a.capture, a.channel)
+        except SystemExit as e:
+            print(e, file=sys.stderr)
             return 2
-        meta = tomls[0].read_text()
-        rate = float(re.search(r"rate_hz\s*=\s*([0-9.]+)", meta).group(1))
-        ts = re.search(r"trigger_sample\s*=\s*(\d+)", meta)
-        chans = dict(re.findall(r'^ch(\d+)\s*=\s*"([^"]+)"', meta, re.M))
-        if chans:
-            if str(a.channel) not in chans:
-                print(f"{tomls[0].name}: channels {', '.join(sorted(chans))}; no CH{a.channel} (the video) to score", file=sys.stderr)
-                return 2
-            u8 = run / chans[str(a.channel)]
-        else:
-            u8 = run / re.search(r'file\s*=\s*"([^"]+)"', meta).group(1)
         cmd += [str(u8), f"{rate:.1f}"]
-        if ts:
-            env["TRIGGER_SAMPLE"] = ts.group(1)
+        if ts is not None:
+            env["TRIGGER_SAMPLE"] = str(ts)
         else:
             print("the capture's .toml has no trigger_sample: the recovery takes the record's first frame", file=sys.stderr)
     print("b1-score:", " ".join(f"{k}={env[k]}" for k in ("SCRIPT", "LATCH", "TRIGGER_SAMPLE", "SYNTH_TRIGGER") if k in env), " ".join(cmd[-3:]))
