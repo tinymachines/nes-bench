@@ -170,3 +170,106 @@ after frame 214 (E2 did exactly this: the title at latch 300), and the
 sound. What it cannot yet: the frame at which rendering went off, until
 the scope is triggered at latch 201 and the decoded record shows the
 blank frames.
+
+## 3. The game loop inside the interrupt
+
+**What it does.** The main program spins on one instruction; the whole
+game runs in the NMI handler, which turns NMIs off at its entry and on
+before its `RTI`, so a long frame is dropped and never re-entered.
+
+**Found in.** Super Mario Bros. (`mario-dissection.md`): `JMP $8057`
+at `$8057`, 5,800 spins a frame, 58 percent of it; the handler at
+`$8082`, `$2000 <- 10` at line 241 dot 149, `$2000 <- 90` at line 87,
+`RTI` at `$8181`.
+
+**Signature.** An idle loop of one instruction that every frame's
+profile finds at the same address; the vector taken at line 241; the
+first PPU write of the handler clearing bit 7 of `$2000` and the last
+setting it.
+
+**Mechanism.** The NMI is the frame clock. With the game inside it, the
+frame is the unit of everything, and the guard is what a frame overrun
+costs: one dropped frame, not a corrupted one.
+
+## 4. The sprite-0 split for a status bar
+
+**What it does.** Waits for the sprite-0 hit flag at the bottom of a
+fixed status bar, then writes the level's scroll, so the bar stays and
+the world moves under it.
+
+**Found in.** Super Mario Bros.: `$2002` read once at `$813D` (the flag
+clear), `LDA $2002 / AND #.. / BEQ` at `$8150` spun 171 times from line
+16 to line 30, a `DEY / BNE` delay of 19 at `$8159`, `$2005` twice at
+line 31 dot 173, `$2000` at dot 230.
+
+**Signature.** A spin on `$2002` that ends at the same line every frame
+(30 here, the bar being 32 lines), a short counted delay into the
+blank, two `$2005` writes and one `$2000` at the next line.
+
+**Mechanism.** The 2C02 sets bit 6 of `$2002` when sprite 0's opaque
+pixel meets an opaque background pixel; a sprite parked at the bar's
+bottom edge makes that a scanline timer. The delay walks the write to
+the horizontal blank so the change lands between lines. What the
+bench can test: a decoded capture must show the bar unscrolled above
+line 32 and the level scrolled below.
+
+## 5. The VRAM buffer drained in the blank
+
+**What it does.** The game's logic, running during the picture, queues
+nametable and palette writes in RAM; the handler writes them to `$2007`
+in the blank, after the DMA, before rendering goes on.
+
+**Found in.** Super Mario Bros.: the buffer at `$0300`, drained by
+`STA $2007` at `$8EBB`; 4 bytes to `$3F0C` and 3 to `$207A` every four
+to five frames, 26 to a nametable column (`$2490`) when the scroll
+crosses sixteen pixels; the address parked at `$3F00` then `$0000`
+after; rendering on at line 247, 249 or 252 by the burst's size.
+
+**Signature.** No `$2007` write outside the blank; bursts right after
+the DMA's 256 writes; four `$2006` writes closing every burst.
+
+**Mechanism.** VRAM is writable only while the PPU is not fetching, so
+the picture's work is deferred into a queue and the blank's budget
+(about 20 lines here) is what bounds a frame's update: one column of
+26 tiles is the biggest thing this game ever writes in a frame.
+
+## 6. The jump engine
+
+**What it does.** A routine called by `JSR` pulls its own return
+address, indexes the table of addresses that follows the `JSR`, and
+lands by `JMP` indirect: a switch on a byte with the cases written as
+a table right after the call.
+
+**Found in.** Super Mario Bros.: `$8E04`, entered 474 times in 100
+frames; tables after the `JSR`s at `$8215` (the operation mode),
+`$AEDF` (the game mode), `$B04C`, `$B34E` (the player's state), `$C88F`,
+`$C907`, `$92C8`. Nine tables in 100 frames.
+
+**Signature.** Two `PLA`s in a routine entered by `JSR` before any
+`RTS`; a `JMP ($..)`; the callee's `RTS` returning to the address the
+caller's caller pushed. The profiler closes the engine's frame at the
+`JMP` and runs the routine it lands on as a call of its own.
+
+**Mechanism.** The 6502 has no indexed jump; the trick makes the return
+address a table pointer. One engine, and every mode, state and object
+type in the game is a table.
+
+## 7. The state dispatch
+
+**What it does.** The player's state (on the ground, in the air, ...)
+indexes a jump-engine table; a press changes the state and the next
+frame runs a different routine.
+
+**Found in.** Super Mario Bros.: the table after `$B34E`, `$B35A` for
+54 of 100 running frames and `$B376` for 46 (the scripted jump); the
+x-ray of a press on the ground: `$B376` is the one routine that ran
+only in the pressed run, 746 half-cycles, after the test at `$B484`
+(`AND $0D`: A now against A last frame) sent the physics down a
+different path.
+
+**Signature.** A routine present in one run's tree and absent from the
+other's, reached from the engine, in the frame of the press.
+
+**Mechanism.** A state machine written as a table. The x-ray's routine
+diff finds the transition without reading the code: that is the
+method entry 7 exists to record.

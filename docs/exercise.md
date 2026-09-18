@@ -370,6 +370,15 @@ event kinds and never its code; the traces go where the ROM store is.
 The first two x-rays and the first two entries are in
 `encyclopedia.md`: the poll routine, from the pad cartridge with its
 code, and the multicart menu's bank switch on Start, shape only.
+`tools/dissect.py` followed the same night: a game's frame in scanline
+order (the handler's vector and `RTI`, every PPU write with its line,
+the DMA, the VRAM bursts with the routine writing them, the `$2002`
+spins, the pad's latch, the idle loops), the routine call tree with a
+jump engine followed through its table, a RAM map, the code's pages,
+and one line per frame; and `xray.py --script` puts both runs on a
+script (the way into a game). Super Mario Bros. was the first game
+taken apart with them: `mario-dissection.md`, and encyclopedia entries
+3 to 7.
 
 ## What is machine today, and the first three moves
 
@@ -384,7 +393,7 @@ code, and the multicart menu's bank switch on Start, shape only.
 | the calibration cartridge | the model side done, the part side waits on the flash chips |
 | the knobs file | built 2026-09-18: `tools/knobs.py`, `nes-console/src/knobs.rs`, two tables with sources, refusals by name, the alignment knob proven to reach the scheduler (Programme 1) |
 | screens, the search | proposed; `episode` is a word since E2 |
-| the x-ray diff and the encyclopedia | built 2026-09-18: `tools/xray.py` (diverge, the path, rejoin, the window; the refusal proven by MUTATE), `encyclopedia.md` with its first two entries (Programme 3) |
+| the x-ray diff and the encyclopedia | built 2026-09-18: `tools/xray.py` (diverge, the path, rejoin, the window; the refusal proven by MUTATE), `encyclopedia.md` with seven entries; `tools/dissect.py` and `mario-dissection.md`, the first game taken apart (Programme 3) |
 
 The first three moves, in order: E2 on a game, because it needs nothing
 that does not exist and it is the loop every programme runs inside

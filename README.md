@@ -53,7 +53,13 @@ register's job, as it is in the pad.
 - `docs/encyclopedia.md`: the NES code patterns the x-rays add up to,
   each with its signature as `tools/xray.py` measured it, a window on
   the Halfshot page and the mechanism; code only from ROMs whose source
-  is ours. Two entries: the poll routine, the multicart's bank switch.
+  is ours. Seven entries: the poll routine, the bank switch, the loop
+  inside the interrupt, the sprite-0 split, the VRAM buffer, the jump
+  engine, the state dispatch.
+- `docs/mario-dissection.md`: Super Mario Bros. taken apart on the model
+  with `tools/dissect.py` and the x-ray: the loop inside the NMI, the
+  frame scanline by scanline, the routine tree through the jump engine,
+  RAM, the VRAM pipeline, and the pad's byte to a jump. Shape only.
 - `docs/closed-cycle-plan.md`: one turn of the whole loop, the
   cartridge to the first disagreeing frame, mapped onto what is built
   and what is not, and the order it closes in (C0 to C3 over B0 to B3).
