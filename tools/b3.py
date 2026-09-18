@@ -151,10 +151,25 @@ def run_script(head, script, into):
 def cmd_record(a):
     log = Path(a.run) / "bridge.log"
     polls = []
-    for line in log.read_text().splitlines():
+    lines = log.read_text().splitlines()
+    # The bridge's log carries the session before its RESET (the head
+    # drains everything it printed); the record starts at the bridge's
+    # acknowledgement, where its latch count is zero. Found on the first
+    # hand's record (2026-09-18): latches 364290..1502, the first byte
+    # the pad's state from before the run.
+    resets = [i for i, l in enumerate(lines) if l.strip() == "# reset"]
+    if resets:
+        lines = lines[resets[-1] + 1:]
+    for line in lines:
         f = line.split()
         if len(f) == 4 and f[0] == "L":
             polls.append((int(f[1]), int(f[2], 16)))
+    if a.until is not None:
+        # A hand's minute can carry more changes than the bridge holds
+        # (the first one, 2026-09-18: 247 over 3603 latches against the
+        # UNO's 128): the replay is then of its first part, cut here, and
+        # the record says so.
+        polls = [(n, b) for n, b in polls if n <= a.until]
     if not polls:
         raise SystemExit(f"{log}: no polls")
     lines = ["# recorded from " + str(a.run), "MODE INJECT", f"SET {polls[0][1]:02x}", "RESET"]
@@ -318,6 +333,7 @@ def main():
     r = sub.add_parser("record")
     r.add_argument("run")
     r.add_argument("-o", "--out", required=True)
+    r.add_argument("--until", type=int, default=None, help="the record's last latch: a prefix of the run, when all of it will not fit the bridge's schedule")
     r.add_argument("--bridge", choices=sorted(SCHEDULE_MAX), default="uno",
                    help="which bridge will replay this: uno (v1b, the one built first) or c6 (v1)")
     p = sub.add_parser("replay")

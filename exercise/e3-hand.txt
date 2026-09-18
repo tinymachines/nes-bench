@@ -1,8 +1,8 @@
 # E3's record: a hand on the original pad, the bridge in MODE PASS so
 # the console sees the pad and the bridge logs every latch's byte. The
 # console from off, five seconds, a reset (the bridge's latch zero),
-# then about 25 seconds of play: the multicart's menu, Start, Super
-# Mario Bros. into 1-1, walking and jumping. Short on purpose: the UNO
+# then about a minute of play: the multicart's menu, Start, Super
+# Mario Bros. into 1-1, walking and jumping. Not longer: the UNO
 # bridge's schedule holds 128 changes of the byte, and tools/b3.py
 # record refuses a record that will not replay whole.
 #   python3 tools/b3.py record runs/<stamp> -o exercise/e3-replay.txt
@@ -12,5 +12,7 @@ POWER ON
 WAIT 5 S
 MODE PASS
 RESET
-WAIT 1500
+WAIT 3600
 POWER OFF
+# First played 2026-09-18 (run 20260918-232758) at 25 s (WAIT 1500):
+# too short for a hand to get past the title; a minute now.

@@ -369,6 +369,37 @@ class Run(threading.Thread):
     # healthy. Refusing the run is the only way that failure is visible.
     REFUSALS = ("# schedule full",)
 
+    def send_checked(self, line, timeout=2.0):
+        """One line to the bridge, then its echo before the next.
+
+        Sent back to back, 125 AT lines overran the UNO's 64-byte serial
+        buffer (2026-09-18, the first hand's replay): some came back as
+        `# ?` and were dropped, some were taken with digits missing
+        (`AT 2219 00` as `# at 2210 00`, `AT 2254 50` as `# at 225 00`),
+        and the console played a different history from latch 1015 on
+        with every refusal check silent. So each line waits for its own
+        echo, and an AT's echo must carry the latch and byte sent."""
+        w = line.split()
+        op = w[0].lower()
+        self.head.bridge.send(line)
+        deadline = time.time() + timeout
+        while time.time() < deadline:
+            for got in self.head.bridge.drain():
+                self.blog.write(got + "\n")
+                if got.startswith("# ?"):
+                    raise RuntimeError(f"the bridge did not understand {line!r} ({got}): the input history would be wrong, so the run is stopped")
+                if any(got.startswith(r) for r in self.REFUSALS):
+                    raise RuntimeError(f"the bridge refused {line!r} ({got.lstrip('# ')}): the input history would be wrong, so the run is stopped")
+                g = got.split()
+                if op == "at" and len(g) == 4 and g[:2] == ["#", "at"]:
+                    if (int(g[2]), int(g[3], 16)) != (int(w[1]), int(w[2], 16)):
+                        raise RuntimeError(f"the bridge took {line!r} as {got!r}: the input history would be wrong, so the run is stopped")
+                    return
+                if op != "at" and len(g) >= 2 and g[0] == "#" and g[1] == op:
+                    return
+            time.sleep(0.002)
+        raise RuntimeError(f"the bridge did not answer {line!r} within {timeout} s")
+
     def pump_bridge(self):
         bad = None
         for line in self.head.bridge.drain():
@@ -409,7 +440,7 @@ class Run(threading.Thread):
         w = line.split()
         op = w[0].upper()
         if op in ("MODE", "SET", "AT", "TRIG"):
-            h.bridge.send(line.upper() if op == "MODE" else line)
+            self.send_checked(line.upper() if op == "MODE" else line)
             self.say(f"bridge <- {line}")
         elif op == "RESET":
             h.bridge.send("RESET")
