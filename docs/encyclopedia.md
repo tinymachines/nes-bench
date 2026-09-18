@@ -1,0 +1,172 @@
+# The encyclopedia of NES code patterns
+
+What the x-rays add up to (`exercise.md`, Programme 3). An entry is a
+pattern's name, what it does, its signature as the x-ray measures it
+(the addresses it touches, the event kinds it raises, its cycle counts
+on the die's rungs), a window to stand in on the 6502 site's Halfshot
+page, the cartridges it was found in by CRC, and the mechanism it
+teaches. An entry carries the shape of a pattern and never a commercial
+cartridge's bytes: code appears only from ROMs whose source is ours.
+
+Every number here was produced by `tools/xray.py` on the model, whose
+CPU is held to the die by the recorded bus (`trace-plan.md`, T1); the
+part confirms an x-ray by the action's effects, never by its fetches,
+because the bench has no address bus.
+
+## 1. The poll routine
+
+**What it does.** Reads the controller: strobe the shift register (a 1
+then a 0 to `$4016`), then read `$4016` eight times, each read one
+button on D0, shifting the bits into a RAM byte.
+
+**Found in.** The pad cartridge, `pad-paint.nes` (`nes-console`
+`testrom::pad_paint_program`, crc32 of the paint variant as
+`export-testrom` writes it), whose source is ours, so the code is
+shown. The multicart's menu polls the same way (entry 2).
+
+**The x-ray.** `tools/xray.py runs/pad-paint.nes pad-a --latch 6 --byte
+01 --frames 12 --bytes --window`: A pressed for one latch at latch 6,
+against not.
+
+```
+diverge h 531570: read of $4016 returned 0 in the base run and 1 with the byte (D0); latch 6 at h 531559, 11 half-cycles after it
+  the instruction: LDA $4016 at $810E (its fetch at h 531564), reads read 6 half-cycles in
+the path: 48 half-cycles differ in 11 span(s) over 290 half-cycles before the next latch, 11 instructions; then 1 span(s) after it
+  h 531570..531571  LDA $4016 at $810E: pad $4016 read D0 1 (base 0)
+  h 531585..531585  ROR $02 at $8112: RAM $0002 <- 80 (base 00)
+  h 531612..531617  ROR $02 at $8112: RAM $0002 read 80 (base 00); RAM $0002 <- 80 (base 00); RAM $0002 <- 40 (base 00)
+  ...  (six more rotations, the bit walking down to bit 0)
+  h 531846..531847  LDA $02 at $8121: RAM $0002 read 01 (base 00)
+  h 531859..531859  STA $2007 at $8125: PPU $2007 <- 01 (base 00)
+  (echo) h 591136..591140  ROR $02 at $8112: RAM $0002 read 01 (base 00); RAM $0002 <- 01 (base 00)
+rejoin: the records agree again from h 591141 to the end (714732)
+signature: code at $810E..$8125, RAM touched $0002, 8 pad reads, 3 PPU writes, 0 cart writes on the path
+```
+
+**Signature.** Eight reads of `$4016` exactly 32 half-cycles apart (16
+CPU cycles: `LDA abs` 4, `LSR` 2, `ROR zp` 5, `DEX` 2, `BNE` taken 3),
+the strobe's two writes before them, one RAM byte written eight times
+with the bit walking from bit 7 to bit 0, and the byte read once after.
+The pad's byte enters the CPU 11 half-cycles after the latch and is a
+whole byte in RAM 290 half-cycles later. The `ROR zp` is a
+read-modify-write: the x-ray shows each one as a read, the old byte
+written back, then the new byte, which is the 6502's double write on
+the die and not a quirk of the tool.
+
+**The code.** From `testrom.rs`, the NMI handler at `$8100`:
+
+```
+8100  INC $00          ; the frame count
+8102  LDA #$01
+8104  STA $4016        ; strobe up
+8107  LDA #$00
+8109  STA $4016        ; strobe down: the register holds the eight buttons
+810C  LDX #$08
+810E  LDA $4016        ; <- the x-ray's divergence: D0 is the button
+8111  LSR A            ; D0 into the carry
+8112  ROR $02          ; the carry into bit 7 of the byte, the rest down
+8114  DEX
+8115  BNE $810E
+8117  ...              ; the paint: $2006 <- $3F, $01; $2007 <- $02 & $3F
+```
+
+**The window.** `pad-poll-6.window`, shipped on the Halfshot page
+(`halfshot?window=pad-poll-6`, the same cartridge's poll at latch 6 from
+the NMI entry), and the x-ray's own `pad-a.window` (312 half-cycles
+from the load's fetch to the palette write, 13 overlay lines) to ship
+beside it.
+
+**The mechanism.** The controller is a shift register (a 4021) clocked
+by reads: the strobe loads it, each read of `$4016` presents one bit and
+the falling edge of the read clocks the next. A game owns the timing of
+its own poll, which is why the port's latch width and clock spacing on
+the bench are the game's cycle counts and not the console's
+(`bench-v1b-uno.md`). The 16 cycles between reads here are this
+routine's; a game with an unrolled loop reads faster, and the DMC's
+fetch can clock the register twice (`pad-dmc`, the nine-clock polls
+`pad-log` predicts).
+
+**The dispatch.** This cartridge's action on the byte is the smallest
+there is: the byte, masked, into palette entry 1, so the picture shows
+what was read. That is entry 1's second half and the seed of entry 3
+(the dispatch from the pad's byte to the action) once a game's is
+x-rayed.
+
+## 2. The bank switch: a menu's Start
+
+**What it does.** A multicart's menu polls the pad, and on Start
+turns rendering off, writes the game's bank into the mapper's register
+and starts the game from its reset vector. The bytes are a commercial
+cartridge's, so this entry is shape only: addresses, counts, event
+kinds, and what the x-ray reported with every fetched byte masked.
+
+**Found in.** Super Mario Bros. + Duck Hunt (USA), crc32 D26EFD78,
+mapper 66 (GxROM: one register at `$8000..$FFFF`, bus-conflict AND).
+
+**The x-ray.** `tools/xray.py <rom> smbdh-start --latch 200 --byte 08
+--frames 222 --out <the ROM store>`: Start for one latch at latch 200,
+the menu's 190th poll, against not. The report, as far as it stays
+shape:
+
+```
+diverge h 12535332: read of $4016 returned 0 in the base run and 1 with the byte (D0); latch 200 at h 12535197, 135 half-cycles after it
+  the instruction: AND $4016 at $8172 (its fetch at h 12535326), reads read 6 half-cycles in
+the path: 27570 half-cycles differ in 2 span(s) over 27574 half-cycles before the next latch, 4592 instructions; then 7 span(s) after it
+  h 12535332..12535333  AND $4016 at $8172: pad $4016 read D0 1 (base 0)
+  h 12535338..12562905  INC $03 at $8177: a different code path from $8178: 11454 fetches differ; RAM: 32 writes to 19 addresses (most: $0003 x10, $01FF x3, $01FE x2, $0060 x2, ...); PPU: 2 writes ($2000 <- 90, $2003 <- 00); cart: 0 writes
+  (echo) h 12595070..12595071  LDA $04 at $817C: RAM $0004 read 10 (base 00)
+  (echo) h 12595113..12595113  STA $47 at $818A: RAM $0047 <- 10 (base 00)
+  (echo) h 12595238..12595239  LDA $47 at $8089: RAM $0047 read 10 (base 00)
+  (echo) h 12595248..12595249  AND $E0 at $808D: RAM $00E0 read D0 (base 00)
+  (echo) h 12595254..13222545  LDA #$.. at $8091: a different code path from $8092: 277692 fetches differ; ...; PPU: 5606 writes ($2001 <- 00, ...); cart: 1 writes (cart $BF00 <- 00 (base 20))
+rejoin: never; the action run is 3 half-cycles longer than the base run over the same frames
+after the path, to the end of the record:
+  ppu 12595265 $2001 <- 00 at frame 211 line 122
+  cart 12595319 $bf00 <- 00 (a mapper register) at frame 211
+  ppu 12755981 $2001 <- 06 at frame 214 line 43
+  ppu 12758123 $2000 <- 10 at frame 214 line 53
+  ...
+  sprite DMAs ($4014) after the path: 6
+signature: code at $8172..$8177, RAM touched $0000, $0003, $0004, $0005, $0022, $0047, $0050, $0051, $0060, $00E0, $01F7, $01F8 and 7 more, 5 pad reads, 3 PPU writes, 0 cart writes on the path
+```
+
+**Signature.** The poll is entry 1's shape with different numbers: eight
+reads of `$4016` 38 half-cycles apart (19 cycles a bit; the pad
+cartridge's is 16), the bit tested by an `AND` on the read rather than
+rotated, and Start is the fourth bit, so the divergence lands on the
+fourth read with five reads after it, spaced 46 half-cycles once the
+branch on the bit is taken. The press is not acted on in its own frame:
+the poll's frame writes 19 RAM addresses (a counter at `$0003` ten
+times, the stack, `$0060`) and ends in the sprite DMA like every
+other. At the next latch the byte comes back out of RAM (`$0004`,
+`$0047`), the dispatch at `$8089` reads it, and the switch follows
+within 60 half-cycles: rendering off (`$2001 <- 00` at frame 211 line
+122), then the mapper register (`$BF00 <- 00`: both banks to zero, the
+first game) 54 half-cycles later, then a code path that never rejoins
+(the game's own reset), rendering back on at frame 214 line 43 (`$2001
+<- 06`, then `$2000 <- 10`, the game's NMI on) and a frame loop that
+toggles `$2000` between `90` and `10` around each frame's DMA.
+
+**The window.** Not cut yet: rung 0 has to run the record to the
+fetch, twelve million half-cycles, about seven minutes, and a window
+inside a commercial cartridge's run carries its bytes, so it would stay
+where the ROM store is and never be served.
+
+**The mechanism.** GxROM's register is the whole ROM space, and the
+board ANDs the written byte with the ROM byte under it (the bus
+conflict), so a menu writes the bank through an address whose ROM byte
+already holds the value: `$BF00` holds `00` in this cartridge's menu
+bank, which is why the write lands there. Rendering goes off first so
+the switch, which swaps the CHR bank too, does not tear the frame; the
+game then starts from its own vector and its first act is to turn the
+picture back on with its own `$2000` and `$2001`. The 3 half-cycles by
+which the action run is longer are the odd-frame dot the PPU skips
+with rendering on: the two runs' frames are no longer the same length
+once one of them has rendering off for three frames.
+
+**What the part can confirm.** Not the fetches (the bench has no
+address bus) but the effects: the poll count, the picture at a trigger
+after frame 214 (E2 did exactly this: the title at latch 300), and the
+sound. What it cannot yet: the frame at which rendering went off, until
+the scope is triggered at latch 201 and the decoded record shows the
+blank frames.

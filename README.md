@@ -50,6 +50,10 @@ register's job, as it is in the pad.
   x-ray behind an encyclopedia of code patterns). E2 played 2026-09-18,
   twice, its script in `exercise/`: the first failing region named, the
   hue miss repeatable, the luma miss one scope level wide.
+- `docs/encyclopedia.md`: the NES code patterns the x-rays add up to,
+  each with its signature as `tools/xray.py` measured it, a window on
+  the Halfshot page and the mechanism; code only from ROMs whose source
+  is ours. Two entries: the poll routine, the multicart's bank switch.
 - `docs/closed-cycle-plan.md`: one turn of the whole loop, the
   cartridge to the first disagreeing frame, mapped onto what is built
   and what is not, and the order it closes in (C0 to C3 over B0 to B3).

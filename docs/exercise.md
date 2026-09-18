@@ -344,6 +344,33 @@ the ROM store is, for the same reason.
 The words added: `xray`, `diverge` (the first half-cycle apart),
 `pattern`, and `window`, which T2 already built.
 
+**Built 2026-09-18, the third move.** `tools/xray.py rom.nes <name>
+--latch N --byte HH` traces the ROM twice through `nes-console`'s
+`trace` (00 held, and HH at latch N for one latch), streams the two
+`.pins` records side by side so a record of any length fits, and
+reports: `diverge`, the first half-cycle apart, with the instruction
+executing there disassembled from the 6502 site's own table
+(`web/disasm.js`, the one place it lives); the path, every later
+half-cycle the records differ at, in spans labelled with the
+instruction and what it did (the RAM written, the picture-chip
+register reached, the bank switched, from the pins and the action
+run's events), the path proper ending at the next latch and what
+differs after it reported as the byte's echo; `rejoin`, where the
+records agree again to the end, or never; a signature line; and with
+`--window`, a window of the action run cut around the divergence by
+the 6502 repository's `replay-recorded`, the overlay lines inside it
+carried, for the Halfshot page to stand in. The invariant is the
+refusal: the pad's byte has one door into the CPU, a read of `$4016`
+or `$4017`, so records that first differ anywhere else were not the
+same run, and `MUTATE=1`, which corrupts one fetched byte of the base
+record before the latch, must be refused there, and is. Without
+`--bytes` the report masks every fetched byte and immediate operand, so
+a commercial cartridge's x-ray carries addresses, mnemonics, counts and
+event kinds and never its code; the traces go where the ROM store is.
+The first two x-rays and the first two entries are in
+`encyclopedia.md`: the poll routine, from the pad cartridge with its
+code, and the multicart menu's bank switch on Start, shape only.
+
 ## What is machine today, and the first three moves
 
 | piece | state on 2026-09-17 |
@@ -357,7 +384,7 @@ The words added: `xray`, `diverge` (the first half-cycle apart),
 | the calibration cartridge | the model side done, the part side waits on the flash chips |
 | the knobs file | built 2026-09-18: `tools/knobs.py`, `nes-console/src/knobs.rs`, two tables with sources, refusals by name, the alignment knob proven to reach the scheduler (Programme 1) |
 | screens, the search | proposed; `episode` is a word since E2 |
-| the x-ray diff and the encyclopedia | proposed; the trace and the window exist |
+| the x-ray diff and the encyclopedia | built 2026-09-18: `tools/xray.py` (diverge, the path, rejoin, the window; the refusal proven by MUTATE), `encyclopedia.md` with its first two entries (Programme 3) |
 
 The first three moves, in order: E2 on a game, because it needs nothing
 that does not exist and it is the loop every programme runs inside
@@ -365,4 +392,8 @@ that does not exist and it is the loop every programme runs inside
 somewhere to land that is not a source edit (built, Programme 1: the
 capture's window is in it, the hue is not, on purpose); and the x-ray
 diff on the pad cartridge, whose source is ours, so the first
-encyclopedia entry (the poll routine) can be published with its code.
+encyclopedia entry (the poll routine) can be published with its code
+(built, Programme 3, and the second entry x-rayed the multicart's
+Start the same night). All three moves are made; what comes next is
+the regime's own next step, E3, a hand on the pad, and E1 when the
+flash chips arrive.
