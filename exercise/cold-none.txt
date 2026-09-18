@@ -1,0 +1,19 @@
+# The multicart's menu with no reset at all: the bridge's counters
+# zeroed (and the reset relay pulsed) with the console's power OFF, then
+# power, so latch zero is the power-on's own. Every earlier "cold" run
+# powered the console and then pulsed its reset, so the part's latch
+# zero followed one warm reset (open-items, the cold-boot Start
+# mystery). Start at 200, the poll line at 400 says menu (119) or game
+# (250).
+POWER OFF
+WAIT 3 S
+MODE INJECT
+SET 00
+RESET
+POWER ON
+AT 200 08
+AT 202 00
+WAIT 400
+ARM coldnone 2,3 0.2 -0.5 CH2
+CAPTURE
+POWER OFF

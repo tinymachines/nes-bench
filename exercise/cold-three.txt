@@ -1,0 +1,20 @@
+# Power, then three resets five seconds apart, Start at 200: two resets
+# take Start (run 20260918-025800) and one does not; three says whether
+# it is the count's parity or "more than one".
+POWER OFF
+WAIT 3 S
+POWER ON
+WAIT 5 S
+MODE INJECT
+SET 00
+RESET
+WAIT 5 S
+RESET
+WAIT 5 S
+RESET
+AT 200 08
+AT 202 00
+WAIT 400
+ARM coldthree 2,3 0.2 -0.5 CH2
+CAPTURE
+POWER OFF

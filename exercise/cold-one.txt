@@ -1,0 +1,15 @@
+# The earlier "cold" case again, the control for cold-none and
+# cold-three: power, five seconds, one reset, Start at 200.
+POWER OFF
+WAIT 3 S
+POWER ON
+WAIT 5 S
+MODE INJECT
+SET 00
+RESET
+AT 200 08
+AT 202 00
+WAIT 400
+ARM coldone 2,3 0.2 -0.5 CH2
+CAPTURE
+POWER OFF

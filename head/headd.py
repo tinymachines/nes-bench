@@ -111,6 +111,15 @@ class Bridge:
                     self.lines.append(line)
                     if len(self.lines) > 100_000:
                         del self.lines[:50_000]
+                    # The bridge's acknowledgement of RESET: its counters are
+                    # zero from here, in the order it printed, so every L line
+                    # before this one is the last session's. Without this a
+                    # WAIT n after a RESET returned at once whenever the
+                    # session before had passed latch n (found 2026-09-18:
+                    # a cold-power script captured at latch ~190 of a
+                    # WAIT 400, the head still holding 2773 from the morning).
+                    if line == "# reset":
+                        self.latest_latch = -1
                     if line.startswith("L "):
                         f = line.split()
                         if len(f) == 4:
