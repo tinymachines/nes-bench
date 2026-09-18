@@ -1,0 +1,12 @@
+# One step of the warm-up series: the console left on since
+# warmup-first.txt, a reset, E2's press and trigger, the same capture at
+# the same scale. tools/warmup.sh plays it every few minutes.
+MODE INJECT
+SET 00
+RESET
+AT 200 08
+AT 202 00
+ARM title-t300 1,3 0.2 -0.5 CH1
+TRIG 300
+WAIT 320
+CAPTURE

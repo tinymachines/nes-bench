@@ -182,6 +182,34 @@ the record's rate error (-4.3 against -8.0 ppm). Recorded, not fitted;
 the E1 bars cartridge with the scope alone is where the luma level
 gets a number of its own.
 
+**The luma spread, answered the same day (2026-09-18, evening): the
+scorer's quantised levels, and the console's warmth.** A warm-up
+series (`tools/warmup.sh`, `exercise/warmup-first.txt` and
+`warmup-step.txt`): the console powered from off, E2's press and
+capture at once, then again every five minutes with the power left on,
+ten captures over 47 minutes at 200 mV a division (runs 194516 to
+203018). Scored as E2 was, the regions' luma held near -0.034 for
+three captures, stepped to -0.050 and -0.061 between 698 and 1002
+seconds, and stayed there; the rate error drifted smoothly from -4.3
+to -3.1 ppm and did not step. The record itself did not step either:
+its blanking's mean climbed 88.48, 88.51 codes across the step, a
+hundredth of a code, and its median went 88 to 89. `ntsc-crt` read the
+levels as medians, whole codes on a u8 record, and the sync is 22.5
+codes deep there, so the gain every region is scored at moved 4.5%
+when the porch crossed a half code. ntsc-crt v0.2.11 reads them as a
+trimmed mean (held on a quantised synthetic record, the median red).
+Rescored under it the step is gone and what is left is a smooth drift,
+`$17` from -0.039 at power-on to about -0.048 and `$22` from -0.042
+to about -0.055, flat from about thirty minutes on, with the hue at
+-3.1 and -9.2 degrees throughout: the console's warmth, about a
+hundredth of luma over its first half hour. E2's records rescored
+under v0.2.11: the 500 mV record -0.043 and -0.047, the cold 200 mV
+record (152924) -0.042 and -0.045, the morning's hour-warm 200 mV
+record -0.050 and -0.059, on the warm plateau. So point 2 below is
+superseded: the two scales agree once the levels are read between the
+codes, and what separated the records was the estimator and the
+warmth. The rows in the table above are as scored at the time.
+
 The gate as the table above states it: the first region that fails,
 named. `$17`, rows 40..68, on every axis; and `$22` behind it. What
 the two records say beyond the verdict:
@@ -194,7 +222,8 @@ the two records say beyond the verdict:
    picture chain is the odd one out; the open item under Programme 1
    (the encoder's level-dependent phase) has a number on the part to
    be held to.
-2. **Luma and saturation move with the scope's scale**, by 0.015 to
+2. **Luma and saturation move with the scope's scale** (superseded
+   the same evening, above: the scorer's quantised levels), by 0.015 to
    0.02, which is one level of the coarse record: at 500 mV a division
    the picture covered 43 of the 256 levels, at 200 mV 100. In volts
    the two records agree (sync tip near 0 V, blanking 0.40 V, peak

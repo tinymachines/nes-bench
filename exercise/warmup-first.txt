@@ -1,0 +1,17 @@
+# The warm-up series' first capture (the luma spread between records at
+# one scale, exercise.md: the console's warmth against the record's
+# rate error). The console powered from off, five seconds, then E2's
+# press and trigger: the multicart's menu, Start at 200, the Super
+# Mario Bros. title captured at latch 300 on CH1 (TRIG) and CH3 (video)
+# at 200 mV a division. The power stays ON for warmup-step.txt.
+POWER ON
+WAIT 5 S
+MODE INJECT
+SET 00
+RESET
+AT 200 08
+AT 202 00
+ARM title-t300 1,3 0.2 -0.5 CH1
+TRIG 300
+WAIT 320
+CAPTURE
