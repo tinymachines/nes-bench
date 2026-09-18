@@ -238,9 +238,34 @@ write), not derived:
 
 Two screens, two poll routines, and part and model agree to a
 hundredth of a line on the menu and three hundredths in the game, the
-strobe's rise 24 dots before its fall on both. The menu's poll moves
-half a line later in its first two seconds on the model (latches 0 to
-126); no part record covers those latches yet.
+strobe's rise 24 dots before its fall on both.
+
+**The menu's first two seconds** (`exercise/menu-early-8.txt`, `-60`,
+`-124`; runs `20260918-154203`, `-154311`, `-154424`, banked as
+`menu-early-8/60/124`). The model's menu polls half a line later for
+its first 127 latches (119.80 to 119.87) and at 119.36 from latch 127
+on, so the part was asked the same, three channels at once: the
+bridge's `TRIG` on channel one, armed before the reset because `RESET`
+clears the bridge's trigger and the scope takes seconds to arm; the
+latch on two; the video on three; 6 M points, the scope's depth with
+three channels, seven polls a record. `poll-line.py --trig-ch 1`
+numbers the polls from the pulse (the longest high run on the channel,
+which also carries the pad's clocks as blips; latch n is the last rise
+before it). Latch for latch against the model's own strobe positions:
+
+| latches | part, the rise | model, the rise | largest difference |
+|---|---|---|---|
+| 7 to 12 | 119.81 to 119.89 | 119.79 to 119.87 | 0.10 line |
+| 59 to 64 | 119.81 to 119.89 | 119.81 to 119.86 | 0.04 line |
+| 123 to 126 | 119.81 to 119.89 | 119.80 to 119.85 | 0.09 line |
+| 127, 128 | 119.375, 119.369 | 119.416, 119.349 | 0.04 line |
+
+The part drops half a line at latch 127, the same latch as the model,
+and no latch in the three records sits more than a tenth of a line
+from the model's. Both sides wobble by 0.08 line from frame to frame
+in the early stretch; the wobble is not the same latch for latch, and
+nothing here says it should be (the model's runs in a period of
+twelve latches; the part's was not read for a period).
 
 **A finding on the way there.** Cold-powered by the relay, the part's
 menu takes Select (the cursor moved to Duck Hunt, seen in the decoded

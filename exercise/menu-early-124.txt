@@ -1,0 +1,18 @@
+# The menu's poll in its first two seconds: the model polls at PPU line
+# 119.83 for latches 0..126 and at 119.36 from 127 on
+# (mario-dissection.md, "Done on the part"); the part had only been
+# recorded past latch 290. Three channels: the bridge's TRIG on CH1
+# (armed BEFORE the reset, since RESET clears the bridge's trigger and
+# the scope takes seconds to arm), the latch on CH2, the video on CH3;
+# 6 M points is the DS1054Z's depth with three channels. TRIG 124
+# marks latch 124 on the record so poll-line.py numbers the rest.
+POWER ON
+WAIT 2 S
+MODE INJECT
+SET 00
+ARM early124 1,2,3 0.2 -0.5 CH1 0.005 6000000
+RESET
+TRIG 124
+WAIT 164
+CAPTURE
+POWER OFF
