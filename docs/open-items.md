@@ -45,6 +45,36 @@ entry is the one that raised it, with its date.
 
 ## Model side
 
+- **The multicart's menu ignores Start after a cold boot, on the
+  part (2026-09-18).** Nine head runs (`exercise/poll-line.txt` and
+  its variants; runs 024438, 025049, 025348, 025525, 031022, 031324,
+  031502): powered by the relay, MODE INJECT, RESET, Start at latch
+  200 (one or two latches), at 400, held sixty latches, pressed twice,
+  after two or ten seconds: the poll stays at the menu's line (119.6
+  on the part) and the decoded capture shows the menu. Select at 200
+  moves the cursor (031022). With Start injected the port's D0 is low
+  in the fourth slot (025943): the byte arrives. Power, five seconds,
+  reset, five seconds, reset, then Start (025800): the game, the poll
+  at line 250. E2 (the console on for an hour, warm reset): the game.
+  The model takes the same press cold, and with its RAM filled or
+  seeded ten ways (`nes-console` `[ram]` knob): the switch at frame
+  212 every time. From the record, the menu's press path arms a mask
+  byte and its release path fires the switch through that mask;
+  Select's path is separate and works cold on the part. So the
+  difference is in state a cold boot leaves and a warm reset does not,
+  that is not the work RAM as far as the model can vary it: the PPU's
+  and APU's power-on state, the sprite and nametable memories, the
+  CPU's registers, or the power sequence itself (the CIC's hold, the
+  PPU's first frame). Closes with: a cartridge of our own that shows
+  the part's RAM, OAM and VRAM at power-on (Programme 1's proposal,
+  widened), or the logic analyser on the bus for one cold press.
+- **The vertical sync's first dot (2026-09-18).** The part's poll sits
+  six tenths of a line earlier than the model's on two different
+  screens (`mario-dissection.md`, "Done on the part"): a constant,
+  and the encoder places its sync at line granularity (rows 245 to
+  247). Closes with: the switch-level 2C02's composite output read
+  for the dot its vertical sync begins on, and the encoder held to it.
+
 - **The model's hue against the part (2026-09-12).** On the title
   screen the two eyes agree to 0.7 degrees and the model sits 12.6 and
   14.1 degrees off them on the saturated colours (`eyes-vs-scope.md`).

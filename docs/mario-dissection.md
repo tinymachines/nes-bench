@@ -191,6 +191,44 @@ the bench can test directly is the split: a capture triggered at a
 running latch, decoded, must show the status bar unscrolled above line
 32 and the level scrolled below it, on the same frame the model shows.
 
+## Done on the part, the same night
+
+**The poll's scanline** (`tools/poll-line.py`, `exercise/poll-line.txt`):
+the latch line on scope channel two beside the video on three, one
+capture holding fourteen polls, each placed against the vertical sync
+before it with the line period measured off the record's own
+horizontal syncs (63.500 us). On the multicart's menu every one of the
+fourteen rises 136.55 lines after the sync's first row, a spread of
+0.08 line; with the encoder's sync rows (245 to 247) that is PPU line
+119 dot 188. The model's menu polls at line 120 dot 50, on every
+frame. In the game (a run that reached it, below) the part's poll
+rises at line 250 on twelve frames of fourteen, 251 and 252 once each;
+the model's falls at 251 on 68 frames of 100 and later on the rest.
+Two screens, two poll routines, and the same six tenths of a line
+between part and model both times: a constant, which is what an
+encoder's line-granular vertical sync would leave, and which the
+switch-level PPU can settle by saying on which dot its sync begins.
+The game's two extra values on the part are the frames a VRAM burst
+pushed the poll, as the model's spread is.
+
+**A finding on the way there.** Cold-powered by the relay, the part's
+menu takes Select (the cursor moved to Duck Hunt, seen in the decoded
+capture) and never takes Start: one latch, two latches, a two-second
+or ten-second warm-up, a press at latch 400, a sixty-latch hold, two
+presses in a row, nine runs on the menu's own poll line every time.
+The byte reaches the console: with Start injected, the port's data
+line reads low in the fourth slot of the poll. After a warm reset
+(power, five seconds, reset, five seconds, reset, then the press) the
+same press takes, as E2's did on a console that had been running for
+an hour. The model takes it cold, and with its work RAM filled with
+00, ff, 55, aa and six seeded random patterns (the `[ram]` knob built
+for this), still at frame 212 every time. Read from the model's
+record, the menu's logic is a press that arms a mask and a release
+that fires the switch; Select goes another way. What a cold boot
+changes that a warm reset does not, and RAM does not, is in
+`open-items.md`; the state-showing cartridge and the logic analyser
+are what close it.
+
 ## What it seeds
 
 Five patterns for the encyclopedia, each with numbers on it: the game

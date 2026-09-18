@@ -215,7 +215,7 @@ are the knobs, and they are already scattered through the crates:
 | the television's stages (`CrtParams`) | `ntsc-crt` | authored, and labelled so | nothing yet: the bench's television is not measured, and the grabber is a different television |
 | the encoder's level-dependent phase | not built | the model sits 12.6 and 14.1 degrees off both eyes in hue on the saturated colours, located in the part's analogue output under load (`eyes-vs-scope.md`) | the bars cartridge captured under the eyes' load and with the scope alone; the constant fitted per load, MUTATE red |
 | the DAC's load | not built | the untriggered captures ran hot in saturation; probe or DAC undecided | a terminated capture of the bars cartridge (B1's first gate) |
-| power-on RAM | not built | the model's RAM starts blank | a cartridge of our own that shows its RAM at power-on; games that seed from it are the ones E3 names |
+| power-on RAM | `nes-console` `[ram] fill` or `seed`, built 2026-09-18 | authored: blank, or a fill, or a seeded pattern; the first game to test it (the multicart's menu after a cold boot, `open-items.md`) turned out not to depend on it | a cartridge of our own that shows its RAM, OAM and VRAM at power-on |
 
 Externalising them is the proposal on the sheet's dashed box: one file
 per run, `knobs.toml` in `runs/<stamp>/`, read by the model's runners.

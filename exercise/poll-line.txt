@@ -1,0 +1,19 @@
+# The poll's scanline on the part (mario-dissection.md, "What the part
+# confirms"): into gameplay by script, then the scope armed on the
+# latch line (CH2, the strobe's rise) with the video on CH3 beside it,
+# 12 M points at 50 MSa/s: six frames before the trigger, eight after,
+# so every poll in the record has a vertical sync to be measured from.
+POWER ON
+WAIT 2 S
+MODE INJECT
+SET 00
+RESET
+AT 200 08
+AT 201 00
+AT 330 08
+AT 332 00
+AT 520 80
+WAIT 560
+ARM poll-line 2,3 0.2 -0.5 CH2
+CAPTURE
+POWER OFF
