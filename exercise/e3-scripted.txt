@@ -1,0 +1,23 @@
+# E3's machinery on the part before a hand is on the pad: a record in
+# the form tools/b3.py record writes, typed instead of played. The
+# menu's Start at 200, the title's Start at 330, then Mario walks right
+# from 520 and jumps four times. b3.py replay, agree and bisect take it
+# exactly as they will take a hand's.
+MODE INJECT
+SET 00
+RESET
+AT 200 08
+AT 202 00
+AT 330 08
+AT 332 00
+AT 520 80
+AT 600 81
+AT 630 80
+AT 700 81
+AT 720 80
+AT 800 81
+AT 840 80
+AT 900 81
+AT 930 80
+AT 1100 00
+# 16 changes, last latch 1200

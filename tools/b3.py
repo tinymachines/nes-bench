@@ -38,9 +38,21 @@ them), then ARM <name>, TRIG t, WAIT t+20, CAPTURE, the arm first
 because it takes seconds of SCPI and a trigger set before it can fire
 unheard. The head
 plays them; the model plays the same file through capture-score.
-Nothing here has met the part: it has run against tools/fake-bridge.py
-and tools/fake-scope.py --video, which serves the model's own
-synthesis with an optional divergence planted at a latch, and finds it.
+It was written against tools/fake-bridge.py and tools/fake-scope.py
+--video (the model's own synthesis with a divergence planted at a
+latch, found). It met the part on 2026-09-18 with a typed record
+(exercise/e3-scripted.txt: the menu, the title, Mario walking and
+jumping) and three things changed there: the arm names the bench's
+channels and trigger (ARM_ARGS; a bare ARM fell back to EXT, which the
+head refuses), the status poll rides out the minute the head is silent
+reading a record, and a capture is called the model's by the picture's
+correlation (--by picture, below) rather than by B1's region
+tolerances, which every real capture misses by its calibration. Two
+replays agreed with each other at 400, 800 and 1150, each agreed with
+the model, and the bisection over 0..1150 found no divergence in one
+replay; the same capture scored against a record with Right dropped
+disagrees. A hand's record (MODE PASS, exercise/e3-hand.txt) is the
+step still to play.
 """
 import argparse
 import json
@@ -69,6 +81,32 @@ def _schedule_max():
 
 SCHEDULE_MAX = _schedule_max()
 
+# The capture every replay arms: E2's (exercise/e2-title.txt), the
+# bridge's TRIG on CH1 beside the video on CH3 at 200 mV a division. A
+# bare `ARM name` falls back to the head's old defaults, whose trigger
+# source EXT the DS1054Z does not have and the head refuses by name;
+# this tool was written against the fakes before that was known.
+ARM_ARGS = "1,3 0.2 -0.5 CH1"
+
+# A replay's frame is the model's on two readings of split-score's
+# fourth section (Pearson's r of the decoded luma, blind to the part's
+# constant gain and offset). The SCREEN: the coarse shape (30 by 32
+# blocks of the frame) against the model's F at least C_MIN. The FRAME:
+# at full resolution F no worse than F-1, F+1 or F+2 by more than
+# R_TIE, which a still screen passes (its frames are all alike) and a
+# scrolling one passes only at the right frame. AUTHORED from the first
+# records, 2026-09-18: every true match 0.9968 to 0.9992 coarse (the
+# title, the split, the game's black world card, Mario walking), the
+# same game thirty frames on 0.72 to 0.78, the replay scored against a
+# record with Right dropped 0.66. Full resolution alone could not do the
+# screen: the black card, which is small text, reads 0.71 against every
+# frame, below the mutant's 0.47 by less than the title's 0.91 is above
+# it. B1's region tolerances (--by regions) are the other rule, and
+# every real capture misses them by its calibration (E2: hue 3 and 9
+# degrees, luma 0.04), so under them the part disagrees at every latch.
+C_MIN = 0.99
+R_TIE = 0.01
+
 
 def ask(host, port, req, timeout=5.0):
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -89,7 +127,17 @@ def run_script(head, script, into):
     if not rep.get("ok"):
         raise SystemExit(f"the head refused the run: {rep}")
     stamp = rep["stamp"]
-    while ask(host, port, {"op": "status"}).get("run"):
+    # The head answers no request while it reads a record off the scope
+    # (about a minute for 12 M points), so a status that times out is a
+    # run still playing, not a dead head; bench.py waits the same way.
+    # Found on the part (2026-09-18): the first replay died here and
+    # left its run playing, and every call after it was refused.
+    while True:
+        try:
+            if not ask(host, port, {"op": "status"}).get("run"):
+                break
+        except TimeoutError:
+            pass
         time.sleep(0.3)
     subprocess.check_call([sys.executable, str(HERE / "bench.py"), head, "fetch", stamp, "--into", into], stdout=subprocess.DEVNULL)
     out = Path(into) / stamp
@@ -141,7 +189,7 @@ def replay_script(record, triggers, name_prefix="t", tail=20):
     # ARM before TRIG: arming is seconds of SCPI, and a trigger set
     # first can fire before the scope is listening.
     for t in triggers:
-        out += [f"ARM {name_prefix}{t}", f"TRIG {t}", f"WAIT {t + tail}", "CAPTURE"]
+        out += [f"ARM {name_prefix}{t} {ARM_ARGS}", f"TRIG {t}", f"WAIT {t + tail}", "CAPTURE"]
     return "\n".join(out) + "\n"
 
 
@@ -159,6 +207,32 @@ def score(run, rom, capture, nes):
     return held, rows, summary
 
 
+def picture(run, rom, capture, nes):
+    """split-score on one capture of a run: (held, {j: (coarse r, r)}, summary line)."""
+    r = subprocess.run([sys.executable, str(HERE / "split-score.py"), str(run), rom, capture, "--nes", nes], capture_output=True, text=True)
+
+    def read(tag):
+        line = next((l for l in r.stdout.splitlines() if tag in l), None)
+        return {int(j): float(v) for j, v in re.findall(r"F([+-]\d+) (-?[\d.]+|NaN)", line.split("(Pearson r):", 1)[1])} if line else {}
+    coarse, full = read("coarse shape"), read("whole picture's luma")
+    if 0 not in coarse or 0 not in full:
+        return False, {}, (r.stdout[-300:] + r.stderr[-300:]).strip()
+    near = max(full.get(j, -1.0) for j in (-1, 1, 2))
+    held = coarse[0] >= C_MIN and full[0] >= near - R_TIE
+    far = max(full)
+    summary = f"screen {coarse[0]:.4f} (F+{far} {coarse.get(far, float('nan')):.4f}); frame r {full[0]:.3f}, best neighbour {near:.3f}"
+    return held, {j: (coarse.get(j), full.get(j)) for j in full}, summary
+
+
+def judge(a, run, capture):
+    """(held, summary, first miss or None) under the chosen rule."""
+    if a.by == "picture":
+        held, _, summary = picture(run, a.rom, capture, a.nes)
+        return held, summary, None
+    held, rows, summary = score(run, a.rom, capture, a.nes)
+    return held, summary, next((k for k, v in rows.items() if v["miss"]), None)
+
+
 def cmd_replay(a):
     record = Path(a.script).read_text()
     triggers = [int(t) for t in a.at.split(",")]
@@ -167,9 +241,8 @@ def cmd_replay(a):
     for t in triggers:
         run = run_script(a.head, replay_script(record, [t]), a.into)
         manifest[str(t)] = run.name
-        held, rows, summary = score(run, a.rom, f"t{t}", a.nes)
-        misses = [k for k, v in rows.items() if v["miss"]]
-        print(f"  latch {t} ({run.name}): {'agrees' if held else 'DISAGREES'}: {summary}" + (f"; first miss ${misses[0][0]} emphasis {misses[0][1]} rows {misses[0][2]}..{misses[0][3]}" if misses else ""))
+        held, summary, miss = judge(a, run, f"t{t}")
+        print(f"  latch {t} ({run.name}): {'agrees' if held else 'DISAGREES'}: {summary}" + (f"; first miss ${miss[0]} emphasis {miss[1]} rows {miss[2]}..{miss[3]}" if miss else ""))
         bad += not held
     Path(a.into, "replay.json").write_text(json.dumps(dict(script=str(a.script), rom=a.rom, runs=manifest), indent=2))
     return 1 if bad else 0
@@ -218,23 +291,22 @@ def cmd_bisect(a):
     lo, hi = a.lo, a.hi  # lo agrees (assumed), hi disagrees (checked first)
     print(f"bisecting the first divergent latch in {lo}..{hi}")
     run = run_script(a.head, replay_script(record, [hi]), a.into)
-    held, rows, summary = score(run, a.rom, f"t{hi}", a.nes)
+    held, summary, first_miss = judge(a, run, f"t{hi}")
     if held:
         print(f"latch {hi} agrees with the model: no divergence in {lo}..{hi} ({summary})")
         return 0
     steps = 1
-    first_miss = next((k for k, v in rows.items() if v["miss"]), None)
     while hi - lo > 1:
         mid = (lo + hi) // 2
         run = run_script(a.head, replay_script(record, [mid]), a.into)
-        held, rows, _ = score(run, a.rom, f"t{mid}", a.nes)
+        held, summary, miss = judge(a, run, f"t{mid}")
         steps += 1
         if held:
             lo = mid
         else:
             hi = mid
-            first_miss = next((k for k, v in rows.items() if v["miss"]), first_miss)
-        print(f"  step {steps}: latch {mid} {'agrees' if held else 'disagrees'}; bracket {lo}..{hi}")
+            first_miss = miss or first_miss
+        print(f"  step {steps}: latch {mid} {'agrees' if held else 'disagrees'} ({summary}); bracket {lo}..{hi}")
     print(f"first divergent latch: {hi} (latch {lo} agrees), {steps} replays" + (f"; region ${first_miss[0]} rows {first_miss[2]}..{first_miss[3]}" if first_miss else ""))
     return 0
 
@@ -255,6 +327,8 @@ def main():
     p.add_argument("--at", required=True)
     p.add_argument("--into", default="runs")
     p.add_argument("--nes", default=nes_default)
+    p.add_argument("--by", choices=("picture", "regions"), default="picture",
+                   help="how a capture is called the model's: the whole picture's correlation (split-score) or B1's region tolerances")
     g = sub.add_parser("agree")
     g.add_argument("replay_a")
     g.add_argument("replay_b")
@@ -268,6 +342,8 @@ def main():
     b.add_argument("--hi", type=int, required=True)
     b.add_argument("--into", default="runs")
     b.add_argument("--nes", default=nes_default)
+    b.add_argument("--by", choices=("picture", "regions"), default="picture",
+                   help="how a capture is called the model's: the whole picture's correlation (split-score) or B1's region tolerances")
     a = ap.parse_args()
     if getattr(a, "bridge", None):
         a.schedule_max = SCHEDULE_MAX[a.bridge]

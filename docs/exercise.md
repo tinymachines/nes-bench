@@ -248,6 +248,44 @@ the two records say beyond the verdict:
    CRC, the script and the captures. Two episodes were played; every
    later step is made of them.
 
+## E3's machinery on the part: 2026-09-18
+
+Everything in E3 but the hand, run on the part the evening E2's luma
+was answered: a record typed in the form `b3.py record` writes
+(`exercise/e3-scripted.txt`: the menu's Start at 200, the title's at
+330, Right from 520, four jumps, the pad released at 1100), replayed
+twice with a capture at latches 400, 800 and 1150 (`runs/e3-a`,
+`runs/e3-b`), the two replays set against each other, and a bisection
+over 0..1150. What met the part first was the tool: its arm fell back
+to the old `EXT` trigger the head refuses, its status poll died in the
+minute the head is silent reading a record (and left the run playing,
+so every later call was refused), and its rule for calling a capture
+the model's was B1's region tolerances, which every real capture
+misses by its calibration. The rule is now the picture's correlation,
+two readings of `split-score`'s new fourth section: the screen by its
+coarse shape (30 by 32 blocks, at least 0.99), the frame by the full
+resolution (F no worse than its neighbours). Full resolution alone
+could not say which screen: the game's black world card at latch 400
+is small text, and reads 0.71 against every model frame while the part
+against itself reads 0.999; the two picture chains differ at fine
+detail, and the blocks average that away.
+
+| latch | screen | the part against the model | the two replays |
+|---|---|---|---|
+| 400 | the black world card | screen 0.9988, frames alike (still) | agree |
+| 800 | 1-1, Mario walking | screen 0.9990, frame r 0.916 against neighbours 0.689 | agree |
+| 1150 | 1-1, the pad released | screen 0.9992, frame r 0.921 | agree |
+
+The two replays' correlations came back identical to the third
+decimal: the game is deterministic on the part from a reset. The
+bisection's first step, latch 1150, agreed, so there is no divergence
+in 0..1150. The mutation, the latch-800 capture scored against the
+record with `AT 520 80` dropped (Mario never walks): screen 0.66,
+disagrees. The step left is the hand: `exercise/e3-hand.txt` (`MODE
+PASS`, about 25 seconds of play, short because the UNO bridge's
+schedule holds 128 changes), then `b3.py record`, and the same replay,
+agreement and bisection on what it wrote.
+
 ## Programme 1: the virtual stack tuned to the part
 
 The model is not a picture of the console; it is the console's chips at
@@ -439,7 +477,7 @@ taken apart with them: `mario-dissection.md`, and encyclopedia entries
 | one script, both sides | holds; `SET` and `AT` by latch on the part and in the model's runners |
 | the trigger and the capture | hold; the decode through `ntsc-crt` |
 | the model's trace, the recorded bus, windows on the die's pages | hold (T0 to T3) |
-| the comparators | `compare-logs.py` and `b1-score.py` have met the part (E2, twice); the terminated capture is still E1's |
+| the comparators | `compare-logs.py` and `b1-score.py` have met the part (E2, twice), `b3.py` too (E3's machinery, 2026-09-18, on a typed record); the terminated capture is still E1's |
 | E2 | played 2026-09-18, twice: the first failing region named (`$17`, every axis), the hue miss repeatable to 0.1 deg, the luma miss one scope level wide (section above) |
 | the calibration cartridge | the model side done, the part side waits on the flash chips |
 | the knobs file | built 2026-09-18: `tools/knobs.py`, `nes-console/src/knobs.rs`, two tables with sources, refusals by name, the alignment knob proven to reach the scheduler (Programme 1) |
