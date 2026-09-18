@@ -45,29 +45,29 @@ entry is the one that raised it, with its date.
 
 ## Model side
 
-- **The multicart's menu ignores Start after a cold boot, on the
-  part (2026-09-18).** Nine head runs (`exercise/poll-line.txt` and
-  its variants; runs 024438, 025049, 025348, 025525, 031022, 031324,
-  031502): powered by the relay, MODE INJECT, RESET, Start at latch
-  200 (one or two latches), at 400, held sixty latches, pressed twice,
-  after two or ten seconds: the poll stays at the menu's line (119.6
-  on the part) and the decoded capture shows the menu. Select at 200
-  moves the cursor (031022). With Start injected the port's D0 is low
-  in the fourth slot (025943): the byte arrives. Power, five seconds,
-  reset, five seconds, reset, then Start (025800): the game, the poll
-  at line 250. E2 (the console on for an hour, warm reset): the game.
-  The model takes the same press cold, and with its RAM filled or
-  seeded ten ways (`nes-console` `[ram]` knob): the switch at frame
-  212 every time. From the record, the menu's press path arms a mask
-  byte and its release path fires the switch through that mask;
-  Select's path is separate and works cold on the part. So the
-  difference is in state a cold boot leaves and a warm reset does not,
-  that is not the work RAM as far as the model can vary it: the PPU's
-  and APU's power-on state, the sprite and nametable memories, the
-  CPU's registers, or the power sequence itself (the CIC's hold, the
-  PPU's first frame). Closes with: a cartridge of our own that shows
-  the part's RAM, OAM and VRAM at power-on (Programme 1's proposal,
-  widened), or the logic analyser on the bus for one cold press.
+- **The multicart's menu ignores Start after a cold boot: CLOSED
+  2026-09-18, the bench's own.** It never did. The head kept the last
+  bridge session's latch number across the bridge's `RESET`, so a
+  `WAIT n` after a `RESET` returned at once whenever the session before
+  had passed latch n, and the `ARM` behind it (three seconds of SCPI)
+  caught the menu around latch 190, before the press at 200. The runs
+  that "ignored" Start show it: from `wait for latch` to `armed` in
+  their `head.log` is 3.1 to 4.0 s, the arm alone (024438, 025049,
+  025348, 025525, 031324, 031502), where the one that "took" it after
+  two resets (025800) spent 12.8 s, a real wait: the two resets'
+  five seconds between let the bridge's new count reach the head.
+  Fixed in `head/headd.py` (the bridge's `# reset` acknowledgement
+  clears the count; 3b22f7f) and asked again: with no reset at all
+  (the bridge zeroed with the power off, then power; run 193915), one
+  reset (194105) and three (194257), the press takes every time, the
+  poll at the Super Mario Bros. title's lines (247, 249) where the
+  model's is. The model's side was built on the way and stays:
+  `nes-console`'s `Console::reset_button` and `bench-script` (a script
+  played with its seconds and its resets; nes @ a2a9f15), which took
+  the press after one reset and two before the part was asked again.
+  What was written from the wrong reading (a mask gated by cold-boot
+  state, in `mario-dissection.md` and `encyclopedia.md`, and the `[ram]`
+  knob's motive) is corrected where it stood.
 - **The vertical sync's first dot: CLOSED 2026-09-18.** Measured on
   the switch-level 2C02 (`2c02`'s `vsync-probe`): the sync begins where
   row 244's horizontal sync begins, dot 280, three broad pulses a row

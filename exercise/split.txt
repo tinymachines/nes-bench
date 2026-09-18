@@ -1,5 +1,6 @@
 # The split on the part (docs/mario-dissection.md): the game reached by
-# the warm-reset recipe (a cold multicart menu never takes Start, see
+# the warm-reset recipe (a cold multicart menu seemed never to take
+# Start; that was the head's WAIT, fixed 3b22f7f, see
 # open-items), Right held from latch 520 so the level scrolls, and the
 # scope stopped on the bridge's TRIG at latch 600 with TRIG on CH1 and
 # the video on CH3, as E2's title was. 12 M points at 50 MS/s hold

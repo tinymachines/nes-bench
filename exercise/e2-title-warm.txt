@@ -1,5 +1,6 @@
 # E2's title on a cold-powered console: e2-title.txt through the
-# warm-reset recipe (the multicart's menu ignores Start until a reset,
+# warm-reset recipe (the multicart's menu seemed to ignore Start until a
+# second reset; that was the head's WAIT, fixed 3b22f7f,
 # open-items), then the same press and trigger. Played 2026-09-18 to
 # rerun E2 under the frame rule that places the model's picture from
 # the latch's position against the vertical sync (nes @ efbcc46): a

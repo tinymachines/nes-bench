@@ -267,27 +267,27 @@ in the early stretch; the wobble is not the same latch for latch, and
 nothing here says it should be (the model's runs in a period of
 twelve latches; the part's was not read for a period).
 
-**A finding on the way there.** Cold-powered by the relay, the part's
-menu takes Select (the cursor moved to Duck Hunt, seen in the decoded
-capture) and never takes Start: one latch, two latches, a two-second
-or ten-second warm-up, a press at latch 400, a sixty-latch hold, two
-presses in a row, nine runs on the menu's own poll line every time.
-The byte reaches the console: with Start injected, the port's data
-line reads low in the fourth slot of the poll. After a warm reset
-(power, five seconds, reset, five seconds, reset, then the press) the
-same press takes, as E2's did on a console that had been running for
-an hour. The model takes it cold, and with its work RAM filled with
-00, ff, 55, aa and six seeded random patterns (the `[ram]` knob built
-for this), still at frame 212 every time. Read from the model's
-record, the menu's logic is a press that arms a mask and a release
-that fires the switch; Select goes another way. What a cold boot
-changes that a warm reset does not, and RAM does not, is in
-`open-items.md`; the state-showing cartridge and the logic analyser
-are what close it.
+**A finding on the way there, withdrawn.** Cold-powered by the relay,
+the part's menu seemed never to take Start (nine runs: one latch, two,
+a press at 400, a sixty-latch hold, two presses) while it took Select,
+and took Start after a second reset. The byte reached the console
+(the port's data line low in the fourth slot of the poll), the model
+took the press cold with its RAM filled ten ways, and the difference
+was put down to state a cold boot leaves. It was the head: its count
+of the bridge's latches survived the bridge's `RESET`, so a `WAIT`
+after a reset returned at once and the scope caught the menu before
+the press (from `wait for latch` to `armed` in those runs' logs is the
+three seconds the arm takes; in the one that "took", 12.8 s). With the
+count cleared on the bridge's acknowledgement, the press takes with no
+reset, one and three (runs 193915, 194105, 194257), the poll at the
+title's lines 247 and 249. The account is in `open-items.md`. The
+menu's logic read from the model's record stands: a press that arms a
+mask and a release that fires the switch, Select another way.
 
 **The split** (`tools/split-score.py`, `exercise/split.txt`, run
 `20260918-135721`, the afternoon after). The game reached by the
-warm-reset recipe, Right held from latch 520, the scope stopped on the
+warm-reset recipe (two resets, then the press: at the time the only
+way that seemed to work, see above), Right held from latch 520, the scope stopped on the
 bridge's `TRIG` at latch 600 with the video on CH3: eight frames of
 Mario walking right. The measurement is the one the claim above asks
 for, made without telling either side where the split is: every

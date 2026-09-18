@@ -169,11 +169,11 @@ address bus) but the effects: the poll count, the picture at a trigger
 after frame 214 (E2 did exactly this: the title at latch 300), and the
 sound. What it cannot yet: the frame at which rendering went off, until
 the scope is triggered at latch 201 and the decoded record shows the
-blank frames. And what it found when asked (2026-09-18): the same
-press that switches banks on the model and on a warm-reset part does
-nothing on a cold-booted part, nine ways, while Select works; the
-menu's release path is gated by state a cold boot leaves different
-(`open-items.md`).
+blank frames. Asked (2026-09-18), the part switches on the same
+press, cold or after any number of resets, the poll moving to the
+title's lines as the model's does; an earlier reading that a
+cold-booted part ignored it was the bench's head catching the menu
+before the press (`open-items.md`).
 
 ## 3. The game loop inside the interrupt
 
