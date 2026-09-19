@@ -65,10 +65,11 @@ tools need nothing beyond the serial speed.
   handle wrap. Clock count: a volatile counter in the INT0 ISR.
 - Loop order: read counts, emit L, then write. Fixed 64-byte line
   buffer, no `String`. Schedule cursor, not a scan.
-- The schedule holds 128 entries, not the C6's 2048. This part has
+- The schedule held 128 entries, not the C6's 2048. This part has
   2 KB of SRAM in total and the compiler is the authority: at 256 it
-  reports 2161 bytes of globals, 105 percent, and refuses to link; at
-  128 it reports 1521 and leaves 527 for the stack. `tools/b3.py
+  reported 2161 bytes of globals, 105 percent, and refused to link; at
+  128 it reported 1521 and left 527 for the stack. Since 2026-09-19 it
+  holds 600, packed (the section below, "How the bridge works"). `tools/b3.py
   record` refuses a longer record before the run, `tools/fake-bridge.py`
   is bounded the same way so the failure can be rehearsed, and the head
   stops any run in which the bridge answers `# schedule full`.
@@ -90,6 +91,214 @@ tools need nothing beyond the serial speed.
   latch line, done in software with nothing to forget to move back. A
   mutated run reports one clock per latch instead of eight, so the
   8-per-latch gate is red.
+
+## How the bridge works: the UNO's job, its code and the ideas under it
+
+This section is for a reader who wants to know what the Arduino is
+actually doing between the console and the pad, line by line where it
+matters. The sketch is `firmware/bridge-uno/bridge-uno.ino` with its
+schedule in `schedule.h`; the head that drives it is `head/headd.py`.
+
+### The job in one paragraph
+
+The console believes it is reading a controller. The UNO makes that
+true with a controller of its own choosing. It sits in the cut cable
+between the console's port and an original pad, and does four things
+at once: it presents a byte to the console exactly where a pad's
+buttons would be; it counts every time the console asks for the
+buttons (a poll, or latch), which gives the bench a clock that the
+part and the model share; it reads the original pad itself, so a hand
+can play through it; and it reports all of that to the head over USB
+serial, one line per poll. What it presents is either the hand's byte
+(`MODE PASS`) or a byte from a schedule the head loaded (`MODE
+INJECT`). That is the whole trick behind replaying a person's play on
+the console and on the model with the same inputs at the same polls.
+
+### How a console reads a pad
+
+An NES pad is one 8-bit parallel-in, serial-out shift register (a
+4021) and eight buttons. The console reads it in three moves, all from
+the game's own code:
+
+1. **Strobe.** The game writes 1 then 0 to `$4016`; the console's
+   `OUT0` line goes high and low. While it is high the register copies
+   the eight buttons in; the fall freezes them. That fall is the
+   latch, and the bench counts time in latches: latch 0 is the first
+   poll after the bridge's `RESET`, and a Super Mario Bros. frame is
+   one latch.
+2. **Shift.** The game reads `$4016` eight times. Each read pulses the
+   console's `CLK` line, and the register moves one bit onto the data
+   line, in a fixed order: A, B, Select, Start, Up, Down, Left, Right.
+3. **Active low.** A pressed button reads as 0 on the wire. The bench's
+   byte is the other way up (bit 0 = A, set = pressed), and the
+   firmware complements it on the way out.
+
+The bridge's log line for each poll is `L <latch> <byte> <clocks>`:
+the index, the byte the console was given, and how many clocks the
+game spent reading it (eight for a normal poll, nine when a sample
+fetch clocks the pad twice, which is a measured 2A03 behaviour).
+
+### The two chips that stand in for the pad
+
+The console must see a shift register that behaves like the pad's, so
+the bridge has one: a 74HC165, wired where the pad's 4021 was, loaded
+by `OUT0` and shifted by `CLK`, entirely by the console. The UNO never
+touches its timing, which is the point: the console reads the bridge at
+full speed with no software in the path.
+
+The UNO sets the 165's eight parallel inputs through a second register,
+a 74HC595, because the UNO does not have eight spare pins that change
+together. The byte goes in serially over SPI (`SPI.transfer`), which
+changes nothing yet, and one rising edge on `RCLK` (pin D10, the
+`PORTB |= _BV(PB2)` line in `write_register`) moves all eight bits to
+the 595's outputs at once. So the 165's inputs change in a single
+62.5 ns step, never one bit at a time, and a poll can never read half
+of an old byte and half of a new one from the shift.
+
+Two details that were each a silent wrong answer if backwards: the
+595's `QA` feeds the 165's `H`, and the 165 shifts `H` out first, so
+`QA` is the A button; SPI sends the most significant bit first and the
+first bit sent travels furthest, so sending bit 7 first leaves bit 0 on
+`QA`. And the complement (`reg_byte_for`) is what makes a pressed
+button a 0 on the wire. Reverse any one and the pad is mirrored.
+
+### The load window
+
+The 165 copies its inputs for the whole time `OUT0` is high. If
+`RCLK` moved them inside that window, the console could latch a byte
+in transition. `write_register` therefore reads the latch line before
+the SPI transfer, after it, and after the `RCLK` edge: if the window is
+open before the edge it defers the write to the next loop pass
+(`deferred`), and if it opened across the edge it says so on the next
+`L` line (`torn`). `STATUS` reports both counts; on the bench they have
+stayed at zero.
+
+### Counting without missing: a hardware counter and a snapshot
+
+At 60 polls a second a missed latch is a replay one frame out of step
+for the rest of the run, so counting cannot depend on the loop being
+quick. The latch line is on D5 because D5 is `T1`, Timer1's external
+clock input: set up as a counter (`TCCR1B = CS12|CS11|CS10`), Timer1
+counts the latch's rising edges in hardware whatever the processor is
+doing. The console's clock line is on D2, `INT0`, and an interrupt
+counts its falling edges.
+
+The same D5 pin also raises a pin-change interrupt (`PCINT21`). Its
+handler asks Timer1 whether the count moved (a rise, not a fall, is
+told apart by the counter rather than by reading the pin, because the
+latch pulse is 3.6 microseconds wide and the interrupt can arrive after
+it has ended), and if so it records, in the same instant, the clock
+count at that rise (`clocks_at_rise`) and the number of rises. The
+loop later reads that pair with interrupts off. Both rules were
+measured into existence on 2026-09-15: reading the pin missed 7 of
+1,202 latches, and reading the two counters a few instructions apart
+booked clocks to the wrong poll.
+
+### The loop
+
+`loop()` runs about every 100 microseconds, in a fixed order:
+
+1. **Commands.** Bytes from the serial port are gathered into a 64-byte
+   line buffer and each complete line is handled (`handle`).
+2. **The pad.** Once a millisecond the UNO polls the original pad on
+   its own three pins (`poll_pad`, the same strobe-and-shift the
+   console does, at leisure), keeping the result as `pad_byte`.
+3. **Book the polls.** If the interrupt has seen new latch rises, the
+   loop prints the `L` line for the poll that just ended, with the byte
+   the register held for it and the clocks between its rise and the
+   one before; then it advances the latch index. Printing before
+   writing a new byte is what makes the `L` line's byte the one the
+   console actually read.
+4. **The trigger.** If `TRIG n` is armed and latch n has passed, D3
+   goes high for a millisecond: the scope's trigger, on CH1.
+5. **The byte.** In `PASS` the wanted byte is the pad's; in `INJECT`
+   it is the schedule's for the current latch. If it differs from what
+   the register holds, `write_register` changes it.
+
+### The line protocol
+
+The head talks to the bridge in short text lines at 115200 baud, and
+the bridge answers each with a `#` line: `MODE PASS|INJECT`, `SET hh`
+(the byte to hold now), `AT n hh` (from latch n on, hold hh; n must
+not go backwards), `TRIG n`, `RESET` (zero the counters, clear the
+schedule and the trigger), `STATUS`, and `MUTATE ON|OFF` (B0's
+sabotage: the clock counter fed from the latch line, so the
+eight-clocks check must fail). A line it cannot parse comes back as
+`# ? ...`.
+
+The head waits for each line's answer before it sends the next, and
+checks that an `AT`'s answer carries the latch and byte it sent. It did
+not always: on 2026-09-18 a hand's record of 125 `AT` lines, sent back
+to back, overran the UNO's 64-byte receive buffer, some lines came back
+`# ?`, others were taken with digits missing (`AT 2219 00` as `at 2210
+00`), and Mario ran the wrong way on the replay while every check stayed
+quiet. The head also drops its count of latches when it sees the
+bridge's `# reset`, so a `WAIT n` after a reset cannot be satisfied by
+the session before (the cold-boot "Start is ignored" finding of the same
+day was exactly that).
+
+### The schedule, packed
+
+`AT n hh` means: from latch n on, hold hh, until the next entry. The
+protocol keeps n absolute, and so do the head, the tools and the C6
+build. Only the UNO's RAM holds it differently, because it has 2048
+bytes in total and the first build spent five of them per entry (a
+32-bit latch and a byte), which held 128 entries. A minute of a hand
+playing Super Mario Bros. through 1-1 is 289 changes of the byte.
+
+`schedule.h` stores each entry as two bytes: the GAP in latches from
+the previous entry (0 to 254), and the byte. A gap of 255 or more is
+paid for with FILLER entries, each "advance 255 latches, change
+nothing" (the gap value 255 is reserved for them), so a filler never
+has to name a byte. `append` converts an absolute n into fillers and an
+entry, refusing whole if they do not fit (`# schedule full`) and
+refusing an n before the last one. `due` walks a cursor forward as the
+latch index grows, adding up the gaps, and applies every entry whose
+latch has come; it copes with the index jumping by more than one,
+which happens when the loop was busy.
+
+What paid for the room:
+
+| build | entry | entries | globals | left for the stack |
+|---|---|---|---|---|
+| to 2026-09-18 | 5 bytes | 128 | 1533 bytes | 515 |
+| packed | 2 bytes | 320 | 1615 | 433 |
+| packed, strings in flash | 2 bytes | 320 | 967 | 1081 |
+| packed, strings in flash (flashed) | 2 bytes | 600 | 1527 | 521 |
+
+The second row is the surprise worth knowing about the AVR: a plain
+string literal is copied from flash into RAM at boot, so every message
+the sketch prints cost RAM, and two new messages cost 82 bytes. Every
+literal now stays in flash (`F("...")`, `PSTR`, `snprintf_P`,
+`strcmp_P`; a flash string passed to `%` needs `%S`), which gave back
+648 bytes. The schedule then grew until the stack had what the old
+build ran on.
+
+The compiler's figure is an estimate of the stack; the firmware
+measures it. `setup` paints the free RAM between the globals and the
+stack with `0x5A`, and `STATUS` counts how much paint is still intact
+(`# stack N bytes never touched`). After a full minute's schedule was
+loaded and replayed it read 355 bytes never touched: the stack's
+deepest reach was about 130 bytes.
+
+The packing is tested off the chip. `tools/test-uno-schedule.sh`
+builds `schedule.h` natively and plays 400 random schedules (gaps from
+0 to 2000, entries past latch 254 so fillers come first, latch indices
+that jump) and any real record against the protocol's absolute
+meaning, latch by latch, plus the capacity edge; `MUTATE=1` makes a
+filler set the byte to zero and must fail (it fails 384 of 402).
+`tools/b3.py record` counts a record in packed entries by the same rule
+(`entries_for`), and `tools/fake-bridge.py` refuses the same records the
+UNO does.
+
+### What the bridge still cannot do
+
+It holds 600 entries, about two minutes of lively play; longer needs
+the C6 bridge's 2048 or a schedule streamed from the head during the
+run. It does not watch the console's data line (D0 is not wired back),
+so what the console actually shifted out is inferred from the register
+and the clock count, not read. And it serves one port: the second
+controller is not bridged.
 
 ## The wiring, drawn to build from
 

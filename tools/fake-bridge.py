@@ -64,6 +64,7 @@ def main():
     pad = int(a.pad, 16)
     set_byte = 0
     schedule = []
+    used = 0     # packed entries, as the UNO counts them
     latches = 0
     clocks = 0
     trig_at = -1
@@ -97,14 +98,22 @@ def main():
                     set_byte = int(line[4:], 16); out(f"# set {set_byte:02x}")
                 elif line.startswith("AT "):
                     n, b = line[3:].split()
-                    if len(schedule) < schedule_max:
+                    # The UNO's packed entries: a one-byte gap and the byte,
+                    # a filler per 255 latches of a longer gap
+                    # (firmware/bridge-uno/schedule.h, Schedule::cost).
+                    prev = schedule[-1][0] if schedule else 0
+                    cost = (int(n) - prev) // 255 + 1
+                    if schedule and int(n) < prev:
+                        out(f"# ? AT {int(n)} before the schedule's last latch")
+                    elif used + cost <= schedule_max:
+                        used += cost
                         schedule.append((int(n), int(b, 16))); out(f"# at {int(n)} {int(b, 16):02x}")
                     else:
                         out("# schedule full")
                 elif line.startswith("TRIG "):
                     trig_at = int(line[5:]); out(f"# trig at {trig_at}")
                 elif line == "RESET":
-                    latches = 0; clocks = 0; schedule = []; trig_at = -1; have_latch = False; out("# reset")
+                    latches = 0; clocks = 0; schedule = []; used = 0; trig_at = -1; have_latch = False; out("# reset")
                 elif line in ("MUTATE ON", "MUTATE OFF"):
                     mutated = line == "MUTATE ON"; out(f"# mutate {'on' if mutated else 'off'}")
                 elif line == "STATUS":

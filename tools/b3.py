@@ -81,6 +81,15 @@ def _schedule_max():
 
 SCHEDULE_MAX = _schedule_max()
 
+
+def entries_for(bridge, gap):
+    """The schedule entries one AT costs, `gap` latches after the one
+    before it (or after latch 0). The UNO packs each entry as a one-byte
+    gap and the byte, with a filler per 255 latches of a longer gap
+    (firmware/bridge-uno/schedule.h, Schedule::cost); the C6 keeps
+    absolute latches, one entry an AT."""
+    return gap // 255 + 1 if bridge == "uno" else 1
+
 # The capture every replay arms: E2's (exercise/e2-title.txt), the
 # bridge's TRIG on CH1 beside the video on CH3 at 200 mV a division. A
 # bare `ARM name` falls back to the head's old defaults, whose trigger
@@ -191,9 +200,13 @@ def cmd_record(a):
     lines = ["# recorded from " + str(a.run)] + pre + ["MODE INJECT", f"SET {polls[0][1]:02x}", "RESET"]
     last = polls[0][1]
     changes = 0
+    entries = 0      # what the bridge's RAM holds: see entries_for
+    prev_n = 0
     for n, b in polls:
         if b != last:
             lines.append(f"AT {n} {b:02x}")
+            entries += entries_for(a.bridge, n - prev_n)
+            prev_n = n
             last = b
             changes += 1
     lines.append(f"# {len(polls)} polls, {changes} changes, last latch {polls[-1][0]}")
@@ -203,12 +216,12 @@ def cmd_record(a):
     # a factor of sixteen. A record that does not fit is replayed with
     # its tail missing, which looks like a finding about the part, so it
     # is named here rather than discovered later.
-    if changes > a.schedule_max:
-        print(f"  REFUSED: {changes} changes will not fit the {a.bridge} bridge's {a.schedule_max}-entry schedule.")
-        print(f"  Record a shorter run, or use the C6 build (--bridge c6, {SCHEDULE_MAX['c6']} entries).")
+    if entries > a.schedule_max:
+        print(f"  REFUSED: {changes} changes are {entries} entries, which will not fit the {a.bridge} bridge's {a.schedule_max}-entry schedule.")
+        print(f"  Record a shorter run, cut it (--until), or use the C6 build (--bridge c6, {SCHEDULE_MAX['c6']} entries).")
         return 1
-    if changes > a.schedule_max * 0.8:
-        print(f"  note: {changes} of the {a.bridge} bridge's {a.schedule_max} schedule entries used")
+    if entries > a.schedule_max * 0.8:
+        print(f"  note: {entries} of the {a.bridge} bridge's {a.schedule_max} schedule entries used")
     return 0
 
 

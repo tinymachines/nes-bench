@@ -36,19 +36,26 @@
 //     uint32_t and %lu: the latch index wraps after 2.2 years at 60
 //     polls a second, the clock count after 103 days at 480 a second.
 //  2. The C6's 2048-entry schedule is 32 KB. This part has 2 KB of SRAM
-//     in total. SCHEDULE_MAX is 128, which is not a guess: at 256 the
-//     compiler reports 2161 bytes of globals, 105 percent, and refuses
-//     to link; at 128 it reports 1521 bytes and leaves 527 for the
-//     stack. A B3 record with more than 128 changes of byte does not
-//     fit, gets the protocol's existing "# schedule full" reply, and
-//     is refused by tools/b3.py before the run rather than replayed
-//     with its tail missing. Longer records need the C6 build or a
-//     streamed schedule, which is a v2 item and is not pretended to
-//     work here.
+//     in total. With five-byte entries (a uint32_t latch and a byte)
+//     SCHEDULE_MAX was 128: at 256 the compiler reported 2161 bytes of
+//     globals, 105 percent, and refused to link; at 128, 1521 bytes and
+//     527 for the stack. A hand's minute of Super Mario Bros. is 289
+//     changes of byte (run 20260919-012524), so since 2026-09-19 the
+//     schedule is packed (schedule.h): each entry is the gap from the
+//     previous one in a byte and the byte to hold, two bytes, with a
+//     filler entry per 255 latches of a longer gap, and every string
+//     literal lives in flash (on the AVR a plain literal is copied into
+//     RAM at boot): 600 entries, with the stack's room what it was at
+//     128, and the protocol still carries absolute latches. A record that still does
+//     not fit gets "# schedule full" and is refused by tools/b3.py before
+//     the run rather than replayed with its tail missing. STATUS reports
+//     the stack bytes the run has never touched (painted at boot), so the
+//     margin is a measurement, not the compiler's estimate.
 //  3. Timer1's external clock input is the T1 pin and nothing else, so
 //     the latch line has to be D5. That is not a preference.
 
 #include <SPI.h>
+#include "schedule.h"
 
 // ------------------------------------------------------------- pins
 // Per docs/bench-v1b-uno.md's table and the A1 chip on the v1b sheet,
@@ -65,15 +72,15 @@ static const uint8_t PIN_PAD_DATA  = 8;
 // monitored on this build, as on the C6.
 static const int CON_DATA = -1;
 
-// 256 * 5 bytes = 1280 of the 2048. The compiler's own report is the
-// authority; if it says the globals leave under ~300 bytes for the
-// stack, this number is what to lower.
-static const int SCHEDULE_MAX = 128;
+// 600 * 2 bytes = 1200 of the 2048. What paid for it: the entries went
+// from five bytes to two (320 in the 640 bytes 128 had), and every
+// string literal moved to flash, which took the globals from 1615 bytes
+// to 967 with 320 entries. 600 leaves the stack what the 128-entry
+// build ran on for months (about 515 bytes by the compiler); STATUS's
+// untouched stack is the measurement. tools/b3.py reads this number.
+static const int SCHEDULE_MAX = 600;
 
-struct At { uint32_t latch; uint8_t byte; };
-static At schedule[SCHEDULE_MAX];
-static int schedule_len = 0;
-static int schedule_cursor = 0;   // a cursor, not a scan: AT arrives in order
+static Schedule<SCHEDULE_MAX> schedule;   // a cursor, not a scan: AT arrives in order
 
 enum Mode { PASS, INJECT };
 static Mode mode = PASS;
@@ -181,70 +188,89 @@ static uint8_t poll_pad() {
 }
 
 static uint8_t scheduled_byte() {
-  while (schedule_cursor < schedule_len && schedule[schedule_cursor].latch <= latches) {
-    set_byte = schedule[schedule_cursor].byte;
-    schedule_cursor++;
-  }
+  schedule.due(latches, set_byte);
   return set_byte;
+}
+
+// ------------------------------------------------------------ stack
+// Every byte between the end of the globals and the stack is painted at
+// boot; STATUS counts the painted bytes still intact from the bottom up,
+// the stack's deepest reach since boot read as what it never touched.
+extern uint8_t __bss_end;
+static const uint8_t PAINT = 0x5A;
+static void paint_stack() {
+  uint8_t *p = &__bss_end;
+  uint8_t *top = (uint8_t *)SP - 32;   // leave setup's own frame alone
+  while (p < top) *p++ = PAINT;
+}
+static uint16_t stack_untouched() {
+  uint8_t *p = &__bss_end;
+  uint16_t n = 0;
+  while (p < (uint8_t *)SP && *p == PAINT) { p++; n++; }
+  return n;
 }
 
 // ---------------------------------------------------------- commands
 static char line[64];
 static uint8_t line_len = 0;
 
+// Every literal lives in flash (F(), PSTR(), the _P functions): on the
+// AVR a plain string literal is copied into RAM at boot, and the
+// messages here cost more RAM than a third of the schedule.
 static void say(const char *s) { Serial.println(s); }
+static void sayF(const __FlashStringHelper *s) { Serial.println(s); }
 
 static void handle(char *s) {
   while (*s == ' ') s++;
   for (char *e = s + strlen(s); e > s && (e[-1] == '\r' || e[-1] == ' '); e--) e[-1] = 0;
   char out[64];
-  if (!strcmp(s, "MODE PASS")) { mode = PASS; say("# mode pass"); }
-  else if (!strcmp(s, "MODE INJECT")) { mode = INJECT; say("# mode inject"); }
-  else if (!strncmp(s, "SET ", 4)) {
+  if (!strcmp_P(s, PSTR("MODE PASS"))) { mode = PASS; sayF(F("# mode pass")); }
+  else if (!strcmp_P(s, PSTR("MODE INJECT"))) { mode = INJECT; sayF(F("# mode inject")); }
+  else if (!strncmp_P(s, PSTR("SET "), 4)) {
     set_byte = (uint8_t)strtoul(s + 4, NULL, 16);
-    snprintf(out, sizeof out, "# set %02x", set_byte); say(out);
+    snprintf_P(out, sizeof out, PSTR("# set %02x"), set_byte); say(out);
   }
-  else if (!strncmp(s, "AT ", 3)) {
+  else if (!strncmp_P(s, PSTR("AT "), 3)) {
     char *end;
     unsigned long n = strtoul(s + 3, &end, 10);
     unsigned long b = strtoul(end, NULL, 16);
-    if (schedule_len < SCHEDULE_MAX) {
-      schedule[schedule_len].latch = (uint32_t)n;
-      schedule[schedule_len].byte = (uint8_t)b;
-      schedule_len++;
-      snprintf(out, sizeof out, "# at %lu %02lx", n, b); say(out);
-    } else say("# schedule full");
+    int r = schedule.append((uint32_t)n, (uint8_t)b);
+    if (r == 0) { snprintf_P(out, sizeof out, PSTR("# at %lu %02lx"), n, b); say(out); }
+    else if (r == 1) sayF(F("# schedule full"));
+    else { snprintf_P(out, sizeof out, PSTR("# ? AT %lu before the schedule's last latch"), n); say(out); }
   }
-  else if (!strncmp(s, "TRIG ", 5)) {
+  else if (!strncmp_P(s, PSTR("TRIG "), 5)) {
     trig_at = strtol(s + 5, NULL, 10);
-    snprintf(out, sizeof out, "# trig at %ld", trig_at); say(out);
+    snprintf_P(out, sizeof out, PSTR("# trig at %ld"), trig_at); say(out);
   }
-  else if (!strcmp(s, "RESET")) {
+  else if (!strcmp_P(s, PSTR("RESET"))) {
     uint8_t sreg = SREG; cli();
     latches = 0; clock_edges = 0; last_tcnt = TCNT1; tcnt_in_isr = last_tcnt; clocks_at_rise = 0; rises = 0; last_rises = 0;
     SREG = sreg;
     clocks = 0; clocks_at_latch = 0; have_latch = false;
-    schedule_len = 0; schedule_cursor = 0; trig_at = -1;
+    schedule.clear(); trig_at = -1;
     deferred_writes = 0; torn_writes = 0; torn_pending = false;
-    say("# reset");
+    sayF(F("# reset"));
   }
-  else if (!strcmp(s, "STATUS")) {
-    snprintf(out, sizeof out, "# mode %s latch %lu clocks %lu held %02x",
-             mode == PASS ? "pass" : "inject", latches, clocks, held); say(out);
-    snprintf(out, sizeof out, "# pad %02x schedule %d/%d data %d deferred %u torn %u mutate %s",
-             pad_byte, schedule_len, SCHEDULE_MAX, CON_DATA, deferred_writes, torn_writes,
-             mutated ? "on" : "off"); say(out);
+  else if (!strcmp_P(s, PSTR("STATUS"))) {
+    snprintf_P(out, sizeof out, PSTR("# mode %S latch %lu clocks %lu held %02x"),
+             mode == PASS ? PSTR("pass") : PSTR("inject"), latches, clocks, held); say(out);
+    snprintf_P(out, sizeof out, PSTR("# pad %02x schedule %d/%d data %d deferred %u torn %u mutate %S"),
+             pad_byte, schedule.len, SCHEDULE_MAX, CON_DATA, deferred_writes, torn_writes,
+             mutated ? PSTR("on") : PSTR("off")); say(out);
+    snprintf_P(out, sizeof out, PSTR("# stack %u bytes never touched"), stack_untouched()); say(out);
   }
-  else if (!strcmp(s, "MUTATE ON") || !strcmp(s, "MUTATE OFF")) {
-    mutated = !strcmp(s, "MUTATE ON");
-    say(mutated ? "# mutate on: the clock counter is fed the latch line"
-                : "# mutate off: the counters on their own lines");
+  else if (!strcmp_P(s, PSTR("MUTATE ON")) || !strcmp_P(s, PSTR("MUTATE OFF"))) {
+    mutated = !strcmp_P(s, PSTR("MUTATE ON"));
+    if (mutated) sayF(F("# mutate on: the clock counter is fed the latch line"));
+    else sayF(F("# mutate off: the counters on their own lines"));
   }
-  else if (*s) { snprintf(out, sizeof out, "# ? %.58s", s); say(out); }
+  else if (*s) { snprintf_P(out, sizeof out, PSTR("# ? %.58s"), s); say(out); }
 }
 
 // ------------------------------------------------------------- setup
 void setup() {
+  paint_stack();
   Serial.begin(115200);
 
   pinMode(PIN_RCLK, OUTPUT);
@@ -287,7 +313,7 @@ void setup() {
   PCMSK2 |= _BV(PCINT21);
   PCICR |= _BV(PCIE2);
 
-  say("# nes-bench bridge v1b (UNO, all 5 V): B0 sniff; MODE PASS");
+  sayF(F("# nes-bench bridge v1b (UNO, all 5 V): B0 sniff; MODE PASS"));
 }
 
 // -------------------------------------------------------------- loop
@@ -323,11 +349,11 @@ void loop() {
     // latch's rise and this one's, both read at the edge by the
     // interrupt above, not whatever the loop sees now.
     if (have_latch) {
-      snprintf(out, sizeof out, "L %lu %02x %lu", latches - 1, byte_at_latch, at_rise - clocks_at_latch);
+      snprintf_P(out, sizeof out, PSTR("L %lu %02x %lu"), latches - 1, byte_at_latch, at_rise - clocks_at_latch);
       say(out);
-      if (torn_pending) { say("# the load window opened across an RCLK edge: the byte above may be torn"); torn_pending = false; }
+      if (torn_pending) { sayF(F("# the load window opened across an RCLK edge: the byte above may be torn")); torn_pending = false; }
     }
-    if (dl > 1) { snprintf(out, sizeof out, "# %u latches in one look at %lu", dl, latches); say(out); }
+    if (dl > 1) { snprintf_P(out, sizeof out, PSTR("# %u latches in one look at %lu"), dl, latches); say(out); }
     latches += dl;
     clocks_at_latch = at_rise;
     byte_at_latch = held;
@@ -336,7 +362,7 @@ void loop() {
       digitalWrite(PIN_TRIG, HIGH);
       trig_until = millis() + 1;
       trig_at = -1;
-      snprintf(out, sizeof out, "# trigger at latch %lu", latches - 1); say(out);
+      snprintf_P(out, sizeof out, PSTR("# trigger at latch %lu"), latches - 1); say(out);
     }
   }
   if (trig_until && millis() >= trig_until) { digitalWrite(PIN_TRIG, LOW); trig_until = 0; }
