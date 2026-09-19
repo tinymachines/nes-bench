@@ -202,7 +202,8 @@ Rescored under it the step is gone and what is left is a smooth drift,
 `$17` from -0.039 at power-on to about -0.048 and `$22` from -0.042
 to about -0.055, flat from about thirty minutes on, with the hue at
 -3.1 and -9.2 degrees throughout: the console's warmth, about a
-hundredth of luma over its first half hour. E2's records rescored
+hundredth of luma over its first half hour (a knob since 2026-09-19:
+Programme 1, "The warmth"). E2's records rescored
 under v0.2.11: the 500 mV record -0.043 and -0.047, the cold 200 mV
 record (152924) -0.042 and -0.045, the morning's hour-warm 200 mV
 record -0.050 and -0.059, on the warm plateau. So point 2 below is
@@ -380,6 +381,7 @@ are the knobs, and they are already scattered through the crates:
 | the television's stages (`CrtParams`) | `ntsc-crt` | authored, and labelled so | nothing yet: the bench's television is not measured, and the grabber is a different television |
 | the encoder's level-dependent phase | not built | the model sits 12.6 and 14.1 degrees off both eyes in hue on the saturated colours, located in the part's analogue output under load (`eyes-vs-scope.md`) | the bars cartridge captured under the eyes' load and with the scope alone; the constant fitted per load, MUTATE red |
 | the DAC's load | not built | the untriggered captures ran hot in saturation; probe or DAC undecided | a terminated capture of the bars cartridge (B1's first gate) |
+| the part's warmth | `nes-console` `[warmth]` `seconds_on` on `[warmth_curve]` `depth`, `tau_s`, built 2026-09-19 | the seconds measured off the head's logs; the curve fitted to the warm-up series (depth 0.0214, tau 1050 s, rms 0.001) | a second warm-up series, and one on the bars cartridge, where every level says whether it is a gain or an offset |
 | power-on RAM | `nes-console` `[ram] fill` or `seed`, built 2026-09-18 | authored: blank, or a fill, or a seeded pattern; the first game it was built for (the multicart's menu after a cold boot) turned out not to need it: the part takes the press cold once the head's `WAIT` was fixed (`open-items.md`) | a cartridge of our own that shows its RAM, OAM and VRAM at power-on |
 
 Externalising them is the proposal on the sheet's dashed box: one file
@@ -416,6 +418,49 @@ two points fit a line with no residual, so it stays an open item with
 its numbers until the bars cartridge gives it every level (E1). The
 reset hold stays a labelled constant in `nes-glue`: nothing in the
 console reads it yet, and a knob that reaches nothing is not a knob.
+
+**The warmth, built 2026-09-19: the first fitted knob.** The warm-up
+series (above, "The luma spread") left one thing the model could not
+know: how long the part had been on. Its picture shrinks against its
+sync as it warms, and scoring every run against a cold model reads that
+as a luma and saturation error that grows over the first half hour.
+Two tables carry it. `[warmth]` `seconds_on` is measured:
+`tools/knobs.py` reads the run's trigger off its `head.log` and the last
+`power on` before it across every run's log, and writes nothing when
+the head never switched the power (the front switch by hand), so such a
+run is scored cold. `[warmth_curve]` is fitted: the model's picture
+gain `1 - depth * (1 - exp(-t / tau))`, fitted by `tools/warmth-fit.py`
+to the series' ten captures, luma and saturation of both regions under
+one curve, each series' own start solved exactly: depth 0.0214, tau
+1050 seconds, rms 0.00098 over forty numbers, worst 0.0023.
+`capture-score` scales the model's encoded frames about blanking by
+that gain before the card model's front end; the sync and the burst are
+left alone, which is what the scorer's levels and the decoder's phase
+come from (`tests/knobs.rs`, `MUTATE_WARMTH=1` red).
+
+What it does to the series, scored again with the knob in each run's
+file (`warmth-fit.py --check`): the luma error that went from -0.039 to
+-0.048 on `$17` and from -0.042 to -0.055 on `$22` now holds at -0.041
+and -0.042 across the whole 45 minutes, a spread of 0.0035 and 0.0040
+against 0.009 and 0.013 without it. The knob's own gate: moved off its
+fit to depth zero, the spread comes back. And one record the fit never
+saw: the morning's 200 mV record of 2026-09-18, taken with the console
+an hour on by the front switch (so its seconds are authored, and past
+fifty minutes the curve is flat, so the hour need not be exact), scores
+-0.043 and -0.046 with the knob, against -0.042 and -0.045 on the cold
+record `152924`: the two records the evening had set apart by warmth
+agree to a thousandth. The offset that is left, about -0.04 in luma
+and -0.05 to -0.07 in saturation, is the part's own against the model
+and belongs to E1's bars.
+
+What the fit does not say. Luma alone wants a deeper curve than
+saturation (0.024 against 0.018), and `$17`'s luma alone deeper than
+`$22`'s (0.030 against 0.023): the drift is not a pure gain, part of it
+behaves like an offset, and two colours cannot separate the two. The
+shared curve is inside the scorer's tolerance on all four, so it
+stands as one gain until the bars cartridge's levels can tell a gain
+from an offset. The hue does not move with warmth (-3.1 and -9.2
+degrees throughout), so the knob does not touch it.
 
 ## Programme 2: games learned from the pad to the picture
 

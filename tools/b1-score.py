@@ -20,7 +20,9 @@ refused rather than scored on the trigger line, which is what the
 first E2 run of 2026-09-18 would have done through the `file =` line.
 
 The run's `knobs.toml` (tools/knobs.py) is written if the run has none
-and handed to the scorer as KNOBS=, so its report opens with the
+and handed to the scorer as KNOBS= (`--cold` hands it over without its
+[warmth] table, so the model runs at the cold part's gain: how
+tools/warmth-fit.py reads the drift it fits), so its report opens with the
 model's alignment and its source; `--channel` defaults to the file's
 `[capture] channel`. Real captures are
 recorded, not held: the exit status is the scorer's own, and the first
@@ -41,7 +43,23 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import knobs  # noqa: E402
 
 
-def run_env(run, synthetic, channel):
+def cold_copy(kpath):
+    """The knobs file without its [warmth] table, beside the run in the
+    system's temporary directory: the model at the cold part's gain."""
+    import tempfile
+    out, skip = [], False
+    for line in kpath.read_text().splitlines():
+        if line.strip().startswith("["):
+            skip = line.strip() == "[warmth]"
+        if not skip:
+            out.append(line)
+    f = tempfile.NamedTemporaryFile("w", suffix=".toml", prefix="knobs-cold-", delete=False)
+    f.write("\n".join(out) + "\n")
+    f.close()
+    return Path(f.name)
+
+
+def run_env(run, synthetic, channel, cold=False):
     """The environment a run hands the model's scorers: SCRIPT, LATCH
     (the script's last TRIG), KNOBS (written if the run has none), and
     the video channel resolved from the knobs file when none is named.
@@ -57,7 +75,7 @@ def run_env(run, synthetic, channel):
         kpath = run / "knobs.toml"
         if not kpath.exists():
             print(f"{Path(sys.argv[0]).name}: wrote {knobs.init(run)}")
-        env["KNOBS"] = str(kpath)
+        env["KNOBS"] = str(cold_copy(kpath) if cold else kpath)
         if channel is None:
             m = re.search(r"^channel\s*=\s*(\d+)", kpath.read_text(), re.M)
             channel = int(m.group(1)) if m else knobs.VIDEO_CHANNEL
@@ -99,11 +117,12 @@ def main():
     ap.add_argument("--channel", type=int, default=None, help="the video channel in a multi-channel capture (default: the knobs file's)")
     ap.add_argument("--frames", type=int, default=2000, help="a ceiling on the frames the model runs to reach the latch")
     ap.add_argument("--synthetic", action="store_true")
+    ap.add_argument("--cold", action="store_true", help="score against the model at the cold part's gain (the knobs file without [warmth])")
     a = ap.parse_args()
     # Absolute: the scorer runs in the model's checkout, and a run named
     # relative to this one vanished there (the first E2 run, 2026-09-18).
     run = Path(a.run).resolve()
-    env, a.channel = run_env(run, a.synthetic, a.channel)
+    env, a.channel = run_env(run, a.synthetic, a.channel, a.cold)
     cmd = ["cargo", "run", "--release", "-p", "nes-console", "--example", "capture-score", "--", a.rom, str(a.frames)]
     if a.synthetic:
         env["SYNTH_TRIGGER"] = "1"

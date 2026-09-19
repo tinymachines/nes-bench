@@ -113,6 +113,10 @@ register's job, as it is in the pad.
   three-channel capture, the histogram over power-ons, its self-test),
   `b3.py` (record a run as a script, replay it with captures, the part
   against itself, bisect to the first divergent latch),
+  `warmth-fit.py` (the part's picture gain against its seconds on,
+  fitted to a warm-up series, and `--check` to score the series with
+  it), `knobs.py` (a run's knobs file: `init`, `show`, `check`, and
+  `warmth` to add the seconds on and the curve to an older file),
   `fake-scope.py` (the head's SCPI subset with synthesised records, and
   with `--video` the model's own frames at the bridge's trigger latch,
   a divergence plantable),
