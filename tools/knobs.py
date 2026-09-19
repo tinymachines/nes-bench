@@ -20,8 +20,9 @@ off the two dies' clock recipes until E4's histogram sets it from the
 part), [capture] (the scope's window on the video, from the run's
 ARM line: the channel the video sits on, the scale, the offset), and
 [warmth] with [warmth_curve]: the seconds the console had been on when
-the record was triggered, read off the head's logs (the last `power on`
-across every run up to this one, with no `power off` after it), and
+the record was triggered, read off the head's logs (the first `power
+on` after the last `power off` across every run up to this one: a
+second `on` with the relay already closed changes nothing), and
 the picture-gain curve tools/warmth-fit.py fitted to the warm-up
 series. A run whose power the head never switched (the front switch by
 hand, before the relay) gets no [warmth]: the seconds are not known,
@@ -84,14 +85,21 @@ def seconds_on(run):
     t = trigger_time(run)
     if t is None:
         return None
-    last = None
+    # A `power on` while the relay is already closed changes nothing on
+    # the part, and the head logs it all the same (a script that starts
+    # with POWER ON, run twice): the console has been on since the FIRST
+    # `on` after the last `off`.
+    on_since = None
     for when, what in head_events(run.parent):
         if when > t:
             break
-        last = (when, what)
-    if last is None or last[1] != "on":
+        if what == "off":
+            on_since = None
+        elif on_since is None:
+            on_since = when
+    if on_since is None:
         return None
-    return t - last[0]
+    return t - on_since
 
 
 def warmth_lines(run):
@@ -101,7 +109,7 @@ def warmth_lines(run):
     return ["[warmth]",
             f"seconds_on = {round(s)}",
             'source = "measured"',
-            f'by = "{Path(run).name} head.log trigger against the last power on in runs/*/head.log"',
+            f'by = "{Path(run).name} head.log trigger against the first power on since the last power off in runs/*/head.log"',
             "",
             "[warmth_curve]",
             f"depth = {WARMTH_DEPTH}",

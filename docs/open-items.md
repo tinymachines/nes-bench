@@ -93,6 +93,18 @@ entry is the one that raised it, with its date.
   channel's delay on detail against sync. Recorded, not fitted; the
   bars cartridge's sharp edges under the scope alone (E1) would give
   it a number free of the game's content.
+  Duck Hunt's field (2026-09-19, `exercise.md`) reads 4 samples.
+- **Duck Hunt's field matches the model's F-1 and F+1, not F: OPEN.**
+  On runs `20260919-183613` and `183919` the part's frame lines up at
+  full resolution with the model's frames an odd number away (r 0.94)
+  better than with F (0.91), where Super Mario Bros.' split and every
+  E3 capture matched F. The field is still, so the two neighbours
+  cannot be told apart and neither can a frame from a dot-crawl phase.
+  Candidates: the frame rule's placement for a game polling at line
+  253 (after the vertical sync's onset), or the part's frame parity
+  against the model's where the game turns rendering off and on.
+  Closes with: a capture of the field where something moves (the dog
+  walking, a later latch), scored for F-1 against F+1.
 - **The vertical sync's first dot: CLOSED 2026-09-18.** Measured on
   the switch-level 2C02 (`2c02`'s `vsync-probe`): the sync begins where
   row 244's horizontal sync begins, dot 280, three broad pulses a row

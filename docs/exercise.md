@@ -249,6 +249,88 @@ the two records say beyond the verdict:
    CRC, the script and the captures. Two episodes were played; every
    later step is made of them.
 
+## E2 on a second game, Duck Hunt's field: 2026-09-19
+
+Super Mario Bros.' title gave the scorer two flat colours, so the hue
+miss had two points and no curve, and the luma gap could not say
+whether it was a gain or an offset. Duck Hunt, the multicart's second
+game, has a field of large flat colours. The script,
+`exercise/dh-field.txt`, was found on the model first (`capture-score`
+gained `SHOW=path.ppm`, the chosen frame decoded): the menu takes Select
+at latch 200 and Start at 240; Duck Hunt's title ignores Start until
+about latch 500, and takes one held ten latches from 600; Game A's
+field is captured at latch 900. Played twice (runs `20260919-183613`
+at 24 seconds on and `183919` at 211), then Super Mario Bros.' title
+once more at the same warmth (`184121`, `warmup-step.txt`).
+
+**The scorer's regions were not the largest rectangles.** The first
+model run found one region on the field, a strip of ground, and not
+the sky. `capture-score` merged rows greedily, each following the first
+run that overlapped it and keeping the intersection, so the tree's
+leaves cut the whole sky down to an eight-dot sliver at the left edge.
+The regions are now the largest all-one-colour rectangle per colour
+(the maximal rectangles of its mask), as its comment always said
+(`MUTATE_REGIONS=1` runs the old merge). On the bars cartridge nothing
+moves: 13 of 13 regions on every luma row, the late-trigger mutation
+still red. On Super Mario Bros.' title the two old regions move by
+0.0002 in luma and 0.1 degree in hue, and two more appear, the greens
+`$1a` and `$29` along the bottom.
+
+The part reached the field on both runs, and its picture is the
+model's screen (coarse shape r 0.998 against the model; 0.9997 against
+itself two frames on). Six colours at two luma levels, warmth knob on:
+
+| region | luma | hue (model) | dY | dsat | dhue |
+|---|---|---|---|---|---|
+| `$1a` title, rows 200..208 | 0.35 | -118.5 | -0.036 | -0.049 | -0.2 |
+| `$17` field, rows 166..173 | 0.33 | +150.1 | -0.043, -0.045 | -0.052, -0.054 | -3.5, -3.4 |
+| `$17` title, rows 33..72 | 0.34 | +149.8 | -0.041 | -0.052 | -3.3 |
+| `$18` field, rows 226..240 | 0.35 | -177.2 | -0.028, -0.031 | -0.046, -0.047 | -7.9, -7.9 |
+| `$22` title, rows 23..192 | 0.65 | 0.0 | -0.045 | -0.068 | -9.2 |
+| `$29` field, rows 168..181 | 0.65 | -149.9 | -0.045, -0.048 | -0.067, -0.069 | -10.5, -10.5 |
+| `$29` title, rows 200..208 | 0.65 | -148.8 | -0.040 | -0.065 | -10.9 |
+| `$21` field, rows 0..122 | 0.65 | -30.0 | -0.044, -0.047 | -0.067, -0.069 | -11.9, -11.9 |
+
+What the eight rows say, recorded and not fitted:
+
+1. **The hue miss grows with the level.** The three colours of the
+   high luma row miss by -9.2 to -11.9 degrees, the three of the low
+   row by -0.2 to -7.9. The level carries most of it (the means are
+   -10.6 and -3.8); within a row the hue carries the rest, and more of
+   it on the low row. Each hue repeats to 0.4 degrees across runs,
+   games and regions. That is the shape of a level-dependent phase in
+   the part's output (the open item in Programme 1's table, and the
+   eyes' finding under load), now with six points on the part. The
+   bars cartridge gives it every level and every hue, and the constant
+   is fitted there.
+2. **The luma gap is an offset, not a gain.** Both levels miss by about
+   the same amount (-0.041 to -0.048 on the upper rows at 0.33 and at
+   0.65), where a gain would miss twice as much on the high row.
+   Saturation is the other way: the part's chroma is 12 to 15 percent
+   short of the model's at both levels, a gain.
+3. **The lowest rows miss less.** The regions at rows 200 and below
+   read -0.028 to -0.040 in luma, the ones above -0.041 to -0.048, and
+   `$29` shows it on one colour (-0.040 at rows 200..208, -0.045 and
+   -0.048 at 168..181). A level that moves down the field would do
+   this; so would the regions near the frame's bottom sitting where the
+   recovery's lines end. Not separated yet.
+4. **The frame is one off.** The part's picture matches the model's
+   frames F-1 and F+1 at full resolution (r 0.94) better than F (0.91),
+   where Super Mario Bros.' split and E3 found F. The field is still
+   where the regions are, so the colours do not depend on it; the
+   frame (or its dot-crawl phase) is recorded in `open-items.md`. The
+   registration is 4 samples, half a dot, the same direction as the
+   quarter-dot item and a little more.
+
+The warmth knob's seconds were wrong on the second run as first
+written: the script opens with `POWER ON`, the relay was already
+closed, and the head logs the word all the same, so the knob counted
+from the second run's own start. `tools/knobs.py` now counts from the
+first `on` after the last `off` (the warm-up series' seconds do not
+move). Between 24 and 211 seconds the field's luma moved by 0.002 to
+0.003 more than the curve takes out, about the curve's worst residual
+on the evening it was fitted.
+
 ## E3's machinery on the part: 2026-09-18
 
 Everything in E3 but the hand, run on the part the evening E2's luma
