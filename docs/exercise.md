@@ -313,14 +313,16 @@ What the eight rows say, recorded and not fitted:
    `$29` shows it on one colour (-0.040 at rows 200..208, -0.045 and
    -0.048 at 168..181). A level that moves down the field would do
    this; so would the regions near the frame's bottom sitting where the
-   recovery's lines end. Not separated yet.
+   recovery's lines end. Not separated yet. ANSWERED 2026-09-20
+   below: it is the colour, not the row.
 4. **The frame is one off.** The part's picture matches the model's
    frames F-1 and F+1 at full resolution (r 0.94) better than F (0.91),
    where Super Mario Bros.' split and E3 found F. The field is still
    where the regions are, so the colours do not depend on it; the
    frame (or its dot-crawl phase) is recorded in `open-items.md`. The
    registration is 4 samples, half a dot, the same direction as the
-   quarter-dot item and a little more.
+   quarter-dot item and a little more. ANSWERED 2026-09-20 below: the
+   frame is F, and what was read is the colour phase.
 
 The warmth knob's seconds were wrong on the second run as first
 written: the script opens with `POWER ON`, the relay was already
@@ -330,6 +332,90 @@ first `on` after the last `off` (the warm-up series' seconds do not
 move). Between 24 and 211 seconds the field's luma moved by 0.002 to
 0.003 more than the curve takes out, about the curve's worst residual
 on the evening it was fitted.
+
+## Which frame, and which row: 2026-09-20
+
+Two of Duck Hunt's findings above are answered, and both answers are
+about the instrument rather than the part.
+
+### The part drew the model's F; what the correlation saw was the colour phase
+
+The field at latch 900 does not move. `nes-console`'s new
+`frame-motion` probe plays a bench script's own `SET` and `AT` lines on
+the model and counts, for every frame, how many of the 256 by 240
+active dots differ from the frame before: pictures 920 to 929 are
+identical, dot for dot. No measurement made on that record could have
+told F-1 from F+1, because the two draw the same dots.
+
+What the correlation saw instead was the colour subcarrier. Two frames
+of identical dots differ on 9 percent of their decoded samples, and the
+five candidates fall into two classes: F-2, F and F+2 read one number
+and F-1 and F+1 read another, to the fourth decimal. That is the
+frame's parity and nothing else. A blur does not take it out either: a
+box a dot wide leaves 6 percent of a still frame still separating the
+candidates, one a whole subcarrier cycle wide leaves 3.8 percent,
+because the residue at an edge is a transient and not a sinusoid.
+
+So `split-score` gained a fifth measurement, in two readings that are
+about different things:
+
+- **what moved**: the mask comes from the PPU's own dots (exact, and
+  blind to the phase by construction), a disputed dot claims its eight
+  samples and a dot either side, the undisputed side stands five dots
+  clear, and the picture is blurred over a subcarrier cycle before the
+  rms is taken. Each candidate is also scored at its own best
+  alignment, a dot and a half either way, since the phase turns with
+  the alignment.
+- **the colour phase**: the same arithmetic on the mask the decoded
+  picture gives, which names a parity, not a frame.
+
+Both are held on the synthesis and `MUTATE_FRAME=1` is red on both. The
+first version of the measurement was not: it took the registration
+fitted against F, which on a scrolling game absorbs the very difference
+being measured, and the mutant went green. The fix is to fit the
+alignment only where no candidate is in dispute.
+
+Then two captures with the round's ducks climbing, where the model
+draws every frame differently for seventeen frames
+(`exercise/dh-duck.txt` at latch 989, `dh-duck-late.txt` at 1020):
+
+| run | latch | what moved | next candidate | floor | the colour phase |
+|---|---|---|---|---|---|
+| `20260919-235044` | 989 | **F+0**, rms 0.047 | 0.117 | 0.020 | F-1 0.100, F+1 0.107, F+0 0.183 |
+| `20260919-235753` | 1020 | **F+0**, rms 0.047 | 0.158 | 0.020 | F+1 0.113, F-1 0.117, F+0 0.121 |
+
+The part drew the model's F, on two pictures, by what was drawn. The
+frame rule holds on a game that polls at line 249. The colour phase
+still prefers an odd neighbour, and that is now its own item.
+
+A third run in between (`20260919-235505`, the same script as the
+first) matched no candidate at all: 0.24 against a floor of 0.041,
+because a duck had flown elsewhere. The floor is printed for exactly
+that reason. One capture to a run, too: reading 12 M points off the
+scope costs about four thousand latches, so a second `TRIG` in the same
+script is always late.
+
+### The luma gap belongs to the colour, not to the row
+
+`capture-score` gained `PROFILE=<colour>`: one colour's luma row by
+row, on the model and on the part, over the dots the model draws a
+settling distance clear of anything else. A tilt inside one colour
+would be the picture's; a step between colours at the same rows is the
+colour's.
+
+| record | colour | rows | the part, on the mean | tilt per hundred rows |
+|---|---|---|---|---|
+| Super Mario Bros.' title | `$22` | 1..207 | -0.0443 | +0.0001 |
+| Duck Hunt's field | `$21` | 1..148 | -0.0444 | +0.0006 |
+| Duck Hunt's field | `$29` | 157..225 | -0.0445 | +0.0318 |
+| Duck Hunt's field | `$18` | 183..239 | -0.0283 | -0.0023 |
+
+One colour over 207 rows, a third of the way down the picture to the
+bottom of it, does not drift: a ten-thousandth per hundred rows. And at
+the same rows two colours read -0.0445 and -0.0283. So E2's third
+finding is answered: the regions at row 200 and below miss less because
+of the colours that live down there, not because of where they sit.
+Nothing in the recovery weakens at the frame's bottom.
 
 ## E3's machinery on the part: 2026-09-18
 

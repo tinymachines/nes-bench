@@ -94,17 +94,51 @@ entry is the one that raised it, with its date.
   bars cartridge's sharp edges under the scope alone (E1) would give
   it a number free of the game's content.
   Duck Hunt's field (2026-09-19, `exercise.md`) reads 4 samples.
-- **Duck Hunt's field matches the model's F-1 and F+1, not F: OPEN.**
-  On runs `20260919-183613` and `183919` the part's frame lines up at
-  full resolution with the model's frames an odd number away (r 0.94)
-  better than with F (0.91), where Super Mario Bros.' split and every
-  E3 capture matched F. The field is still, so the two neighbours
-  cannot be told apart and neither can a frame from a dot-crawl phase.
-  Candidates: the frame rule's placement for a game polling at line
-  253 (after the vertical sync's onset), or the part's frame parity
-  against the model's where the game turns rendering off and on.
-  Closes with: a capture of the field where something moves (the dog
-  walking, a later latch), scored for F-1 against F+1.
+- **Duck Hunt's field matches the model's F-1 and F+1, not F: CLOSED
+  2026-09-20. The frame is F; what was read is the colour phase.**
+  The field at latch 900 is still dot for dot from picture 920 to 929
+  (`nes-console`'s `frame-motion` probe), so nothing measured on those
+  records could tell F-1 from F+1. Two frames of identical dots differ
+  on 9 percent of their decoded samples, and the five candidates fall
+  into two classes exactly: F-2, F and F+2 read one number, F-1 and F+1
+  another. `split-score`'s new fifth measurement scores the candidates
+  twice, once on the samples where they draw different dots (blurred
+  over a subcarrier cycle, each candidate at its own best alignment)
+  and once on the decoded picture, and two captures with the ducks
+  climbing (`exercise/dh-duck.txt` at latch 989, `dh-duck-late.txt` at
+  1020) read **F+0** by what was drawn, rms 0.047 against the next
+  candidate's 0.117 and 0.158 over a floor of 0.020. The frame rule
+  holds on a game that polls at line 249. Trap, recorded: the first
+  version of the measurement took the registration fitted against F,
+  which on a scrolling game absorbs the difference being measured, and
+  `MUTATE_FRAME=1` went green; the alignment is fitted only where no
+  candidate is in dispute.
+- **The part's colour phase is a neighbouring frame's: OPEN.** With the
+  frame settled by content, the same records still read the part's
+  colour phase closer to the model's F-1 and F+1 than to F: 0.100 and
+  0.107 against 0.183 on the still field, 0.113 and 0.117 against 0.121
+  on a moving one, and no alignment within a dot and a half repairs it.
+  The NES begins each frame at one of three subcarrier origins a third
+  of a cycle apart, and `recover_nes` has measured the part's since
+  v0.2.12; a third of a cycle is 4 samples on the recovery's grid,
+  which is also what the registration reads on this game. So this item
+  and the quarter-dot one above may be one quantity seen twice.
+  Candidates: which origin the model's encoder gives a frame of that
+  parity, against which the part actually starts. Closes with: the
+  origin named on both sides, frame by frame, on one record (the
+  recovery already names the part's), or the bars cartridge under the
+  scope alone.
+- **The part's luma misses less on the lowest rows: CLOSED 2026-09-20.
+  It is the colour, not the row.** `capture-score`'s new
+  `PROFILE=<colour>` reports one colour's luma row by row on both
+  sides, over the dots the model draws a settling distance clear of
+  anything else. `$22` on the Super Mario Bros. title runs rows 1 to
+  207 and the part sits -0.0443 below the model with the difference
+  tilting +0.0001 per hundred rows; Duck Hunt's `$21` reads -0.0444
+  over rows 1 to 148, `$29` -0.0445 over 157 to 225 and `$18` -0.0283
+  over 183 to 239. Two colours at the same rows read -0.0445 and
+  -0.0283, and one colour across two thirds of the picture does not
+  drift. Nothing in the recovery weakens at the frame's bottom.
 - **The vertical sync's first dot: CLOSED 2026-09-18.** Measured on
   the switch-level 2C02 (`2c02`'s `vsync-probe`): the sync begins where
   row 244's horizontal sync begins, dot 280, three broad pulses a row

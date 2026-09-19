@@ -1,0 +1,33 @@
+# Duck Hunt's field with the ducks in flight, at a second latch: the
+# same question as dh-duck.txt asked of the picture at latch 1020,
+# where the model draws every frame differently for five frames either
+# side. Below, the capture that tells one
+# frame from its neighbour. The field at latch 900 (dh-field.txt) is
+# still to the dot for ten frames either side, so the part's frame
+# matched the model's F-1 and F+1 alike and F worse, which is the colour
+# phase alternating with the PPU's frame parity and not a frame at all
+# (open-items). This triggers at latch 989 instead: the model has the
+# round's ducks climbing, every frame drawn differently from the one
+# before for seventeen frames (nes-console's frame-motion probe), so
+# split-score's "what moved" can name the frame while "the colour phase"
+# reads the parity beside it. Same recipe as dh-field to get there:
+# Select at 200 to the cursor, Start at 240 for Duck Hunt, Start held
+# from 600 for Game A. One capture a run: reading
+# 12 M points off the scope takes about four thousand latches, so a
+# second TRIG in the same script is always late (measured 2026-09-19,
+# run 20260919-235505), which is why this is a script of its own.
+POWER ON
+WAIT 5 S
+MODE INJECT
+SET 00
+RESET
+AT 200 04
+AT 202 00
+AT 240 08
+AT 242 00
+AT 600 08
+AT 610 00
+ARM duck-t1020 1,3 0.2 -0.5 CH1
+TRIG 1020
+WAIT 1040
+CAPTURE
