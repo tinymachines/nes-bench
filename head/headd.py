@@ -164,6 +164,14 @@ class Relays:
             # low, which is the console off.
             self.power = DigitalOutputDevice(power_pin, initial_value=False)
 
+    def hold_reset(self):
+        if self.real:
+            self.reset.on()
+
+    def release_reset(self):
+        if self.real:
+            self.reset.off()
+
     def pulse_reset(self, hold=RESET_HOLD_S):
         if self.real:
             self.reset.on()
@@ -356,6 +364,7 @@ class Run(threading.Thread):
         self.armed = None  # (name, chs, note) while a capture waits for its trigger
         self.captures = []  # the names read so far
         head.bridge.drain()  # the log is this run's lines, not the idle backlog
+        self.held_since = None  # when RESET began holding the console
 
     def say(self, s):
         self.log.write(f"{time.time():.3f} {s}\n")
@@ -423,6 +432,7 @@ class Run(threading.Thread):
                     return
                 self.play(line)
                 self.pump_bridge()
+            self.release()
             if self.armed:
                 self.wait_capture()
             self.say("done")
@@ -430,21 +440,50 @@ class Run(threading.Thread):
             self.error = f"line {self.line_no}: {e}"
             self.say(f"failed: {self.error}")
         finally:
+            if self.held_since is not None:   # a run that failed while holding
+                self.head.relays.release_reset()
+                self.held_since = None
             self.pump_bridge()
             self.log.close()
             self.blog.close()
             self.head.current = None
 
+    def release(self):
+        """Let the console out of the reset RESET began holding."""
+        if self.held_since is None:
+            return
+        left = RESET_HOLD_S - (time.time() - self.held_since)
+        if left > 0:
+            time.sleep(left)
+        self.head.relays.release_reset()
+        self.say(f"reset released after {time.time() - self.held_since:.2f} s")
+        self.held_since = None
+
     def play(self, line):
         h = self.head
         w = line.split()
         op = w[0].upper()
+        if op not in ("MODE", "SET", "AT", "TRIG", "ARM"):
+            self.release()
         if op in ("MODE", "SET", "AT", "TRIG"):
             self.send_checked(line.upper() if op == "MODE" else line)
             self.say(f"bridge <- {line}")
+            # A trigger whose latch has passed fires at the next one, and
+            # the capture is of some other frame with nothing to say so.
+            if op == "TRIG" and h.bridge.latest_latch >= int(w[1]):
+                raise RuntimeError(f"TRIG {w[1]} arrived at latch {h.bridge.latest_latch}: the capture would be late, so the run is stopped")
         elif op == "RESET":
-            h.bridge.send("RESET")
-            self.say("bridge <- RESET; " + h.relays.pulse_reset())
+            # The console is held in reset from here through the bridge
+            # lines that follow (SET, AT, TRIG) and the scope's ARM, and
+            # released at the first other word, after RESET_HOLD_S at least: latch 0 is still the
+            # release, and nothing loads against a running console. A
+            # hand's 290-line schedule took 15 s to load with every line
+            # echoed, and the replay's TRIG 1000 arrived at latch 1060
+            # (2026-09-19); the capture was of the game 60 frames on.
+            h.relays.hold_reset()
+            self.held_since = time.time()
+            self.send_checked("RESET")
+            self.say(f"bridge <- RESET; reset held on GPIO{h.relays.reset_pin} while the bridge lines load")
         elif op == "POWER":
             on = w[1].upper() == "ON"
             self.say(h.relays.set_power(on))

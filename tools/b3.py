@@ -237,9 +237,18 @@ def replay_script(record, triggers, name_prefix="t", tail=20):
     return "\n".join(out) + "\n"
 
 
+def frames_for(run):
+    """The model's frame ceiling for a run: twice its trigger latch and
+    some. The scorers' default, 2000 frames, is about 1985 polls of Super
+    Mario Bros., which a hand's minute (3601 latches) passes; the first
+    whole-minute replays (2026-09-19) scored nothing past latch 2000."""
+    m = re.search(r"^TRIG (\d+)", (Path(run) / "script.txt").read_text(), re.M)
+    return 2 * int(m.group(1)) + 600 if m else 2000
+
+
 def score(run, rom, capture, nes):
     """b1-score on one capture of a run: (held, rows, summary line)."""
-    r = subprocess.run([sys.executable, str(HERE / "b1-score.py"), str(run), rom, capture, "--nes", nes], capture_output=True, text=True)
+    r = subprocess.run([sys.executable, str(HERE / "b1-score.py"), str(run), rom, capture, "--nes", nes, "--frames", str(frames_for(run))], capture_output=True, text=True)
     rows = {}
     for line in r.stdout.splitlines():
         m = re.match(r"^\$([0-9a-f]{2})\s+(\d)\s+(\d+)\.\.(\d+)\s+(\d+)\.\.(\d+)\s+\|\s+(\S+)\s+(\S+)\s+(\S+)\s+\|\s+(\S+)\s+(\S+)\s+(\S+)\s+\|\s+(\S+)\s+(\S+)\s+(\S+)(\s+MISS)?", line)
@@ -253,7 +262,7 @@ def score(run, rom, capture, nes):
 
 def picture(run, rom, capture, nes):
     """split-score on one capture of a run: (held, {j: (coarse r, r)}, summary line)."""
-    r = subprocess.run([sys.executable, str(HERE / "split-score.py"), str(run), rom, capture, "--nes", nes], capture_output=True, text=True)
+    r = subprocess.run([sys.executable, str(HERE / "split-score.py"), str(run), rom, capture, "--nes", nes, "--frames", str(frames_for(run))], capture_output=True, text=True)
 
     def read(tag):
         line = next((l for l in r.stdout.splitlines() if tag in l), None)
