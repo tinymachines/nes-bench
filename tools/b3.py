@@ -172,7 +172,23 @@ def cmd_record(a):
         polls = [(n, b) for n, b in polls if n <= a.until]
     if not polls:
         raise SystemExit(f"{log}: no polls")
-    lines = ["# recorded from " + str(a.run), "MODE INJECT", f"SET {polls[0][1]:02x}", "RESET"]
+    # The record's own way in: the power words before its RESET, so a
+    # replay starts from the state the hand's run did. A replay from a
+    # bare RESET started from whatever the last run left, which for the
+    # multicart is its game's bank: the first hand's replays (2026-09-18)
+    # came back up in Super Mario Bros. with no menu, took the menu's
+    # presses as the game's, and matched the model's screens a frame off.
+    pre = []
+    script = Path(a.run) / "script.txt"
+    for l in (script.read_text().splitlines() if script.exists() else []):
+        w = l.split("#")[0].split()
+        if not w:
+            continue
+        if w[0].upper() == "RESET":
+            break
+        if w[0].upper() == "POWER" or (w[0].upper() == "WAIT" and len(w) == 3 and w[2].upper() == "S"):
+            pre.append(" ".join(w))
+    lines = ["# recorded from " + str(a.run)] + pre + ["MODE INJECT", f"SET {polls[0][1]:02x}", "RESET"]
     last = polls[0][1]
     changes = 0
     for n, b in polls:
