@@ -68,6 +68,31 @@ entry is the one that raised it, with its date.
   What was written from the wrong reading (a mask gated by cold-boot
   state, in `mario-dissection.md` and `encyclopedia.md`, and the `[ram]`
   knob's motive) is corrected where it stood.
+- **split-score's synthetic roundtrip read 0.77: CLOSED 2026-09-19,
+  a recovery bug.** The whole-picture correlation of the synthetic
+  record with the model's own frame F read 0.77, tied with F+1, where a
+  clean synthesis should read 1. None of the stand-in scope's knobs
+  mattered (rate, rate error, offset, noise all zero: still 0.7735); an
+  offset search found the picture exact (r 1.0000) four samples over,
+  half a dot. The capture recovery (`ntsc-crt` `recover_nes`) assumed
+  every frame began at subcarrier origin 0, and the NES starts each
+  frame at one of three origins a third of a cycle apart; its burst
+  lock slid a frame that began elsewhere by 4 or 8 samples to make the
+  assumption true, invisible to colour and to flat regions (E2's
+  scores are unchanged) and to its own test, whose chain had been
+  arranged so the anchored frame was origin 0. v0.2.12 measures the
+  origin, locks to it and names it; the synthetic roundtrip reads
+  1.0000 at F, the neighbours 0.62 to 0.71.
+- **The part's picture sits a quarter dot right of the model's: OPEN,
+  a measurement.** `split-score` now prints the registration, the shift
+  that best lines the part's frame up with the model's F: 1 to 3
+  decoded samples (eight to a dot), 2 on average, on 8 records from
+  three sessions (the split, E3's scripted and hand replays), with r
+  0.95 to 0.99 there. The synthetic reads 0. Candidates: the DAC's own
+  timing of a picture edge against its sync edge, or the scope
+  channel's delay on detail against sync. Recorded, not fitted; the
+  bars cartridge's sharp edges under the scope alone (E1) would give
+  it a number free of the game's content.
 - **The vertical sync's first dot: CLOSED 2026-09-18.** Measured on
   the switch-level 2C02 (`2c02`'s `vsync-probe`): the sync begins where
   row 244's horizontal sync begins, dot 280, three broad pulses a row
