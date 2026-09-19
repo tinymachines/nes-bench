@@ -286,6 +286,55 @@ PASS`, about 25 seconds of play, short because the UNO bridge's
 schedule holds 128 changes), then `b3.py record`, and the same replay,
 agreement and bisection on what it wrote.
 
+## E3, a hand: 2026-09-19
+
+The step's gate met on a person's play. The record: `exercise/e3-hand.txt`
+(power cycled, `MODE PASS`, a reset, a minute), the owner on the
+original pad through the bridge, the multicart's menu, the title, and
+1-1 played to the flag (run `20260919-012524`). A minute of play is
+289 changes of the pad's byte; the UNO bridge holds 128, so `b3.py
+record --until 1850` replays the first 31 seconds (127 changes). Two
+replays with captures at 500, 1000, 1500 and 1840 (`runs/e3h2-a`,
+`runs/e3h2-b`), the agreement, and the bisection over 400..1840:
+
+| latch | the part against the model, replay a / b | the two replays |
+|---|---|---|
+| 500 | screen 0.9997 / 0.9993, the title (frames alike) | agree |
+| 1000 | screen 0.9992, frame r 0.917 against neighbours 0.899 / 0.900 | agree |
+| 1500 | screen 0.9993, frame r 0.927 / 0.863 against neighbours 0.666 / 0.657 | agree |
+| 1840 | screen 0.9985, frame r 0.916 against 0.914 (Mario standing) | agree |
+
+The bisection's first replay, at 1840, agreed: no divergence between
+the part and the model in the first half minute of a hand's play of
+Super Mario Bros., latch for latch.
+
+Four things broke first, each found by the hand and none by the typed
+record, which is what the step was for:
+
+1. **The head overran the bridge.** 125 `AT` lines sent back to back
+   overflowed the UNO's serial buffer: some came back `# ?`, some were
+   taken with digits missing (`AT 2219 00` as `at 2210 00`), and the
+   console played a different history from latch 1015 with every check
+   silent. The owner saw it on the screen ("you are running the wrong
+   way"). The head now waits for each line's echo and stops the run on
+   a mismatch (`send_checked`, d6ac715); a schedule-only replay then
+   matched the record on 1965 of 1965 latches.
+2. **The record carried the session before its reset.** `b3.py
+   record` read the bridge's whole log; it now starts at the bridge's
+   `# reset`.
+3. **The replay started from the wrong place.** A replay from a bare
+   `RESET` came back up in whatever bank the run before left, which
+   after a game is the game: Super Mario Bros. restarted without the
+   menu, the menu's presses went to the game, the screens matched the
+   model's a frame off and the bisection walked to latch 1 (`runs/e3h-*`,
+   void). Seen by dumping the part's frame at latch 142
+   (`split-score DUMP=`): 1-1 where the model showed the menu. A record
+   now keeps its run's power words before the reset.
+4. **The window was too short and the schedule too small.** Twenty-five
+   seconds ended on the title; a minute is more than the UNO holds, so
+   `--until` replays a prefix. The whole minute needs the C6 bridge's
+   2048 entries or a denser schedule on the UNO.
+
 ## Programme 1: the virtual stack tuned to the part
 
 The model is not a picture of the console; it is the console's chips at
@@ -478,6 +527,7 @@ taken apart with them: `mario-dissection.md`, and encyclopedia entries
 | the trigger and the capture | hold; the decode through `ntsc-crt` |
 | the model's trace, the recorded bus, windows on the die's pages | hold (T0 to T3) |
 | the comparators | `compare-logs.py` and `b1-score.py` have met the part (E2, twice), `b3.py` too (E3's machinery, 2026-09-18, on a typed record); the terminated capture is still E1's |
+| E3 | met 2026-09-19 on a hand's play: two replays agree, the part agrees with the model through the first half minute, no divergence (section above) |
 | E2 | played 2026-09-18, twice: the first failing region named (`$17`, every axis), the hue miss repeatable to 0.1 deg, the luma miss one scope level wide (section above) |
 | the calibration cartridge | the model side done, the part side waits on the flash chips |
 | the knobs file | built 2026-09-18: `tools/knobs.py`, `nes-console/src/knobs.rs`, two tables with sources, refusals by name, the alignment knob proven to reach the scheduler (Programme 1) |
