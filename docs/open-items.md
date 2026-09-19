@@ -113,6 +113,21 @@ entry is the one that raised it, with its date.
   which on a scrolling game absorbs the difference being measured, and
   `MUTATE_FRAME=1` went green; the alignment is fitted only where no
   candidate is in dispute.
+- **Where inside a CPU cycle the console hands a cartridge its /IRQ:
+  OPEN, a measurement.** The console gained MMC3 on 2026-09-20 (nes-bus
+  0.1.3), and blargg's `4-scanline_timing` measures a cartridge
+  interrupt to PPU clock accuracy. The board's count and its place are
+  right: `2-details` counts the 241 clocks of a frame and passes, a
+  cartridge written for the purpose reads 241 a frame from outside, and
+  the rise sits on dot 261, where the switch-level 2C02's own
+  `p3-fetch-probe` puts the first sprite pattern fetch. What the ROM
+  fails on is the last dot or two: held back by one CPU half-cycle it
+  still reads the interrupt as early, and by two it reads it as late,
+  so the console presents /IRQ somewhere inside a half-cycle of where
+  the part does and no whole number of half-cycles lands on it. It
+  costs no game a line (a split is 341 dots wide). Closes with: the
+  same question the 6502 repo's `brk-nmi-probe` answered for NMI, asked
+  of the cartridge's pin.
 - **The part's colour phase is a neighbouring frame's: OPEN.** With the
   frame settled by content, the same records still read the part's
   colour phase closer to the model's F-1 and F+1 than to F: 0.100 and
