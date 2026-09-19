@@ -331,9 +331,36 @@ record, which is what the step was for:
    (`split-score DUMP=`): 1-1 where the model showed the menu. A record
    now keeps its run's power words before the reset.
 4. **The window was too short and the schedule too small.** Twenty-five
-   seconds ended on the title; a minute is more than the UNO holds, so
-   `--until` replays a prefix. The whole minute needs the C6 bridge's
-   2048 entries or a denser schedule on the UNO.
+   seconds ended on the title; a minute is more than the UNO held, so
+   `--until` replayed a prefix.
+
+**The whole minute, the same night.** The UNO's schedule was packed
+(`bench-v1b-uno.md`, "How the bridge works": two-byte entries and the
+sketch's strings in flash, 600 entries where 128 fitted, the stack's
+room measured), and the hand's run replayed to the flag: all 289
+changes, 3601 latches (`exercise/e3-replay-full.txt`, `runs/e3f-a`,
+`runs/e3f-b`).
+
+| latch | the part against the model, replay a / b | the two replays |
+|---|---|---|
+| 1000 | screen 0.9992, frame r 0.862 / 0.917 against neighbours 0.848 / 0.900 | agree |
+| 2000 | screen 0.9989, frame r 0.917 against 0.735 | agree |
+| 3000 | screen 0.9985 / 0.9982, frame r 0.953 / 0.909 against 0.753 / 0.810 | agree |
+| 3580 | screen 0.9988 / 0.9992, the flag (frames alike) | agree |
+
+The bisection over 400..3580 agreed at its first replay: no divergence
+between the part and the model across a minute of a person playing
+1-1 to the flag. Three more things broke on the way, all in the tools:
+the model's frame ceiling (2000 frames, about 1985 polls) scored
+nothing past latch 2000 until `b3.py` sized it to the latch; loading
+290 echoed lines took 15 seconds against a running console, so the
+replay's `TRIG 1000` fired at latch 1060 and two captures of the game
+60 frames on read as a divergence (the head now holds the console in
+reset while a replay loads, and refuses a trigger whose latch has
+passed); and the head once missed the request to start a run, which
+`b3.py` now asks about before asking again. `agree` compares the two
+replays by the frame each lands on, since their luma differs by the
+console's warmth.
 
 ## Programme 1: the virtual stack tuned to the part
 
@@ -527,7 +554,7 @@ taken apart with them: `mario-dissection.md`, and encyclopedia entries
 | the trigger and the capture | hold; the decode through `ntsc-crt` |
 | the model's trace, the recorded bus, windows on the die's pages | hold (T0 to T3) |
 | the comparators | `compare-logs.py` and `b1-score.py` have met the part (E2, twice), `b3.py` too (E3's machinery, 2026-09-18, on a typed record); the terminated capture is still E1's |
-| E3 | met 2026-09-19 on a hand's play: two replays agree, the part agrees with the model through the first half minute, no divergence (section above) |
+| E3 | met 2026-09-19 on a hand's play, the whole minute to the flag: two replays agree, the part agrees with the model at every capture, no divergence (section above) |
 | E2 | played 2026-09-18, twice: the first failing region named (`$17`, every axis), the hue miss repeatable to 0.1 deg, the luma miss one scope level wide (section above) |
 | the calibration cartridge | the model side done, the part side waits on the flash chips |
 | the knobs file | built 2026-09-18: `tools/knobs.py`, `nes-console/src/knobs.rs`, two tables with sources, refusals by name, the alignment knob proven to reach the scheduler (Programme 1) |

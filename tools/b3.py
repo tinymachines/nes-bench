@@ -132,7 +132,26 @@ def head_addr(head):
 def run_script(head, script, into):
     """Play a script on the head, wait, fetch: the run's directory."""
     host, port = head_addr(head)
-    rep = ask(host, port, {"op": "run", "script": script})
+    # The head can miss a request while it finishes the run before
+    # (2026-09-19: a whole-minute replay died here between two latches).
+    # A request whose reply was lost may still have started the run, so
+    # a timeout asks the status before asking again.
+    rep = None
+    for _ in range(10):
+        try:
+            rep = ask(host, port, {"op": "run", "script": script})
+            break
+        except TimeoutError:
+            try:
+                cur = ask(host, port, {"op": "status"}).get("run")
+            except TimeoutError:
+                cur = None
+            if cur:
+                rep = {"ok": True, "stamp": cur["stamp"]}
+                break
+            time.sleep(2)
+    if rep is None:
+        raise SystemExit("the head did not take the run after ten asks")
     if not rep.get("ok"):
         raise SystemExit(f"the head refused the run: {rep}")
     stamp = rep["stamp"]
@@ -310,6 +329,21 @@ def cmd_agree(a):
         raise SystemExit("the two replays share no trigger latch")
     tol_y, tol_hue, tol_sat_rel, tol_sat_abs = 0.01, 1.0, 0.05, 0.005
     bad = 0
+    if a.by == "picture":
+        # The part against itself by the same reading that calls a capture
+        # the model's: both replays called the model's (or both not), and
+        # by the same frame. B1's region tolerances (--by regions) hold
+        # luma to 0.01, and two replays minutes apart differ by more than
+        # that from the console's warmth alone (exercise.md, the warm-up
+        # series: about 0.01 over the first half hour).
+        for t in triggers:
+            ha, ca, sa = picture(Path(a.replay_a) / ma[str(t)], a.rom, f"t{t}", a.nes)
+            hb, cb, sb = picture(Path(a.replay_b) / mb[str(t)], a.rom, f"t{t}", a.nes)
+            best = lambda c: max((j for j in c if -1 <= j <= 2), key=lambda j: c[j][1], default=None)
+            same = ha == hb and (best(ca) == best(cb) or (ha and hb))
+            print(f"  latch {t}: the two replays {'agree' if same else 'DIFFER'}: a {sa}; b {sb}")
+            bad += not same
+        return 1 if bad else 0
     for t in triggers:
         _, ra, _ = score(Path(a.replay_a) / ma[str(t)], a.rom, f"t{t}", a.nes)
         _, rb, _ = score(Path(a.replay_b) / mb[str(t)], a.rom, f"t{t}", a.nes)
@@ -388,6 +422,8 @@ def main():
     g.add_argument("replay_b")
     g.add_argument("rom")
     g.add_argument("--nes", default=nes_default)
+    g.add_argument("--by", choices=("picture", "regions"), default="picture",
+                   help="the part against itself by the picture's correlation to the model, or by B1's region tolerances")
     b = sub.add_parser("bisect")
     b.add_argument("head")
     b.add_argument("script")

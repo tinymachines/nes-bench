@@ -237,6 +237,15 @@ bridge's `# reset`, so a `WAIT n` after a reset cannot be satisfied by
 the session before (the cold-boot "Start is ignored" finding of the same
 day was exactly that).
 
+Waiting for every echo made loading slow: a whole minute's schedule,
+290 lines, takes about 15 seconds. So the head holds the console in
+reset from `RESET` through the `SET`, `AT`, `TRIG` and `ARM` lines that
+follow and lets it go at the first other word (after half a second at
+least), and latch 0 is still the release. Before that, the replay's
+`TRIG 1000` arrived at latch 1060, the bridge fired it at the next latch
+as it was built to, and two captures of the game 60 frames on read as a
+divergence. A `TRIG` whose latch has already passed now stops the run.
+
 ### The schedule, packed
 
 `AT n hh` means: from latch n on, hold hh, until the next entry. The
