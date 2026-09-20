@@ -182,15 +182,42 @@ entry is the one that raised it, with its date.
   always share an origin that F does not, whatever is drawn. That is
   also why measurement 5 names a parity and not a frame.
 
-  A difference of exactly 4 is **one frame's worth**: somewhere between
-  power-on and the trigger, one side counted a frame short that the
-  other counted full. It is not the seed (`Picture` starts at phase 0,
-  and on the Super Mario Bros. path that seed is right), and it is not
-  the step. **Closes with:** that one frame found on the Duck Hunt path,
-  which runs through the multicart menu and the title where rendering is
-  turned off and on. `split-score`'s measurement 6 is the instrument;
-  the model's short-frame decisions per frame against the part's is the
-  next reading.
+  A difference of 4 is **one frame's worth**: one side counted a frame
+  short that the other counted full. It is not the seed (`Picture`
+  starts at phase 0, and on the Super Mario Bros. path that seed is
+  right) and it is not the step.
+
+  **Swept over the bank the same day, and the divergence is early and
+  rare.** Measurement 6 on eight records, every one of them its own
+  `POWER ON`:
+
+  | latch | path | difference | frames missed |
+  |---|---|---|---|
+  | 8, 60, 124 | the menu's first two seconds | 8 | 2 |
+  | 300, 600 | Super Mario Bros. title and level | 0 | 3, wrapped |
+  | 900, 989, 1020 | Duck Hunt's field | 4 | 4 |
+
+  Three separate power-ons inside each group read the **same** number,
+  so the part's power-on origin is reproducible and this is not a
+  power-on lottery the model could never track. The count accumulates
+  mod 3, which is why it reads 0 in the middle of the range rather than
+  growing: at 300 the model has missed three, not none.
+
+  The shape of it is the finding. The difference is already 8 by frame
+  **8** and has not moved by frame 124, so two divergences happen in the
+  first eight frames and then none for over a hundred; one more arrives
+  by 300 and one more by 900. That points at the moments rendering is
+  turned off and on, and above all at the PPU's warm-up, where the part
+  ignores writes for the first frames and the model may enable rendering
+  a frame earlier or later than the part does.
+
+  **Closes with:** the model's per-frame short/full decisions printed
+  from power-on and counted against what each record's difference
+  requires. `split-score`'s measurement 6 is the instrument and the
+  eight records above are the fixture; what is missing is the model's
+  own frame-by-frame parity, which no probe prints yet. A Duck Hunt
+  record earlier than latch 900 would bracket the fourth divergence, and
+  the bank has none.
 
   Superseded account, kept because the supposition it makes is exactly
   the one the measurement refuted.
