@@ -114,7 +114,7 @@ entry is the one that raised it, with its date.
   `MUTATE_FRAME=1` went green; the alignment is fitted only where no
   candidate is in dispute.
 - **Where inside a CPU cycle the console hands a cartridge its /IRQ:
-  FITTED 2026-09-22, and the fit is what is open.** blargg's
+  FITTED 2026-09-20, and the fit is what is open.** blargg's
   `4-scanline_timing` now passes, and getting there needed two things,
   because that ROM brackets the interrupt's arrival to ONE PPU clock and
   the console was wrong by more than that in two independent ways.
