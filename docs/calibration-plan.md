@@ -110,7 +110,7 @@ the hue stage was.
 test `tests/cal.rs`, `export-testrom cal`, `cal-screens`). What was
 planned as `cal_program()` in `testrom.rs` became its own module with
 a small label-resolving assembler, because eight screens, a timer, a
-pad-driven menu and a ninety-tile strip are too much program to write
+pad-driven menu and a strip of 180 tiles are too much program to write
 as bare bytes and keep honest. Two things the build decided:
 
 - The strip is three rows of fifteen blocks, each two tiles square,

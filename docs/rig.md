@@ -74,7 +74,7 @@ there.
 python3 tools/rig-check.py --pi HOST
 ```
 
-Four checks, each PASS or FAIL with the number that decided it: **light**
+Six checks, each PASS or FAIL with the number that decided it: **light**
 (the whole-board frame's level near the baseline's, the exposure under the
 camera's cap: a dark room pins it at 312, seen 2026-09-15 when the sliding
 bar took the light with it), **still** (the frame differs from the
@@ -86,6 +86,12 @@ held to the map within half a hole; a FAIL means the map is stale), and
 the two **side eyes** (lit, and correlating with their baseline frames at
 0.85 or better). Exit 1 on any FAIL. The frames it took are in
 `captures/rig/`, so a FAIL can be looked at.
+
+Not covered today: the two board checks print their verdict against the
+map only under `--baseline`. A dark frame or a read that finds no board
+still fails in any run, but the half-a-hole comparison is reported on a
+baseline run alone, which is a gap in `tools/rig-check.py` rather than a
+rule about the rig.
 
 When a change was meant (a board added, the camera slid), the sequence is:
 the check (it fails, and says where), the map re-read off the frames it

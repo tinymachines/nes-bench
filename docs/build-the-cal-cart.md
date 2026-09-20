@@ -74,10 +74,10 @@ so nothing has to search the picture for them.
 The family's cartridges are functions that return bytes
 (`testrom.rs`: the pad cartridge, the bars). Those were written as
 bare opcodes with comments, which is fine for a program that fits on
-one screen. This one has a menu, a timer, a ninety-tile strip and eight
-nametables, so `cal.rs` starts with sixty lines of assembler: a `Vec`
-of bytes, a label table, and a list of fix-ups for the branches and
-jumps that name a label before it exists.
+one screen. This one has a menu, a timer, a strip of 180 tiles and
+eight nametables, so `cal.rs` starts with sixty lines of assembler: a
+`Vec` of bytes, a label table, and a list of fix-ups for the branches
+and jumps that name a label before it exists.
 
 ```rust
 a.label("main");
@@ -99,15 +99,17 @@ if the code runs into the data at `$9000`.
 The whole program has one hard constraint: a write to the PPU's memory
 while it is drawing corrupts the picture, so every write has to fit in
 vertical blanking, about 2,270 CPU cycles a frame. The strip alone is
-ninety tiles plus six address writes, the palette sixteen more, the
+180 tile writes plus six address writes, the palette sixteen more, the
 pad eight reads, and the emphasis and scroll a few more: about 1,700
 cycles by counting instructions. There is no room to also decide what
 the tiles should be, so:
 
 - **The NMI handler** does only PPU traffic. It counts the frame,
   reads the pad into `$04`, copies the sixteen palette bytes from
-  `$80` and the ninety strip tiles from `$20` to the PPU, resets the
-  scroll and writes the mask (background on, emphasis bits from `$90`).
+  `$80` and the ninety strip bytes from `$20` to the PPU, each of the
+  three block rows written twice because a block is two tiles tall
+  (180 tiles in all), resets the scroll and writes the mask
+  (background on, emphasis bits from `$90`).
 - **The main loop**, once per NMI, does everything else: notices new
   button presses (Select steps the screen, Start toggles hold), runs
   the timer (a variant every `VARIANT_FRAMES[screen]` frames,

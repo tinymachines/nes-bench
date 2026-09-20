@@ -25,6 +25,8 @@ spec, and three things fall out:
 | U2 | SN74HC165N | the TI bag |
 | U3 | SN74HC595N | the box of 30 |
 | C1..C3 | 100 nF | |
+| R2 | 1 k, CON_CLK to U2's CP | on hand; on the sheet since 2026-09-15 |
+| C4 | 100 pF, CP to GND | on hand; on the sheet since 2026-09-15 |
 | R1 | 100 R (+ two 1 k if EXT TRIG needs a divider) | |
 | J1 | console port header harness | |
 | J2 | the console's other port housing | |
@@ -46,8 +48,11 @@ spec, and three things fall out:
 Timer1 in external-clock mode counts edges synchronously with the
 16 MHz clock, so a pulse must be longer than one CPU cycle (62.5 ns)
 to count; the console's latch pulse is microseconds. There is no
-glitch filter; if the L stream ever shows a latch count that is not
-one per poll, add a 100 pF to ground on D5 and record it.
+glitch filter on this pin; if the L stream ever shows a latch count
+that is not one per poll, add a 100 pF to ground on D5 and record it.
+That is a different pin from the filter the sheet already carries: R2
+and C4 sit on the 165's clock pin, against the spike measured on
+2026-09-15.
 
 ## Firmware, delta from `bridge.ino`
 
@@ -68,11 +73,13 @@ tools need nothing beyond the serial speed.
 - The schedule held 128 entries, not the C6's 2048. This part has
   2 KB of SRAM in total and the compiler is the authority: at 256 it
   reported 2161 bytes of globals, 105 percent, and refused to link; at
-  128 it reported 1521 and left 527 for the stack. Since 2026-09-19 it
-  holds 600, packed (the section below, "How the bridge works"). `tools/b3.py
-  record` refuses a longer record before the run, `tools/fake-bridge.py`
-  is bounded the same way so the failure can be rehearsed, and the head
-  stops any run in which the bridge answers `# schedule full`.
+  128 it reported 1521 and left 527 for the stack (the 2026-09-08
+  build; 1533 and 515 by 2026-09-18, the table below). Since 2026-09-19
+  it holds 600, packed (the section below, "How the bridge works").
+  `tools/b3.py record` refuses a longer record before the run,
+  `tools/fake-bridge.py` is bounded the same way so the failure can be
+  rehearsed, and the head stops any run in which the bridge answers
+  `# schedule full`.
 - There is no `Serial.printf` on the AVR core and avr-libc's printf
   carries no 64-bit conversion, so the C6's `uint64_t` counters and
   `%llu` would have compiled to nothing useful. Every counter here is
@@ -238,8 +245,9 @@ the session before (the cold-boot "Start is ignored" finding of the same
 day was exactly that).
 
 Waiting for every echo made loading slow: a whole minute's schedule,
-290 lines, takes about 15 seconds. So the head holds the console in
-reset from `RESET` through the `SET`, `AT`, `TRIG` and `ARM` lines that
+290 lines (289 changes of the byte and the opening `SET`), takes about
+15 seconds. So the head holds the console in reset from `RESET` through
+the `SET`, `AT`, `TRIG` and `ARM` lines that
 follow and lets it go at the first other word (after half a second at
 least), and latch 0 is still the release. Before that, the replay's
 `TRIG 1000` arrived at latch 1060, the bridge fired it at the next latch
@@ -416,8 +424,9 @@ the bullets above now say what was built rather than what was planned.
 - The `micros()` field would have broken three tools that require four.
 - The MUTATE jumper and its D4 config pin are not needed; PCINT21 on
   the latch line does it in software.
-- The schedule does not fit and never could; 128 is measured, not
-  chosen, and three places now refuse rather than truncate.
+- The C6's 2048-entry schedule did not fit and never could; 128 was
+  measured, not chosen, and three places now refuse rather than
+  truncate. (Packed to 600 on 2026-09-19: "The schedule, packed".)
 - The 64-bit counters do not exist on this part.
 - The relay modules on hand are 5 V coil parts with opto inputs, so the
   v1 sheet's 3.3 V rail was wrong for them too; both sheets now show

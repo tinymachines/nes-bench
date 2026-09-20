@@ -217,7 +217,8 @@ free, and afterwards the two take it by turns.
 
 ## The head: Raspberry Pi 4
 
-- USB to the ESP32 (power and the serial line protocol).
+- USB to the ESP32 (power and the serial line protocol); on v1b the
+  same cable to the UNO.
 - Ethernet to the LAN the scope is on. The Pi's and the scope's
   addresses live in `bench.local.md`, ignored by git.
 - GPIO17 to the PC817 module's INPUT +, INPUT - to the Pi's GND (the
@@ -233,12 +234,12 @@ free, and afterwards the two take it by turns.
   Four Dupont leads off the header; a 40-pin breakout buys nothing
   here and eats board room (decided 2026-09-10).
 - **No ground wire from the Pi to the console.** The Pi's ground
-  reaches the console through the UNO's USB cable and the bridge, and
+  reaches the console through that USB cable and the bridge, and
   that is the only path there should be. Its two switches touch the
   console only through an LED (the PC817) and a contact (the relay),
   which is why they were chosen: a third wire would discard that
-  isolation and close a second loop (Pi, USB, UNO, port, console,
-  wire, Pi). See Grounds.
+  isolation and close a second loop (Pi, USB, the bridge, port,
+  console, wire, Pi). See Grounds.
 
 ## Grounds
 
@@ -259,8 +260,9 @@ With the meter, before anything is powered through the bridge:
    pull-ups and port buffers, and pins that share nothing beep. The
    first pass on this bench put two port pins on one lead, repeatably,
    and it was the instrument talking, not the cable.
-2. Console on, nothing plugged in: port pin 7 to pin 1 reads 5 V, pin
-   3 and pin 2 read high (idle), pin 4 reads high (pulled up).
+2. Console on, nothing plugged in: port pin 5 to pin 1 reads 5 V (the
+   pinout table above, MEASURED 2026-09-09), pin 2 idles high and pin 3
+   idles low, pin 4 reads high (pulled up).
 3. An original pad on the console's other port, a game running: the
    scope on pin 2 and pin 3 of the used port, to see the latch pulse
    width, the clock pulse width and count, and D0's idle and pressed
@@ -270,8 +272,8 @@ With the meter, before anything is powered through the bridge:
    3.3 V (it should from the datasheet), the pad side gets a second
    74LVC245 and 5 V, and this file says so.
 5. The reset button's pads with the console on: which pad is ground,
-   and the level the other sits at (it should be pulled up); the
-   4N35's emitter goes to the ground side.
+   and the level the other sits at (it should be pulled up); the PC817
+   module's GND goes to the ground side and its OUT to the other.
 6. The 165's QH with OUT0 pulsed by hand and the ESP32 holding a known
    byte: the eight bits in the pad's order on the scope.
 

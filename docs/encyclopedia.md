@@ -88,7 +88,7 @@ fetch can clock the register twice (`pad-dmc`, the nine-clock polls
 
 **The dispatch.** This cartridge's action on the byte is the smallest
 there is: the byte, masked, into palette entry 1, so the picture shows
-what was read. That is entry 1's second half and the seed of entry 3
+what was read. That is entry 1's second half and the seed of entry 7
 (the dispatch from the pad's byte to the action) once a game's is
 x-rayed.
 

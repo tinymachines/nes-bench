@@ -99,8 +99,10 @@ The full three-panel picture, and the reasoning about which stage of
 the model's picture chain is the odd one out, is on the eyes-versus-scope
 page. Rerun there on 2026-09-13 with the CPU and the sprite DMA
 corrected (the section below), the hue numbers came back the same to
-the second decimal and the stray sprite did not come back at all. What this page records is how the third picture became possible:
-a cartridge read correctly, verified against the checksum the reader
+the second decimal and the stray sprite did not come back at all.
+
+What this page records is how the third picture became possible: a
+cartridge read correctly, verified against the checksum the reader
 itself keys on, and a board added to the model so it runs the bytes the
 console runs. The measurement it produced, the model's hue against the
 part with two witnesses, is the bench doing the job it exists for.

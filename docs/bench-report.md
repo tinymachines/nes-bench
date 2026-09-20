@@ -2,9 +2,11 @@
 
 Begun 2026-09-06 as B0's report and grown into the bench's running
 report as B1, B2 and B3 got their tools before the hardware arrived.
-Plan: `docs/bench-plan.md`, first. Nothing here has touched the part
-yet: the bridge is not built. What closed is everything the four
-milestones could close on the machine, each tool with a green run on a
+Plan: `docs/bench-plan.md`, first. Nothing here has met the console
+yet: the bridge is flashed and answering on the Pi (sitting 1,
+2026-09-08, the section below) and not yet joined to the console's
+port. What closed is everything the four milestones could close on the
+machine, each tool with a green run on a
 synthesis and a sabotage run that goes red, and one thing B0 was going to
 measure on the part turned out to be measurable on the die first,
 which changed the model. The sections are in the order they were
@@ -373,10 +375,11 @@ from the record while saying they happened, because a rehearsal against
 a fake is tool development and not bench work.
 
 The record is `docs/lab-notebook.md`, generated from
-`docs/lab-log.jsonl`. It shows every attempt, not the successful ones: a
-step that took three tries is the part of a notebook worth keeping. It
-embeds a photograph once the file is in `docs/lab/` and names it as
-pending until then, so it carries no broken images and forgets nothing.
+`docs/lab-log.jsonl`. It shows every attempt, not only the successful
+ones: a step that took three tries is the part of a notebook worth
+keeping. It embeds a photograph once the file is in `docs/lab/` and
+names it as pending until then, so it carries no broken images and
+forgets nothing.
 
 ## Added 2026-09-08: the first sitting held, and a counter that counted nothing
 

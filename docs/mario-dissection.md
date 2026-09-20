@@ -65,16 +65,16 @@ line and the picture, and ends with the blank, so the handler that
 draws frame 585's picture ran at the end of frame 584. (Lines and dots
 are the PPU's own since 2026-09-18: `dissect.py` had numbered the
 pre-render line 0 and drifted a dot for every dot a rendered odd frame
-skips, which put its lines up to 0.7 high; see "Done on the part".) So
-the blank is spent on the DMA, the VRAM buffer and the sound and pad
-routines; the top of the picture is spent waiting for the sprite-0 hit
-at the bottom of the status bar (lines 16 to 30, the bar being 32 lines
-tall); the scroll for the level is written at line 31, which is the
-split; and the game's own logic runs during the visible frame from line
-31 to about line 89. A frame that loads a column of the next screen
-(frame 615: 26 bytes to `$2490`) puts rendering on at line 252 instead
-of 247 and ends its handler at line 98; the logic's budget is what is
-left of the picture.
+skips, which put its lines up to 0.7 high; see "Done on the part, the
+same night".) So the blank is spent on the DMA, the VRAM buffer and the
+sound and pad routines; the top of the picture is spent waiting for the
+sprite-0 hit at the bottom of the status bar (lines 16 to 30, the bar
+being 32 lines tall); the scroll for the level is written at line 31,
+which is the split; and the game's own logic runs during the visible
+frame from line 31 to about line 89. A frame that loads a column of the
+next screen (frame 615: 26 bytes to `$2490`) puts rendering on at line
+252 instead of 247 and ends its handler at line 98; the logic's budget
+is what is left of the picture.
 
 Over frames 560 to 659: the NMI at line 241 every frame; rendering on
 at 247 (249 with a 4-byte burst, 252 with a column); the `RTI` at 87
@@ -279,8 +279,9 @@ after a reset returned at once and the scope caught the menu before
 the press (from `wait for latch` to `armed` in those runs' logs is the
 three seconds the arm takes; in the one that "took", 12.8 s). With the
 count cleared on the bridge's acknowledgement, the press takes with no
-reset, one and three (runs 193915, 194105, 194257), the poll at the
-title's lines 247 and 249. The account is in `open-items.md`. The
+reset at all, with one and with three (runs 193915, 194105, 194257, the
+number of resets in that order), the poll at the title's lines 247 and
+249. The account is in `open-items.md`. The
 menu's logic read from the model's record stands: a press that arms a
 mask and a release that fires the switch, Select another way.
 

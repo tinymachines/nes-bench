@@ -760,7 +760,7 @@ taken apart with them: `mario-dissection.md`, and encyclopedia entries
 
 ## What is machine today, and the first three moves
 
-| piece | state on 2026-09-17 |
+| piece | state on 2026-09-19 |
 |---|---|
 | the regression, both hands | holds; `scripts/hands-head.sh` and `scripts/hands-manual.sh` |
 | one script, both sides | holds; `SET` and `AT` by latch on the part and in the model's runners |
@@ -782,6 +782,7 @@ capture's window is in it, the hue is not, on purpose); and the x-ray
 diff on the pad cartridge, whose source is ours, so the first
 encyclopedia entry (the poll routine) can be published with its code
 (built, Programme 3, and the second entry x-rayed the multicart's
-Start the same night). All three moves are made; what comes next is
-the regime's own next step, E3, a hand on the pad, and E1 when the
+Start the same night). All three moves are made, and E3 is met
+(2026-09-19, the section above); what comes next is the regime's own
+next step, E4's sweep, once the master clock is probed, and E1 when the
 flash chips arrive.
