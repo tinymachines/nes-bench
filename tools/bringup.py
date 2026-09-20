@@ -58,7 +58,7 @@ HOST_IN_URL = re.compile(r"(?P<scheme>[A-Za-z][A-Za-z0-9+.\-]*://)(?P<host>[^\s/
 
 
 def redact_host(value):
-    """`socket://13.0.0.229:6545` becomes `socket://<pi>:6545`.
+    """`socket://198.51.100.7:6545` becomes `socket://<pi>:6545`.
 
     Strings are rewritten, lists and dicts are walked, everything else is
     handed back as it is, so this can sit over a whole log entry."""
