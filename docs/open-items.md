@@ -211,13 +211,39 @@ entry is the one that raised it, with its date.
   ignores writes for the first frames and the model may enable rendering
   a frame earlier or later than the part does.
 
-  **Closes with:** the model's per-frame short/full decisions printed
-  from power-on and counted against what each record's difference
-  requires. `split-score`'s measurement 6 is the instrument and the
-  eight records above are the fixture; what is missing is the model's
-  own frame-by-frame parity, which no probe prints yet. A Duck Hunt
-  record earlier than latch 900 would bracket the fourth divergence, and
-  the bank has none.
+  **The model renders four frames later than the part, and every
+  rendering window after that costs one more (2026-09-20).** The probe
+  that was missing is `nes-console`'s `origin-walk`: the model's own
+  parity frame by frame, the origin it carries, and every frame where
+  its rendering state changed. Its origin at F agrees with measurement
+  6's model column on all three paths, which is two independent
+  computations of the same number and the reason the rest is worth
+  reading.
+
+  | path | F | the model's rendering changes | extra short frames the part had |
+  |---|---|---|---|
+  | menu | 19 | on at 11 | 2 |
+  | Mario title | 316 | on 11, off 213, on 245 | 3 |
+  | Duck Hunt | 922 | on 11, off 253, on 259, off 623, on 627 | 4 |
+
+  The first divergence is shared by all three and is the largest. The
+  model turns rendering on at frame **11**; two extra short frames can
+  only come from odd frames 7 and 9, so the part was rendering by frame
+  **7** and possibly 6. Nothing gates this in the model: no PPU warm-up
+  is implemented, so frame 11 is where the multicart's own startup code
+  decided it was ready. The part's code decided four frames sooner.
+
+  After that, each rendering-off window costs one more, which is what
+  takes the count from 2 to 3 on the Mario path and to 4 on Duck Hunt.
+  The model's off windows are 32, 6 and 4 frames; one odd frame more
+  than the part's would be enough each time.
+
+  **Closes with:** why the startup wait runs longer on the model. The
+  usual shape is a game polling PPUSTATUS for two vblanks, so the
+  suspects are the vblank flag's power-on state and the first vblank's
+  timing, not the encoder and not the origin. A Duck Hunt record earlier
+  than latch 900 would still bracket the later divergences, and the bank
+  has none.
 
   Superseded account, kept because the supposition it makes is exactly
   the one the measurement refuted.
