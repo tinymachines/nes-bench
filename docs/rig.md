@@ -87,12 +87,6 @@ the two **side eyes** (lit, and correlating with their baseline frames at
 0.85 or better). Exit 1 on any FAIL. The frames it took are in
 `captures/rig/`, so a FAIL can be looked at.
 
-Not covered today: the two board checks print their verdict against the
-map only under `--baseline`. A dark frame or a read that finds no board
-still fails in any run, but the half-a-hole comparison is reported on a
-baseline run alone, which is a gap in `tools/rig-check.py` rather than a
-rule about the rig.
-
 When a change was meant (a board added, the camera slid), the sequence is:
 the check (it fails, and says where), the map re-read off the frames it
 just took (`tools/board-overlay.py --read-boards --frames

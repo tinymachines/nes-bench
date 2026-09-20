@@ -209,9 +209,8 @@ def main():
             continue
         worst, last, n = compare_board(m, trial, name)
         result[name]["read"] = {"worst_px": round(worst, 1), "columns": last, "anchors_compared": n}
-        if a.baseline:
-            check(f"board {name}", worst <= ANCHOR_TOL and last >= 40,
-                  f"read against the map: worst {worst:.0f} px over {n} anchors (tolerance {ANCHOR_TOL}), columns 1 to {last}")
+        check(f"board {name}", worst <= ANCHOR_TOL and last >= 40,
+              f"read against the map: worst {worst:.0f} px over {n} anchors (tolerance {ANCHOR_TOL}), columns 1 to {last}")
 
     # 4. the side eyes
     if not a.no_side:
