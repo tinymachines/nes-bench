@@ -114,20 +114,45 @@ entry is the one that raised it, with its date.
   `MUTATE_FRAME=1` went green; the alignment is fitted only where no
   candidate is in dispute.
 - **Where inside a CPU cycle the console hands a cartridge its /IRQ:
-  OPEN, a measurement.** The console gained MMC3 on 2026-09-20 (nes-bus
-  0.1.3), and blargg's `4-scanline_timing` measures a cartridge
-  interrupt to PPU clock accuracy. The board's count and its place are
-  right: `2-details` counts the 241 clocks of a frame and passes, a
-  cartridge written for the purpose reads 241 a frame from outside, and
-  the rise sits on dot 261, where the switch-level 2C02's own
-  `p3-fetch-probe` puts the first sprite pattern fetch. What the ROM
-  fails on is the last dot or two: held back by one CPU half-cycle it
-  still reads the interrupt as early, and by two it reads it as late,
-  so the console presents /IRQ somewhere inside a half-cycle of where
-  the part does and no whole number of half-cycles lands on it. It
-  costs no game a line (a split is 341 dots wide). Closes with: the
-  same question the 6502 repo's `brk-nmi-probe` answered for NMI, asked
-  of the cartridge's pin.
+  FITTED 2026-09-22, and the fit is what is open.** blargg's
+  `4-scanline_timing` now passes, and getting there needed two things,
+  because that ROM brackets the interrupt's arrival to ONE PPU clock and
+  the console was wrong by more than that in two independent ways.
+
+  The first was the board's, and it is closed: the A12 filter took nine
+  dots of A12 low where the part takes ten. Nine dots is exactly three
+  CPU cycles, so the third falling edge of M2 lands on the rise rather
+  than before it, and nesdev's "remained low FOR three falling edges" is
+  not met. It cost one clock a frame and only with the background at
+  $1000, where A12 falls after the pre-render line's last pattern fetch
+  and rises at line 0's first: a frame came to 242 clocks on alternate
+  frames where the part makes 241. nes-bus 0.1.6, and the console's
+  `mmc3-probe` now runs its own cartridge in either mode so the count
+  reads straight off.
+
+  The second is the console's and is a fit. The cartridge's /IRQ had no
+  delay at all: the level was read at whatever CPU half-cycle came next.
+  It is a LINE, and `CART_IRQ_DELAY` now holds it behind the board by
+  sixteen master half-steps (twelve to a CPU half-cycle, eight to a
+  dot), which is the only grain fine enough for a one-clock bracket.
+  `examples/irq-sweep` runs the ROM at every delay and prints what each
+  reports: the ROM allows thirteen through twenty and no further, and
+  sixteen is the middle of that band and two dots exactly. **Closes
+  with:** a scope on pin 15 against the CPU's phi2 on the bench, which
+  would narrow the band to a number instead of a middle. It costs no
+  game a line either way (a split is 341 dots wide).
+- **MMC3's A12 filter counts dots where the part counts M2's falls:
+  OPEN, and no ROM here can see it.** Ten dots is the value that agrees
+  with the part everywhere blargg looks, but the argument behind it is
+  about a phase: whether three M2 falls fit strictly inside a nine-dot
+  window depends on where the window starts against the CPU's clock. A
+  count of dots cannot express that and a console can, because it owns
+  the alignment. The case that decides it is the pre-render line to line
+  0 boundary with the background at $1000, where the gap is exactly nine
+  dots; every other window in a frame is either two dots or hundreds,
+  nowhere near the edge. **Closes with:** the filter rewritten to count
+  M2's falling edges, held to the same five ROMs, with the alignment
+  swept to show which alignments change the answer and which do not.
 - **The part's colour phase is a neighbouring frame's: OPEN.** With the
   frame settled by content, the same records still read the part's
   colour phase closer to the model's F-1 and F+1 than to F: 0.100 and
