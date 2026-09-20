@@ -12,7 +12,7 @@ The build is v1b, the bridge on an Arduino UNO with everything at
 run it and it walks the build, measuring at each stop.
 
 Before any of it touched hardware the tool was rehearsed against
-stand-ins, 6 attempts between 2026-09-08 and 2026-09-08.
+stand-ins, 6 attempts on 2026-09-08.
 Those are in the log, marked, and are not counted below.
 
 ## Where the build stands
@@ -44,7 +44,7 @@ Those are in the log, marked, and are not counted below.
 
 Photograph pending: `docs/lab/00-uno-bare.jpg`.
 
-**Attempt 2, 2026-09-08 12:41:14**: held. socket://13.0.0.229:6545 opens
+**Attempt 2, 2026-09-08 12:41:14**: held. socket://<pi>:6545 opens
 
 Photograph pending: `docs/lab/00-uno-bare.jpg`.
 

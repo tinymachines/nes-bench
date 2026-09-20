@@ -126,8 +126,11 @@ def render(entries):
     L.append("")
     if rehearsals:
         when = sorted(e["at"][:10] for e in rehearsals)
+        # A range whose ends are the same day is one day, and saying it
+        # twice reads as a broken range rather than as a fact.
+        span = f"on {when[0]}" if when[0] == when[-1] else f"between {when[0]} and {when[-1]}"
         L.append(f"Before any of it touched hardware the tool was rehearsed against")
-        L.append(f"stand-ins, {len(rehearsals)} attempts between {when[0]} and {when[-1]}.")
+        L.append(f"stand-ins, {len(rehearsals)} attempts {span}.")
         L.append("Those are in the log, marked, and are not counted below.")
         L.append("")
 
@@ -189,7 +192,11 @@ def render(entries):
         for i, a in enumerate(steps[s], 1):
             when = a["at"].replace("T", " ")
             lead = f"**{when}**" if len(steps[s]) == 1 else f"**Attempt {i}, {when}**"
-            L.append(f"{lead}: {MARK[a['state']]}. {a['summary']}")
+            # The summary can quote the bridge's URL, which can name the head
+            # on the LAN. Redacting here as well as in the log means the
+            # entries recorded before that rule existed are rendered redacted
+            # too, rather than only the runs after it. See bringup.redact_host.
+            L.append(f"{lead}: {MARK[a['state']]}. {b.redact_host(a['summary'])}")
             L.append("")
             st = a.get("data", {}).get("console_state")
             if st and st != "not recorded":

@@ -42,6 +42,35 @@ ROOT = Path(__file__).resolve().parent.parent
 LOG = ROOT / "docs" / "lab-log.jsonl"
 PHOTOS = ROOT / "docs" / "lab"
 
+# ------------------------------------------------------------- redaction
+# The bridge can be a URL naming the head on the LAN, and the log this
+# tool writes is rendered into two pages the public site publishes in two
+# languages. A serial device path is harmless; a hostname or an address is
+# not. `socket://<pi>:6545` is already the form the build guide tells a
+# reader to type, so that is the form the record keeps too. The real
+# address belongs where the runbook keeps such things, not in a file that
+# is rendered into a page.
+#
+# One copy of the rule: `tools/lab-notebook.py` and `tools/build-guide.py`
+# call this on the way to the page, so the entries already in the log are
+# redacted as they are rendered and not only from the next run onward.
+HOST_IN_URL = re.compile(r"(?P<scheme>[A-Za-z][A-Za-z0-9+.\-]*://)(?P<host>[^\s/:]+)")
+
+
+def redact_host(value):
+    """`socket://13.0.0.229:6545` becomes `socket://<pi>:6545`.
+
+    Strings are rewritten, lists and dicts are walked, everything else is
+    handed back as it is, so this can sit over a whole log entry."""
+    if isinstance(value, str):
+        return HOST_IN_URL.sub(lambda m: m.group("scheme") + "<pi>", value)
+    if isinstance(value, list):
+        return [redact_host(v) for v in value]
+    if isinstance(value, dict):
+        return {k: redact_host(v) for k, v in value.items()}
+    return value
+
+
 # ------------------------------------------------------------------ output
 BOLD, DIM, GREEN, RED, YELLOW, CYAN, OFF = "\033[1m", "\033[2m", "\033[32m", "\033[31m", "\033[33m", "\033[36m", "\033[0m"
 if not sys.stdout.isatty():
@@ -447,8 +476,7 @@ STEPS = [
       photos=["05-bridge-joined.jpg", "05-console-running.jpg"],
       replaces="the plan's B0 gate 1, which is the first thing the part gets to answer"),
     S("5.2", "Joined", "A pressed button reaches the console through the bridge",
-      ["Same setup. You will be asked to hold a button; the game should see it,",
-       "and the bridge's log should carry the same byte at the same latches."],
+      ["Same setup. You will be asked to hold a button; the game should see it, and the bridge's log should carry the same byte at the same latches."],
       "bridge_pass_through",
       photos=["05-button-through.jpg"]),
 
@@ -917,9 +945,12 @@ def read_log():
 
 
 def append(entry):
+    # The one place the log is written, so the one place the host has to
+    # be taken out of it. Doing it here rather than in each check means a
+    # check added later cannot put an address back in by accident.
     LOG.parent.mkdir(parents=True, exist_ok=True)
     with LOG.open("a") as f:
-        f.write(json.dumps(entry) + "\n")
+        f.write(json.dumps(redact_host(entry)) + "\n")
 
 
 def latest_state():

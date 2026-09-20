@@ -449,20 +449,38 @@ def chip_refs(sheet="bench-v1b"):
     return sorted(seen, key=lambda r: (r[0], int(r[1:]) if r[1:].isdigit() else 0))
 
 
+def part_name(part):
+    """A part as a heading should read it. The sheets write a part number
+    and its supply note with two spaces between them, which is the
+    drawing's own spacing for a second line under the part number and is
+    not a sentence's: `74HCT04  at +5V` is one part, spelled with one
+    space here."""
+    return " ".join(part.split())
+
+
 def md_table(headers, rows):
     out = ["| " + " | ".join(headers) + " |", "|" + "---|" * len(headers)]
     out += ["| " + " | ".join(r) + " |" for r in rows]
     return "\n".join(out)
 
 
+HEAD_STEPS = ("6.2", "6.3")
+
+
 def steps_section():
-    """Bring-up 6.2 and 6.3 as the tool runs them, from its own table."""
+    """Bring-up 6.2 and 6.3 as the tool runs them, from its own table.
+
+    One command per step, off the same tuple the sections below are
+    written from, so the block cannot print fewer runs than the section
+    covers."""
     bu = load(ROOT / "tools" / "bringup.py", "bringup")
     L = ["## The two steps, as the bring-up tool runs them", "",
-         "From `tools/bringup.py`, the same table `docs/build-guide.md` is written from. On the Pi:",
-         "", "```", "cd ~/nes-bench && yes '' | python3 tools/bringup.py --step 6.2 --bridge /dev/ttyACM0 --scope SCOPE --operator NAME",
-         "```", ""]
-    for sid in ("6.2", "6.3"):
+         "From `tools/bringup.py`, the same table `docs/build-guide.md` is written from. "
+         "One command each, on the Pi:", "", "```"]
+    L += [f"cd ~/nes-bench && yes '' | python3 tools/bringup.py --step {sid} "
+          "--bridge /dev/ttyACM0 --scope SCOPE --operator NAME" for sid in HEAD_STEPS]
+    L += ["```", ""]
+    for sid in HEAD_STEPS:
         st = bu.BY_ID[sid]
         L += [f"**{sid} {st['title']}**", ""]
         L += [f"- {d}" for d in st["do"]]
@@ -478,14 +496,15 @@ def render(sheet="bench-v1b"):
              "(`bench-v1b-3.svg`); the breakout leads come from the bring-up tool's own table; the",
              "only authored text is what each module pin does on the part, kept in one place in",
              "that tool and refused if the schematic names a pin differently. Which two ways of",
-             "the breakout are the reset pair is step 6.2's measurement and is not written here.",
+             "the breakout are the reset pair was metered at the console on 2026-09-17, and the",
+             "J3 table below is where that reading is written down.",
              "The same wiring at right angles: `wiring-v1b-head.svg`.", "",
              f"Sheet: `{sheet}`.", ""]
         for title, note, headers, rows in pinmap(sheet):
             L += [f"## {title}", "", note, "", md_table(headers, rows), ""]
         for ref in chip_refs(sheet):
             r, part, what, headers, rows = chip_sheet(ref, sheet)
-            L += [f"## {r}: {part}", "", what, "", md_table(headers, rows), ""]
+            L += [f"## {r}: {part_name(part)}", "", what, "", md_table(headers, rows), ""]
         L += steps_section()
         return "\n".join(L).rstrip() + "\n"
     L = ["# Cheat sheet: the breakouts pin by pin, and every pin of every chip", "",
@@ -502,7 +521,7 @@ def render(sheet="bench-v1b"):
         L += [f"## {title}", "", note, "", md_table(headers, rows), ""]
     for ref in chip_refs(sheet):
         r, part, what, headers, rows = chip_sheet(ref, sheet)
-        L += [f"## {r}: {part}", "", what, "", md_table(headers, rows), ""]
+        L += [f"## {r}: {part_name(part)}", "", what, "", md_table(headers, rows), ""]
     return "\n".join(L).rstrip() + "\n"
 
 

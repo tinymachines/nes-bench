@@ -76,7 +76,7 @@ As wired 2026-09-15, each probe's landing given as a board column so it can be p
 | CH4 | CON_D0 | U2 pin 9: right board column 18, the rails side (rows a to e) | the byte the console reads back, pressed LOW: high through the eight bits for 00, low for ff (MEASURED 2026-09-15 23:00, which is how the two probes were told apart) |
 | EXT TRIG | none | not on this scope | the DS1054Z has no external trigger input (MEASURED 2026-09-15: source EXT refused; the rear BNC is Trig Out) |
 
-## U1: 74HCT04  at +5V
+## U1: 74HCT04 at +5V
 
 Hex inverter, six independent gates. HCT inputs switch at TTL levels (high from 2.0 V), which is why it sits on the console's NMOS OUT0 line: OUT0 high loads the register, so its inversion is the 165's active-low load. One gate is used. The other five inputs are CMOS and must not float: tie each spare A input to GND and leave its Y open.
 
@@ -97,7 +97,7 @@ Hex inverter, six independent gates. HCT inputs switch at TTL levels (high from 
 | 13 | 6A | gate 6 input | the GND rail |
 | 14 | VCC | supply, 4.5 to 5.5 V; 100 nF to GND at the pin | the +5V rail |
 
-## U2: 74HC165  at +5V (the TI bag)
+## U2: 74HC165 at +5V (the TI bag)
 
 8-bit parallel-in, serial-out shift register: the pad's 4021 in a 74 package. While /PL is low the eight inputs A to H are copied into the stages as they are (it is transparent, so the byte must be settled before the load). With /PL high, each rising edge of CP shifts one place toward QH and pulls DS in at A. QH shows stage H, so H is the first bit out and A the eighth, which is why the pad's order A, B, Select, Start, Up, Down, Left, Right is wired H down to A. /CE high holds the clock off.
 
@@ -120,7 +120,7 @@ Hex inverter, six independent gates. HCT inputs switch at TTL levels (high from 
 | 15 | /CE | clock enable, active low: high inhibits CP | the GND rail |
 | 16 | VCC | supply, 2 to 6 V; 100 nF to GND at the pin | the +5V rail |
 
-## U3: 74HC595  at +5V
+## U3: 74HC595 at +5V
 
 8-bit serial-in, parallel-out shift register with an output latch. Each rising edge of SRCLK shifts SER in at QA's stage; the stages are invisible until a rising edge of RCLK copies all eight into the output latch at once, which is what makes a byte atomic to the console: the 165 never sees a half-written byte. /OE low turns the outputs on; /SRCLR low clears the shift stages (not the latch). QH' is the eighth stage, for chaining a second 595.
 

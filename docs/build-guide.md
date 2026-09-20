@@ -12,8 +12,8 @@ that fails stops the run and tells you which one to repeat.
 The running record, with every attempt and the photographs, is
 [the lab notebook](lab-notebook.md). The working document for
 whichever cycle is open, and the place the operator's own
-observations are written down, is in
-[procedures](procedures/README.md).
+observations are written down, is in `docs/procedures/` in this
+repository.
 
 ## Where it stands
 
@@ -45,8 +45,9 @@ Nothing else needs it, and nothing else should carry it.
 On the desk, over the five sittings: a meter, two scope probes, the
 UNO and a USB cable, the console open with a game in it, two original
 pads, the breadboard, a 74HCT04, a 74HC165, a 74HC595, three 100 nF
-capacitors, a 100 ohm resistor, a BNC lead to the scope's rear EXT
-TRIG, the PC817 module, the relay module, and the Pi.
+capacitors, a 100 ohm resistor, a probe or a BNC lead to carry the
+bridge's trigger into the scope's CH1, the PC817 module, the relay
+module, and the Pi.
 
 ## Sitting 1: Instruments
 
@@ -81,7 +82,7 @@ Photographs:
 
 - `docs/lab/00-uno-bare.jpg`  (wanted)
 
-> Last run 2026-09-08 12:41:14: held. socket://13.0.0.229:6545 opens
+> Last run 2026-09-08 12:41:14: held. socket://<pi>:6545 opens
 
 ### 0.3  The bridge firmware is on the UNO and answers STATUS  (held)
 
@@ -249,8 +250,7 @@ Photographs:
 
 ### 5.2  A pressed button reaches the console through the bridge
 
-- Same setup. You will be asked to hold a button; the game should see it,
-- and the bridge's log should carry the same byte at the same latches.
+- Same setup. You will be asked to hold a button; the game should see it, and the bridge's log should carry the same byte at the same latches.
 
 Then it checks the game reacts and the log carries the byte.
 
@@ -271,7 +271,7 @@ python3 tools/bringup.py --session 5
 - UNO D3 through a 100 ohm resistor to the scope's CH1 (a probe, or a BNC lead): the DS1054Z has no external trigger input, MEASURED 2026-09-15, the source EXT is refused.
 - CH1 is the master clock's channel later; until the mainboard is probed it is free, and afterwards TRIG and the clock take it by turns.
 
-Then it arms the scope on EXT TRIG and fires the bridge's trigger at a latch.
+Then it arms the scope on CH1 and fires the bridge's trigger at a latch.
 
 Photographs:
 

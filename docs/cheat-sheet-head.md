@@ -5,7 +5,8 @@ list and each module's bench column are read out of the schematic's third sheet
 (`bench-v1b-3.svg`); the breakout leads come from the bring-up tool's own table; the
 only authored text is what each module pin does on the part, kept in one place in
 that tool and refused if the schematic names a pin differently. Which two ways of
-the breakout are the reset pair is step 6.2's measurement and is not written here.
+the breakout are the reset pair was metered at the console on 2026-09-17, and the
+J3 table below is where that reading is written down.
 The same wiring at right angles: `wiring-v1b-head.svg`.
 
 Sheet: `bench-v1b-head`.
@@ -77,10 +78,11 @@ A 5 V coil relay on a carrier with an opto-isolated input, driving the coil's tr
 
 ## The two steps, as the bring-up tool runs them
 
-From `tools/bringup.py`, the same table `docs/build-guide.md` is written from. On the Pi:
+From `tools/bringup.py`, the same table `docs/build-guide.md` is written from. One command each, on the Pi:
 
 ```
 cd ~/nes-bench && yes '' | python3 tools/bringup.py --step 6.2 --bridge /dev/ttyACM0 --scope SCOPE --operator NAME
+cd ~/nes-bench && yes '' | python3 tools/bringup.py --step 6.3 --bridge /dev/ttyACM0 --scope SCOPE --operator NAME
 ```
 
 **6.2 The reset optocoupler pulses the console**

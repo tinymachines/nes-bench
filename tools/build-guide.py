@@ -32,7 +32,7 @@ CHECK_SAYS = {
     "bridge_pad_follows": "asks you to hold three buttons and checks each one reaches the bridge's pad byte",
     "bridge_eight_clocks": "listens to the bridge for twenty seconds and prints the clocks-per-poll histogram",
     "bridge_pass_through": "checks the game reacts and the log carries the byte",
-    "trigger_reaches_scope": "arms the scope on EXT TRIG and fires the bridge's trigger at a latch",
+    "trigger_reaches_scope": "arms the scope on CH1 and fires the bridge's trigger at a latch",
     "reset_pulse": "records which reset pad is ground and checks the pulse resets the console",
     "power_relay": "refuses unless the contact is on the adapter side, then checks it switches",
 }
@@ -82,8 +82,11 @@ def render():
     L.append("The running record, with every attempt and the photographs, is")
     L.append("[the lab notebook](lab-notebook.md). The working document for")
     L.append("whichever cycle is open, and the place the operator's own")
-    L.append("observations are written down, is in")
-    L.append("[procedures](procedures/README.md).")
+    # No link on the procedures: they are not part of the rendered tree,
+    # and a relative one resolves against the page's own path, which on
+    # the site is a directory deeper than this repository is.
+    L.append("observations are written down, is in `docs/procedures/` in this")
+    L.append("repository.")
     L.append("")
 
     # Where things stand, per sitting.
@@ -125,8 +128,11 @@ def render():
     L.append("On the desk, over the five sittings: a meter, two scope probes, the")
     L.append("UNO and a USB cable, the console open with a game in it, two original")
     L.append("pads, the breadboard, a 74HCT04, a 74HC165, a 74HC595, three 100 nF")
-    L.append("capacitors, a 100 ohm resistor, a BNC lead to the scope's rear EXT")
-    L.append("TRIG, the PC817 module, the relay module, and the Pi.")
+    # The DS1054Z has no external trigger input, MEASURED 2026-09-15, so
+    # step 6.1's lead goes to CH1 and the list has to ask for that lead.
+    L.append("capacitors, a 100 ohm resistor, a probe or a BNC lead to carry the")
+    L.append("bridge's trigger into the scope's CH1, the PC817 module, the relay")
+    L.append("module, and the Pi.")
     L.append("")
 
     for n, title, desc, ids in b.SESSIONS:
@@ -182,7 +188,10 @@ def render():
                     L.append(f"- `docs/lab/{ph}`" + ("  (pushed)" if here else "  (wanted)"))
                 L.append("")
             if e:
-                L.append(f"> Last run {e['at'].replace('T', ' ')}: {mark}. {e['summary']}")
+                # The quoted run goes through the same redaction the log is
+                # written with, so the entries recorded before that rule
+                # existed are published redacted too. See bringup.redact_host.
+                L.append(f"> Last run {e['at'].replace('T', ' ')}: {mark}. {b.redact_host(e['summary'])}")
                 L.append("")
 
     L.append("## When a sitting is done")
