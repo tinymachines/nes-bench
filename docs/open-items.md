@@ -133,14 +133,17 @@ entry is the one that raised it, with its date.
   The second is the console's and is a fit. The cartridge's /IRQ had no
   delay at all: the level was read at whatever CPU half-cycle came next.
   It is a LINE, and `CART_IRQ_DELAY` now holds it behind the board by
-  sixteen master half-steps (twelve to a CPU half-cycle, eight to a
+  seventeen master half-steps (twelve to a CPU half-cycle, eight to a
   dot), which is the only grain fine enough for a one-clock bracket.
   `examples/irq-sweep` runs the ROM at every delay and prints what each
-  reports: the ROM allows thirteen through twenty and no further, and
-  sixteen is the middle of that band and two dots exactly. **Closes
-  with:** a scope on pin 15 against the CPU's phi2 on the bench, which
-  would narrow the band to a number instead of a middle. It costs no
-  game a line either way (a split is 341 dots wide).
+  reports: the ROM allows fourteen through twenty-one and no further,
+  and seventeen is the middle. That is more than half a CPU cycle,
+  which is far too long for a wire from pin 15, so most of what it
+  stands in for is likely where inside its cycle the CORE samples IRQ
+  rather than anything the cartridge does. **Closes with:** a scope on
+  pin 15 against the CPU's phi2 on the bench, which would narrow the
+  band to a number and say which end of the path the slack belongs to.
+  It costs no game a line either way (a split is 341 dots wide).
 - **MMC3's A12 filter counts dots where the part counts M2's falls:
   OPEN, and no ROM here can see it.** Ten dots is the value that agrees
   with the part everywhere blargg looks, but the argument behind it is
