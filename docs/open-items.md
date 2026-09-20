@@ -94,6 +94,16 @@ entry is the one that raised it, with its date.
   bars cartridge's sharp edges under the scope alone (E1) would give
   it a number free of the game's content.
   Duck Hunt's field (2026-09-19, `exercise.md`) reads 4 samples.
+  **Narrowed 2026-09-20: Duck Hunt's 4 samples is the subcarrier
+  origin, not this.** `split-score`'s measurement 6 names the origin on
+  both sides, and on all three Duck Hunt records the part's is 4 samples
+  ahead of the model's while the registration reads exactly 4; on the
+  Super Mario Bros. split the origins agree and the registration reads
+  2. So the two are not one quantity, which is what the item below
+  supposed: they coincide only where the origin is adrift. What is left
+  here is the 2 samples that remain when the origins agree, and the 8
+  records' 1 to 3 should be re-read with measurement 6 beside them to
+  see which of them were carrying an origin difference too.
 - **Duck Hunt's field matches the model's F-1 and F+1, not F: CLOSED
   2026-09-20. The frame is F; what was read is the colour phase.**
   The field at latch 900 is still dot for dot from picture 920 to 929
@@ -156,7 +166,36 @@ entry is the one that raised it, with its date.
   nowhere near the edge. **Closes with:** the filter rewritten to count
   M2's falling edges, held to the same five ROMs, with the alignment
   swept to show which alignments change the answer and which do not.
-- **The part's colour phase is a neighbouring frame's: OPEN.** With the
+- **The part's colour phase is a neighbouring frame's: CAUSE NAMED
+  2026-09-20, and what is left is one frame.** The part's subcarrier
+  origin is **4 samples ahead of the model's on every Duck Hunt record
+  and equal on the Super Mario Bros. split**, and the difference
+  survives the two-frame step on all four, so it is a standing offset
+  rather than a phase carried wrongly. On the still field and the late
+  duck the part's origin equals the model's at F-1 and F+1 exactly,
+  which is why those frames scored better: the colour phase was reading
+  the origin, as the entry below supposed, and now says so in a number.
+
+  The mechanism is in `ntsc-grid`: a full frame advances the origin 4
+  samples and a short one 8, so the sequence alternates between two of
+  the three origins and never visits the third. F-1 and F+1 therefore
+  always share an origin that F does not, whatever is drawn. That is
+  also why measurement 5 names a parity and not a frame.
+
+  A difference of exactly 4 is **one frame's worth**: somewhere between
+  power-on and the trigger, one side counted a frame short that the
+  other counted full. It is not the seed (`Picture` starts at phase 0,
+  and on the Super Mario Bros. path that seed is right), and it is not
+  the step. **Closes with:** that one frame found on the Duck Hunt path,
+  which runs through the multicart menu and the title where rendering is
+  turned off and on. `split-score`'s measurement 6 is the instrument;
+  the model's short-frame decisions per frame against the part's is the
+  next reading.
+
+  Superseded account, kept because the supposition it makes is exactly
+  the one the measurement refuted.
+
+  With the
   frame settled by content, the same records still read the part's
   colour phase closer to the model's F-1 and F+1 than to F: 0.100 and
   0.107 against 0.183 on the still field, 0.113 and 0.117 against 0.121
