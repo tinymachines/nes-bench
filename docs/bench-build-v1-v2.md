@@ -98,7 +98,7 @@ hides:
 | 1 | relay module, 3V3 logic input, contacts rated above the adapter's current | | K1, VCC from the Pi's 3V3 pin |
 | 3 | 100 nF ceramic | | C1..C3 |
 | 1 | 100 R | | R1, trigger |
-| 1 | BNC to open-end cable | | to EXT TRIG |
+| 1 | BNC to open-end cable, or a probe | | the trigger into CH1 |
 | 1 | breakout or crimp pins for the controller harness header | | J1 |
 | 1 | second controller-port housing with harness (the console's own) | yes | J2 |
 | | breadboard or perfboard, 22 AWG wire, USB-C cable C6 to Pi | | |
@@ -132,8 +132,9 @@ been measured.
    the wire links from step 4), CON_OUT0 and CON_CLK into U3, GND
    between the planes. Console on, `MODE PASS`, a game: the L stream
    appears, 8 clocks per latch. That is B0's first check.
-7. **Trigger.** R1 to EXT TRIG. `TRIG 300` and the scope's single
-   shot fires. Sign of the horizontal offset gets settled here and
+7. **Trigger.** R1 to the scope's CH1: the DS1054Z has no external
+   trigger input (MEASURED 2026-09-15, the source EXT is refused).
+   `TRIG 300` and the scope's single shot fires. Sign of the horizontal offset gets settled here and
    written to the capture's `.toml`.
 8. **Reset.** Meter the reset button's two pads (which is ground,
    what the other sits at). OK1's OUT to the pulled-up pad, GND to the
