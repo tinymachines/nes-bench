@@ -6,10 +6,19 @@ on the breadboard, and two resistors. It pairs to a phone, a tablet or
 a laptop as a plain BLE keyboard, which is what lets a forty-year-old
 controller drive a browser emulator with no app at either end.
 
-Written 2026-09-21. **Nothing here has been built or measured.** The
-firmware compiles and its mapping is tested on the desk; the wiring
-below has never had current in it, and one thing it rests on has been
+Written 2026-09-21, updated 2026-09-22.
+
+**Nothing here has been built, and nothing about the circuit has been
+measured.** The firmware compiles and its key mapping is tested on the
+desk, but the wiring below has never had current in it, no pad has been
+wired to it, no host has paired it, and one thing it rests on has been
 an open measure-first item since 2026-09-07.
+
+What HAS been measured is the board, not the circuit: which part it is,
+where it sits on the breadboard, and the order of its header pins. Each
+of those says where it was read and by what. The two are kept apart on
+purpose, because a page that mixes a measurement of the part with a
+plan for a circuit launders one into the other.
 
 ## Why this and not the adapter sheet
 
@@ -57,8 +66,8 @@ from.
 
 ## The wiring, drawn to build from
 
-Two drawings of one circuit, both derived from the same netlist so
-neither can show a wire the other does not.
+Three drawings of one circuit, all derived from the same netlist, so no
+one of them can show a wire the others do not.
 
 ![pad-ble v1: the schematic, two pads into the C6 with what the board can and cannot do](pad-ble.svg)
 
@@ -248,7 +257,9 @@ host as well, because doing only one is the failure.
 
 - The adapter has met no pad and no host.
 - An original pad at 3V3 is unproven (measure-first item 4).
-- The lead colours disagree between the committed table and the bench.
+- The bench eye cannot read a devkit's silkscreen, which is why the
+  header order above was read by hand. It will be true of the next
+  devkit too.
 - The latency is unmeasured. Worth measuring here rather than guessing,
   because this bench can: the bridge stamps every poll with its latch
   index, so the number is one subtraction of `head.log` against
