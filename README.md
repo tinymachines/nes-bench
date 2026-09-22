@@ -114,7 +114,10 @@ register's job, as it is in the pad.
   the descriptor the way a host parses it; everything else in there
   needs the part and has met no pad. The build document, with both
   drawings, the wire list and the two measure-first items it rests on,
-  is `docs/pad-ble-build.md`.
+  is `docs/pad-ble-build.md`, with three drawings from one netlist: the
+  schematic, the right-angle wiring, and the breadboard sheet that says
+  which hole. The devkit's header order is measured and lives once, as
+  `C6_HEADER` in `tools/breadboard.py`.
 - `head/`: the Pi's daemon, the bench under one script (UDP in, the
   bridge over serial, relays, the scope over SCPI, runs served back over
   HTTP); `docs/script.md` is the script's words, shared with the model.

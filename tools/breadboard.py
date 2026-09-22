@@ -70,6 +70,29 @@ CAP_TO_GND = {"C4": 6}
 # order is the measured pinout: 1 GND, 2 CLK, 3 OUT0, 4 D0, 5 +5V.
 LEAD = {1: ("yellow", "#d9b400"), 2: ("blue", "#1b64c8"), 3: ("black", "#222222"),
         4: ("green", "#1f9c53"), 5: ("red", "#d02b2b")}
+# ---------------------------------------------------------- pad-ble
+# MEASURED 2026-09-22 from photographs of the board itself. The bench
+# eye cannot resolve this silkscreen (about a millimetre, rotated, below
+# what the BRIO gives at its working distance, and refocusing onto the
+# devkit's raised surface is worse), so these came from a phone. They
+# are the ESP32-C6-DevKitC-1 v1.2's two headers, each read FROM THE USB
+# END, which is the end the two USB-C connectors are on. "G" is the
+# board's own spelling of ground, and it appears more than once.
+#
+# This is the one fact a breadboard sheet needs that no netlist has, and
+# it is not typed from memory: this bench already found a published
+# pinout disagreeing with its own console at pin 5.
+C6_HEADER = {
+    # The row the whole of pad-ble lands on: GPIO2, 3, 6, 7, a 3V3 and a
+    # ground are all here, so no wire crosses to the other side.
+    "lower": ["NC", "G", "5V", "3", "2", "11", "10", "8", "1", "0", "7", "6", "5", "4", "RST", "3V3"],
+    "upper": ["NC", "G", "12", "13", "G", "9", "18", "19", "20", "21", "22", "23", "15", "RX", "TX", "G"],
+}
+# What the schematic calls a pin, against what the board prints beside
+# it. The ground taken is the one on the same row as everything else.
+C6_PIN = {"GPIO2": ("lower", "2"), "GPIO3": ("lower", "3"), "GPIO6": ("lower", "6"),
+          "GPIO7": ("lower", "7"), "3V3": ("lower", "3V3"), "GND": ("lower", "G")}
+
 PALETTE = ["#7a3fbf", "#0f8f9e", "#b5651d", "#8d1f5e", "#3f6f2a", "#5b5bd6",
            "#a8471f", "#1f7a8c", "#7d4a1f", "#4a4a9c", "#96206a", "#2f7d4f"]
 
@@ -123,6 +146,21 @@ def dip_hole(ref, pin):
     return c0 + (n - pin), "upper"
 
 
+def devkit_hole(ref, pinname, devkits):
+    """Which column and half a devkit pin lands in.
+
+    A devkit is not a DIP: its pins are named, not numbered, and it
+    straddles the channel so wide that only ONE row on each side stays
+    reachable. The body covers rows B to I, so the holes in C to H are
+    underneath it; a wire to a lower-header pin goes into row J and a
+    wire to an upper-header pin into row A, which is the whole practical
+    difference between this and a chip.
+    """
+    d = devkits[ref]
+    row, label = d["pins"][pinname]
+    return d["col"] + d["header"][row].index(label), row
+
+
 class Draw:
     def __init__(self):
         self.o = [f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" width="{W}" height="{H}">',
@@ -174,6 +212,26 @@ class Draw:
         self.text(cx(pin1_col), cy("J") + 36, f"{ref} pin 1", "col", "middle")
 
 
+    def devkit(self, ref):
+        d = DEVKITS[ref]
+        n = len(d["header"]["lower"])
+        c0 = d["col"]
+        x0, x1 = cx(c0) - P / 2 - 2, cx(c0 + n - 1) + P / 2 + 2
+        yt, yb = cy("C") - 2, cy("H") + 2
+        for which, row in (("upper", "B"), ("lower", "I")):
+            for i in range(n):
+                self.add(f'<rect class="leg" x="{cx(c0+i)-4}" y="{cy(row)-7}" width="8" height="14" rx="2"/>')
+        self.add(f'<rect class="dip" x="{x0}" y="{yt}" width="{x1-x0}" height="{yb-yt}" rx="3"/>')
+        self.text((x0 + x1) / 2, (yt + yb) / 2 - 4, f"{ref}  {d['label']}", "dipt", "middle")
+        self.text((x0 + x1) / 2, (yt + yb) / 2 + 12, d["note"], "dips", "middle")
+        # Every pin labelled as the board labels it, outside the body,
+        # because "which hole" is the only question this drawing exists
+        # to answer and the labels are what a builder counts along.
+        for which, row, dy in (("upper", "A", -28), ("lower", "J", 36)):
+            for i, name in enumerate(d["header"][which]):
+                self.text(cx(c0 + i), cy(row) + dy, name, "col", "middle")
+        self.text(x0, cy("A") - 42, "USB end", "col")
+
 # Where an off-board thing's terminals sit. Order is the order they are
 # first seen in the netlist, which is the order the schematic draws them.
 TERMINALS = {
@@ -187,6 +245,13 @@ def endpoint(ref, pin, pinname, terms):
     """Where a wire for this pin actually plugs in. A package pin is not
     a hole you can use: the leg is already in it. The wire goes into
     another hole in the same column, which is the same node."""
+    if ref in DEVKITS:
+        col, which = devkit_hole(ref, pinname, DEVKITS)
+        row = "A" if which == "upper" else "J"
+        half = "upper" if which == "upper" else "lower"
+        label = DEVKITS[ref]["header"][which][col - DEVKITS[ref]["col"]]
+        return {"x": cx(col), "y": cy(row), "half": half,
+                "at": f"{ref} pin marked {label} (col {col} row {row})"}
     if ref in CHIPS:
         col, half = dip_hole(ref, pin)
         row = "C" if half == "upper" else "H"
@@ -226,71 +291,89 @@ def jumper(a, b, k):
         (x1 + 2 * mx + x2) / 4, (y1 + 2 * my + y2) / 4)
 
 
-def main():
-    ap = argparse.ArgumentParser()
-    ap.add_argument("outdir", nargs="?", default=str(ROOT / "docs"))
-    ap.add_argument("--check", action="store_true")
-    a = ap.parse_args()
+# ------------------------------------------------------- the two boards
+# What differs between the sheets. Everything about the board, the hole
+# rule, the routing and the key is shared; only the parts, where they
+# sit and the words change. The v1b entries point at the module-level
+# tables above so that sheet is byte for byte what it always was.
+DEVKITS = {}
 
-    nl = load(ROOT / "tools" / "netlist.py", "nl")
-    sheets, _off = nl.collect()
-    nodes = sheets["bench-v1b"]
+PADBLE_DEVKITS = {
+    "U1": {"col": 39, "label": "ESP32-C6-DevKitC-1 v1.2", "note": "BLE only: the USB port is serial and JTAG",
+           "header": C6_HEADER, "pins": C6_PIN},
+}
+# The pullups, in free columns just past the devkit. Row H, which is
+# reachable there: under the devkit only rows A and J are.
+PADBLE_RES = {"R1": (26, 28), "R2": (32, 34)}
+PADBLE_RES_PART = {"R1": "10k", "R2": "10k"}
+PADBLE_RES_NOTE = {"R1": "pad 1 D0 to 3V3", "R2": "pad 2 D0 to 3V3"}
+PADBLE_TERMINALS = {
+    "J1": {"x": 108, "y": 262, "title": "J1  pad 1", "sub": "the plug half of the cable"},
+    "J2": {"x": 1700, "y": 262, "title": "J2  pad 2", "sub": "shares the latch and clock"},
+}
 
-    # The pin-to-hole rule is the one thing here that silently wrecks
-    # every wire if it is wrong, so it is asserted against pins whose
-    # position is known from the packages: a 16-pin part has VCC at 16,
-    # top-left, and GND at 8, bottom-right.
-    # Notch right, as built: VCC (16) upper at the HIGHEST column, GND
-    # (8) lower at the lowest; pin 1 lower at the highest.
-    for ref, n in (("U2", 16), ("U1", 14)):
-        c0, h = CHIPS[ref]["col"], n // 2
-        assert CHIPS[ref]["notch"] == "right"
-        assert dip_hole(ref, 1) == (c0 + h - 1, "lower"), dip_hole(ref, 1)
-        assert dip_hole(ref, h) == (c0, "lower"), dip_hole(ref, h)
-        assert dip_hole(ref, h + 1) == (c0, "upper"), dip_hole(ref, h + 1)
-        assert dip_hole(ref, n) == (c0 + h - 1, "upper"), dip_hole(ref, n)
-    # And the rule for a chip the other way round, which nothing on this
-    # board uses now but the drawing still has to get right.
-    CHIPS["_t"] = {"col": 1, "pins": 16, "notch": "left"}
-    assert dip_hole("_t", 1) == (1, "lower") and dip_hole("_t", 8) == (8, "lower")
-    assert dip_hole("_t", 9) == (8, "upper") and dip_hole("_t", 16) == (1, "upper")
-    del CHIPS["_t"]
-    if a.check:
-        print("breadboard: the pin-to-hole rule holds for both package sizes and both notch directions")
-        return 0
+SHEETS = {
+    "v1b": dict(netlist="bench-v1b", out="breadboard-v1b.svg", cols=40, rails=("+5V", "GND"),
+                chips=CHIPS, devkits={}, caps=CAPS, res=RES, res_part=RES_PART, res_note=RES_NOTE,
+                cap_to_gnd=CAP_TO_GND, terminals=TERMINALS,
+                title="Bridge v1b on the breadboard: where everything goes",
+                sub="Placement is the board as built on 2026-09-11, read off its photographs: notches toward the high columns, "
+                    "pin 1 lower right. Every wire is read out of the schematic, so this cannot show a connection it does not have."),
+    "padble": dict(netlist="pad-ble", out="breadboard-pad-ble.svg", cols=56, rails=("3V3", "GND"),
+                   chips={}, devkits=PADBLE_DEVKITS, caps={"C1": 36}, res=PADBLE_RES, res_part=PADBLE_RES_PART,
+                   res_note=PADBLE_RES_NOTE, cap_to_gnd={}, terminals=PADBLE_TERMINALS,
+                   title="pad-ble v1 on the breadboard: where everything goes",
+                   sub="The devkit's pin labels are MEASURED off the board (the bench eye cannot read that silkscreen). It straddles "
+                       "the channel, so only rows A and J are reachable in its columns. Every wire is read out of the schematic."),
+}
 
+
+def use(cfg):
+    """Bind the sheet's tables. One code path draws both boards; a
+    second copy of the routing would drift from this one and a reader
+    comparing two breadboard pictures could not tell which was lying."""
+    global CHIPS, DEVKITS, CAPS, RES, RES_PART, RES_NOTE, CAP_TO_GND, TERMINALS, COLS
+    CHIPS, DEVKITS, CAPS = cfg["chips"], cfg["devkits"], cfg["caps"]
+    RES, RES_PART, RES_NOTE = cfg["res"], cfg["res_part"], cfg["res_note"]
+    CAP_TO_GND, TERMINALS, COLS = cfg["cap_to_gnd"], cfg["terminals"], cfg["cols"]
+
+
+def render(key, nl, sheets, offsheet, outdir):
+    cfg = SHEETS[key]
+    use(cfg)
+    nodes = sheets[cfg["netlist"]]
     nets = nl.nets_of(nodes)
+    rail_p, rail_n = cfg["rails"]
 
-    # Terminals for the off-board things, in netlist order.
     terms, seen = {}, {r: 0 for r in TERMINALS}
     for n in nodes:
-        key = (n["ref"], n["pinname"])
-        if n["ref"] in TERMINALS and key not in terms:
-            t = TERMINALS[n["ref"]]
-            terms[key] = {"x": t["x"], "y": t["y"] + seen[n["ref"]] * 30, "name": n["pinname"]}
+        k = (n["ref"], n["pinname"])
+        if n["ref"] in TERMINALS and k not in terms:
+            tm = TERMINALS[n["ref"]]
+            terms[k] = {"x": tm["x"], "y": tm["y"] + seen[n["ref"]] * 30, "name": n["pinname"]}
             seen[n["ref"]] += 1
 
     d = Draw()
-    d.text(60, 60, "Bridge v1b on the breadboard: where everything goes", "h1")
-    d.text(60, 84, "Placement is the board as built on 2026-09-11, read off its photographs: notches toward the high columns, "
-                   "pin 1 lower right. Every wire is read out of the schematic, so this cannot show a connection it does not have.", "h2")
+    d.text(60, 60, cfg["title"], "h1")
+    d.text(60, 84, cfg["sub"], "h2")
     d.board()
     for ref in CHIPS:
         d.chip(ref)
-    for ref, t in TERMINALS.items():
+    for ref in DEVKITS:
+        d.devkit(ref)
+    for ref, tm in TERMINALS.items():
         rows = [v for (r, _p), v in terms.items() if r == ref]
         if not rows:
             continue
         y0, y1 = min(v["y"] for v in rows), max(v["y"] for v in rows)
-        left = t["x"] < X0
-        d.add(f'<rect class="term" x="{t["x"]-(96 if left else 8)}" y="{y0-46}" width="104" height="{y1-y0+58}" rx="5"/>')
-        d.text(t["x"] - (92 if left else 4), y0 - 30, t["title"], "kb")
-        d.text(t["x"] - (92 if left else 4), y0 - 16, t["sub"], "col")
+        left = tm["x"] < X0
+        d.add(f'<rect class="term" x="{tm["x"]-(96 if left else 8)}" y="{y0-46}" width="104" height="{y1-y0+58}" rx="5"/>')
+        d.text(tm["x"] - (92 if left else 4), y0 - 30, tm["title"], "kb")
+        d.text(tm["x"] - (92 if left else 4), y0 - 16, tm["sub"], "col")
         for v in rows:
             d.add(f'<circle cx="{v["x"]}" cy="{v["y"]}" r="4" fill="#333"/>')
-            d.text(t["x"] - (12 if left else -12), v["y"] + 4, v["name"], "termt", "end" if left else "start")
+            d.text(tm["x"] - (12 if left else -12), v["y"] + 4, v["name"], "termt", "end" if left else "start")
 
-    # Decoupling sits rail to rail beside its chip, and needs no wire.
     for ref, col in CAPS.items():
         d.add(f'<rect class="pass" x="{cx(col)-9}" y="{Y_RAIL_BN+4}" width="18" height="{Y_RAIL_BP-Y_RAIL_BN-8}" rx="3"/>')
         d.text(cx(col) + 14, (Y_RAIL_BN + Y_RAIL_BP) / 2 + 4, f"{ref} 100nF", "col")
@@ -298,24 +381,26 @@ def main():
         d.add(f'<rect class="pass" x="{cx(c1)}" y="{cy("H")-7}" width="{cx(c2)-cx(c1)}" height="14" rx="3"/>')
         d.text((cx(c1) + cx(c2)) / 2, cy("H") - 12, f"{ref} {RES_PART[ref]}", "col", "middle")
         d.text(cx(c2) + 12, cy("G") + 4, RES_NOTE[ref], "col")
-    # A capacitor from a strip to the GND rail: a box standing between them.
     for ref, c in CAP_TO_GND.items():
         d.add(f'<rect class="pass" x="{cx(c)-7}" y="{cy("J")}" width="14" height="{Y_RAIL_BN-cy("J")}" rx="3"/>')
         d.text(cx(c) + 12, (cy("J") + Y_RAIL_BN) / 2 + 4, f"{ref} 100pF", "col")
 
-    # ---------------------------------------------------------- the wires
-    wires = []
-    ci = 0
-    rails = []
-    for net, ns in sorted(nets.items(), key=lambda kv: (kv[0] in ("+5V", "GND"), kv[0])):
+    wires, ci, rails = [], 0, []
+    for net, ns in sorted(nets.items(), key=lambda kv: (kv[0] in (rail_p, rail_n), kv[0])):
+        # A net that leaves the drawing is not a wire anybody plugs in:
+        # the radio and the USB cable have one end on the sheet and no
+        # hole on the board. Skipped before endpoints are asked for,
+        # because asking would be a question with no answer.
+        if net in offsheet:
+            continue
         pts = [endpoint(n["ref"], n["pin"], n["pinname"], terms) for n in ns]
-        if net in ("+5V", "GND"):
-            col = "#d02b2b" if net == "+5V" else "#1b64c8"
+        if net in (rail_p, rail_n):
+            col = "#d02b2b" if net == rail_p else "#1b64c8"
             for pt, n in zip(pts, ns):
                 if pt["half"] == "rail":
                     continue
-                rail = (Y_RAIL_TP if net == "+5V" else Y_RAIL_TN) if pt["half"] == "upper" \
-                    else (Y_RAIL_BP if net == "+5V" else Y_RAIL_BN)
+                rail = (Y_RAIL_TP if net == rail_p else Y_RAIL_TN) if pt["half"] == "upper" \
+                    else (Y_RAIL_BP if net == rail_p else Y_RAIL_BN)
                 d.add(f'<path class="w" stroke="{col}" opacity="0.9" d="M{pt["x"]:.0f} {pt["y"]:.0f} L{pt["x"]:.0f} {rail}"/>')
                 rails.append((net, pt["at"]))
             continue
@@ -337,7 +422,6 @@ def main():
             d.text(mx, my + 4, str(n), "wn", "middle")
             wires.append((n, net + (f", the {lead[0]} lead" if lead else ""), p1["at"], p2["at"], colour))
 
-    # ------------------------------------------------------------ the key
     ky = BOT_BAND + 70
     d.text(60, ky, f"{len(wires)} numbered jumpers, and {len(rails)} short wires to the rails", "h1")
     d.text(60, ky + 22, "Every one of these is read out of the schematic. Red stubs go to the nearest + rail, blue stubs to "
@@ -350,9 +434,50 @@ def main():
         d.text(cxx + 9, yy, str(n), "wn", "middle")
         d.text(cxx + 26, yy, f"{net}:  {at1}  to  {at2}", "k")
     d.add("</svg>")
-    out = Path(a.outdir) / "breadboard-v1b.svg"
+    out = Path(outdir) / cfg["out"]
     out.write_text("\n".join(d.o))
     print(f"wrote {out}")
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("outdir", nargs="?", default=str(ROOT / "docs"))
+    ap.add_argument("--check", action="store_true")
+    a = ap.parse_args()
+
+    nl = load(ROOT / "tools" / "netlist.py", "nl")
+    sheets, offsheet = nl.collect()
+
+    # The pin-to-hole rules are the one thing here that silently wrecks
+    # every wire if wrong, so both are asserted against positions known
+    # from the parts themselves.
+    use(SHEETS["v1b"])
+    for ref, n in (("U2", 16), ("U1", 14)):
+        c0, h = CHIPS[ref]["col"], n // 2
+        assert CHIPS[ref]["notch"] == "right"
+        assert dip_hole(ref, 1) == (c0 + h - 1, "lower"), dip_hole(ref, 1)
+        assert dip_hole(ref, h) == (c0, "lower"), dip_hole(ref, h)
+        assert dip_hole(ref, h + 1) == (c0, "upper"), dip_hole(ref, h + 1)
+        assert dip_hole(ref, n) == (c0 + h - 1, "upper"), dip_hole(ref, n)
+    CHIPS["_t"] = {"col": 1, "pins": 16, "notch": "left"}
+    assert dip_hole("_t", 1) == (1, "lower") and dip_hole("_t", 8) == (8, "lower")
+    assert dip_hole("_t", 9) == (8, "upper") and dip_hole("_t", 16) == (1, "upper")
+    del CHIPS["_t"]
+    # The devkit's rule, against the labels as read off the board: the
+    # first pin of a row is the devkit's own column, and a label the
+    # board does not carry is a typo rather than a hole.
+    dk = PADBLE_DEVKITS["U1"]
+    assert devkit_hole("U1", "GPIO2", PADBLE_DEVKITS) == (dk["col"] + 4, "lower")
+    assert devkit_hole("U1", "3V3", PADBLE_DEVKITS) == (dk["col"] + 15, "lower")
+    for name, (row, label) in C6_PIN.items():
+        assert label in C6_HEADER[row], f"{name}: the board carries no pin marked {label} on its {row} header"
+    assert len(C6_HEADER["upper"]) == len(C6_HEADER["lower"]) == 16
+    if a.check:
+        print("breadboard: the pin-to-hole rule holds for both package sizes, both notch directions and the devkit")
+        return 0
+
+    for key in SHEETS:
+        render(key, nl, sheets, offsheet, a.outdir)
     return 0
 
 

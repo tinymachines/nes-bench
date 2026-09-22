@@ -64,6 +64,13 @@ neither can show a wire the other does not.
 
 ![pad-ble v1 at right angles: every wire, on the packages as they sit](wiring-pad-ble.svg)
 
+![pad-ble v1 on the breadboard: which hole everything goes in](breadboard-pad-ble.svg)
+
+The breadboard sheet is the one that says **which hole**, and it needed
+a fact the other two did not: the physical order of the pins along the
+devkit's headers. That is measured (below) and lives in
+`tools/breadboard.py` as `C6_HEADER`, read from the USB end.
+
 ## The wire list
 
 Five conductors per pad. Both pads share the latch and the clock, so
@@ -105,26 +112,57 @@ breadboard's own printed column numbers:
 
 | | |
 |---|---|
-| the devkit | the middle breadboard, spanning about **columns 37 to 56** |
+| the devkit's PCB | the middle breadboard, spanning about **columns 37 to 56** |
+| its headers | **sixteen pins a side, so sixteen columns**; the USB connectors overhang the rest of the PCB at one end |
 | its rows | pins in **B and I**, straddling the channel, leaving A and J free |
 | the pads | a cut cable is stripped and lying at the board's low-column end, five conductors |
 
 Believed to within a column, exactly as the bridge's own placement was
 ("counted from the printed marks and believed to within one column").
+The sheet draws the headers at columns 39 to 54, which is that reading
+rounded to the pin count; nothing in the circuit depends on the choice,
+only on the relative positions, so seat it where it suits you and read
+the columns off the sheet.
 
-**What the eye could not read, and it is the one thing a breadboard
-sheet needs.** The devkit's silkscreen pin labels are about a
-millimetre and rotated, and at zoom 1000 they are below what the BRIO
-resolves at this working distance. Refocusing onto the devkit's raised
-surface (focus 26 against the board plane's 18) is blurrier, so this is
-resolution, not focus. The same eye reads the BOARD perfectly: the part
-was identified from its `RGB@IO8` silkscreen, which is several times
-larger.
+**Only rows A and J are reachable in the devkit's columns.** It is wide
+enough to cover C through H, so those holes are underneath it. Every
+wire to a lower-header pin goes into row J and every wire to an
+upper-header pin into row A. That is the one way a devkit differs from
+a chip on this board, and the sheet's addresses already account for it.
 
-So the header order has to be read by hand, once, and written down. Until
-it is, the schematic and the right-angle sheet are complete (they work in
-signals and GPIO numbers) and the breadboard sheet cannot be drawn
-without inventing a pinout, which is the one thing this bench does not do.
+**The eye could not read the pin labels, and that is now a recorded
+limit.** They are about a millimetre and rotated, and at zoom 1000 they
+are below what the BRIO resolves at this working distance; refocusing
+onto the devkit's raised surface (focus 26 against the board plane's 18)
+is blurrier, so it is resolution and not focus. The same eye reads the
+BOARD perfectly, which is how the part was identified from its
+`RGB@IO8` silkscreen, several times larger.
+
+## The headers, measured
+
+Read 2026-09-22 from photographs of the board taken by hand, since the
+bench eye cannot. **Each row is read from the USB end**, the end the two
+USB-C connectors are on. `G` is the board's own spelling of ground, and
+it appears more than once.
+
+| row | pins, from the USB end |
+|---|---|
+| the pad-ble side | NC, G, 5V, **3**, **2**, 11, 10, 8, 1, 0, **7**, **6**, 5, 4, RST, **3V3** |
+| the other side | NC, G, 12, 13, G, 9, 18, 19, 20, 21, 22, 23, 15, RX, TX, G |
+
+Sixteen a side. This table lives once, in `tools/breadboard.py` as
+`C6_HEADER`, and the sheet is drawn from it.
+
+**Every pin this circuit needs is on one row.** GPIO2, GPIO3, GPIO6,
+GPIO7, a 3V3 and a ground are all on the first row above, so no wire
+crosses to the other side of the board. That is worth knowing before
+you start, and it was not a given.
+
+**The trap that row sets.** GPIO4 and GPIO5 sit immediately beside
+GPIO6 and GPIO7, and GPIO8 is four along. All three are strapping pins
+on the C6. Counting one hole wrong along that row does not give you a
+dead input, it gives you a board that may not boot. Count from the
+printed labels, not from the end.
 
 ## Measure first
 

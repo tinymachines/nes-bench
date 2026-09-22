@@ -51,8 +51,16 @@ entry is the one that raised it, with its date.
   listing order given was the set, not the pin order. The drawings
   already print it and need no edit. A continuity run before power is
   still the rule, but there is no disagreement to settle first.
-- **The C6 devkit's header order is not recorded anywhere here
-  (2026-09-22), and it is what a breadboard sheet needs.** Every other
+- ~~**The C6 devkit's header order is not recorded anywhere here
+  (2026-09-22)**~~ CLOSED the same day: read by hand off the board and
+  committed as `C6_HEADER` in `tools/breadboard.py`, sixteen a side,
+  each row from the USB end, and `docs/breadboard-pad-ble.svg` is drawn
+  from it. The finding worth keeping: every pin pad-ble needs is on one
+  row, and GPIO4, GPIO5 and GPIO8 (all strapping pins) sit along that
+  same row beside the ones being used, so miscounting one hole can stop
+  the board booting rather than merely not working. The original entry
+  follows, because the reason the eye could not do it is still true.
+- **The bench eye cannot read a devkit's silkscreen (2026-09-22).** Every other
   drawing works in signals and GPIO numbers, which is enough for a
   schematic and for the right-angle sheet. A breadboard sheet has to say
   WHICH HOLE, and that needs the physical order of the pins along the
