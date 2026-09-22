@@ -104,6 +104,15 @@ register's job, as it is in the pad.
   disagree with the document (`--check` refuses a stale one).
 - `firmware/bridge/`: the ESP32 sketch (arduino-cli, esp32 core 3.x;
   the bench's board is an ESP32-C6-DevKitC-1).
+- `firmware/pad-ble/`: the other direction, and standalone. An original
+  NES pad as a Bluetooth Low Energy keyboard, so it drives a phone, a
+  tablet or a browser emulator with no app and no bench: the bridge's
+  own `poll_pad` with a radio behind it instead of a shift register
+  (`docs/pad-adapter.svg`, and section 4 of `bench-build-v1-v2.md`).
+  The report descriptor and the key mapping are plain C in `keymap.h`
+  and are held on the desk by `tools/test-pad-keymap.sh`, which parses
+  the descriptor the way a host parses it; everything else in there
+  needs the part and has met no pad.
 - `head/`: the Pi's daemon, the bench under one script (UDP in, the
   bridge over serial, relays, the scope over SCPI, runs served back over
   HTTP); `docs/script.md` is the script's words, shared with the model.

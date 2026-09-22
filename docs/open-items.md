@@ -35,6 +35,15 @@ entry is the one that raised it, with its date.
   arrives at its own rate with its own axes, and whether BlueZ on this
   head pairs the pad at all. Closes with a pad paired on the Pi and
   `bench.py <head> pad on` playing one screen of anything.
+- **The BLE pad adapter is written and has met nothing (2026-09-21).**
+  `firmware/pad-ble` compiles for the C6 (56% of flash) and its mapping
+  and HID descriptor pass 76 desk checks with the mutation red, but no
+  pad has been wired to it and no host has paired it. Two things it
+  rests on are unproven here, and one of them is old: **an original pad
+  at 3V3 is measure-first item 4** and has never been done, and the
+  pairing has met no phone. First light is `poll_pads` printing a byte
+  that follows the buttons, which needs no radio and settles the half
+  that matters.
 - **The hand's latency is unmeasured (2026-09-21).** A pad's report
   crosses Bluetooth, BlueZ, a USB serial line at 921600 and the
   bridge's own loop before the 595 holds it, and none of that is
