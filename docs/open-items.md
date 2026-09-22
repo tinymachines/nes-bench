@@ -25,6 +25,26 @@ entry is the one that raised it, with its date.
 - **The pad through the bridge OPEN** (4.2, 5.2), and with it J2's
   lead order, the last check on the as-built sheet.
 - **CH2's original lead broke 2026-09-15**; a new lead is on the latch.
+- **The gamepad hand has never met a gamepad (2026-09-21).**
+  `head/pad.py` and the head's `pad` op are built and hold together:
+  19 checks in `tools/check-pad.py` with no pad and no bridge in the
+  room, and one end-to-end session against `fake-bridge.py` with a
+  FIFO standing in for the event device, whose five presses came out
+  of the bridge as 08, 00, 01, 41, 00 and out of `b3.py` as five ATs.
+  What that does not touch: a real pad's own report stream, which
+  arrives at its own rate with its own axes, and whether BlueZ on this
+  head pairs the pad at all. Closes with a pad paired on the Pi and
+  `bench.py <head> pad on` playing one screen of anything.
+- **The hand's latency is unmeasured (2026-09-21).** A pad's report
+  crosses Bluetooth, BlueZ, a USB serial line at 921600 and the
+  bridge's own loop before the 595 holds it, and none of that is
+  timed. It is worth measuring here rather than guessing, because this
+  bench can: the bridge stamps every poll with its latch index, so the
+  number wanted is how many polls pass between the host seeing the
+  event and the console reading the byte, which is one subtraction on
+  a session's `head.log` against its `bridge.log`. Until it is
+  measured, nothing in this repository should claim the adapter is
+  fast enough to play on.
 - ~~**The Pi's GPIO27 rests with a pull-down (2026-09-17)**, which is the relay
   ON from power-up until the head claims the pin.~~ DONE 2026-09-17 11:56 EDT:
   `gpio=27=op,dh` and `gpio=17=op,dl` in the Pi's boot config (the old file
