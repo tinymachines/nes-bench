@@ -107,6 +107,13 @@ register's job, as it is in the pad.
 - `head/`: the Pi's daemon, the bench under one script (UDP in, the
   bridge over serial, relays, the scope over SCPI, runs served back over
   HTTP); `docs/script.md` is the script's words, shared with the model.
+  `head/pad.py` is a gamepad on the Pi's own Bluetooth as the console's
+  hand: BlueZ pairs it, the kernel gives it up as an event device, and
+  every change of the eight buttons becomes one `SET hh` down the path
+  the bridge already proved. A session takes a run directory like any
+  other, so `tools/b3.py` turns a minute of real play into a script the
+  bridge replays latch for latch. Held by `tools/check-pad.py`, which
+  needs neither a pad nor a bridge.
 - `tools/`: `eye.py` (the camera on the board: grab, sweep, named views), `cal.py` (the calibration cartridge's reader for every eye), `board-overlay.py` (the wiring state drawn on the photograph, from `docs/board-map.json`), `nesprep.py` (an iNES file into the two flash images, tiled), `bench.py` (the workstation's client), `b1-score.py` (a
   run's triggered capture against the model's frame at the same poll,
   through the roundtrip), `b2-align.py` (the alignment class off a

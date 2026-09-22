@@ -22,7 +22,11 @@ HTTP listing on the port after the UDP one.
 Requests: {"op": "status"}, {"op": "run", "script": "..."} (starts a
 run; refused while one plays), {"op": "abort"}, {"op": "bridge",
 "line": "STATUS"} (one line straight to the bridge, its replies within
-half a second returned), {"op": "runs"} (the run directories).
+half a second returned), {"op": "runs"} (the run directories), and
+{"op": "pad", "action": "on"|"off"|"status"} (a gamepad on this Pi's
+own Bluetooth driving the console's byte; it takes a run directory of
+its own and is refused while a script plays, because both drive the
+same byte).
 
 Addresses come from the command line or bench.local.md, never from a
 file that is committed. The scope belongs to another experiment when
@@ -35,12 +39,18 @@ import argparse
 import http.server
 import json
 import os
+import select
 import socket
 import socketserver
 import sys
 import threading
 import time
 from pathlib import Path
+
+# The gamepad hand lives beside this file. Named explicitly rather than
+# relying on the script directory, so headd can also be imported.
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import pad  # noqa: E402
 
 try:
     import serial
@@ -347,6 +357,8 @@ class Scope:
 class Run(threading.Thread):
     """One script, played line by line on its own thread."""
 
+    kind = "a run"
+
     def __init__(self, head, script):
         super().__init__(daemon=True)
         self.head = head
@@ -558,6 +570,121 @@ class Run(threading.Thread):
         h.scope.restore_setup()
 
 
+# -------------------------------------------------------------------- hand
+class _Waiting:
+    """The event device, read without blocking.
+
+    `pad.events` takes None as "nothing yet, ask again", which is what
+    lets a hand resting on the table still be stopped. The select
+    timeout is the abort's latency and nothing else: a button press
+    wakes the read at once, so it costs the console nothing.
+    """
+
+    def __init__(self, f, timeout=0.05):
+        self.f, self.timeout = f, timeout
+
+    def read(self, n):
+        r, _, _ = select.select([self.f], [], [], self.timeout)
+        return self.f.read(n) if r else None
+
+
+class Hand(threading.Thread):
+    """A gamepad on the Pi's own Bluetooth, driving the console's byte.
+
+    The signal path is the one the 2026-09-15 milestone proved and
+    nothing here changes it: every change of the eight buttons becomes
+    one `SET hh`, which the bridge puts on the 595 and the 165 hands to
+    the console. What is new is only where the byte comes from.
+
+    A hand is a run, deliberately. It takes a run directory, streams
+    the bridge's lines into `bridge.log` the same way, and refuses to
+    start while a script is playing, because both drive the same byte.
+    The reason it is worth a directory: `tools/b3.py` already turns a
+    bridge log into an AT schedule, so a minute of real play comes back
+    as a script the bridge replays latch for latch under the scope.
+    That is the only way this bench gets rich input a hand chose.
+    """
+
+    kind = "a hand"
+
+    def __init__(self, head, device=None, deadzone=0.5):
+        super().__init__(daemon=True)
+        self.head = head
+        found = pad.find_pads()
+        if device:
+            self.device = device
+            self.name = next((n for n, p in found if p == device), "named by the client")
+        elif found:
+            self.name, self.device = found[0]
+        else:
+            raise RuntimeError("no gamepad on this head: pair one with bluetoothctl, then "
+                               "check it appears in /proc/bus/input/devices with a js handler")
+        self.deadzone = deadzone
+        self.stamp = time.strftime("%Y%m%d-%H%M%S")
+        self.dir = head.runs / self.stamp
+        self.dir.mkdir(parents=True)
+        (self.dir / "script.txt").write_text(
+            f"# played by hand on {self.name} ({self.device})\n"
+            "# Not a script: the bytes arrived from a gamepad. This records how the\n"
+            "# session started; tools/b3.py builds the replay out of bridge.log.\n"
+            "MODE INJECT\nSET 00\n")
+        self.log = open(self.dir / "head.log", "w")
+        self.blog = open(self.dir / "bridge.log", "w")
+        self.abort = False
+        self.state = "starting"
+        self.error = None
+        self.line_no = 0    # changes sent so far, so `status` shows it moving
+        head.bridge.drain()
+
+    def say(self, s):
+        self.log.write(f"{time.time():.3f} {s}\n")
+        self.log.flush()
+        self.state = s
+
+    def pump(self):
+        for line in self.head.bridge.drain():
+            self.blog.write(line + "\n")
+        self.blog.flush()
+
+    def run(self):
+        b = self.head.bridge
+        p = None
+        try:
+            b.send("MODE INJECT")
+            b.send("SET 00")
+            self.say(f"hand on {self.name} at {self.device}")
+            with open(self.device, "rb", buffering=0) as f:
+                os.set_blocking(f.fileno(), False)
+                p = pad.Pad(deadzone=self.deadzone, ranges=pad.abs_ranges(f.fileno()))
+                if not p.ranges:
+                    self.say("no analog range from this pad: the hat and the buttons only")
+                for byte in pad.stream(_Waiting(f), p, rest=0, stop=lambda: self.abort):
+                    b.send(f"SET {byte:02x}")
+                    self.line_no += 1
+                    self.pump()
+            self.say("aborted" if self.abort else "the pad went away")
+        except Exception as e:  # noqa: BLE001 - the session's own record is the point
+            self.error = str(e)
+            self.say(f"failed: {self.error}")
+        finally:
+            # The console must not be left holding whatever was pressed
+            # when the pad disconnected, which is how a lost connection
+            # becomes a character running into a pit for ten minutes.
+            b.send("SET 00")
+            b.send("MODE PASS")
+            if p is not None and p.impossible:
+                self.say(f"{p.impossible} report(s) asked for a direction pair the pad's pivot "
+                         "cannot make; neither was sent")
+            if p is not None and p.unknown:
+                self.say("codes seen and not mapped: "
+                         + ", ".join(f"0x{c:x} x{n}" for c, n in sorted(p.unknown.items())))
+            self.say(f"done: {self.line_no} change(s) of byte")
+            self.pump()
+            self.log.close()
+            self.blog.close()
+            self.head.current = None
+
+
 # -------------------------------------------------------------------- head
 class Head:
     def __init__(self, a):
@@ -575,10 +702,10 @@ class Head:
             cur = self.current
             return dict(ok=True, up=round(time.time() - self.started, 1), bridge=self.bridge.path, latest_latch=self.bridge.latest_latch,
                         scope=self.scope.idn if self.scope else None, gpio=self.relays.real, power=self.relays.power_on,
-                        run=None if cur is None else dict(stamp=cur.stamp, state=cur.state, line=cur.line_no, error=cur.error))
+                        run=None if cur is None else dict(stamp=cur.stamp, kind=cur.kind, state=cur.state, line=cur.line_no, error=cur.error))
         if op == "run":
             if self.current is not None:
-                return dict(ok=False, error="a run is playing", stamp=self.current.stamp)
+                return dict(ok=False, error=f"{self.current.kind} is playing", stamp=self.current.stamp)
             r = Run(self, req.get("script", ""))
             self.current = r
             r.start()
@@ -588,6 +715,25 @@ class Head:
                 return dict(ok=False, error="nothing playing")
             self.current.abort = True
             return dict(ok=True, stamp=self.current.stamp)
+        if op == "pad":
+            action = req.get("action", "status")
+            if action == "on":
+                if self.current is not None:
+                    return dict(ok=False, error=f"{self.current.kind} is playing", stamp=self.current.stamp)
+                try:
+                    h = Hand(self, req.get("device"), float(req.get("deadzone", 0.5)))
+                except Exception as e:  # noqa: BLE001 - the reason is what the client needs
+                    return dict(ok=False, error=str(e))
+                self.current = h
+                h.start()
+                return dict(ok=True, stamp=h.stamp, device=h.device, pad=h.name)
+            if action == "off":
+                if not isinstance(self.current, Hand):
+                    return dict(ok=False, error="no hand playing")
+                self.current.abort = True
+                return dict(ok=True, stamp=self.current.stamp)
+            return dict(ok=True, pads=[dict(name=n, device=d) for n, d in pad.find_pads()],
+                        playing=isinstance(self.current, Hand))
         if op == "bridge":
             return dict(ok=True, lines=self.bridge.ask(req.get("line", "STATUS")))
         if op == "runs":

@@ -6,6 +6,9 @@ fetch the run.
   python3 tools/bench.py <head> run script.txt [--fetch runs/]
   python3 tools/bench.py <head> abort
   python3 tools/bench.py <head> bridge "STATUS"
+  python3 tools/bench.py <head> pad            # the gamepads the head can see
+  python3 tools/bench.py <head> pad on         # give the console to one
+  python3 tools/bench.py <head> pad off
   python3 tools/bench.py <head> runs
   python3 tools/bench.py <head> fetch <stamp> [--into runs/]
 
@@ -49,10 +52,11 @@ def fetch(host, port, stamp, into):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("head")
-    ap.add_argument("op", choices=["status", "run", "abort", "bridge", "runs", "fetch"])
+    ap.add_argument("op", choices=["status", "run", "abort", "bridge", "runs", "fetch", "pad"])
     ap.add_argument("arg", nargs="?")
     ap.add_argument("--no-fetch", action="store_true")
     ap.add_argument("--into", default="runs")
+    ap.add_argument("--device", help="pad on: the event device, when the head has more than one")
     a = ap.parse_args()
     host, _, port = a.head.partition(":")
     port = int(port) if port else 6530
@@ -67,6 +71,24 @@ def main():
             print(line)
     elif a.op == "fetch":
         print(fetch(host, port, a.arg, a.into))
+    elif a.op == "pad":
+        # `pad` with no argument lists what the head's Bluetooth has; `on`
+        # gives the console to it until `off`. The session is a run
+        # directory like any other, so `runs` and `fetch` reach it and
+        # b3.py builds a replay from its bridge.log.
+        action = a.arg or "status"
+        rep = ask(host, port, {"op": "pad", "action": action, **({"device": a.device} if a.device else {})})
+        if not rep.get("ok"):
+            print(rep.get("error", rep))
+            return 1
+        if action == "status":
+            for d in rep.get("pads", []):
+                print(f"{d['device']}  {d['name']}")
+            if not rep.get("pads"):
+                print("no gamepad on the head: pair one with bluetoothctl there")
+            print(f"a hand is {'playing' if rep.get('playing') else 'not playing'}")
+        else:
+            print(rep)
     elif a.op == "run":
         script = Path(a.arg).read_text()
         rep = ask(host, port, {"op": "run", "script": script})
