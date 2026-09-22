@@ -77,15 +77,19 @@ those two nets reach four pins between them; only D0 is per pad.
 | 4 | D0 | green | GPIO6 (pad 1) or GPIO7 (pad 2), each with 10k up to 3V3 |
 | 5 | +5V | red | **3V3**, not 5 V |
 
-**The lead colours are in dispute and must be metered before they are
-believed.** The table above is the bridge's own, measured and committed
-in `tools/wiring-diagram.py` as `LEAD = {1: yellow, 2: blue, 3: black,
-4: green, 5: red}`. On 2026-09-21 the colours were given at the bench as
-"black, yellow, blue, green, red", which is the same five colours with
-the first three in a different order. Both readings agree on green at
-pin 4 and red at pin 5 and disagree on GND, CLK and OUT0, so taking the
-wrong one puts the console's clock on ground. It is one continuity run
-to settle and it has to happen before power.
+**The colours are the bridge's own, confirmed at the bench on
+2026-09-22 as the same five.** The table is `LEAD = {1: yellow, 2:
+blue, 3: black, 4: green, 5: red}` in `tools/wiring-diagram.py`,
+metered on the bridge's cable and printed on both pad connectors of
+`wiring-pad-ble.svg`. A listing of the five colours in another order
+was a listing of the set, not of the pin order, and nothing needed
+changing.
+
+Ring the cable out anyway before power. Not because the table is in
+doubt, but because this is a different cable from the one that was
+metered, and the rule here is that colours are not evidence. Unplugged:
+on 2026-09-09 a tone through a cable still in the console ran through
+its pull-ups and pins that share nothing beeped, repeatably.
 
 **Not GPIO4, GPIO5 or GPIO15.** Those are the S3's numbers for this job
 and they are strapping pins on the C6. The three above are the pins
@@ -93,6 +97,34 @@ and they are strapping pins on the C6. The three above are the pins
 `firmware/pad-ble` reuses `poll_pad` unedited, and
 `tools/check-sheets.py` holds the sheet and the firmware to each other
 so they cannot drift apart again.
+
+## Where it sits now, measured off the bench eye
+
+Read 2026-09-22 from the board eye at zoom 500 and 1000, against the
+breadboard's own printed column numbers:
+
+| | |
+|---|---|
+| the devkit | the middle breadboard, spanning about **columns 37 to 56** |
+| its rows | pins in **B and I**, straddling the channel, leaving A and J free |
+| the pads | a cut cable is stripped and lying at the board's low-column end, five conductors |
+
+Believed to within a column, exactly as the bridge's own placement was
+("counted from the printed marks and believed to within one column").
+
+**What the eye could not read, and it is the one thing a breadboard
+sheet needs.** The devkit's silkscreen pin labels are about a
+millimetre and rotated, and at zoom 1000 they are below what the BRIO
+resolves at this working distance. Refocusing onto the devkit's raised
+surface (focus 26 against the board plane's 18) is blurrier, so this is
+resolution, not focus. The same eye reads the BOARD perfectly: the part
+was identified from its `RGB@IO8` silkscreen, which is several times
+larger.
+
+So the header order has to be read by hand, once, and written down. Until
+it is, the schematic and the right-angle sheet are complete (they work in
+signals and GPIO numbers) and the breadboard sheet cannot be drawn
+without inventing a pinout, which is the one thing this bench does not do.
 
 ## Measure first
 

@@ -44,15 +44,29 @@ entry is the one that raised it, with its date.
   pairing has met no phone. First light is `poll_pads` printing a byte
   that follows the buttons, which needs no radio and settles the half
   that matters.
-- **The pad cable's lead colours disagree (2026-09-21).** The committed
-  table is the bridge's own, metered: pin 1 yellow, 2 blue, 3 black, 4
-  green, 5 red (`LEAD` in `tools/wiring-diagram.py`, and it is printed
-  on both pad connectors of `wiring-pad-ble.svg`). At the bench the
-  colours were given as black, yellow, blue, green, red, which is the
-  same five with the first three rotated. The two agree on pin 4 green
-  and pin 5 red and disagree on GND, CLK and OUT0, so the wrong one puts
-  the clock on ground. One continuity run on an unplugged cable settles
-  it, and it has to happen before the adapter is powered.
+- ~~**The pad cable's lead colours disagree (2026-09-21)**~~ CLOSED
+  2026-09-22: the same five colours as the bridge, confirmed at the
+  bench, so the metered table stands unchanged (pin 1 yellow, 2 blue,
+  3 black, 4 green, 5 red, `LEAD` in `tools/wiring-diagram.py`). The
+  listing order given was the set, not the pin order. The drawings
+  already print it and need no edit. A continuity run before power is
+  still the rule, but there is no disagreement to settle first.
+- **The C6 devkit's header order is not recorded anywhere here
+  (2026-09-22), and it is what a breadboard sheet needs.** Every other
+  drawing works in signals and GPIO numbers, which is enough for a
+  schematic and for the right-angle sheet. A breadboard sheet has to say
+  WHICH HOLE, and that needs the physical order of the pins along the
+  devkit's two headers, which is a fact about the board and not about
+  the netlist. It is not in this repository and must not be typed from
+  memory: this bench already refuses pin numbers carried in from
+  elsewhere (`probe-plan.md` names none on purpose).
+  **The bench eye cannot read it.** Measured 2026-09-22: at zoom 1000
+  the silkscreen pin labels are about a millimetre, rotated, and below
+  what the BRIO resolves at this working distance; focus 26 (onto the
+  devkit's raised surface) is blurrier than the board-plane 18, so it is
+  resolution and not focus. It reads the BOARD fine, which is how the
+  part was identified from `RGB@IO8`. Closes by reading the labels by
+  eye or by hand, once, into a table the sheet can be drawn from.
 - **The hand's latency is unmeasured (2026-09-21).** A pad's report
   crosses Bluetooth, BlueZ, a USB serial line at 921600 and the
   bridge's own loop before the 595 holds it, and none of that is
