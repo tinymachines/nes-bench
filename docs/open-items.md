@@ -44,6 +44,15 @@ entry is the one that raised it, with its date.
   pairing has met no phone. First light is `poll_pads` printing a byte
   that follows the buttons, which needs no radio and settles the half
   that matters.
+- **The pad cable's lead colours disagree (2026-09-21).** The committed
+  table is the bridge's own, metered: pin 1 yellow, 2 blue, 3 black, 4
+  green, 5 red (`LEAD` in `tools/wiring-diagram.py`, and it is printed
+  on both pad connectors of `wiring-pad-ble.svg`). At the bench the
+  colours were given as black, yellow, blue, green, red, which is the
+  same five with the first three rotated. The two agree on pin 4 green
+  and pin 5 red and disagree on GND, CLK and OUT0, so the wrong one puts
+  the clock on ground. One continuity run on an unplugged cable settles
+  it, and it has to happen before the adapter is powered.
 - **The hand's latency is unmeasured (2026-09-21).** A pad's report
   crosses Bluetooth, BlueZ, a USB serial line at 921600 and the
   bridge's own loop before the 595 holds it, and none of that is

@@ -203,6 +203,78 @@ def check_port_pinout():
     return bad
 
 
+def check_padble():
+    """The pad-ble sheet's GPIO pins against the firmware that will run.
+
+    This is the tie that was missing from pad-adapter.svg, and its
+    absence cost two defects on 2026-09-21: the sheet carried the S3's
+    pin numbers on a board that was a C6, and both pullups sat on one
+    pad. A drawing with nothing to be held to always agrees with itself.
+
+    The firmware is the right thing to hold it to rather than a prose
+    table, because a disagreement between them is silent in the worst
+    way: you wire the board exactly as the drawing says, flash firmware
+    that polls three other pins, and get a pad that reads nothing with
+    no error anywhere. The two files have to say one thing.
+    """
+    ino = ROOT / "firmware/pad-ble/pad-ble.ino"
+    if not ino.exists():
+        print("  firmware/pad-ble/pad-ble.ino absent: nothing to hold the pad-ble sheet to")
+        return 1
+    src = ino.read_text()
+    fw = dict(re.findall(r"static const int (\w+)\s*=\s*(\d+);", src))
+
+    # What the firmware's name means as a net on the sheet. The pad's
+    # data lines are the only ones that differ in spelling, because the
+    # schematic names a net after the signal and the firmware after the
+    # pin it reads it on.
+    means = {"PAD_LATCH": "PAD_LATCH", "PAD_CLOCK": "PAD_CLK",
+             "PAD1_DATA": "PAD1_D0", "PAD2_DATA": "PAD2_D0",
+             "MODE_SW": "NC", "LED_PIN": "NC"}
+
+    # The sheet's U1 block, read the way sheet_nets reads the v1 sheet's.
+    ds = (ROOT / "tools" / "draw-schematics.py").read_text()
+    # Inside sheet_padble, not from the top of the file: sheet_pad names
+    # a U1 of the same part, and its MODE_SW and LED ARE wired. Anchoring
+    # on the part string alone read the wrong sheet and reported the
+    # other one's pins, which this check caught on its first run.
+    fn = ds.index("def sheet_padble(")
+    i = ds.index('"U1", "ESP32-C6-DevKitC-1 v1.2"', fn)
+    j = ds.index("sh.twopin(", i)
+    sheet = dict(re.findall(r'\(None, "(GPIO\d+)", "([A-Z0-9_]+)"\)', ds[i:j]))
+
+    bad = 0
+    for name, net in sorted(means.items()):
+        if name not in fw:
+            print(f"  the firmware does not declare {name}, which the pad-ble sheet is held to")
+            bad += 1
+            continue
+        pin = f"GPIO{fw[name]}"
+        if sheet.get(pin) != net:
+            print(f"  {name}: the firmware puts it on {pin}, the pad-ble sheet has {pin} as {sheet.get(pin)!r}, want {net!r}")
+            bad += 1
+    extra = {g: n for g, n in sheet.items() if g not in {f"GPIO{fw[k]}" for k in means if k in fw}}
+    if extra:
+        print(f"  the pad-ble sheet draws GPIO pins the firmware does not name: {extra}")
+        bad += 1
+
+    # The sheet's own claim, in its note, that these are the pins the
+    # BRIDGE firmware already polls a pad on. If that stops being true
+    # the note is a lie and poll_pad needs editing after all.
+    bridge = (ROOT / "firmware/bridge/bridge.ino").read_text()
+    if "CONFIG_IDF_TARGET_ESP32C6" in bridge:
+        c6 = bridge[bridge.index("#if CONFIG_IDF_TARGET_ESP32C6"):bridge.index("#else")]
+        bf = dict(re.findall(r"static const int (\w+)\s*=\s*(-?\d+);", c6))
+        for a, b in (("PAD_LATCH", "PAD_LATCH"), ("PAD_CLOCK", "PAD_CLOCK"), ("PAD1_DATA", "PAD_DATA")):
+            if a in fw and b in bf and fw[a] != bf[b]:
+                print(f"  the pad-ble sheet says these are the bridge's own pad pins, but {a} is "
+                      f"GPIO{fw[a]} there and GPIO{bf[b]} in firmware/bridge")
+                bad += 1
+    if not bad:
+        print(f"check-sheets: {len(means)} pad-ble pins agree between the sheet and firmware/pad-ble")
+    return bad
+
+
 def main():
     w = draw_bench.read_wiring()
     want = {}
@@ -232,6 +304,7 @@ def main():
     bad += check_v1b()
     bad += check_port_pinout()
     bad += check_head()
+    bad += check_padble()
     # The committed SVGs are what the generator writes.
     n_sheets = 0
     with tempfile.TemporaryDirectory() as d:

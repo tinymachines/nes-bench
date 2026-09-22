@@ -55,6 +55,12 @@ OFFSHEET = {
     "PI_USB": "USB to the Pi", "serial": "115200 to the Pi", "LAN": "SCPI over the LAN",
     "EXT_TRIG": "scope EXT TRIG", "VIDEO": "console composite video", "radio": "BLE",
     "USB_HID": "USB to a host", "AC_LEAD_A": "AC adapter lead", "AC_LEAD_B": "AC adapter lead",
+    # VBUS arrives from whatever is at the other end of the USB cable, so
+    # it leaves every sheet it appears on. On pad-adapter it also has an
+    # on-sheet end at the charger, so naming it here only changes how it
+    # is FLAGGED there; on pad-ble, where there is no charger, it is the
+    # difference between a declared inlet and a wire to nowhere.
+    "VBUS": "USB power in",
     "PWR_DRIVE": "from the Pi's GPIO27", "RESET_PAD": "console reset pads",
     "RESET_GND": "console reset pads",
 }
@@ -1013,6 +1019,106 @@ def sheet_pad():
     sh.done(OUT / "pad-adapter.svg")
 
 
+# --------------------------------------------------------- pad-ble build
+def sheet_padble():
+    """The buildable subset of the pad adapter, and the only one of these
+    sheets whose parts are all in the drawer.
+
+    pad-adapter.svg is the whole idea: two pads, a mode switch, a cell, a
+    charger, an LDO, and either an S3 for USB HID or a C6 for BLE. Most
+    of that is on order. This is what can be wired on the breadboard the
+    C6 is already seated in, and it is a separate sheet for the same
+    reason bench-v1b is separate from bench-v1: a sheet somebody builds
+    from has to show the parts they have, or they spend the evening
+    reading around the ones they do not.
+
+    So: two pads, two pullups, the C6 on USB power. No cell, no charger,
+    no LDO, no switch. MODE_SW and LED are declared NC rather than left
+    unmentioned, because an unmentioned pin is silence and this repo's
+    netlist refuses silence on a pin that could have been wired.
+    """
+    sh = Sheet(1560, 1060, "pad-ble v1: two original pads into an ESP32-C6, as a BLE keyboard",
+               "The buildable subset of pad-adapter.svg: USB powered, no cell, no charger, no mode switch. The board on "
+               "the bench is an ESP32-C6-DevKitC-1 v1.2, read off its RGB@IO8 silkscreen 2026-09-21. Nothing built.")
+
+    sh.zone(20, 66, 690, 700, "THE TWO PADS, polled at 3V3 exactly as the bridge polls one")
+    pad_socket(sh, 150, 100, "J1", "PAD_LATCH", "PAD_CLK", "PAD1_D0")
+    pad_socket(sh, 150, 400, "J2", "PAD_LATCH", "PAD_CLK", "PAD2_D0")
+    sh.note(330, 110, [
+        "The pad's 4021 is a CMOS part rated 3 to 18 V, so at 3V3 its",
+        "D0 is 3V3 logic and needs no shifter. That is the datasheet,",
+        "not this bench: MEASURE FIRST, item 4. If a pad will not",
+        "follow its buttons at 3V3, add a 74LVC245 and feed the pad",
+        "5 V; the 245 is on hand.",
+        "",
+        "Both pads share PAD_LATCH and PAD_CLK. They are separate shift",
+        "registers on one strobe, so one pass clocks both and the",
+        "second pad costs a pin, not a poll.",
+        "",
+        "Pin 5 is the supply and 6 and 7 carry nothing, as measured on",
+        "this console's own cable (docs/wiring.md). RING THE CABLE OUT",
+        "UNPLUGGED: a tone through a cable still in the console runs",
+        "through its pull-ups, and pins that share nothing beep.",
+    ])
+    sh.twopin(330, 690, "R1", "10k", "PAD1_D0", "3V3")
+    sh.twopin(330, 714, "R2", "10k", "PAD2_D0", "3V3")
+
+    sh.zone(730, 66, 810, 700, "THE CONTROLLER, on USB power")
+    sh.chip(900, 100, 210, "U1", "ESP32-C6-DevKitC-1 v1.2", [
+        (None, "GPIO2", "PAD_LATCH"), (None, "GPIO3", "PAD_CLK"),
+        (None, "GPIO6", "PAD1_D0"), (None, "GPIO7", "PAD2_D0"),
+        (None, "GPIO10", "NC"), (None, "GPIO11", "NC"),
+        (None, "3V3", "3V3"), (None, "GND", "GND")],
+        [(None, "BLE", "radio"), (None, "USB-C", "VBUS")],
+        extra="NimBLE HID keyboard; no USB device controller")
+    sh.twopin(820, 430, "C1", "100nF", "3V3", "GND")
+    sh.note(760, 480, [
+        "NOT GPIO4, GPIO5 or GPIO15: strapping pins on the C6. The three",
+        "pad pins above are the map firmware/bridge/bridge.ino already",
+        "polls a pad on, so firmware/pad-ble reuses poll_pad unedited.",
+        "",
+        "GPIO10 (MODE_SW) and GPIO11 (LED) are NC here: the firmware reads",
+        "one with a pullup and drives the other, and neither is wired.",
+        "Declared rather than omitted, so the netlist sees a statement",
+        "instead of silence.",
+        "",
+        "C1 sits across the devkit's own 3V3 and GND pins. The devkit is",
+        "regulated already; this is for the breadboard's inductance, which",
+        "is what the bridge's own 100 nF was added for on 2026-09-15.",
+    ])
+
+    sh.zone(20, 790, 1520, 210, "WHAT THIS BOARD CAN AND CANNOT DO, and why the answer is in silicon")
+    # Two text columns, not one string with padding: SVG collapses runs
+    # of spaces, so a label column written with spaces reads as the first
+    # words of the sentence. "BLE HID Works, and reaches a phone" was the
+    # first draft of this band.
+    rows = [
+        ("BLE HID", [
+            "Works, and reaches a phone with no app: a BLE HID-over-GATT keyboard pairs in Settings beside a Magic Keyboard. Browser emulators take keys.",
+            "Needs four things, each in firmware/pad-ble/pad-ble.ino with its reason: bonding with encryption, the PnP ID, a battery service, and the HID",
+            "service UUID plus the keyboard appearance IN THE ADVERTISEMENT, since a host decides what to offer as a pairable accessory from the advert alone."]),
+        ("USB HID", [
+            "IMPOSSIBLE ON THIS PART, and not for want of firmware. The port marked USB is a USB-Serial-JTAG bridge, fixed in silicon. Its soc_caps.h defines",
+            "SOC_USB_SERIAL_JTAG_SUPPORTED and does NOT define SOC_USB_OTG_SUPPORTED, and the core gates USBHIDKeyboard.h on the latter, so it compiles away.",
+            "Read off the installed esp32 core 3.3.11 on 2026-09-21, not recalled. USB HID needs an S3, S2 or P4, and an S3 does BLE too, so it gets both modes."]),
+        ("Gamepad HID", [
+            "Not built. iOS refuses a generic HID gamepad, taking only the MFi, Xbox, PlayStation and Switch Pro layouts, which is why keyboard mode came first."]),
+        ("Two players", [
+            "One pad sends keys. A keyboard report carries six key slots and two pads can ask for ten, so two on one report would drop whichever arrived last.",
+            "Pad 2 is polled and printed so its wiring can be proved. Two players wants gamepad mode with two report IDs, on a part that can do it."]),
+        ("Bench mode", [
+            "Not built, and the cheapest of them: the C6's USB already IS a serial port, so pad bytes over USB serial into a uinput shim need no new hardware."]),
+    ]
+    y = 824
+    for label, lines in rows:
+        sh.text(40, y, label, "pin")
+        for l in lines:
+            sh.text(168, y, l, "pin")
+            y += 14
+        y += 4
+    sh.done(OUT / "pad-ble.svg")
+
+
 # ------------------------------------------------------------ the two stacks
 # Flow types on the exercise sheet, each a colour and a stroke. What an
 # arrow carries decides its class; the direction is the way the thing
@@ -1328,4 +1434,5 @@ if __name__ == "__main__":
     sheet_v2b()
     sheet_logic()
     sheet_pad()
+    sheet_padble()
     sheet_exercise()

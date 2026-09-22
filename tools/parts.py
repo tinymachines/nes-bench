@@ -31,6 +31,7 @@ SHEETS = [
     ("bench-v1", "sheet_v1", "The ESP32-C6 alternative to v1b. Not the build."),
     ("bench-v2", "sheet_v2", "The C6 alternative to v2b. Not the build."),
     ("pad-adapter", "sheet_pad", "The original pad as a wireless HID device. A separate project."),
+    ("pad-ble", "sheet_padble", "**Buildable now.** The subset of the adapter whose parts are all on hand: two pads, two pullups, the C6 on USB power."),
 ]
 
 # AUTHORED, and the only authored thing here: where each part is. A

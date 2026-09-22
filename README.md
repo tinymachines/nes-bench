@@ -112,7 +112,9 @@ register's job, as it is in the pad.
   The report descriptor and the key mapping are plain C in `keymap.h`
   and are held on the desk by `tools/test-pad-keymap.sh`, which parses
   the descriptor the way a host parses it; everything else in there
-  needs the part and has met no pad.
+  needs the part and has met no pad. The build document, with both
+  drawings, the wire list and the two measure-first items it rests on,
+  is `docs/pad-ble-build.md`.
 - `head/`: the Pi's daemon, the bench under one script (UDP in, the
   bridge over serial, relays, the scope over SCPI, runs served back over
   HTTP); `docs/script.md` is the script's words, shared with the model.

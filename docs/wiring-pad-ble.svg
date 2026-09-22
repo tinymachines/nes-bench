@@ -1,0 +1,152 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1387 546" width="1387" height="546" role="img" aria-label="pad-ble adapter wiring diagram">
+<style>
+ text{font-family:ui-sans-serif,'DejaVu Sans',sans-serif;fill:#222}
+ .title{font-size:24px;font-weight:700}
+ .sub{font-size:13px;fill:#555}
+ .ref{font-size:14px;font-weight:700}
+ .note{font-size:12px;fill:#555}
+ .pin{font-family:ui-monospace,'DejaVu Sans Mono',monospace;font-size:11.5px}
+ .pinno{font-family:ui-monospace,'DejaVu Sans Mono',monospace;font-size:11.5px;fill:#666}
+ .net{font-family:ui-monospace,'DejaVu Sans Mono',monospace;font-size:12px;font-weight:700;paint-order:stroke;stroke:#fff;stroke-width:3px;stroke-linejoin:round}
+ .rail{font-family:ui-monospace,'DejaVu Sans Mono',monospace;font-size:11px;font-weight:700}
+ .lead{font-size:11.5px;font-style:italic;fill:#555}
+ .body{fill:#f4f2ea;stroke:#222;stroke-width:1.6}
+ .hdr{fill:#eef2f7;stroke:#222;stroke-width:1.4}
+ .cap{fill:#fff;stroke:#222;stroke-width:1.2}
+ .stub{stroke:#222;stroke-width:1.6}
+ .wire{fill:none;stroke-width:2.2;stroke-linejoin:miter}
+ .railline{fill:none;stroke-width:3}
+ .notch{fill:#fff;stroke:#222;stroke-width:1.2}
+</style>
+<rect x="0" y="0" width="1387" height="546" fill="#ffffff"/>
+<g class="sheet-heading" data-height="60">
+<text class="title" x="24.0" y="30.0" text-anchor="start">pad-ble v1: two original pads into an ESP32-C6, at right angles</text>
+<text class="sub" x="24.0" y="46.0" text-anchor="start">The standalone adapter, every wire read out of pad-ble.svg. Both pads share the latch and the clock, so those two nets reach four pins each. The pads run from 3V3, not 5 V, which is measure-first item 4.</text>
+</g>
+<line class="railline" x1="40.0" y1="122.0" x2="1232.0" y2="122.0" stroke="#b35c00"/>
+<text class="rail" x="1238.0" y="126.0" text-anchor="start">3V3</text>
+<line class="railline" x1="40.0" y1="476.0" x2="1232.0" y2="476.0" stroke="#b35c00"/>
+<text class="rail" x="1238.0" y="480.0" text-anchor="start">3V3</text>
+<line class="railline" x1="40.0" y1="122.0" x2="40.0" y2="476.0" stroke="#b35c00"/>
+<line class="railline" x1="54.0" y1="144.0" x2="1232.0" y2="144.0" stroke="#1b64c8"/>
+<text class="rail" x="1238.0" y="148.0" text-anchor="start">GND</text>
+<line class="railline" x1="54.0" y1="454.0" x2="1232.0" y2="454.0" stroke="#1b64c8"/>
+<text class="rail" x="1238.0" y="458.0" text-anchor="start">GND</text>
+<line class="railline" x1="54.0" y1="144.0" x2="54.0" y2="454.0" stroke="#1b64c8"/>
+<text class="note" x="36.0" y="114.0" text-anchor="start">3V3 and GND from the devkit's own pins: no separate supply on this build</text>
+<rect class="hdr" x="70" y="244" width="164" height="170" rx="4"/>
+<text class="ref" x="152.0" y="327.0" text-anchor="middle">J1 pad 1</text>
+<text class="note" x="152.0" y="342.0" text-anchor="middle">the plug half of an original pad</text>
+<line class="stub" x1="92.0" y1="244.0" x2="92.0" y2="226.0"/>
+<text class="pin" x="95.5" y="256.0" text-anchor="end" transform="rotate(-90 95.5 256.0)">GND</text>
+<text class="lead" x="107.0" y="256.0" text-anchor="end" transform="rotate(-90 107.0 256.0)">1 yellow</text>
+<line class="stub" x1="122.0" y1="244.0" x2="122.0" y2="226.0"/>
+<text class="pin" x="125.5" y="256.0" text-anchor="end" transform="rotate(-90 125.5 256.0)">CLK</text>
+<text class="lead" x="137.0" y="256.0" text-anchor="end" transform="rotate(-90 137.0 256.0)">2 blue</text>
+<line class="stub" x1="152.0" y1="244.0" x2="152.0" y2="226.0"/>
+<text class="pin" x="155.5" y="256.0" text-anchor="end" transform="rotate(-90 155.5 256.0)">OUT0</text>
+<text class="lead" x="167.0" y="256.0" text-anchor="end" transform="rotate(-90 167.0 256.0)">3 black</text>
+<line class="stub" x1="182.0" y1="244.0" x2="182.0" y2="226.0"/>
+<text class="pin" x="185.5" y="256.0" text-anchor="end" transform="rotate(-90 185.5 256.0)">D0</text>
+<text class="lead" x="197.0" y="256.0" text-anchor="end" transform="rotate(-90 197.0 256.0)">4 green</text>
+<line class="stub" x1="212.0" y1="244.0" x2="212.0" y2="226.0"/>
+<text class="pin" x="215.5" y="256.0" text-anchor="end" transform="rotate(-90 215.5 256.0)">+5V</text>
+<text class="lead" x="227.0" y="256.0" text-anchor="end" transform="rotate(-90 227.0 256.0)">5 red</text>
+<rect class="hdr" x="352" y="244" width="164" height="170" rx="4"/>
+<text class="ref" x="434.0" y="327.0" text-anchor="middle">J2 pad 2</text>
+<text class="note" x="434.0" y="342.0" text-anchor="middle">shares the latch and the clock</text>
+<line class="stub" x1="374.0" y1="244.0" x2="374.0" y2="226.0"/>
+<text class="pin" x="377.5" y="256.0" text-anchor="end" transform="rotate(-90 377.5 256.0)">GND</text>
+<text class="lead" x="389.0" y="256.0" text-anchor="end" transform="rotate(-90 389.0 256.0)">1 yellow</text>
+<line class="stub" x1="404.0" y1="244.0" x2="404.0" y2="226.0"/>
+<text class="pin" x="407.5" y="256.0" text-anchor="end" transform="rotate(-90 407.5 256.0)">CLK</text>
+<text class="lead" x="419.0" y="256.0" text-anchor="end" transform="rotate(-90 419.0 256.0)">2 blue</text>
+<line class="stub" x1="434.0" y1="244.0" x2="434.0" y2="226.0"/>
+<text class="pin" x="437.5" y="256.0" text-anchor="end" transform="rotate(-90 437.5 256.0)">OUT0</text>
+<text class="lead" x="449.0" y="256.0" text-anchor="end" transform="rotate(-90 449.0 256.0)">3 black</text>
+<line class="stub" x1="464.0" y1="244.0" x2="464.0" y2="226.0"/>
+<text class="pin" x="467.5" y="256.0" text-anchor="end" transform="rotate(-90 467.5 256.0)">D0</text>
+<text class="lead" x="479.0" y="256.0" text-anchor="end" transform="rotate(-90 479.0 256.0)">4 green</text>
+<line class="stub" x1="494.0" y1="244.0" x2="494.0" y2="226.0"/>
+<text class="pin" x="497.5" y="256.0" text-anchor="end" transform="rotate(-90 497.5 256.0)">+5V</text>
+<text class="lead" x="509.0" y="256.0" text-anchor="end" transform="rotate(-90 509.0 256.0)">5 red</text>
+<rect class="hdr" x="634" y="244" width="74" height="170" rx="4"/>
+<text class="ref" x="671.0" y="327.0" text-anchor="middle">R1 10k</text>
+<text class="note" x="671.0" y="342.0" text-anchor="middle">pad 1 D0 pullup</text>
+<line class="stub" x1="656.0" y1="244.0" x2="656.0" y2="226.0"/>
+<text class="pin" x="659.5" y="256.0" text-anchor="end" transform="rotate(-90 659.5 256.0)">1</text>
+<line class="stub" x1="686.0" y1="244.0" x2="686.0" y2="226.0"/>
+<text class="pin" x="689.5" y="256.0" text-anchor="end" transform="rotate(-90 689.5 256.0)">2</text>
+<rect class="hdr" x="826" y="244" width="74" height="170" rx="4"/>
+<text class="ref" x="863.0" y="327.0" text-anchor="middle">R2 10k</text>
+<text class="note" x="863.0" y="342.0" text-anchor="middle">pad 2 D0 pullup</text>
+<line class="stub" x1="848.0" y1="244.0" x2="848.0" y2="226.0"/>
+<text class="pin" x="851.5" y="256.0" text-anchor="end" transform="rotate(-90 851.5 256.0)">1</text>
+<line class="stub" x1="878.0" y1="244.0" x2="878.0" y2="226.0"/>
+<text class="pin" x="881.5" y="256.0" text-anchor="end" transform="rotate(-90 881.5 256.0)">2</text>
+<rect class="hdr" x="1018" y="244" width="194" height="170" rx="4"/>
+<text class="ref" x="1115.0" y="327.0" text-anchor="middle">U1 ESP32-C6-DevKitC-1</text>
+<text class="note" x="1115.0" y="342.0" text-anchor="middle">3.3 V logic; BLE only</text>
+<line class="stub" x1="1040.0" y1="244.0" x2="1040.0" y2="226.0"/>
+<text class="pin" x="1043.5" y="256.0" text-anchor="end" transform="rotate(-90 1043.5 256.0)">GPIO2</text>
+<line class="stub" x1="1070.0" y1="244.0" x2="1070.0" y2="226.0"/>
+<text class="pin" x="1073.5" y="256.0" text-anchor="end" transform="rotate(-90 1073.5 256.0)">GPIO3</text>
+<line class="stub" x1="1100.0" y1="244.0" x2="1100.0" y2="226.0"/>
+<text class="pin" x="1103.5" y="256.0" text-anchor="end" transform="rotate(-90 1103.5 256.0)">GPIO6</text>
+<line class="stub" x1="1130.0" y1="244.0" x2="1130.0" y2="226.0"/>
+<text class="pin" x="1133.5" y="256.0" text-anchor="end" transform="rotate(-90 1133.5 256.0)">GPIO7</text>
+<line class="stub" x1="1160.0" y1="244.0" x2="1160.0" y2="226.0"/>
+<text class="pin" x="1163.5" y="256.0" text-anchor="end" transform="rotate(-90 1163.5 256.0)">3V3</text>
+<line class="stub" x1="1190.0" y1="244.0" x2="1190.0" y2="226.0"/>
+<text class="pin" x="1193.5" y="256.0" text-anchor="end" transform="rotate(-90 1193.5 256.0)">GND</text>
+<line class="stub" x1="1040.0" y1="414.0" x2="1040.0" y2="432.0"/>
+<text class="pin" x="1043.5" y="402.0" text-anchor="start" transform="rotate(-90 1043.5 402.0)">BLE</text>
+<line class="stub" x1="1070.0" y1="414.0" x2="1070.0" y2="432.0"/>
+<text class="pin" x="1073.5" y="402.0" text-anchor="start" transform="rotate(-90 1073.5 402.0)">USB-C</text>
+<line class="stub" x1="1242.0" y1="454.0" x2="1242.0" y2="476.0"/>
+<rect class="cap" x="1237" y="459.0" width="10" height="12"/>
+<text class="note" x="1251.0" y="469.0" text-anchor="start">C1 100nF</text>
+<line class="wire" x1="212.0" y1="226.0" x2="212.0" y2="122.0" stroke="#b35c00"/>
+<circle cx="212.0" cy="122.0" r="3.4" fill="#b35c00"/>
+<line class="wire" x1="494.0" y1="226.0" x2="494.0" y2="122.0" stroke="#b35c00"/>
+<circle cx="494.0" cy="122.0" r="3.4" fill="#b35c00"/>
+<line class="wire" x1="686.0" y1="226.0" x2="686.0" y2="122.0" stroke="#b35c00"/>
+<circle cx="686.0" cy="122.0" r="3.4" fill="#b35c00"/>
+<line class="wire" x1="878.0" y1="226.0" x2="878.0" y2="122.0" stroke="#b35c00"/>
+<circle cx="878.0" cy="122.0" r="3.4" fill="#b35c00"/>
+<line class="wire" x1="1160.0" y1="226.0" x2="1160.0" y2="122.0" stroke="#b35c00"/>
+<circle cx="1160.0" cy="122.0" r="3.4" fill="#b35c00"/>
+<line class="wire" x1="92.0" y1="226.0" x2="92.0" y2="144.0" stroke="#1b64c8"/>
+<circle cx="92.0" cy="144.0" r="3.4" fill="#1b64c8"/>
+<line class="wire" x1="374.0" y1="226.0" x2="374.0" y2="144.0" stroke="#1b64c8"/>
+<circle cx="374.0" cy="144.0" r="3.4" fill="#1b64c8"/>
+<line class="wire" x1="1190.0" y1="226.0" x2="1190.0" y2="144.0" stroke="#1b64c8"/>
+<circle cx="1190.0" cy="144.0" r="3.4" fill="#1b64c8"/>
+<line class="wire" x1="122.0" y1="167.0" x2="1070.0" y2="167.0" stroke="#b5651d"/>
+<line class="wire" x1="122.0" y1="226.0" x2="122.0" y2="167.0" stroke="#b5651d"/>
+<line class="wire" x1="404.0" y1="226.0" x2="404.0" y2="167.0" stroke="#b5651d"/>
+<line class="wire" x1="1070.0" y1="226.0" x2="1070.0" y2="167.0" stroke="#b5651d"/>
+<circle cx="404.0" cy="167.0" r="3.4" fill="#b5651d"/>
+<text class="net" x="126.0" y="164.0" text-anchor="start">PAD_CLK</text>
+<line class="wire" x1="152.0" y1="197.0" x2="1040.0" y2="197.0" stroke="#8d1f5e"/>
+<line class="wire" x1="152.0" y1="226.0" x2="152.0" y2="197.0" stroke="#8d1f5e"/>
+<line class="wire" x1="434.0" y1="226.0" x2="434.0" y2="197.0" stroke="#8d1f5e"/>
+<line class="wire" x1="1040.0" y1="226.0" x2="1040.0" y2="197.0" stroke="#8d1f5e"/>
+<circle cx="434.0" cy="197.0" r="3.4" fill="#8d1f5e"/>
+<text class="net" x="156.0" y="194.0" text-anchor="start">PAD_LATCH</text>
+<line class="wire" x1="182.0" y1="182.0" x2="1100.0" y2="182.0" stroke="#7a3fbf"/>
+<line class="wire" x1="182.0" y1="226.0" x2="182.0" y2="182.0" stroke="#7a3fbf"/>
+<line class="wire" x1="656.0" y1="226.0" x2="656.0" y2="182.0" stroke="#7a3fbf"/>
+<line class="wire" x1="1100.0" y1="226.0" x2="1100.0" y2="182.0" stroke="#7a3fbf"/>
+<circle cx="656.0" cy="182.0" r="3.4" fill="#7a3fbf"/>
+<text class="net" x="186.0" y="179.0" text-anchor="start">PAD1_D0</text>
+<line class="wire" x1="464.0" y1="212.0" x2="1130.0" y2="212.0" stroke="#0f8f9e"/>
+<line class="wire" x1="464.0" y1="226.0" x2="464.0" y2="212.0" stroke="#0f8f9e"/>
+<line class="wire" x1="848.0" y1="226.0" x2="848.0" y2="212.0" stroke="#0f8f9e"/>
+<line class="wire" x1="1130.0" y1="226.0" x2="1130.0" y2="212.0" stroke="#0f8f9e"/>
+<circle cx="848.0" cy="212.0" r="3.4" fill="#0f8f9e"/>
+<text class="net" x="468.0" y="209.0" text-anchor="start">PAD2_D0</text>
+<line class="wire" x1="1040.0" y1="432.0" x2="1040.0" y2="458.0" stroke="#444"/>
+<text class="net" x="1034.0" y="462.0" text-anchor="end">radio: BLE</text>
+<text class="note" x="1363" y="530" text-anchor="end">4 nets on tracks, 0 of them crossing the row; 10 supply pins on the rails. drawn by tools/wiring-diagram.py</text>
+</svg>

@@ -143,3 +143,14 @@ The original pad as a wireless HID device. A separate project.
 | SW2 | power | VBAT to VBAT_SW |
 | LED1 | +330R | LED to GND |
 
+## pad-ble
+
+**Buildable now.** The subset of the adapter whose parts are all on hand: two pads, two pullups, the C6 on USB power.
+
+| ref | part | on the sheet |
+|---|---|---|
+| R1 | 10k | PAD1_D0 to 3V3 |
+| R2 | 10k | PAD2_D0 to 3V3 |
+| U1 | ESP32-C6-DevKitC-1 v1.2 | NimBLE HID keyboard; no USB device controller |
+| C1 | 100nF | 3V3 to GND |
+

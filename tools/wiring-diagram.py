@@ -87,7 +87,11 @@ ROW = [
 CAPS = {"C1": "U1", "C2": "U2", "C3": "U3"}
 # The cut cable's lead colours, by pin, both halves (docs/cheat-sheet.md).
 LEAD = {1: "yellow", 2: "blue", 3: "black", 4: "green", 5: "red"}
-RAIL_COLOUR = {"+5V": "#d02b2b", "GND": "#1b64c8", "PI_5V": "#d02b2b"}
+RAIL_COLOUR = {"+5V": "#d02b2b", "GND": "#1b64c8", "PI_5V": "#d02b2b",
+               # The same 3V3 the schematics use for their rail flags
+               # (.rail3 in draw-schematics.py), so a reader moving between
+               # the two drawings sees one colour for one supply.
+               "3V3": "#b35c00"}
 
 # Sheet 3, the head's hands (bench-v1b-3.svg): the Pi's four jumpers,
 # the PC817 across the reset pads, the relay in the adapter lead. Left
@@ -113,6 +117,31 @@ ROW_HEAD = [
                        (4, "4 yellow, reset -"), (5, "5 white, LED")]}),
 ]
 
+# pad-ble (pad-ble.svg): the standalone adapter, the buildable subset.
+# Left to right as they sit on the breadboard the C6 is already in: the
+# two pad cables at the left where their leads come in, the two pullups,
+# then the devkit. Every pin is keyed by NAME here, because a devkit's
+# header has no pin numbers on the schematic and the netlist keys a
+# nameless pin by its name.
+#
+# Pins 6 and 7 of each pad cable are not drawn: the schematic declares
+# them n/c, and the console's own cable does not carry them. The bridge's
+# J1 and J2 leave them off for the same reason.
+ROW_PADBLE = [
+    ("J1", {"kind": "header", "label": "J1 pad 1", "sub": "the plug half of an original pad",
+            "top": [(1, "GND"), (2, "CLK"), (3, "OUT0"), (4, "D0"), (5, "+5V")], "bottom": []}),
+    ("J2", {"kind": "header", "label": "J2 pad 2", "sub": "shares the latch and the clock",
+            "top": [(1, "GND"), (2, "CLK"), (3, "OUT0"), (4, "D0"), (5, "+5V")], "bottom": []}),
+    ("R1", {"kind": "header", "label": "R1 10k", "sub": "pad 1 D0 pullup",
+            "top": [(1, "1"), (2, "2")], "bottom": []}),
+    ("R2", {"kind": "header", "label": "R2 10k", "sub": "pad 2 D0 pullup",
+            "top": [(1, "1"), (2, "2")], "bottom": []}),
+    ("U1", {"kind": "header", "label": "U1 ESP32-C6-DevKitC-1", "sub": "3.3 V logic; BLE only",
+            "top": [(None, "GPIO2"), (None, "GPIO3"), (None, "GPIO6"), (None, "GPIO7"),
+                    (None, "3V3"), (None, "GND")],
+            "bottom": [(None, "BLE"), (None, "USB-C")]}),
+]
+
 # What differs between the two sheets: the netlist, the row, the rails,
 # the words. Everything about routing and drawing is shared.
 SHEETS = {
@@ -129,6 +158,13 @@ SHEETS = {
                      "are the Pi's side, bottom edges the console's; the two never meet. Every wire is read out of the schematic.",
                  built_title="The head's hands as built",
                  rails_note="the Pi's 5 V and GND, positions 2 and 6: the relay's coil and the two modules' input returns"),
+    "padble": dict(netlist="pad-ble", row=ROW_PADBLE, caps={"C1": "U1"}, rails=("3V3", "GND"), out="wiring-pad-ble",
+                   status=None, aria="pad-ble adapter wiring diagram",
+                   title="pad-ble v1: two original pads into an ESP32-C6, at right angles",
+                   sub="The standalone adapter, every wire read out of pad-ble.svg. Both pads share the latch and the clock, "
+                       "so those two nets reach four pins each. The pads run from 3V3, not 5 V, which is measure-first item 4.",
+                   built_title="pad-ble v1 as built",
+                   rails_note="3V3 and GND from the devkit's own pins: no separate supply on this build"),
 }
 PALETTE = ["#7a3fbf", "#0f8f9e", "#b5651d", "#8d1f5e", "#3f6f2a", "#5b5bd6", "#c2185b",
            "#00796b", "#e65100", "#4527a0", "#2e7d32", "#6d4c41", "#0277bd", "#ad1457",
