@@ -959,14 +959,31 @@ def sheet_pad():
                        "at 3V3, add a 74LVC245 and feed the pad 5 V.",
                        "", "Poll: OUT0 high 12 us, low, 8 clocks at 1 us,", "read D0 before each rising edge. 1 kHz.",
                        "The same poll_pad() as firmware/bridge/bridge.ino."])
-    sh.bank(400, 300, ["R1", "R2"], "10k", "PAD1_D0", "3V3")
-    sh.note(340, 330, ["pullups on D0 (both pads): unplugged reads 'nothing pressed'"])
+    sh.twopin(400, 268, "R1", "10k", "PAD1_D0", "3V3")
+    sh.twopin(400, 292, "R2", "10k", "PAD2_D0", "3V3")
+    sh.note(340, 318, ["One pullup per pad, each to its OWN D0, so an unplugged socket reads",
+                       "'nothing pressed' rather than all eight.",
+                       "",
+                       "CORRECTED 2026-09-21: these were drawn with bank(), which is N parts",
+                       "between the SAME two nets, so pad 1 carried two pullups and pad 2 none",
+                       "while the note beside them claimed 'both pads'. The netlist recorded",
+                       "what was drawn, so nothing downstream disagreed with it."])
 
     sh.zone(760, 60, 920, 560, "CONTROLLER AND POWER")
-    sh.chip(900, 90, 190, "U1", "ESP32-S3-DevKitC-1 (or C6)", [
-        (None, "GPIO4", "PAD_LATCH"), (None, "GPIO5", "PAD_CLK"), (None, "GPIO6", "PAD1_D0"), (None, "GPIO7", "PAD2_D0"),
-        (None, "GPIO15", "MODE_SW"), (None, "GPIO16", "LED"), (None, "3V3", "3V3"), (None, "GND", "GND")],
-        [(None, "USB D+/D-", "USB_HID"), (None, "5V in", "VBUS"), (None, "BLE", "radio")], extra="TinyUSB HID + NimBLE HID")
+    sh.chip(900, 90, 190, "U1", "ESP32-C6-DevKitC-1 v1.2", [
+        (None, "GPIO2", "PAD_LATCH"), (None, "GPIO3", "PAD_CLK"), (None, "GPIO6", "PAD1_D0"), (None, "GPIO7", "PAD2_D0"),
+        (None, "GPIO10", "MODE_SW"), (None, "GPIO11", "LED"), (None, "3V3", "3V3"), (None, "GND", "GND")],
+        [(None, "BLE", "radio"), (None, "5V in", "VBUS")], extra="NimBLE HID; no USB device")
+    sh.note(900, 300, ["CORRECTED 2026-09-21. This sheet carried the S3's pin numbers while",
+                       "offering the C6 as the on-hand part, and three of them are pins the C6",
+                       "must not use: GPIO4, GPIO5 and GPIO15 are strapping pins there",
+                       "(docs/wiring.md, 'left alone'). The map above is the one",
+                       "firmware/bridge/bridge.ino ALREADY polls a pad on, so poll_pad() runs",
+                       "unedited and step 2 of the build order needs no firmware change.",
+                       "",
+                       "An S3 needs its own map and not this one: GPIO3 is a strapping pin",
+                       "there, and GPIO19/20 are its USB. One map does not fit both parts,",
+                       "and pretending it does is what put GPIO4 on this drawing."])
     sh.chip(1300, 90, 150, "U2", "TP4056 + protection", [(None, "IN+", "VBUS"), (None, "IN-", "GND")],
             [(None, "BAT+", "VBAT"), (None, "BAT-", "GND"), (None, "OUT+", "VBAT_SW")], extra="LiPo charger module")
     sh.chip(1300, 340, 150, "U3", "MCP1700-3302 LDO", [(None, "VIN", "VBAT_SW"), (None, "GND", "GND")], [(None, "VOUT", "3V3")],

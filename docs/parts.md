@@ -32,7 +32,6 @@ Every distinct part across every sheet, with where it is.
 | 74LVC245 | on hand | C6 sheets only; no UNO sheet uses one any more |
 | ESP32-C6-DevKitC-1 v1.2 | on hand | DevKitC-1 v1.2, the alternative build |
 | 10k | check | pad adapter only. A common value; check the drawer before ordering |
-| ESP32-S3-DevKitC-1 (or C6) | to order | only if the pad adapter gets built |
 | TP4056 + protection | to order | pad adapter only |
 | MCP1700-3302 LDO | to order | pad adapter only |
 | slide | to order | pad adapter only, the power switch |
@@ -136,8 +135,8 @@ The original pad as a wireless HID device. A separate project.
 | ref | part | on the sheet |
 |---|---|---|
 | R1 | 10k | PAD1_D0 to 3V3 |
-| R2 | 10k | PAD1_D0 to 3V3 |
-| U1 | ESP32-S3-DevKitC-1 (or C6) | TinyUSB HID + NimBLE HID |
+| R2 | 10k | PAD2_D0 to 3V3 |
+| U1 | ESP32-C6-DevKitC-1 v1.2 | NimBLE HID; no USB device |
 | U2 | TP4056 + protection | LiPo charger module |
 | U3 | MCP1700-3302 LDO | or the devkit's own 3V3 from VBUS |
 | SW1 | slide | MODE_SW to GND |

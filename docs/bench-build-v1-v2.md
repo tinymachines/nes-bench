@@ -323,8 +323,14 @@ are the whole thing.
 1. Measure-first item 4 on the bench first: an original pad at 3V3
    follows its buttons. If it does not, the adapter needs a 74LVC245
    and 5 V to the pad, and the sheet says where.
-2. Wire J1 to GPIO4, 5, 6 and 3V3/GND. Flash the bench's `poll_pad`
-   and print the byte. Buttons appear.
+2. Wire J1 to **GPIO2 (latch), GPIO3 (clock), GPIO6 (D0)** and
+   3V3/GND, with a 10 k from D0 up to 3V3. Flash the bench's
+   `poll_pad` and print the byte. Buttons appear.
+   **Not GPIO4 and 5**, which this step said until 2026-09-21: those
+   are the S3's numbers and they are strapping pins on the C6, which
+   is the part on hand. The three above are the map
+   `firmware/bridge/bridge.ino` already polls a pad on, so `poll_pad`
+   runs unedited.
 3. Add the HID service (NimBLE on either chip; TinyUSB on the S3).
    Keyboard mode first, since a phone will show it working with no app.
 4. Gamepad mode behind the switch.
