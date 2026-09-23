@@ -120,6 +120,23 @@ file that does not hash to its record, a record naming a commit that is
 not the checkout's head, or a record written from a dirty tree. Each
 refusal names `--check` as the command that says the same thing here.
 
+**A hook can do the two middle steps for you**, and on this bench it
+is installed:
+
+    tools/install-hooks.sh          # install
+    tools/install-hooks.sh --check  # say what is installed, change nothing
+
+It symlinks `.git/hooks/post-commit` at `tools/post-commit-hook.sh`, so
+the tracked file is the one that runs. It rebuilds and checks after
+every commit, about 7 seconds, prints one line when all three agree and
+the refusal when they do not. It skips during a rebase or a merge,
+where HEAD churns per commit and only the end state matters, and says
+that it skipped. It cannot block a commit and does not try: git ignores
+a post-commit hook's status and the commit already exists, so it
+reports and never amends. **Cloning does not install it**; a hook that
+runs code on every commit should be somebody's decision, so it stays a
+command you type.
+
 **`--check` before the commit cannot pass, and that is not a bug.** The
 record names the commit its sheets came from, and before the commit
 that commit does not exist; the tree is also dirty by definition. A
