@@ -41,8 +41,13 @@ head=$(git rev-parse --short HEAD)
 echo "post-commit: rebuilding the drawing packages at $head (about 7 s)..."
 
 if ! out=$(python3 tools/make-package.py 2>&1); then
-  echo "post-commit: THE BUILD REFUSED. The packages are stale until this is fixed:"
-  echo "$out" | tail -12
+  # The line that says WHY is the last one; everything above it is the
+  # traceback that led there. Printing twelve lines put the answer at
+  # the bottom of eleven lines of noise, at the bottom of a commit,
+  # which is where nobody reads.
+  echo "post-commit: THE BUILD REFUSED, so the packages are stale until this is fixed:"
+  echo "  $(echo "$out" | tail -1)"
+  echo "  run 'python3 tools/make-package.py' to see the whole of it."
   exit 0
 fi
 
@@ -51,7 +56,7 @@ fi
 # with the person who can fix it on the other side of it.
 if ! out=$(python3 tools/make-package.py --check 2>&1); then
   echo "post-commit: THE PACKAGES DISAGREE WITH WHAT BUILT THEM:"
-  echo "$out" | tail -12
+  echo "$out" | grep -v '^make-package:' | tail -6
   exit 0
 fi
 
