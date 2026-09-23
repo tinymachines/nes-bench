@@ -350,6 +350,27 @@ def build(cfg, out, svg_only):
     if r.returncode != 0 or not pdf.exists():
         print(f"rsvg-convert failed: {r.stderr.strip()[:300]}")
         return 1
+    # A SUPERSEDED REVISION IS NOT AN ARCHIVE, IT IS A LIVE WRONG
+    # DRAWING. The SVG pass above already drops sheets this build did
+    # not write; the PDF did not, so this directory had accumulated
+    # every revision since A, and the site's pull copies whatever the
+    # package directories hold. On 2026-09-23 that meant fifteen
+    # revisions of TM-NESB-001 were publicly downloadable and answering
+    # 200, including revisions from before the port pinout was replaced
+    # by this console's own measurement and before the clock filter
+    # reached the 165. Nothing linked them and nothing marked them
+    # superseded, so an old link or a search result handed somebody a
+    # drawing this bench had already disproved.
+    #
+    # The package directory now holds exactly what the manifest names,
+    # which makes "copy whatever is there" correct by construction
+    # rather than by their side filtering. An older revision is not
+    # lost: its manifest and its sheets are in git history, which is
+    # where a superseded drawing belongs.
+    for f in out.glob(f"{cfg['project']}-{cfg['docno']}-rev*.pdf"):
+        if f != pdf:
+            f.unlink()
+            print(f"  withdrew superseded {f.name}")
     print(f"\n{pdf.relative_to(ROOT)}  {pdf.stat().st_size//1024} KB, {len(files)} pages\n")
     return 0
 
