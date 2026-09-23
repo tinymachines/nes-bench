@@ -102,6 +102,36 @@ register's job, as it is in the pad.
   bridge's chips with every pin below. Derived: `tools/draw-bench.py`
   reads the pin tables in `docs/wiring.md`, so the drawing cannot
   disagree with the document (`--check` refuses a stale one).
+## Committing here has an obligation attached
+
+**Commit, then rebuild the drawing packages, then check, then push.**
+
+    git commit ...
+    python3 tools/make-package.py          # rebuilds all three
+    python3 tools/make-package.py --check  # must exit 0
+    git push
+
+The site copies the package PDFs out of this working directory byte for
+byte and never builds them, because `docs/package/` is gitignored and a
+fresh checkout has none. So a commit that is not followed by a rebuild
+leaves PDFs that were built from different sources than the checkout
+describes, and the site's pull refuses: no record beside the PDF, a
+file that does not hash to its record, a record naming a commit that is
+not the checkout's head, or a record written from a dirty tree. Each
+refusal names `--check` as the command that says the same thing here.
+
+**`--check` before the commit cannot pass, and that is not a bug.** The
+record names the commit its sheets came from, and before the commit
+that commit does not exist; the tree is also dirty by definition. A
+clean record is only obtainable afterwards, which is why the order
+above is the order.
+
+Any commit makes all three stale, including one that touches no sheet.
+That is a plain equality rather than a list of sources two repositories
+would have to keep in step, and it is cheap because the builds are
+reproducible: `SOURCE_DATE_EPOCH` comes from the commit's own time, so
+a package built twice at one commit is byte-identical.
+
 - `firmware/bridge/`: the ESP32 sketch (arduino-cli, esp32 core 3.x;
   the bench's board is an ESP32-C6-DevKitC-1).
 - `firmware/pad-ble/`: the other direction, and standalone. An original
