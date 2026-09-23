@@ -1,0 +1,69 @@
+{
+  "org": "tinymachines",
+  "project": "nes-bench",
+  "docno": "TM-NESB-003",
+  "rev": "A",
+  "drawn": "bisenbek",
+  "page": "ansi-a",
+  "title": "Original pad to Bluetooth keyboard, pad-ble v1",
+  "intro": [
+    "Two original NES controllers into an ESP32-C6, which presents them to a phone or a laptop as a plain Bluetooth keyboard. It is the bench bridge's own pad poll with a radio behind it instead of a shift register, and it stands alone: no Pi, no UNO, no console.",
+    "THIS IS A DRAWING, NOT A BUILD. Nothing here has been made and nothing about the circuit has been measured. The firmware compiles and its key mapping passes on the desk; no pad has been wired to it and no host has paired it. It rests on one thing open since 2026-09-07: that an original pad's 4021 follows its buttons at 3.3 V. The datasheet says it should; this bench has not seen it.",
+    "What HAS been measured is the board rather than the circuit. The part was identified off its own silkscreen, which reads RGB@IO8 and so names a C6 and not an S3, and its header order was read by hand from photographs, sixteen pins a side, because the bench eye cannot resolve a silkscreen that small. Those readings are what let the breadboard sheet say which hole."
+  ],
+  "revisions": [
+    [
+      "-",
+      "2026-09-21",
+      "drawn as the buildable subset of the pad adapter: no cell, no charger, no switch"
+    ],
+    [
+      "-",
+      "2026-09-21",
+      "S3 pin numbers removed; GPIO4, GPIO5 and GPIO15 are strapping pins on the C6"
+    ],
+    [
+      "-",
+      "2026-09-22",
+      "one pullup per pad: R1 and R2 had both been drawn on pad 1's data line"
+    ],
+    [
+      "A",
+      "2026-09-22",
+      "devkit headers read off the part, breadboard sheet drawn from them"
+    ]
+  ],
+  "sheets": [
+    {
+      "kind": "cover",
+      "title": "Cover and sheet index"
+    },
+    {
+      "kind": "schematic",
+      "svg": "pad-ble.svg",
+      "page": "ansi-b",
+      "title": "pad-ble v1: two pads into the C6, as a BLE keyboard"
+    },
+    {
+      "kind": "schematic",
+      "svg": "wiring-pad-ble.svg",
+      "page": "ansi-b",
+      "title": "Wiring diagram: every wire at right angles on the packages"
+    },
+    {
+      "kind": "schematic",
+      "svg": "breadboard-pad-ble.svg",
+      "page": "ansi-b",
+      "title": "Breadboard: which hole each part and jumper goes in"
+    },
+    {
+      "kind": "wiring",
+      "sheet": "pad-ble",
+      "title": "Wiring list, pad-ble v1"
+    },
+    {
+      "kind": "parts",
+      "title": "Parts list"
+    }
+  ]
+}

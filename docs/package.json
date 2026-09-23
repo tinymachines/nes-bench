@@ -2,7 +2,7 @@
   "org": "tinymachines",
   "project": "nes-bench",
   "docno": "TM-NESB-001",
-  "rev": "N",
+  "rev": "P",
   "drawn": "bisenbek",
   "page": "ansi-a",
   "title": "NES controller-port bridge, v1b",
@@ -27,7 +27,7 @@
     {
       "kind": "schematic",
       "svg": "bench-v1b-3.svg",
-      "title": "Bridge v1b, sheet 3: the head's hands, reset and power from the Pi"
+      "title": "Bridge v1b, sheet 3: the head's hands, reset and power"
     },
     {
       "kind": "schematic",
@@ -91,7 +91,7 @@
     {
       "kind": "pinmap",
       "sheet": "bench-v1b-head",
-      "title": "Pin map, sheet 3: the head's jumpers, the breakout, every wire"
+      "title": "Pin map, sheet 3: the head's jumpers, breakout"
     },
     {
       "kind": "chip",
@@ -202,6 +202,11 @@
       "N",
       "2026-09-15",
       "sheet 3: the head's hands, reset and power from the Pi"
+    ],
+    [
+      "P",
+      "2026-09-23",
+      "two index titles shortened: they printed over the paper column"
     ]
   ]
 }

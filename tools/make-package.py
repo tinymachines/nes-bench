@@ -82,9 +82,13 @@ def sheet_cover(p, cfg, spec):
               "chip": "schematic pins, datasheet purposes",
               "cover": "this sheet"}[s["kind"]]]
             for i, s in enumerate(sheets)]
+    # strict: a sheet title longer than its column printed ON TOP of the
+    # paper column and read as neither, which is the failure `table`'s
+    # strict mode was written for and which this call was not asking
+    # for. Found on TM-NESB-003's cover, 2026-09-23.
     drawn = p.table((x, cy + 10, w * 0.86, h - (cy - y) - 24),
                     ["sheet", "title", "paper", "how it is made"],
-                    rows, widths=[0.07, 0.50, 0.12, 0.31], mono=(0, 2), lh=17)
+                    rows, widths=[0.07, 0.50, 0.12, 0.31], mono=(0, 2), lh=17, strict=True)
     # The index of a document has to list all of it. `table` truncates
     # honestly and says so, which is right for a wiring list that runs
     # on: here there is no next sheet to run on to, so a truncated index
