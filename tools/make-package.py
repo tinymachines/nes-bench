@@ -29,6 +29,14 @@ bump reach the site with the commit and nothing else: before it existed
 the filename was typed on their side, and moving TM-NESB-001 from rev N
 to rev P on 2026-09-23 broke nine links at once. So renaming these
 files, or moving either key, breaks a repository that is not this one.
+
+`rev` IS ALSO READ AS A LETTER. Their end-to-end spec derives every
+earlier revision letter of each docno and requires each to answer 404,
+which is what stops a superseded drawing coming back. So a rev has to
+stay a single letter that sorts: going to "AA", or to a number, or to
+"P2", would not break the link, it would quietly break the test that
+proves the old ones are gone. Skipping letters is fine and expected;
+this package has no rev O, and a letter that never existed 404s anyway.
 """
 import argparse
 import importlib.util
