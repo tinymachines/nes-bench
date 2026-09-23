@@ -41,6 +41,7 @@ this package has no rev O, and a letter that never existed 404s anyway.
 import argparse
 import importlib.util
 import json
+import os
 import subprocess
 import sys
 from datetime import date
@@ -66,6 +67,33 @@ def git_rev():
         return r.stdout.strip() or "no git"
     except OSError:
         return "no git"
+
+
+def git_time():
+    """The commit's own time, for SOURCE_DATE_EPOCH.
+
+    cairo stamps /CreationDate into a PDF from the wall clock, so two
+    builds of identical content a second apart differed, and the site
+    ships byte copies of these files. That made a byte comparison
+    useless as a signal: a published PDF could differ from a fresh build
+    while saying the same thing, and could say a different thing while
+    being the same size. Stamping the COMMIT's time instead makes a
+    build at a given commit reproducible, so "is what is published what
+    this commit builds" becomes a question bytes can answer.
+
+    Measured 2026-09-23: cairo 1.16 honours SOURCE_DATE_EPOCH, and two
+    builds a second apart came out byte-identical with it set.
+
+    This is only true of a clean tree. The title block already shows the
+    short sha, and a dirty tree makes that sha a claim about content it
+    does not describe; that was true before this and is not changed by
+    it."""
+    try:
+        r = subprocess.run(["git", "-C", str(ROOT), "log", "-1", "--format=%ct"],
+                           capture_output=True, text=True)
+        return r.stdout.strip() or None
+    except OSError:
+        return None
 
 
 def page_meta(cfg, title, n, total):
@@ -353,8 +381,10 @@ def build(cfg, out, svg_only):
     if svg_only:
         return 0
     pdf = out / f"{cfg['project']}-{cfg['docno']}-rev{cfg['rev']}.pdf"
+    ts = git_time()
+    env = dict(os.environ, SOURCE_DATE_EPOCH=ts) if ts else None
     r = subprocess.run(["rsvg-convert", "-f", "pdf", "-o", str(pdf), *files],
-                       capture_output=True, text=True)
+                       capture_output=True, text=True, env=env)
     if r.returncode != 0 or not pdf.exists():
         print(f"rsvg-convert failed: {r.stderr.strip()[:300]}")
         return 1
