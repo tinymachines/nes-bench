@@ -40,6 +40,7 @@ this package has no rev O, and a letter that never existed 404s anyway.
 """
 import argparse
 import importlib.util
+import hashlib
 import json
 import os
 import subprocess
@@ -67,6 +68,32 @@ def git_rev():
         return r.stdout.strip() or "no git"
     except OSError:
         return "no git"
+
+
+def git_dirty():
+    """Whether a tracked file differs from HEAD.
+
+    The record below names the commit a package was built at, and on a
+    dirty tree that name is a claim about content it does not describe:
+    the sheets came from somebody's working copy, not from the commit.
+    Untracked files do not count, because nothing untracked is built
+    into a sheet; a modified tracked one is.
+    """
+    try:
+        r = subprocess.run(["git", "-C", str(ROOT), "status", "--porcelain", "--untracked-files=no"],
+                           capture_output=True, text=True)
+        return bool(r.stdout.strip())
+    except OSError:
+        return True
+
+
+def git_head():
+    try:
+        r = subprocess.run(["git", "-C", str(ROOT), "rev-parse", "HEAD"],
+                           capture_output=True, text=True)
+        return r.stdout.strip() or None
+    except OSError:
+        return None
 
 
 def git_time():
@@ -409,13 +436,82 @@ def build(cfg, out, svg_only):
         if f != pdf:
             f.unlink()
             print(f"  withdrew superseded {f.name}")
-    print(f"\n{pdf.relative_to(ROOT)}  {pdf.stat().st_size//1024} KB, {len(files)} pages\n")
+    # THE RECORD THAT CROSSES THE BOUNDARY. docs/package/ is gitignored,
+    # so a checkout of this repository has no PDFs in it and the site's
+    # pull copies them out of a working directory on the same machine.
+    # That is fine until a sheet changes without a revision bump: the
+    # file keeps its name, the pull's missing-file refusal never fires,
+    # and a stale drawing ships in silence. Nothing in the PDF says
+    # which commit built it.
+    #
+    # So the build writes down what it did, beside what it wrote, and
+    # the pull refuses on four things without taking anybody's word:
+    # the record missing, the PDF not hashing to it, the commit not
+    # equal to the checkout's HEAD, and the tree having been dirty.
+    # The last is the one that was not asked for: a dirty tree makes
+    # `commit` a claim about content that did not come from it, so a
+    # commit-equals-HEAD check would pass on sheets nobody committed.
+    record = {
+        "file": pdf.name,
+        "docno": cfg["docno"],
+        "rev": cfg["rev"],
+        "pages": len(files),
+        "sha256": hashlib.sha256(pdf.read_bytes()).hexdigest(),
+        "commit": git_head(),
+        "epoch": int(ts) if ts else None,
+        "dirty": git_dirty(),
+    }
+    (out / "built.json").write_text(json.dumps(record, indent=2) + "\n")
+    print(f"\n{pdf.relative_to(ROOT)}  {pdf.stat().st_size//1024} KB, {len(files)} pages"
+          + ("  BUILT FROM A DIRTY TREE" if record["dirty"] else "") + "\n")
     return 0
+
+
+def check(cfg, out):
+    """The same four questions the site's pull asks, asked here first.
+
+    It is the same check on both sides on purpose. If it can only be
+    run over there, the first anybody hears of a stale package is a red
+    deploy, and the person who can fix it is on this side.
+    """
+    want = f"{cfg['project']}-{cfg['docno']}-rev{cfg['rev']}.pdf"
+    rec = out / "built.json"
+    if not rec.exists():
+        print(f"  {cfg['docno']}: no built.json; run make-package.py")
+        return 1
+    r = json.loads(rec.read_text())
+    pdf = out / want
+    bad = 0
+    if r.get("file") != want:
+        print(f"  {cfg['docno']}: the record names {r.get('file')!r}, the manifest names {want!r}")
+        bad = 1
+    if not pdf.exists():
+        print(f"  {cfg['docno']}: {want} is not there")
+        return 1
+    got = hashlib.sha256(pdf.read_bytes()).hexdigest()
+    if got != r.get("sha256"):
+        print(f"  {cfg['docno']}: {want} is not the file the record describes "
+              f"(sha256 {got[:12]}, record {str(r.get('sha256'))[:12]})")
+        bad = 1
+    head = git_head()
+    if r.get("commit") != head:
+        print(f"  {cfg['docno']}: built at {str(r.get('commit'))[:7]}, HEAD is {str(head)[:7]}: "
+              "the package is stale against the sources, rebuild it")
+        bad = 1
+    if r.get("dirty"):
+        print(f"  {cfg['docno']}: built from a dirty tree, so its commit names content "
+              "that is not in that commit")
+        bad = 1
+    if not bad:
+        print(f"  {cfg['docno']}: {want}, {r['pages']} pages, built at {str(head)[:7]}, clean")
+    return bad
 
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--svg-only", action="store_true")
+    ap.add_argument("--check", action="store_true",
+                    help="verify each package against its built.json; build nothing")
     ap.add_argument("--config", help="one manifest; the default is every docs/package*.json")
     a = ap.parse_args()
     # One drawing package per manifest. v1b and v2b are different
@@ -429,8 +525,13 @@ def main():
     bad = 0
     for c in configs:
         cfg = json.loads(c.read_text())
+        if a.check:
+            bad |= check(cfg, OUT / cfg["docno"].lower())
+            continue
         print(f"{c.name}  {cfg['docno']}  {cfg['title']}")
         bad |= build(cfg, OUT / cfg["docno"].lower(), a.svg_only)
+    if a.check and not bad:
+        print(f"make-package: {len(configs)} package(s) agree with what built them")
     return bad
 
 
