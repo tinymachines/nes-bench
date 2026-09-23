@@ -20,6 +20,15 @@ ANSI B page is 17 by 11 inches in the PDF and prints as one.
 Nothing here is committed. The SVG sheets are the artefact and are
 checked against the wiring tables; a PDF is a rendering of them, made on
 demand, for the same reason the PNGs are.
+
+`docno` and `rev` IN THE MANIFESTS ARE AN INTERFACE, not local config.
+The site's pull reads them out of docs/package*.json to build the
+filename it links, and refuses to pull when a manifest names a file the
+package directory does not have. That arrangement is what makes a rev
+bump reach the site with the commit and nothing else: before it existed
+the filename was typed on their side, and moving TM-NESB-001 from rev N
+to rev P on 2026-09-23 broke nine links at once. So renaming these
+files, or moving either key, breaks a repository that is not this one.
 """
 import argparse
 import importlib.util
