@@ -169,8 +169,8 @@
 <text class="pin" x="40" y="916" text-anchor="start">Gamepad HID</text>
 <text class="pin" x="168" y="916" text-anchor="start">Not built. iOS refuses a generic HID gamepad, taking only the MFi, Xbox, PlayStation and Switch Pro layouts, which is why keyboard mode came first.</text>
 <text class="pin" x="40" y="934" text-anchor="start">Two players</text>
-<text class="pin" x="168" y="934" text-anchor="start">One pad sends keys. A keyboard report carries six key slots and two pads can ask for ten, so two on one report would drop whichever arrived last.</text>
-<text class="pin" x="168" y="948" text-anchor="start">Pad 2 is polled and printed so its wiring can be proved. Two players wants gamepad mode with two report IDs, on a part that can do it.</text>
+<text class="pin" x="168" y="934" text-anchor="start">Not on this board. A keyboard report carries six key slots and two pads can ask for ten, so a second pad could be polled and never sent.</text>
+<text class="pin" x="168" y="948" text-anchor="start">One was drawn and polled here until 2026-09-23 doing exactly that. Two players wants gamepad mode with two report IDs, on a part that can do it.</text>
 <text class="pin" x="40" y="966" text-anchor="start">Bench mode</text>
 <text class="pin" x="168" y="966" text-anchor="start">Not built, and the cheapest of them: the C6's USB already IS a serial port, so pad bytes over USB serial into a uinput shim need no new hardware.</text>
 </svg>

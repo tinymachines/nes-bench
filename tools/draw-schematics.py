@@ -1105,8 +1105,8 @@ def sheet_padble():
         ("Gamepad HID", [
             "Not built. iOS refuses a generic HID gamepad, taking only the MFi, Xbox, PlayStation and Switch Pro layouts, which is why keyboard mode came first."]),
         ("Two players", [
-            "One pad sends keys. A keyboard report carries six key slots and two pads can ask for ten, so two on one report would drop whichever arrived last.",
-            "Pad 2 is polled and printed so its wiring can be proved. Two players wants gamepad mode with two report IDs, on a part that can do it."]),
+            "Not on this board. A keyboard report carries six key slots and two pads can ask for ten, so a second pad could be polled and never sent.",
+            "One was drawn and polled here until 2026-09-23 doing exactly that. Two players wants gamepad mode with two report IDs, on a part that can do it."]),
         ("Bench mode", [
             "Not built, and the cheapest of them: the C6's USB already IS a serial port, so pad bytes over USB serial into a uinput shim need no new hardware."]),
     ]
