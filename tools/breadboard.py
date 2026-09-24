@@ -82,16 +82,29 @@ LEAD = {1: ("yellow", "#d9b400"), 2: ("blue", "#1b64c8"), 3: ("black", "#222222"
 # This is the one fact a breadboard sheet needs that no netlist has, and
 # it is not typed from memory: this bench already found a published
 # pinout disagreeing with its own console at pin 5.
+#
+# WHICH ROW IS WHICH, corrected 2026-09-23 after it was drawn backwards.
+# The photographs show one edge at a time and say nothing about which
+# edge, so the first version worked that out by rotating the strip in
+# my head and got it inverted, which put every address on this sheet on
+# the wrong header, including two that are the C6's own UART. The owner
+# settled it at the bench in one sentence: with the antenna facing up,
+# 3V3 is the TOP-LEFT pin. Antenna up and USB down turned so that USB
+# is at the left, which is how the devkit sits on this board, sends the
+# left side to the top. So the pad row is the UPPER header.
 C6_HEADER = {
-    # The row the whole of pad-ble lands on: GPIO2, 3, 6, 7, a 3V3 and a
+    # The row the whole of pad-ble lands on: GPIO2, 3, 6, a 3V3 and a
     # ground are all here, so no wire crosses to the other side.
-    "lower": ["NC", "G", "5V", "3", "2", "11", "10", "8", "1", "0", "7", "6", "5", "4", "RST", "3V3"],
-    "upper": ["NC", "G", "12", "13", "G", "9", "18", "19", "20", "21", "22", "23", "15", "RX", "TX", "G"],
+    "upper": ["NC", "G", "5V", "3", "2", "11", "10", "8", "1", "0", "7", "6", "5", "4", "RST", "3V3"],
+    # And this one carries RX and TX, the UART the board is flashed
+    # over. A wire landed here by following the old sheet would take the
+    # console's clock or latch onto the serial port.
+    "lower": ["NC", "G", "12", "13", "G", "9", "18", "19", "20", "21", "22", "23", "15", "RX", "TX", "G"],
 }
 # What the schematic calls a pin, against what the board prints beside
 # it. The ground taken is the one on the same row as everything else.
-C6_PIN = {"GPIO2": ("lower", "2"), "GPIO3": ("lower", "3"), "GPIO6": ("lower", "6"),
-          "3V3": ("lower", "3V3"), "GND": ("lower", "G")}
+C6_PIN = {"GPIO2": ("upper", "2"), "GPIO3": ("upper", "3"), "GPIO6": ("upper", "6"),
+          "3V3": ("upper", "3V3"), "GND": ("upper", "G")}
 
 PALETTE = ["#7a3fbf", "#0f8f9e", "#b5651d", "#8d1f5e", "#3f6f2a", "#5b5bd6",
            "#a8471f", "#1f7a8c", "#7d4a1f", "#4a4a9c", "#96206a", "#2f7d4f"]
@@ -466,9 +479,9 @@ def main():
     # first pin of a row is the devkit's own column, and a label the
     # board does not carry is a typo rather than a hole.
     dk = PADBLE_DEVKITS["U1"]
-    assert devkit_hole("U1", "GPIO2", PADBLE_DEVKITS) == (dk["col"] + 4, "lower")
-    assert devkit_hole("U1", "GPIO6", PADBLE_DEVKITS) == (dk["col"] + 11, "lower")
-    assert devkit_hole("U1", "3V3", PADBLE_DEVKITS) == (dk["col"] + 15, "lower")
+    assert devkit_hole("U1", "GPIO2", PADBLE_DEVKITS) == (dk["col"] + 4, "upper")
+    assert devkit_hole("U1", "GPIO6", PADBLE_DEVKITS) == (dk["col"] + 11, "upper")
+    assert devkit_hole("U1", "3V3", PADBLE_DEVKITS) == (dk["col"] + 15, "upper")
     for name, (row, label) in C6_PIN.items():
         assert label in C6_HEADER[row], f"{name}: the board carries no pin marked {label} on its {row} header"
     assert len(C6_HEADER["upper"]) == len(C6_HEADER["lower"]) == 16

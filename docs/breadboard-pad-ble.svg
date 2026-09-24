@@ -860,36 +860,36 @@
 <text class="dips" x="1383.0" y="418.0" text-anchor="middle">BLE only: the USB port is serial and JTAG</text>
 <text class="col" x="1188.0" y="248.0" text-anchor="middle">NC</text>
 <text class="col" x="1214.0" y="248.0" text-anchor="middle">G</text>
-<text class="col" x="1240.0" y="248.0" text-anchor="middle">12</text>
-<text class="col" x="1266.0" y="248.0" text-anchor="middle">13</text>
-<text class="col" x="1292.0" y="248.0" text-anchor="middle">G</text>
-<text class="col" x="1318.0" y="248.0" text-anchor="middle">9</text>
-<text class="col" x="1344.0" y="248.0" text-anchor="middle">18</text>
-<text class="col" x="1370.0" y="248.0" text-anchor="middle">19</text>
-<text class="col" x="1396.0" y="248.0" text-anchor="middle">20</text>
-<text class="col" x="1422.0" y="248.0" text-anchor="middle">21</text>
-<text class="col" x="1448.0" y="248.0" text-anchor="middle">22</text>
-<text class="col" x="1474.0" y="248.0" text-anchor="middle">23</text>
-<text class="col" x="1500.0" y="248.0" text-anchor="middle">15</text>
-<text class="col" x="1526.0" y="248.0" text-anchor="middle">RX</text>
-<text class="col" x="1552.0" y="248.0" text-anchor="middle">TX</text>
-<text class="col" x="1578.0" y="248.0" text-anchor="middle">G</text>
+<text class="col" x="1240.0" y="248.0" text-anchor="middle">5V</text>
+<text class="col" x="1266.0" y="248.0" text-anchor="middle">3</text>
+<text class="col" x="1292.0" y="248.0" text-anchor="middle">2</text>
+<text class="col" x="1318.0" y="248.0" text-anchor="middle">11</text>
+<text class="col" x="1344.0" y="248.0" text-anchor="middle">10</text>
+<text class="col" x="1370.0" y="248.0" text-anchor="middle">8</text>
+<text class="col" x="1396.0" y="248.0" text-anchor="middle">1</text>
+<text class="col" x="1422.0" y="248.0" text-anchor="middle">0</text>
+<text class="col" x="1448.0" y="248.0" text-anchor="middle">7</text>
+<text class="col" x="1474.0" y="248.0" text-anchor="middle">6</text>
+<text class="col" x="1500.0" y="248.0" text-anchor="middle">5</text>
+<text class="col" x="1526.0" y="248.0" text-anchor="middle">4</text>
+<text class="col" x="1552.0" y="248.0" text-anchor="middle">RST</text>
+<text class="col" x="1578.0" y="248.0" text-anchor="middle">3V3</text>
 <text class="col" x="1188.0" y="572.0" text-anchor="middle">NC</text>
 <text class="col" x="1214.0" y="572.0" text-anchor="middle">G</text>
-<text class="col" x="1240.0" y="572.0" text-anchor="middle">5V</text>
-<text class="col" x="1266.0" y="572.0" text-anchor="middle">3</text>
-<text class="col" x="1292.0" y="572.0" text-anchor="middle">2</text>
-<text class="col" x="1318.0" y="572.0" text-anchor="middle">11</text>
-<text class="col" x="1344.0" y="572.0" text-anchor="middle">10</text>
-<text class="col" x="1370.0" y="572.0" text-anchor="middle">8</text>
-<text class="col" x="1396.0" y="572.0" text-anchor="middle">1</text>
-<text class="col" x="1422.0" y="572.0" text-anchor="middle">0</text>
-<text class="col" x="1448.0" y="572.0" text-anchor="middle">7</text>
-<text class="col" x="1474.0" y="572.0" text-anchor="middle">6</text>
-<text class="col" x="1500.0" y="572.0" text-anchor="middle">5</text>
-<text class="col" x="1526.0" y="572.0" text-anchor="middle">4</text>
-<text class="col" x="1552.0" y="572.0" text-anchor="middle">RST</text>
-<text class="col" x="1578.0" y="572.0" text-anchor="middle">3V3</text>
+<text class="col" x="1240.0" y="572.0" text-anchor="middle">12</text>
+<text class="col" x="1266.0" y="572.0" text-anchor="middle">13</text>
+<text class="col" x="1292.0" y="572.0" text-anchor="middle">G</text>
+<text class="col" x="1318.0" y="572.0" text-anchor="middle">9</text>
+<text class="col" x="1344.0" y="572.0" text-anchor="middle">18</text>
+<text class="col" x="1370.0" y="572.0" text-anchor="middle">19</text>
+<text class="col" x="1396.0" y="572.0" text-anchor="middle">20</text>
+<text class="col" x="1422.0" y="572.0" text-anchor="middle">21</text>
+<text class="col" x="1448.0" y="572.0" text-anchor="middle">22</text>
+<text class="col" x="1474.0" y="572.0" text-anchor="middle">23</text>
+<text class="col" x="1500.0" y="572.0" text-anchor="middle">15</text>
+<text class="col" x="1526.0" y="572.0" text-anchor="middle">RX</text>
+<text class="col" x="1552.0" y="572.0" text-anchor="middle">TX</text>
+<text class="col" x="1578.0" y="572.0" text-anchor="middle">G</text>
 <text class="col" x="1173.0" y="234.0" text-anchor="start">USB end</text>
 <rect class="term" x="12" y="216" width="104" height="208" rx="5"/>
 <text class="kb" x="16.0" y="232.0" text-anchor="start">J1  the pad</text>
@@ -914,20 +914,20 @@
 <path class="w" stroke="#1f9c53" opacity="0.85" d="M108 352 Q456 546 850 484"/>
 <circle cx="468" cy="482" r="9" fill="#ffffff" stroke="#1f9c53" stroke-width="1.6"/>
 <text class="wn" x="467.6" y="486.0" text-anchor="middle">1</text>
-<path class="w" stroke="#1f9c53" opacity="0.85" d="M850 484 Q1173 380 1474 536"/>
-<circle cx="1167" cy="445" r="9" fill="#ffffff" stroke="#1f9c53" stroke-width="1.6"/>
-<text class="wn" x="1167.4" y="449.2" text-anchor="middle">2</text>
-<path class="w" stroke="#1b64c8" opacity="0.85" d="M108 292 Q660 541 1266 536"/>
-<circle cx="674" cy="478" r="9" fill="#ffffff" stroke="#1b64c8" stroke-width="1.6"/>
-<text class="wn" x="673.6" y="481.6" text-anchor="middle">3</text>
-<path class="w" stroke="#222222" opacity="0.85" d="M108 322 Q723 301 1292 536"/>
-<circle cx="712" cy="365" r="9" fill="#ffffff" stroke="#222222" stroke-width="1.6"/>
-<text class="wn" x="711.6" y="369.0" text-anchor="middle">4</text>
+<path class="w" stroke="#1f9c53" opacity="0.85" d="M850 484 Q1121 257 1474 276"/>
+<circle cx="1141" cy="318" r="9" fill="#ffffff" stroke="#1f9c53" stroke-width="1.6"/>
+<text class="wn" x="1141.4" y="322.3" text-anchor="middle">2</text>
+<path class="w" stroke="#1b64c8" opacity="0.85" d="M108 292 Q689 414 1266 276"/>
+<circle cx="688" cy="349" r="9" fill="#ffffff" stroke="#1b64c8" stroke-width="1.6"/>
+<text class="wn" x="687.9" y="353.0" text-anchor="middle">3</text>
+<path class="w" stroke="#222222" opacity="0.85" d="M108 322 Q695 169 1292 276"/>
+<circle cx="697" cy="234" r="9" fill="#ffffff" stroke="#222222" stroke-width="1.6"/>
+<text class="wn" x="697.5" y="238.0" text-anchor="middle">4</text>
 <path class="w" stroke="#d02b2b" opacity="0.9" d="M108 382 L108 622"/>
 <path class="w" stroke="#d02b2b" opacity="0.9" d="M902 484 L902 622"/>
-<path class="w" stroke="#d02b2b" opacity="0.9" d="M1578 536 L1578 622"/>
+<path class="w" stroke="#d02b2b" opacity="0.9" d="M1578 276 L1578 196"/>
 <path class="w" stroke="#1b64c8" opacity="0.9" d="M108 262 L108 596"/>
-<path class="w" stroke="#1b64c8" opacity="0.9" d="M1214 536 L1214 596"/>
+<path class="w" stroke="#1b64c8" opacity="0.9" d="M1214 276 L1214 222"/>
 <text class="h1" x="60.0" y="732.0" text-anchor="start">4 numbered jumpers, and 5 short wires to the rails</text>
 <text class="h2" x="60.0" y="754.0" text-anchor="start">Every one of these is read out of the schematic. Red stubs go to the nearest + rail, blue stubs to the nearest - rail; they are not numbered because they are all the same instruction.</text>
 <circle cx="69" cy="780" r="9" fill="#ffffff" stroke="#1f9c53" stroke-width="1.6"/>
@@ -935,11 +935,11 @@
 <text class="k" x="86.0" y="784.0" text-anchor="start">PAD1_D0, the green lead:  J1 D0  to  R1 col 26 row H</text>
 <circle cx="69" cy="799" r="9" fill="#ffffff" stroke="#1f9c53" stroke-width="1.6"/>
 <text class="wn" x="69.0" y="803.0" text-anchor="middle">2</text>
-<text class="k" x="86.0" y="803.0" text-anchor="start">PAD1_D0, the green lead:  R1 col 26 row H  to  U1 pin marked 6 (col 50 row J)</text>
+<text class="k" x="86.0" y="803.0" text-anchor="start">PAD1_D0, the green lead:  R1 col 26 row H  to  U1 pin marked 6 (col 50 row A)</text>
 <circle cx="669" cy="780" r="9" fill="#ffffff" stroke="#1b64c8" stroke-width="1.6"/>
 <text class="wn" x="669.0" y="784.0" text-anchor="middle">3</text>
-<text class="k" x="686.0" y="784.0" text-anchor="start">PAD_CLK, the blue lead:  J1 CLK  to  U1 pin marked 3 (col 42 row J)</text>
+<text class="k" x="686.0" y="784.0" text-anchor="start">PAD_CLK, the blue lead:  J1 CLK  to  U1 pin marked 3 (col 42 row A)</text>
 <circle cx="669" cy="799" r="9" fill="#ffffff" stroke="#222222" stroke-width="1.6"/>
 <text class="wn" x="669.0" y="803.0" text-anchor="middle">4</text>
-<text class="k" x="686.0" y="803.0" text-anchor="start">PAD_LATCH, the black lead:  J1 OUT0  to  U1 pin marked 2 (col 43 row J)</text>
+<text class="k" x="686.0" y="803.0" text-anchor="start">PAD_LATCH, the black lead:  J1 OUT0  to  U1 pin marked 2 (col 43 row A)</text>
 </svg>

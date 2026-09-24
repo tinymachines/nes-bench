@@ -132,10 +132,20 @@ only on the relative positions, so seat it where it suits you and read
 the columns off the sheet.
 
 **Only rows A and J are reachable in the devkit's columns.** It is wide
-enough to cover C through H, so those holes are underneath it. Every
-wire to a lower-header pin goes into row J and every wire to an
-upper-header pin into row A. That is the one way a devkit differs from
-a chip on this board, and the sheet's addresses already account for it.
+enough to cover C through H, so those holes are underneath it. A wire
+to an upper-header pin goes into row A and a wire to a lower-header pin
+into row J. Every pad-ble wire is on the upper header, so **every one
+goes into row A**.
+
+**Which header is upper was drawn backwards until 2026-09-23**, and it
+is worth saying how it was settled rather than just corrected. The
+header photographs show one edge at a time and say nothing about which
+edge; the first reading worked it out by rotating the strip and got it
+inverted. That put every address on the breadboard sheet on the wrong
+header, two of whose pins are the C6's own RX and TX. It was settled at
+the bench in one sentence: **with the antenna facing up, 3V3 is the
+top-left pin.** Turn that so USB is at the left, which is how the
+devkit sits here, and the left side goes to the top.
 
 **The eye could not read the pin labels, and that is now a recorded
 limit.** They are about a millimetre and rotated, and at zoom 1000 they
@@ -154,8 +164,8 @@ it appears more than once.
 
 | row | pins, from the USB end |
 |---|---|
-| the pad-ble side | NC, G, 5V, **3**, **2**, 11, 10, 8, 1, 0, 7, **6**, 5, 4, RST, **3V3** |
-| the other side | NC, G, 12, 13, G, 9, 18, 19, 20, 21, 22, 23, 15, RX, TX, G |
+| the pad-ble side, **upper** | NC, G, 5V, **3**, **2**, 11, 10, 8, 1, 0, 7, **6**, 5, 4, RST, **3V3** |
+| the other side, **lower** | NC, G, 12, 13, G, 9, 18, 19, 20, 21, 22, 23, 15, RX, TX, G |
 
 Sixteen a side. This table lives once, in `tools/breadboard.py` as
 `C6_HEADER`, and the sheet is drawn from it.
