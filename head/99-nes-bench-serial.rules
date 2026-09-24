@@ -30,3 +30,22 @@ SUBSYSTEM=="tty", ATTRS{idVendor}=="303a", ENV{ID_MM_DEVICE_IGNORE}="1"
 
 # Arduino UNO R3: the bridge the head drives the console through
 SUBSYSTEM=="tty", ATTRS{idVendor}=="2341", ENV{ID_MM_DEVICE_IGNORE}="1"
+
+# ---------------------------------------------------------------
+# A NAME FOR THE BRIDGE THAT SURVIVES A RE-ENUMERATION.
+#
+# MEASURED 2026-09-24: flashing an ESP32-P4 on the same hub reset
+# three unrelated devices at once. The UNO came back as ttyACM2, the
+# head's unit was still pointed at ttyACM0, and headd kept reporting
+# active with a dead bridge pump. A device node is not an identity,
+# and the camera tools learned this first: eye.py addresses every
+# camera by its by-id name and says why in a comment.
+#
+# A by-id path would work, but it carries the board's serial number,
+# which is host-specific and does not belong in a commit. This matches
+# the product instead, so it survives a swapped UNO as well.
+#
+# IF TWO UNO R3s ARE PLUGGED IN AT ONCE the last one to appear takes
+# the name. This bench has one. If that changes, match on
+# ATTRS{serial} here and keep the serial out of the repository.
+SUBSYSTEM=="tty", ATTRS{idVendor}=="2341", ATTRS{idProduct}=="0043", SYMLINK+="nes-bridge"

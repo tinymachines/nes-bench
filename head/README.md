@@ -38,8 +38,8 @@ pull to restart on new code):
 
 ```
 git clone https://github.com/tinymachines/nes-bench && cd nes-bench
-bash head/setup.sh --bridge /dev/ttyACM0 --baud 115200 --scope <ip>   # the UNO bridge; or --no-scope
-bash head/setup.sh --dry-run --bridge /dev/ttyACM0 --baud 115200 --scope <ip>   # the steps, run none
+bash head/setup.sh --bridge /dev/nes-bridge --baud 115200 --scope <ip>   # the UNO bridge; or --no-scope
+bash head/setup.sh --dry-run --bridge /dev/nes-bridge --baud 115200 --scope <ip>   # the steps, run none
 ```
 
 Installed for real on 2026-09-18. `--baud` is the firmware's: the UNO

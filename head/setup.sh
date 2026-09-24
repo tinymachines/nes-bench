@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # The head on a Raspberry Pi 4 in one command, run on the Pi:
 #
-#   bash head/setup.sh --bridge /dev/ttyACM0 --baud 115200 --scope <ip> [--runs /home/pi/runs] [--port 6530]
+#   bash head/setup.sh --bridge /dev/nes-bridge --baud 115200 --scope <ip> [--runs /home/pi/runs] [--port 6530]
 #   bash head/setup.sh --dry-run ...          # print the steps, run none
 #
 # Installs what headd.py needs (python3-serial; gpiozero comes with
@@ -19,6 +19,12 @@
 # console off) with pinctrl, which leaves a level in place; gpiozero
 # would leave them as inputs. --baud is the firmware's: the UNO bridge
 # v1b talks at 115200, the ESP32 sheet at 921600 (headd.py's default).
+# --bridge TAKES A NAME, NOT A NUMBER. Install
+# head/99-nes-bench-serial.rules first and pass /dev/nes-bridge. A
+# /dev/ttyACMn is assigned in the order things appear and moves without
+# warning: on 2026-09-24 flashing an ESP32-P4 on the same hub reset
+# three unrelated devices, the UNO came back one number higher, and the
+# head reported active for eleven minutes with a dead bridge pump.
 # First real run 2026-09-17, on the UNO.
 set -euo pipefail
 
