@@ -173,6 +173,13 @@ a package built twice at one commit is byte-identical.
   schematic, the right-angle wiring, and the breadboard sheet that says
   which hole. The devkit's header order is measured and lives once, as
   `C6_HEADER` in `tools/breadboard.py`.
+- `docs/esp32-part-choice.md`: which ESP32 does BLE, which does USB
+  HID, and which does both, measured out of the vendor's own
+  `soc_caps.h` for eight targets rather than recalled. The short of it:
+  the C6 on hand is the one part in the family that can never be a USB
+  keyboard, and the S3 is the only one that can be both. Written
+  2026-09-24 while the C6 was refusing to flash, so it also records
+  what an S3 would and would not change about that.
 - `head/99-nes-bench-serial.rules`: keeps ModemManager off the bench's
   serial instruments. It probes every tty that appears with AT commands
   for tens of seconds looking for a cellular modem, which is exactly
