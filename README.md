@@ -172,7 +172,12 @@ a package built twice at one commit is byte-identical.
   is `docs/pad-ble-build.md`, with three drawings from one netlist: the
   schematic, the right-angle wiring, and the breadboard sheet that says
   which hole. The devkit's header order is measured and lives once, as
-  `C6_HEADER` in `tools/breadboard.py`.
+  `C6_HEADER` in `tools/breadboard.py`. The part moved on 2026-09-24:
+  the C6 never accepted a flash and a Waveshare ESP32-P4-Module-DEV-KIT
+  on the same bench took one first try and reached the air, so
+  `tools/p4_header.py` carries that board's header P6 as read from
+  Waveshare's schematic, with the two counts that catch a one-row-out
+  misreading, and the firmware builds for both parts.
 - `docs/esp32-part-choice.md`: which ESP32 does BLE, which does USB
   HID, and which does both, measured out of the vendor's own
   `soc_caps.h` for eight targets rather than recalled. The short of it:

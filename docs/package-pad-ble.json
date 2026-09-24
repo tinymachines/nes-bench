@@ -2,13 +2,13 @@
   "org": "tinymachines",
   "project": "nes-bench",
   "docno": "TM-NESB-003",
-  "rev": "D",
+  "rev": "E",
   "drawn": "bisenbek",
   "page": "ansi-a",
   "title": "Original pad to Bluetooth keyboard, pad-ble v1",
   "intro": [
     "Two original NES controllers into an ESP32-C6, which presents them to a phone or a laptop as a plain Bluetooth keyboard. It is the bench bridge's own pad poll with a radio behind it instead of a shift register, and it stands alone: no Pi, no UNO, no console.",
-    "THIS IS A DRAWING, NOT A BUILD. Nothing here has been made and nothing about the circuit has been measured. The firmware compiles and its key mapping passes on the desk; no pad has been wired to it and no host has paired it. It rests on one thing open since 2026-09-07: that an original pad's 4021 follows its buttons at 3.3 V. The datasheet says it should; this bench has not seen it.",
+    "THIS IS A DRAWING, NOT A BUILD, and the part has changed under it. The C6 these three drawings are around has never accepted a flash. On 2026-09-24 a Waveshare ESP32-P4-Module-DEV-KIT on the same bench flashed first try and put a BLE advertisement on the air, heard by an independent radio, so the build is moving to that part. Sheet 5 is the P4's header, read from Waveshare's own schematic. The firmware builds for both. Nothing has been wired to either, and it rests on one thing open since 2026-09-07: that an original pad's 4021 follows its buttons at 3.3 V. The datasheet says it should; this bench has not seen it.",
     "What HAS been measured is the board rather than the circuit. The part was identified off its own silkscreen, which reads RGB@IO8 and so names a C6 and not an S3, and its header order was read by hand from photographs, sixteen pins a side, because the bench eye cannot resolve a silkscreen that small. Those readings are what let the breadboard sheet say which hole."
   ],
   "revisions": [
@@ -46,6 +46,11 @@
       "D",
       "2026-09-23",
       "the devkit's two header rows were drawn swapped; every address moves from row J to row A"
+    ],
+    [
+      "E",
+      "2026-09-24",
+      "the board built is the Waveshare ESP32-P4-Module-DEV-KIT; its header read from the vendor schematic and added as a sheet"
     ]
   ],
   "sheets": [
@@ -70,6 +75,11 @@
       "svg": "breadboard-pad-ble.svg",
       "page": "ansi-b",
       "title": "Breadboard: which hole each part and jumper goes in"
+    },
+    {
+      "kind": "pinmap",
+      "sheet": "pad-ble-p4",
+      "title": "ESP32-P4 module header P6: where each wire goes"
     },
     {
       "kind": "wiring",

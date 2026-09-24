@@ -61,6 +61,7 @@ run "netlist --erc" python3 tools/netlist.py --erc
 
 # The checkers: agreement between things that must say the same, and
 # between a document and the thing it describes.
+run "p4-header" python3 tools/p4_header.py --check
 run "check-bringup" python3 tools/check-bringup.py
 run "check-pad" python3 tools/check-pad.py
 run "check-sheets" python3 tools/check-sheets.py

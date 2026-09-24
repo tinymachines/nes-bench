@@ -181,6 +181,82 @@ on the C6. Counting one hole wrong along that row does not give you a
 dead input, it gives you a board that may not boot. Count from the
 printed labels, not from the end.
 
+## The part changed: the board that actually works is a P4
+
+**2026-09-24.** The C6 these drawings are around has never accepted a
+flash. A Waveshare **ESP32-P4-Module-DEV-KIT** on the same bench
+connected on the first attempt, took the firmware, and put a BLE
+advertisement on the air that an independent radio heard. So the build
+moves to that part, and this section is the wiring for it.
+
+`docs/esp32-part-choice.md` has the measurement behind the choice. The
+short of it: the P4 die has no radio at all, the module carries an
+ESP32-C6 as one, and the Arduino core's BLE classes are gated to allow
+exactly that arrangement. `firmware/pad-ble` builds for `esp32p4` with
+the pad map unedited.
+
+### The five wires
+
+Read on 2026-09-24 out of **Waveshare's own schematic** for this board,
+connector **P6**, by rendering the page at 900 dpi. It is not read off
+a photograph, and that is deliberate: this document shipped four
+revisions with the C6's two header rows swapped because a pinout was
+derived from a rotated picture instead of from the drawing that
+defines it.
+
+| lead | net | goes in | which is |
+|---|---|---|---|
+| Red | `3V3` | **P6 pin 18** | 3V3 |
+| Black | `GND` | **P6 pin 26** | GND |
+| Blue | `PAD_LATCH` | **P6 pin 22** | GPIO2 |
+| Yellow | `PAD_CLK` | **P6 pin 20** | GPIO3 |
+| Green | `PAD1_D0` | **P6 pin 16** | GPIO6 |
+
+**Every one of those is an even pin, so all five wires land in one row
+and nothing crosses the header.** The 10k pullup from `PAD1_D0` up to
+3V3 is unchanged and still belongs on the breadboard beside the board.
+
+### Pin 1 is not where a Raspberry Pi puts it
+
+The header is physically Pi-shaped and numbered the other way round:
+
+    5V    P6 pins 1 and 3      a Pi has 5V on 2 and 4
+    3V3   P6 pins 2 and 18     a Pi has 3V3 on 1 and 17
+    GND   5, 10, 13, 19, 26, 29, 33, 40
+
+Every ground is one pin away from where a Pi user reaches for it. **A
+Pi HAT will fit this board and will not work.** Count from the
+schematic, not from habit.
+
+### Four pins that reach the header and are still not yours
+
+    GPIO54  pin 31   the onboard C6's RESET. Take it and the radio dies.
+    GPIO45  pin 39   the MicroSD card's power switch
+    GPIO53  pin 36   the speaker amplifier's CTRL
+    GPIO36  pin 23   BOOT_MODE2, a strapping pin, pulled up
+
+`GPIO24` and `GPIO25` (pins 28 and 27) are the high-speed USB pair, and
+`GPIO7` and `GPIO8` (pins 4 and 6) are the audio codec's I2C with 2.2k
+pullups already on the board. The full table, with what is free, is
+`tools/p4_header.py` and sheet 5 of TM-NESB-003.
+
+### The two spare pins had to move
+
+On the C6, `MODE_SW` and `LED` were GPIO10 and GPIO11 and cost nothing
+because neither was wired. On this board those numbers are the ES8311
+audio codec's I2S, and they are not on the header at all. The firmware
+moves them to **GPIO21 and GPIO20**, header pins 12 and 14, free and on
+the same even row. Neither is wired; both are declared, because an
+unmentioned pin is silence.
+
+### What is proven about this board, and what is not
+
+Proven by test on 2026-09-24: it flashes, it runs, its BLE address
+reaches an independent receiver, and the firmware compiles for it with
+the pad map untouched. **Not proven: anything at all about the pad.**
+No pad has been wired to this board, and measure-first item 4 below is
+still open.
+
 ## Measure first
 
 Before anything is powered, and in this order:

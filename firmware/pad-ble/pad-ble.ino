@@ -53,12 +53,32 @@
 #include <BLEUtils.h>
 #include "keymap.h"
 
-// The pad side, exactly firmware/bridge/bridge.ino's C6 map.
+// The pad side, exactly firmware/bridge/bridge.ino's C6 map. GPIO2, 3
+// and 6 exist and are free on BOTH parts this sketch builds for, so
+// poll_pad runs unedited either way and there is one pad map, not two.
 static const int PAD_LATCH = 2;
 static const int PAD_CLOCK = 3;
 static const int PAD1_DATA = 6;
+
+#if CONFIG_IDF_TARGET_ESP32P4
+// THE TWO SPARE PINS MOVE, AND THEY HAVE TO.
+//
+// On the C6 these were GPIO10 and GPIO11, which cost nothing because
+// nothing was wired to them. On the Waveshare ESP32-P4-Module-DEV-KIT
+// those same numbers are the ES8311 audio codec's I2S clock and data
+// (GPIO9 to GPIO13), and they are not brought out to the header at
+// all. Reading one with a pullup and driving the other would be
+// fighting a part that is soldered down.
+//
+// GPIO21 and GPIO20 are header pins 12 and 14, free by
+// tools/p4_header.py, and on the same even row as the pad's five, so
+// if either is ever wired it does not cross the header either.
+static const int MODE_SW = 21;  // P6 pin 12; reserved for gamepad mode
+static const int LED_PIN = 20;  // P6 pin 14
+#else
 static const int MODE_SW = 10;  // reserved for gamepad mode; read, not used
 static const int LED_PIN = 11;
+#endif
 
 static const char *DEVICE_NAME = "NES Pad";
 

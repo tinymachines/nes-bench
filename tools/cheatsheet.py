@@ -277,8 +277,50 @@ def head_pinmap(sheet="bench-v1b-head"):
     return [wiring, head, pwr]
 
 
+def p4_pinmap():
+    """The Waveshare P4 module's header, and what pad-ble takes of it.
+
+    Every row comes out of tools/p4_header.py, which read it from
+    Waveshare's own schematic and holds itself to two counts that a
+    one-row-out misreading fails. Nothing here is typed twice."""
+    import p4_header as ph
+    wires = [[ph.PAD_COLOUR[n], n, f"pin {pin} ({name})", what]
+             for n, what in [("3V3", "the pad's supply, and the pullup's top"),
+                             ("GND", "the pad's ground"),
+                             ("PAD_LATCH", "OUT0: its fall latches the buttons"),
+                             ("PAD_CLK", "eight clocks, one per button"),
+                             ("PAD1_D0", "the pad answers; pressed is LOW")]
+             for pin, name in [ph.PAD_BLE[n]]]
+    t0 = ("The five wires, and every one on the even row",
+          "Read from Waveshare's schematic for this board, connector P6, 2026-09-24. PIN 1 IS NOT WHERE A "
+          "RASPBERRY PI PUTS IT: 5V is on 1 and 3 where a Pi has 2 and 4, and every ground sits one pin away "
+          "from where a Pi user reaches. The five below are all EVEN pins, so no wire crosses the header. "
+          "Colours are the same five leads as the bridge; use the lead, not the colour rule.",
+          ["lead", "net", "P6 pin", "what it is"], wires)
+    t1 = ("On the header and already spoken for",
+          "These reach the header and are still not yours. Driving one fights a part soldered to the board.",
+          ["GPIO", "P6 pin", "already wired to"],
+          [[g, f"pin {[p for p, n in ph.P6.items() if n == g][0]}", ph.RESERVED_SHORT[g]] for g in ph.RESERVED])
+    t2 = ("On the header and free",
+          "Nothing else on the board touches these. pad-ble takes GPIO2, 3 and 6 from here, which is the same "
+          "map firmware/bridge/bridge.ino already polls a pad on, so poll_pad runs unedited.",
+          ["GPIO", "P6 pin", "note"],
+          [[g, f"pin {[p for p, n in ph.P6.items() if n == g][0]}",
+            {"GPIO2": "PAD_LATCH", "GPIO3": "PAD_CLK", "GPIO6": "PAD1_D0",
+             "GPIO21": "MODE_SW, not wired", "GPIO20": "LED, not wired"}.get(g, "")]
+           for g in ph.free()])
+    t3 = ("Not brought out to the header at all",
+          "Recorded so nobody goes looking for them. The SDIO group is the whole reason a part with no radio "
+          "can advertise: it is the link to the ESP32-C6 sealed in the module.",
+          ["GPIOs", "what has them", "consequence"],
+          [[g, why, "out of reach"] for g, why in ph.OFF_HEADER.items()])
+    return [t0, t1, t2, t3]
+
+
 def pinmap(sheet="bench-v1b"):
     """Three tables: (title, note, headers, rows)."""
+    if sheet == "pad-ble-p4":
+        return p4_pinmap()
     if sheet == "bench-v1b-head":
         return head_pinmap(sheet)
     nl, bu, nodes, nets = collect(sheet)
