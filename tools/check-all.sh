@@ -19,6 +19,14 @@
 # console and no instrument. The hardware ones (rig-check, bench-check,
 # eye) need the part and are deliberately absent; they are not gates a
 # commit can pass or fail.
+#
+# THIS FILE IS READ BY ANOTHER REPOSITORY. The site's pull runs it in
+# this checkout and refuses to copy anything if it exits non-zero; it
+# used to name eight of these gates by hand, which was the same
+# choose-a-subset habit with somebody else's name on it. So there is
+# one list and it is this one. Adding a check here strengthens both
+# sides; renaming this file or changing what its exit status means
+# breaks a build that is not ours.
 set -u
 cd "$(git rev-parse --show-toplevel)" || exit 1
 
@@ -42,6 +50,14 @@ for t in breadboard build-guide cheatsheet draw-bench export-netlist \
          lab-notebook make-package parts wiring-diagram; do
   run "$t --check" python3 "tools/$t.py" --check
 done
+
+# The schematics' own rule check: a net with one end, a designator used
+# twice, a supply pin nobody mentioned. THE --erc IS LOAD BEARING and
+# not a verbosity flag: netlist.py returns 1 only when it is given, so
+# running it plain adds a check that cannot fail, which is worse than
+# not running it. Added 2026-09-23 after the roof's pull turned out to
+# be carrying this one gate by hand because this file lacked it.
+run "netlist --erc" python3 tools/netlist.py --erc
 
 # The checkers: agreement between things that must say the same, and
 # between a document and the thing it describes.
