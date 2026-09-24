@@ -229,8 +229,7 @@ def check_padble():
     # schematic names a net after the signal and the firmware after the
     # pin it reads it on.
     means = {"PAD_LATCH": "PAD_LATCH", "PAD_CLOCK": "PAD_CLK",
-             "PAD1_DATA": "PAD1_D0", "PAD2_DATA": "PAD2_D0",
-             "MODE_SW": "NC", "LED_PIN": "NC"}
+             "PAD1_DATA": "PAD1_D0", "MODE_SW": "NC", "LED_PIN": "NC"}
 
     # The sheet's U1 block, read the way sheet_nets reads the v1 sheet's.
     ds = (ROOT / "tools" / "draw-schematics.py").read_text()

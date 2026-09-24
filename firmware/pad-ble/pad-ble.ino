@@ -1,10 +1,9 @@
 // An original NES pad as a Bluetooth Low Energy keyboard.
 //
 // docs/pad-adapter.svg, and section 4 of docs/bench-build-v1-v2.md. The
-// bridge already contained the adapter: poll_pads() below is
-// firmware/bridge/bridge.ino's poll_pad() with the same timings on the
-// same pins, clocking both pads in one pass rather than one. What is
-// new is a radio behind it instead of a shift register.
+// bridge already contained the adapter: poll_pad() below is
+// firmware/bridge/bridge.ino's own, with the same timings on the same
+// pins. What is new is a radio behind it instead of a shift register.
 //
 // Standalone: no Pi, no UNO, no bridge, no console. A pad, a C6 and two
 // resistors. Wiring, per the corrected sheet:
@@ -14,7 +13,6 @@
 //   pad OUT0   -> GPIO2      latch, driven
 //   pad CLK    -> GPIO3      clock, driven
 //   pad D0     -> GPIO6      data, with 10k up to 3V3
-//   second pad -> D0 on GPIO7 with its own 10k, sharing latch and clock
 //
 // NOT GPIO4 and GPIO5. Those are the ESP32-S3's numbers and they are
 // strapping pins on the C6. The sheet carried them until 2026-09-21.
@@ -24,7 +22,7 @@
 //
 // Serial at 115200, one line per change, plus commands:
 //
-//   B <pad1 byte> <pad2 byte> <state>   a change of either pad
+//   B <pad byte> <state>                a change of the pad
 //   STATUS                              one line: pads, link, bonded peer
 //   KEYS                                the eight mappings as shipped
 //   FORGET                              drop every bond stored here
@@ -42,11 +40,12 @@
 // MFi, Xbox, PlayStation and Switch Pro layouts. Gamepad mode belongs
 // behind the mode switch on GPIO10 and is not in this build.
 //
-// ONE PAD SENDS KEYS, and that is a limit, not an oversight. A keyboard
-// report carries six key slots. Two pads can ask for ten keys, so two
-// players on one keyboard report would silently drop whatever arrived
-// last. Pad 2 is polled and printed so its wiring can be proved, and
-// two players want gamepad mode with two report IDs.
+// ONE PAD, and that is the design rather than a first step. A keyboard
+// report carries six key slots and two pads can ask for ten, so a
+// second pad could be polled and never sent. One was wired on the sheet
+// and polled here until 2026-09-23 doing exactly that, which is a part
+// on a buildable drawing doing nothing. Two players wants gamepad mode
+// with two report IDs, on a part that can present them.
 
 #include <BLEDevice.h>
 #include <BLEServer.h>
@@ -58,7 +57,6 @@
 static const int PAD_LATCH = 2;
 static const int PAD_CLOCK = 3;
 static const int PAD1_DATA = 6;
-static const int PAD2_DATA = 7;
 static const int MODE_SW = 10;  // reserved for gamepad mode; read, not used
 static const int LED_PIN = 11;
 
@@ -67,7 +65,7 @@ static const char *DEVICE_NAME = "NES Pad";
 static BLEHIDDevice *hid = nullptr;
 static BLECharacteristic *input = nullptr;
 static bool linked = false;
-static uint8_t pad1 = 0, pad2 = 0;
+static uint8_t pad1 = 0;
 static uint8_t sent[PAD_REPORT_LEN] = {0};
 static uint32_t dropped_total = 0;
 static uint32_t polls = 0;
@@ -78,30 +76,23 @@ static uint32_t polls = 0;
 // each rising edge and not after. A pressed button pulls D0 low, so a
 // low is a 1 in the byte, which is what makes bit 0 mean "A is down"
 // and matches Buttons::as_byte.
-// Both pads off one latch and one clock: they are separate shift
-// registers sharing a strobe, so one pass clocks both and the second
-// pad costs a pin, not a poll.
-static void poll_pads(uint8_t *a, uint8_t *b) {
+static uint8_t poll_pad() {
   digitalWrite(PAD_LATCH, HIGH);
   delayMicroseconds(12);
   digitalWrite(PAD_LATCH, LOW);
   delayMicroseconds(6);
-  uint8_t g1 = 0, g2 = 0;
+  uint8_t b = 0;
   for (int i = 0; i < 8; i++) {
     if (digitalRead(PAD1_DATA) == LOW) {
-      g1 |= 1 << i;
-    }
-    if (digitalRead(PAD2_DATA) == LOW) {
-      g2 |= 1 << i;
+      b |= 1 << i;
     }
     digitalWrite(PAD_CLOCK, HIGH);
     delayMicroseconds(6);
     digitalWrite(PAD_CLOCK, LOW);
     delayMicroseconds(6);
   }
-  *a = g1;
-  *b = g2;
   polls++;
+  return b;
 }
 
 // ------------------------------------------------------------- the link
@@ -169,7 +160,7 @@ static void start_ble() {
 
 // ------------------------------------------------------------ commands
 static void say_status() {
-  Serial.printf("# pads %02x %02x  link %s  polls %lu  dropped %lu\n", pad1, pad2, linked ? "up" : "down",
+  Serial.printf("# pad %02x  link %s  polls %lu  dropped %lu\n", pad1, linked ? "up" : "down",
                 (unsigned long)polls, (unsigned long)dropped_total);
 }
 
@@ -199,7 +190,6 @@ void setup() {
   digitalWrite(PAD_LATCH, LOW);
   digitalWrite(PAD_CLOCK, LOW);
   pinMode(PAD1_DATA, INPUT);
-  pinMode(PAD2_DATA, INPUT);
   pinMode(MODE_SW, INPUT_PULLUP);
   pinMode(LED_PIN, OUTPUT);
   Serial.println("# nes-bench pad-ble: an original pad as a BLE keyboard");
@@ -210,7 +200,7 @@ void setup() {
 
 void loop() {
   static uint32_t last = 0;
-  static uint8_t was1 = 0xFF, was2 = 0xFF;
+  static uint8_t was1 = 0xFF;
 
   // 1 kHz, the rate docs/pad-adapter.svg states and the bridge's own
   // pad poll uses. The console polls at 60 Hz; polling sixteen times
@@ -218,14 +208,13 @@ void loop() {
   // this loop.
   if (millis() != last) {
     last = millis();
-    poll_pads(&pad1, &pad2);
+    pad1 = poll_pad();
   }
 
-  if (pad1 != was1 || pad2 != was2) {
+  if (pad1 != was1) {
     was1 = pad1;
-    was2 = pad2;
-    Serial.printf("B %02x %02x %s\n", pad1, pad2, linked ? "linked" : "unlinked");
-    digitalWrite(LED_PIN, pad1 || pad2);
+    Serial.printf("B %02x %s\n", pad1, linked ? "linked" : "unlinked");
+    digitalWrite(LED_PIN, pad1 != 0);
   }
 
   if (linked && input) {

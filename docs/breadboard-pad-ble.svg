@@ -892,7 +892,7 @@
 <text class="col" x="1578.0" y="572.0" text-anchor="middle">3V3</text>
 <text class="col" x="1173.0" y="234.0" text-anchor="start">USB end</text>
 <rect class="term" x="12" y="216" width="104" height="208" rx="5"/>
-<text class="kb" x="16.0" y="232.0" text-anchor="start">J1  pad 1</text>
+<text class="kb" x="16.0" y="232.0" text-anchor="start">J1  the pad</text>
 <text class="col" x="16.0" y="246.0" text-anchor="start">the plug half of the cable</text>
 <circle cx="108" cy="262" r="4" fill="#333"/>
 <text class="termt" x="96.0" y="266.0" text-anchor="end">GND</text>
@@ -906,62 +906,29 @@
 <text class="termt" x="96.0" y="386.0" text-anchor="end">+5V</text>
 <circle cx="108" cy="412" r="4" fill="#333"/>
 <text class="termt" x="96.0" y="416.0" text-anchor="end">n/c</text>
-<rect class="term" x="1692" y="216" width="104" height="208" rx="5"/>
-<text class="kb" x="1696.0" y="232.0" text-anchor="start">J2  pad 2</text>
-<text class="col" x="1696.0" y="246.0" text-anchor="start">shares the latch and clock</text>
-<circle cx="1700" cy="262" r="4" fill="#333"/>
-<text class="termt" x="1712.0" y="266.0" text-anchor="start">GND</text>
-<circle cx="1700" cy="292" r="4" fill="#333"/>
-<text class="termt" x="1712.0" y="296.0" text-anchor="start">CLK</text>
-<circle cx="1700" cy="322" r="4" fill="#333"/>
-<text class="termt" x="1712.0" y="326.0" text-anchor="start">OUT0</text>
-<circle cx="1700" cy="352" r="4" fill="#333"/>
-<text class="termt" x="1712.0" y="356.0" text-anchor="start">D0</text>
-<circle cx="1700" cy="382" r="4" fill="#333"/>
-<text class="termt" x="1712.0" y="386.0" text-anchor="start">+5V</text>
-<circle cx="1700" cy="412" r="4" fill="#333"/>
-<text class="termt" x="1712.0" y="416.0" text-anchor="start">n/c</text>
 <rect class="pass" x="1101" y="600" width="18" height="18" rx="3"/>
 <text class="col" x="1124.0" y="613.0" text-anchor="start">C1 100nF</text>
 <rect class="pass" x="850" y="477" width="52" height="14" rx="3"/>
 <text class="col" x="876.0" y="472.0" text-anchor="middle">R1 10k</text>
-<text class="col" x="914.0" y="462.0" text-anchor="start">pad 1 D0 to 3V3</text>
-<rect class="pass" x="1006" y="477" width="52" height="14" rx="3"/>
-<text class="col" x="1032.0" y="472.0" text-anchor="middle">R2 10k</text>
-<text class="col" x="1070.0" y="462.0" text-anchor="start">pad 2 D0 to 3V3</text>
+<text class="col" x="914.0" y="462.0" text-anchor="start">the pad's D0 to 3V3</text>
 <path class="w" stroke="#1f9c53" opacity="0.85" d="M108 352 Q456 546 850 484"/>
 <circle cx="468" cy="482" r="9" fill="#ffffff" stroke="#1f9c53" stroke-width="1.6"/>
 <text class="wn" x="467.6" y="486.0" text-anchor="middle">1</text>
 <path class="w" stroke="#1f9c53" opacity="0.85" d="M850 484 Q1173 380 1474 536"/>
 <circle cx="1167" cy="445" r="9" fill="#ffffff" stroke="#1f9c53" stroke-width="1.6"/>
 <text class="wn" x="1167.4" y="449.2" text-anchor="middle">2</text>
-<path class="w" stroke="#1f9c53" opacity="0.85" d="M1006 484 Q1216 607 1448 536"/>
-<circle cx="1221" cy="559" r="9" fill="#ffffff" stroke="#1f9c53" stroke-width="1.6"/>
-<text class="wn" x="1221.3" y="562.6" text-anchor="middle">3</text>
-<path class="w" stroke="#1f9c53" opacity="0.85" d="M1448 536 Q1534 389 1700 352"/>
-<circle cx="1554" cy="416" r="9" fill="#ffffff" stroke="#1f9c53" stroke-width="1.6"/>
-<text class="wn" x="1553.8" y="420.3" text-anchor="middle">4</text>
 <path class="w" stroke="#1b64c8" opacity="0.85" d="M108 292 Q660 541 1266 536"/>
 <circle cx="674" cy="478" r="9" fill="#ffffff" stroke="#1b64c8" stroke-width="1.6"/>
-<text class="wn" x="673.6" y="481.6" text-anchor="middle">5</text>
-<path class="w" stroke="#1b64c8" opacity="0.85" d="M1266 536 Q1429 319 1700 292"/>
-<circle cx="1456" cy="366" r="9" fill="#ffffff" stroke="#1b64c8" stroke-width="1.6"/>
-<text class="wn" x="1456.2" y="370.3" text-anchor="middle">6</text>
-<path class="w" stroke="#222222" opacity="0.85" d="M108 322 Q677 557 1292 536"/>
-<circle cx="688" cy="493" r="9" fill="#ffffff" stroke="#222222" stroke-width="1.6"/>
-<text class="wn" x="688.4" y="497.0" text-anchor="middle">7</text>
-<path class="w" stroke="#222222" opacity="0.85" d="M1292 536 Q1449 339 1700 322"/>
-<circle cx="1472" cy="384" r="9" fill="#ffffff" stroke="#222222" stroke-width="1.6"/>
-<text class="wn" x="1472.5" y="388.1" text-anchor="middle">8</text>
+<text class="wn" x="673.6" y="481.6" text-anchor="middle">3</text>
+<path class="w" stroke="#222222" opacity="0.85" d="M108 322 Q723 301 1292 536"/>
+<circle cx="712" cy="365" r="9" fill="#ffffff" stroke="#222222" stroke-width="1.6"/>
+<text class="wn" x="711.6" y="369.0" text-anchor="middle">4</text>
 <path class="w" stroke="#d02b2b" opacity="0.9" d="M108 382 L108 622"/>
-<path class="w" stroke="#d02b2b" opacity="0.9" d="M1700 382 L1700 622"/>
 <path class="w" stroke="#d02b2b" opacity="0.9" d="M902 484 L902 622"/>
-<path class="w" stroke="#d02b2b" opacity="0.9" d="M1058 484 L1058 622"/>
 <path class="w" stroke="#d02b2b" opacity="0.9" d="M1578 536 L1578 622"/>
 <path class="w" stroke="#1b64c8" opacity="0.9" d="M108 262 L108 596"/>
-<path class="w" stroke="#1b64c8" opacity="0.9" d="M1700 262 L1700 596"/>
 <path class="w" stroke="#1b64c8" opacity="0.9" d="M1214 536 L1214 596"/>
-<text class="h1" x="60.0" y="732.0" text-anchor="start">8 numbered jumpers, and 8 short wires to the rails</text>
+<text class="h1" x="60.0" y="732.0" text-anchor="start">4 numbered jumpers, and 5 short wires to the rails</text>
 <text class="h2" x="60.0" y="754.0" text-anchor="start">Every one of these is read out of the schematic. Red stubs go to the nearest + rail, blue stubs to the nearest - rail; they are not numbered because they are all the same instruction.</text>
 <circle cx="69" cy="780" r="9" fill="#ffffff" stroke="#1f9c53" stroke-width="1.6"/>
 <text class="wn" x="69.0" y="784.0" text-anchor="middle">1</text>
@@ -969,22 +936,10 @@
 <circle cx="69" cy="799" r="9" fill="#ffffff" stroke="#1f9c53" stroke-width="1.6"/>
 <text class="wn" x="69.0" y="803.0" text-anchor="middle">2</text>
 <text class="k" x="86.0" y="803.0" text-anchor="start">PAD1_D0, the green lead:  R1 col 26 row H  to  U1 pin marked 6 (col 50 row J)</text>
-<circle cx="69" cy="818" r="9" fill="#ffffff" stroke="#1f9c53" stroke-width="1.6"/>
-<text class="wn" x="69.0" y="822.0" text-anchor="middle">3</text>
-<text class="k" x="86.0" y="822.0" text-anchor="start">PAD2_D0, the green lead:  R2 col 32 row H  to  U1 pin marked 7 (col 49 row J)</text>
-<circle cx="669" cy="780" r="9" fill="#ffffff" stroke="#1f9c53" stroke-width="1.6"/>
-<text class="wn" x="669.0" y="784.0" text-anchor="middle">4</text>
-<text class="k" x="686.0" y="784.0" text-anchor="start">PAD2_D0, the green lead:  U1 pin marked 7 (col 49 row J)  to  J2 D0</text>
-<circle cx="669" cy="799" r="9" fill="#ffffff" stroke="#1b64c8" stroke-width="1.6"/>
-<text class="wn" x="669.0" y="803.0" text-anchor="middle">5</text>
-<text class="k" x="686.0" y="803.0" text-anchor="start">PAD_CLK, the blue lead:  J1 CLK  to  U1 pin marked 3 (col 42 row J)</text>
-<circle cx="669" cy="818" r="9" fill="#ffffff" stroke="#1b64c8" stroke-width="1.6"/>
-<text class="wn" x="669.0" y="822.0" text-anchor="middle">6</text>
-<text class="k" x="686.0" y="822.0" text-anchor="start">PAD_CLK, the blue lead:  U1 pin marked 3 (col 42 row J)  to  J2 CLK</text>
-<circle cx="1269" cy="780" r="9" fill="#ffffff" stroke="#222222" stroke-width="1.6"/>
-<text class="wn" x="1269.0" y="784.0" text-anchor="middle">7</text>
-<text class="k" x="1286.0" y="784.0" text-anchor="start">PAD_LATCH, the black lead:  J1 OUT0  to  U1 pin marked 2 (col 43 row J)</text>
-<circle cx="1269" cy="799" r="9" fill="#ffffff" stroke="#222222" stroke-width="1.6"/>
-<text class="wn" x="1269.0" y="803.0" text-anchor="middle">8</text>
-<text class="k" x="1286.0" y="803.0" text-anchor="start">PAD_LATCH, the black lead:  U1 pin marked 2 (col 43 row J)  to  J2 OUT0</text>
+<circle cx="669" cy="780" r="9" fill="#ffffff" stroke="#1b64c8" stroke-width="1.6"/>
+<text class="wn" x="669.0" y="784.0" text-anchor="middle">3</text>
+<text class="k" x="686.0" y="784.0" text-anchor="start">PAD_CLK, the blue lead:  J1 CLK  to  U1 pin marked 3 (col 42 row J)</text>
+<circle cx="669" cy="799" r="9" fill="#ffffff" stroke="#222222" stroke-width="1.6"/>
+<text class="wn" x="669.0" y="803.0" text-anchor="middle">4</text>
+<text class="k" x="686.0" y="803.0" text-anchor="start">PAD_LATCH, the black lead:  J1 OUT0  to  U1 pin marked 2 (col 43 row J)</text>
 </svg>

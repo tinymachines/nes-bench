@@ -130,14 +130,10 @@ ROW_HEAD = [
 ROW_PADBLE = [
     ("J1", {"kind": "header", "label": "J1 pad 1", "sub": "the plug half of an original pad",
             "top": [(1, "GND"), (2, "CLK"), (3, "OUT0"), (4, "D0"), (5, "+5V")], "bottom": []}),
-    ("J2", {"kind": "header", "label": "J2 pad 2", "sub": "shares the latch and the clock",
-            "top": [(1, "GND"), (2, "CLK"), (3, "OUT0"), (4, "D0"), (5, "+5V")], "bottom": []}),
-    ("R1", {"kind": "header", "label": "R1 10k", "sub": "pad 1 D0 pullup",
-            "top": [(1, "1"), (2, "2")], "bottom": []}),
-    ("R2", {"kind": "header", "label": "R2 10k", "sub": "pad 2 D0 pullup",
+    ("R1", {"kind": "header", "label": "R1 10k", "sub": "the pad's D0 pullup",
             "top": [(1, "1"), (2, "2")], "bottom": []}),
     ("U1", {"kind": "header", "label": "U1 ESP32-C6-DevKitC-1", "sub": "3.3 V logic; BLE only",
-            "top": [(None, "GPIO2"), (None, "GPIO3"), (None, "GPIO6"), (None, "GPIO7"),
+            "top": [(None, "GPIO2"), (None, "GPIO3"), (None, "GPIO6"),
                     (None, "3V3"), (None, "GND")],
             "bottom": [(None, "BLE"), (None, "USB-C")]}),
 ]
@@ -161,8 +157,8 @@ SHEETS = {
     "padble": dict(netlist="pad-ble", row=ROW_PADBLE, caps={"C1": "U1"}, rails=("3V3", "GND"), out="wiring-pad-ble",
                    status=None, aria="pad-ble adapter wiring diagram",
                    title="pad-ble v1: two original pads into an ESP32-C6, at right angles",
-                   sub="The standalone adapter, every wire read out of pad-ble.svg. Both pads share the latch and the clock, "
-                       "so those two nets reach four pins each. The pads run from 3V3, not 5 V, which is measure-first item 4.",
+                   sub="The standalone adapter, every wire read out of pad-ble.svg. One pad, because a keyboard report has six "
+                       "key slots. The pad runs from 3V3, not 5 V, which is measure-first item 4.",
                    built_title="pad-ble v1 as built",
                    rails_note="3V3 and GND from the devkit's own pins: no separate supply on this build"),
 }

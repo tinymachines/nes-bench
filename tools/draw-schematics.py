@@ -1041,9 +1041,8 @@ def sheet_padble():
                "The buildable subset of pad-adapter.svg: USB powered, no cell, no charger, no mode switch. The board on "
                "the bench is an ESP32-C6-DevKitC-1 v1.2, read off its RGB@IO8 silkscreen 2026-09-21. Nothing built.")
 
-    sh.zone(20, 66, 690, 700, "THE TWO PADS, polled at 3V3 exactly as the bridge polls one")
+    sh.zone(20, 66, 690, 700, "THE PAD, polled at 3V3 exactly as the bridge polls one")
     pad_socket(sh, 150, 100, "J1", "PAD_LATCH", "PAD_CLK", "PAD1_D0")
-    pad_socket(sh, 150, 400, "J2", "PAD_LATCH", "PAD_CLK", "PAD2_D0")
     sh.note(330, 110, [
         "The pad's 4021 is a CMOS part rated 3 to 18 V, so at 3V3 its",
         "D0 is 3V3 logic and needs no shifter. That is the datasheet,",
@@ -1051,9 +1050,12 @@ def sheet_padble():
         "follow its buttons at 3V3, add a 74LVC245 and feed the pad",
         "5 V; the 245 is on hand.",
         "",
-        "Both pads share PAD_LATCH and PAD_CLK. They are separate shift",
-        "registers on one strobe, so one pass clocks both and the",
-        "second pad costs a pin, not a poll.",
+        "ONE PAD, and that is the design rather than a first step. A BLE",
+        "keyboard report carries six key slots and two pads can ask for",
+        "ten, so a second pad could be polled and never sent. One was on",
+        "this sheet until 2026-09-23 doing exactly that: wired, pulled",
+        "up, given a pin, and thrown away. Two players wants gamepad",
+        "mode with two report IDs, which is pad-adapter.svg's job.",
         "",
         "Pin 5 is the supply and 6 and 7 carry nothing, as measured on",
         "this console's own cable (docs/wiring.md). RING THE CABLE OUT",
@@ -1061,12 +1063,11 @@ def sheet_padble():
         "through its pull-ups, and pins that share nothing beep.",
     ])
     sh.twopin(330, 690, "R1", "10k", "PAD1_D0", "3V3")
-    sh.twopin(330, 714, "R2", "10k", "PAD2_D0", "3V3")
 
     sh.zone(730, 66, 810, 700, "THE CONTROLLER, on USB power")
     sh.chip(900, 100, 210, "U1", "ESP32-C6-DevKitC-1 v1.2", [
         (None, "GPIO2", "PAD_LATCH"), (None, "GPIO3", "PAD_CLK"),
-        (None, "GPIO6", "PAD1_D0"), (None, "GPIO7", "PAD2_D0"),
+        (None, "GPIO6", "PAD1_D0"),
         (None, "GPIO10", "NC"), (None, "GPIO11", "NC"),
         (None, "3V3", "3V3"), (None, "GND", "GND")],
         [(None, "BLE", "radio"), (None, "USB-C", "VBUS")],

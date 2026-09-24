@@ -91,7 +91,7 @@ C6_HEADER = {
 # What the schematic calls a pin, against what the board prints beside
 # it. The ground taken is the one on the same row as everything else.
 C6_PIN = {"GPIO2": ("lower", "2"), "GPIO3": ("lower", "3"), "GPIO6": ("lower", "6"),
-          "GPIO7": ("lower", "7"), "3V3": ("lower", "3V3"), "GND": ("lower", "G")}
+          "3V3": ("lower", "3V3"), "GND": ("lower", "G")}
 
 PALETTE = ["#7a3fbf", "#0f8f9e", "#b5651d", "#8d1f5e", "#3f6f2a", "#5b5bd6",
            "#a8471f", "#1f7a8c", "#7d4a1f", "#4a4a9c", "#96206a", "#2f7d4f"]
@@ -304,12 +304,11 @@ PADBLE_DEVKITS = {
 }
 # The pullups, in free columns just past the devkit. Row H, which is
 # reachable there: under the devkit only rows A and J are.
-PADBLE_RES = {"R1": (26, 28), "R2": (32, 34)}
-PADBLE_RES_PART = {"R1": "10k", "R2": "10k"}
-PADBLE_RES_NOTE = {"R1": "pad 1 D0 to 3V3", "R2": "pad 2 D0 to 3V3"}
+PADBLE_RES = {"R1": (26, 28)}
+PADBLE_RES_PART = {"R1": "10k"}
+PADBLE_RES_NOTE = {"R1": "the pad's D0 to 3V3"}
 PADBLE_TERMINALS = {
-    "J1": {"x": 108, "y": 262, "title": "J1  pad 1", "sub": "the plug half of the cable"},
-    "J2": {"x": 1700, "y": 262, "title": "J2  pad 2", "sub": "shares the latch and clock"},
+    "J1": {"x": 108, "y": 262, "title": "J1  the pad", "sub": "the plug half of the cable"},
 }
 
 SHEETS = {
@@ -468,6 +467,7 @@ def main():
     # board does not carry is a typo rather than a hole.
     dk = PADBLE_DEVKITS["U1"]
     assert devkit_hole("U1", "GPIO2", PADBLE_DEVKITS) == (dk["col"] + 4, "lower")
+    assert devkit_hole("U1", "GPIO6", PADBLE_DEVKITS) == (dk["col"] + 11, "lower")
     assert devkit_hole("U1", "3V3", PADBLE_DEVKITS) == (dk["col"] + 15, "lower")
     for name, (row, label) in C6_PIN.items():
         assert label in C6_HEADER[row], f"{name}: the board carries no pin marked {label} on its {row} header"

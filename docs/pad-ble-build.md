@@ -2,11 +2,11 @@
 
 The bridge's own pad poll with a radio behind it instead of a shift
 register. No Pi, no UNO, no console: a pad, the ESP32-C6 already seated
-on the breadboard, and two resistors. It pairs to a phone, a tablet or
+on the breadboard, and one resistor. It pairs to a phone, a tablet or
 a laptop as a plain BLE keyboard, which is what lets a forty-year-old
 controller drive a browser emulator with no app at either end.
 
-Written 2026-09-21, updated 2026-09-22.
+Written 2026-09-21, updated 2026-09-23.
 
 **Nothing here has been built, and nothing about the circuit has been
 measured.** The firmware compiles and its key mapping is tested on the
@@ -56,20 +56,19 @@ So: BLE keyboard. Not a preference, the only HID this board can do.
 | ref | part | note |
 |---|---|---|
 | U1 | ESP32-C6-DevKitC-1 v1.2 | already on the breadboard |
-| J1, J2 | an original pad each | the plug half of the cable |
-| R1, R2 | 10k | one per pad, D0 up to 3V3 |
+| J1 | an original pad | the plug half of the cable |
+| R1 | 10k | the pad's D0 up to 3V3 |
 | C1 | 100nF | across the devkit's 3V3 and GND |
 
 No LDO, no charger, no cell, no switch. The devkit runs from whatever
-USB supplies it and its own regulator makes the 3V3 that the pads run
-from.
+USB supplies it and its own regulator makes the 3V3 the pad runs from.
 
 ## The wiring, drawn to build from
 
 Three drawings of one circuit, all derived from the same netlist, so no
 one of them can show a wire the others do not.
 
-![pad-ble v1: the schematic, two pads into the C6 with what the board can and cannot do](pad-ble.svg)
+![pad-ble v1: the schematic, one pad into the C6 with what the board can and cannot do](pad-ble.svg)
 
 ![pad-ble v1 at right angles: every wire, on the packages as they sit](wiring-pad-ble.svg)
 
@@ -82,21 +81,20 @@ devkit's headers. That is measured (below) and lives in
 
 ## The wire list
 
-Five conductors per pad. Both pads share the latch and the clock, so
-those two nets reach four pins between them; only D0 is per pad.
+Five conductors, one pad.
 
 | pad plug pin | signal | lead colour | to |
 |---|---|---|---|
 | 1 | GND | yellow | GND |
 | 2 | CLK | blue | GPIO3, driven by the C6 |
 | 3 | OUT0 | black | GPIO2, driven by the C6 |
-| 4 | D0 | green | GPIO6 (pad 1) or GPIO7 (pad 2), each with 10k up to 3V3 |
+| 4 | D0 | green | GPIO6, with a 10k up to 3V3 |
 | 5 | +5V | red | **3V3**, not 5 V |
 
 **The colours are the bridge's own, confirmed at the bench on
 2026-09-22 as the same five.** The table is `LEAD = {1: yellow, 2:
 blue, 3: black, 4: green, 5: red}` in `tools/wiring-diagram.py`,
-metered on the bridge's cable and printed on both pad connectors of
+metered on the bridge's cable and printed on the pad connector of
 `wiring-pad-ble.svg`. A listing of the five colours in another order
 was a listing of the set, not of the pin order, and nothing needed
 changing.
@@ -124,7 +122,7 @@ breadboard's own printed column numbers:
 | the devkit's PCB | the middle breadboard, spanning about **columns 37 to 56** |
 | its headers | **sixteen pins a side, so sixteen columns**; the USB connectors overhang the rest of the PCB at one end |
 | its rows | pins in **B and I**, straddling the channel, leaving A and J free |
-| the pads | a cut cable is stripped and lying at the board's low-column end, five conductors |
+| the cable | a cut pad cable is stripped and lying at the board's low-column end, five conductors |
 
 Believed to within a column, exactly as the bridge's own placement was
 ("counted from the printed marks and believed to within one column").
@@ -156,19 +154,19 @@ it appears more than once.
 
 | row | pins, from the USB end |
 |---|---|
-| the pad-ble side | NC, G, 5V, **3**, **2**, 11, 10, 8, 1, 0, **7**, **6**, 5, 4, RST, **3V3** |
+| the pad-ble side | NC, G, 5V, **3**, **2**, 11, 10, 8, 1, 0, 7, **6**, 5, 4, RST, **3V3** |
 | the other side | NC, G, 12, 13, G, 9, 18, 19, 20, 21, 22, 23, 15, RX, TX, G |
 
 Sixteen a side. This table lives once, in `tools/breadboard.py` as
 `C6_HEADER`, and the sheet is drawn from it.
 
 **Every pin this circuit needs is on one row.** GPIO2, GPIO3, GPIO6,
-GPIO7, a 3V3 and a ground are all on the first row above, so no wire
-crosses to the other side of the board. That is worth knowing before
-you start, and it was not a given.
+a 3V3 and a ground are all on the first row above, so no wire crosses
+to the other side of the board. That is worth knowing before you start,
+and it was not a given.
 
 **The trap that row sets.** GPIO4 and GPIO5 sit immediately beside
-GPIO6 and GPIO7, and GPIO8 is four along. All three are strapping pins
+GPIO6, and GPIO8 is four the other way. All three are strapping pins
 on the C6. Counting one hole wrong along that row does not give you a
 dead input, it gives you a board that may not boot. Count from the
 printed labels, not from the end.
@@ -205,8 +203,6 @@ because every version of this adapter rests on it.
    helped, and the answer is measure-first item 2.
 4. Only then pair it. It advertises as `NES Pad` and should appear in a
    phone's Bluetooth settings as an ordinary keyboard.
-5. Add the second pad: D0 to GPIO7 with its own 10k, sharing the latch
-   and the clock. It is polled and printed but does not send keys.
 
 ## What the host sees
 
@@ -217,13 +213,20 @@ a key slot because right shift is a modifier, and a host that tracks
 modifier state separately would otherwise see shift held in a way no
 keyboard produces.
 
-**One pad sends keys, and that is a limit rather than an oversight.** A
-keyboard report carries six key slots; two pads can ask for ten, so two
-players on one report would silently drop whichever arrived last. Two
-players wants gamepad mode with two report IDs, on a part that can do
-it. Gamepad mode is also not built, for a different reason: iOS refuses
-a generic HID gamepad, taking only the MFi, Xbox, PlayStation and
-Switch Pro layouts, which is what made keyboard mode first.
+**One pad, and that is the design rather than a first step.** A keyboard
+report carries six key slots and two pads can ask for ten, so a second
+pad could be polled and never sent. One was on these drawings until
+2026-09-23 doing exactly that: wired, pulled up, given a pin, and
+thrown away. It came off when the person holding the cable asked why a
+standalone keyboard for a phone had two of them, which was the right
+question and the sheet's own stated purpose was the argument against
+it: a drawing somebody builds from has to show the parts they have.
+
+Two players wants gamepad mode with two report IDs, which is
+`pad-adapter.svg`'s job. Gamepad mode is not built for a second reason
+anyway: iOS refuses a generic HID gamepad, taking only the MFi, Xbox,
+PlayStation and Switch Pro layouts, which is what made keyboard mode
+first.
 
 ## What is tested, and what is not
 
