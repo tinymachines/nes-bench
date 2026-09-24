@@ -120,6 +120,14 @@ file that does not hash to its record, a record naming a commit that is
 not the checkout's head, or a record written from a dirty tree. Each
 refusal names `--check` as the command that says the same thing here.
 
+**Run every check, not the ones you would have picked:**
+
+    tools/check-all.sh    # all fourteen, about 3 seconds
+
+Choosing a subset by hand is how a stale `docs/parts.md` reached a push
+on 2026-09-23: four gates run, fourteen available, and the one that
+would have caught it was not among the four.
+
 **A hook can do the two middle steps for you**, and on this bench it
 is installed:
 
@@ -127,9 +135,9 @@ is installed:
     tools/install-hooks.sh --check  # say what is installed, change nothing
 
 It symlinks `.git/hooks/post-commit` at `tools/post-commit-hook.sh`, so
-the tracked file is the one that runs. It rebuilds and checks after
-every commit, about 7 seconds, prints one line when all three agree and
-the refusal when they do not. It skips during a rebase or a merge,
+the tracked file is the one that runs. It rebuilds the packages and then runs
+`check-all.sh` after every commit, about 10 seconds, printing one line
+when everything agrees and only the disagreements when it does not. It skips during a rebase or a merge,
 where HEAD churns per commit and only the end state matters, and says
 that it skipped. It cannot block a commit and does not try: git ignores
 a post-commit hook's status and the commit already exists, so it

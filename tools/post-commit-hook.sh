@@ -51,12 +51,15 @@ if ! out=$(python3 tools/make-package.py 2>&1); then
   exit 0
 fi
 
-# The same four questions the site's pull asks. Checked here so the
-# first anybody hears of a stale package is this line, not a red deploy
-# with the person who can fix it on the other side of it.
-if ! out=$(python3 tools/make-package.py --check 2>&1); then
-  echo "post-commit: THE PACKAGES DISAGREE WITH WHAT BUILT THEM:"
-  echo "$out" | grep -v '^make-package:' | tail -6
+# EVERY check, not the ones I would have picked. On 2026-09-23 a part
+# came off the pad-ble sheets, docs/parts.md is generated from those
+# sheets, and the four gates I ran by hand before pushing did not
+# include parts.py --check. The site's pull found it, which is the
+# wrong end of the rope. check-all.sh is the whole set and costs about
+# three seconds, so there is no subset to choose any more.
+if ! out=$(tools/check-all.sh 2>&1); then
+  echo "post-commit: CHECKS DISAGREE, and the commit is already made:"
+  echo "$out" | grep -v '^  ok ' | tail -8
   exit 0
 fi
 
