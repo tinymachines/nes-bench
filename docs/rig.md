@@ -24,9 +24,32 @@ below is measured against.
 | camera | device (by-id) | job | mount | frame | scale |
 |---|---|---|---|---|---|
 | Logitech BRIO | `usb-046d_Logitech_BRIO_1C8D6975` | the board eye: the hole map, the named close-ups, the timed board grabs | on the frame's cross-bar over the breadboards, straight down, raised and levelled 2026-09-15, gaffer-taped and velcroed | 1920 by 1080, MJPG (USB 2: 4K is not on offer) | LOCKED 2026-09-15 (`captures/b15-all.jpg`): 11.1 px per hole at zoom 100, the same along columns and rows (level: no foreshortening), 28 at zoom 250, 53 at zoom 500; focus 18; the whole backing board in frame. The map is read per board off a zoom-250 frame (`docs/board-map.json` names each board's frame, aim and band) and the as-built photograph is drawn on those frames |
-| Logitech QuickCam Pro 9000 (UNPLUGGED 2026-09-24) | `usb-046d_0990_08DF0A45` | was the side eye across the board: the three chips and the UNO's leads in profile from the Pi's side | on the backing board's Pi side, low, looking across the breadboards toward the console | 1600 by 1200, MJPG | OFF THE RIG 2026-09-24, taken out to free hub power after an ESP32-P4 boot reset three devices at once. Its lock stands in the photograph if it goes back: LOCKED 2026-09-15 (`docs/lab/rig-side-eye-9000.jpg`): the chips at about a third of the frame's width; a housing's pins show in profile at about 4 px each |
-| Logitech QuickCam Communicate Deluxe | `usb-046d_09a2_ABAD8310` | the second side eye, along the chip board's rails side from the cable end: the probe clips, the console cable's housing, U3's rails-side landings | on the frame's upright at the cable end, low | 1280 by 960, MJPG | **LOCK BROKEN 2026-09-24**: moved to cover the pad-ble work and not yet re-measured, so no scale here is current. The first frame after the move (`captures/side-eye-2026-09-24.jpg`, not committed) has the subject against the left edge and the auto exposure metering off the wall behind it. The old lock, for the old pose only: LOCKED 2026-09-15 (`docs/lab/rig-side-eye-communicate.jpg`), column numbers legible to about column 25, the Q lines' arc and the housings in profile |
+| Logitech QuickCam Pro 9000 | `usb-046d_0990_08DF0A45` | the side eye across the board: the three chips and the UNO's leads in profile from the Pi's side | on the backing board's Pi side, low, looking across the breadboards toward the console | 1600 by 1200, MJPG | **LOCK BROKEN 2026-09-24**: taken off, then put back in the Communicate's place to cover the pad-ble work, so no scale here is current. It refused to enumerate on port 1-1.4 that evening (`can't set config #1, error -71`, twice, and unchanged by freeing two devices of hub power); a cold reboot cleared it and it has been clean since. The old lock, for the old pose only: LOCKED 2026-09-15 (`docs/lab/rig-side-eye-9000.jpg`): the chips at about a third of the frame's width; a housing's pins show in profile at about 4 px each |
+| Logitech QuickCam Communicate Deluxe (OFF THE RIG 2026-09-24) | `usb-046d_09a2_ABAD8310` | was the second side eye, along the chip board's rails side from the cable end: the probe clips, the console cable's housing, U3's rails-side landings | on the frame's upright at the cable end, low | 1280 by 960, MJPG | **LOCK BROKEN 2026-09-24**: moved to cover the pad-ble work and not yet re-measured, so no scale here is current. The first frame after the move (`captures/side-eye-2026-09-24.jpg`, not committed) has the subject against the left edge and the auto exposure metering off the wall behind it. The old lock, for the old pose only: LOCKED 2026-09-15 (`docs/lab/rig-side-eye-communicate.jpg`), column numbers legible to about column 25, the Q lines' arc and the housings in profile |
 | Roxio capture (em28xx) | `usb-1b80_Roxio_Video_Capture_USB_...` | the console's picture | on the splitter with the scope's CH3 | 720 by 480 NTSC | not a camera |
+
+### Which camera can be aimed in software, measured
+
+Asserted wrong once on 2026-09-24 and then measured, because a camera
+was swapped on the strength of the wrong answer. `v4l2-ctl --list-ctrls`
+on each, after the reboot that day:
+
+| camera | pan / tilt | zoom | focus | frame |
+|---|---|---|---|---|
+| Logitech BRIO | `pan_absolute`, `tilt_absolute` | `zoom_absolute` | `focus_absolute`, `focus_automatic_continuous` | 1920 by 1080 |
+| QuickCam Pro 9000 | none | none | none | 1600 by 1200 |
+| QuickCam Communicate Deluxe | none | none | none | 1280 by 960 |
+
+**Only the BRIO can be aimed without touching it**, which is why
+`eye.py` is written against the BRIO alone and carries presets in
+zoom, pan and tilt. Both side eyes are framed by hand and offer
+nothing but exposure, gain, white balance, sharpness and backlight
+compensation. The Communicate Deluxe adds `privacy` and that is the
+whole difference between the two.
+
+So a side eye is chosen for its sensor, not its reach: the 9000 is
+1600 by 1200 against the Communicate's 1280 by 960, and neither can
+be pointed from here.
 
 ## The bench, photographed
 
