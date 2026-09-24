@@ -1,0 +1,32 @@
+# Keep ModemManager off the bench's serial instruments.
+#
+# Install: sudo cp head/99-nes-bench-serial.rules /etc/udev/rules.d/
+#          sudo udevadm control --reload
+#
+# WHY. ModemManager probes every tty that appears, sending AT commands
+# and toggling the modem control lines for tens of seconds, looking for
+# a cellular modem. None of the things on this bench is one. That probe
+# window is exactly when a flash or a bring-up wants the port, and a
+# device being probed answers nothing, so the symptom is "no serial
+# data received" from a port that is plainly there.
+#
+# MEASURED 2026-09-23: flashing the pad-ble ESP32-C6 failed this way on
+# every reset mode, with a new cable, with the board bare and off the
+# breadboard. ModemManager was active and enabled at boot; it had found
+# no modems, which is the point, because it keeps looking.
+#
+# These four cover what this bench plugs in. ID_MM_DEVICE_IGNORE is
+# ModemManager's own opt-out, so this tells it to leave them alone
+# rather than fighting it for the port.
+
+# Silicon Labs CP210x: the ESP32-C6-DevKitC-1's UART bridge
+SUBSYSTEM=="tty", ATTRS{idVendor}=="10c4", ATTRS{idProduct}=="ea60", ENV{ID_MM_DEVICE_IGNORE}="1"
+
+# QinHeng CH340: the OSCR cartridge reader
+SUBSYSTEM=="tty", ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="7523", ENV{ID_MM_DEVICE_IGNORE}="1"
+
+# Espressif native USB (USB Serial/JTAG), the devkit's other port
+SUBSYSTEM=="tty", ATTRS{idVendor}=="303a", ENV{ID_MM_DEVICE_IGNORE}="1"
+
+# Arduino UNO R3: the bridge the head drives the console through
+SUBSYSTEM=="tty", ATTRS{idVendor}=="2341", ENV{ID_MM_DEVICE_IGNORE}="1"

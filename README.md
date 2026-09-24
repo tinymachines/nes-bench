@@ -173,6 +173,13 @@ a package built twice at one commit is byte-identical.
   schematic, the right-angle wiring, and the breadboard sheet that says
   which hole. The devkit's header order is measured and lives once, as
   `C6_HEADER` in `tools/breadboard.py`.
+- `head/99-nes-bench-serial.rules`: keeps ModemManager off the bench's
+  serial instruments. It probes every tty that appears with AT commands
+  for tens of seconds looking for a cellular modem, which is exactly
+  when a flash or a bring-up wants the port. Installed on this head on
+  2026-09-23, with ModemManager disabled beside it; the file says why
+  and how to install it. It was NOT the cause of that day's silent
+  ESP32, which is worth knowing before reaching for it as one.
 - `head/`: the Pi's daemon, the bench under one script (UDP in, the
   bridge over serial, relays, the scope over SCPI, runs served back over
   HTTP); `docs/script.md` is the script's words, shared with the model.
