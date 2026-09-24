@@ -44,7 +44,112 @@ Read as a parts table:
 | **ESP32-C6** (on hand) | yes | **no** | serial/JTAG only |
 | ESP32-H2 | yes | no | no Wi-Fi either: BLE and 802.15.4 |
 | ESP32-C5 | yes | no | serial/JTAG only |
-| ESP32-P4 | **no radio at all** | yes, two OTG | needs a companion chip to be wireless |
+| ESP32-P4 | **no radio in the silicon**, see below | yes, two OTG | the module on this bench carries a C6 and does both |
+
+## The board on this bench is a P4 module, and that changes its row
+
+Identified 2026-09-24 off its own silkscreen:
+
+    ESP32-P4-Module
+    SoC: ESP32-P4NRW32
+    WiFi: 802.11 b/g/n/ax
+    Flash: 16MB
+
+The table above says the P4 has no radio, and that is correct about the
+die: `soc_caps.h` defines neither `SOC_BLE_SUPPORTED` nor
+`SOC_WIFI_SUPPORTED` for it. **The module is not the die.** That
+silkscreen line is the tell, and `ax` is the specific word that gives
+it away: Wi-Fi 6 means there is a second Espressif part in the can, and
+the core names it.
+
+Measured in the same core, 3.3.11, in `tools/esp32p4-libs/3.3.11`:
+
+    lib/libbt.a                          the NimBLE host, built for P4
+    lib/libespressif__esp_hosted.a       the link to the co-processor
+
+    sdkconfig:
+      CONFIG_BT_ENABLED=y
+      CONFIG_BT_NIMBLE_ENABLED=y
+      CONFIG_BT_CONTROLLER_DISABLED=y     no local controller, correct
+      CONFIG_ESP_HOSTED_ENABLED=y
+      CONFIG_ESP_HOSTED_CP_TARGET_ESP32C6=y
+      CONFIG_ESP_HOSTED_IDF_SLAVE_TARGET="esp32c6"
+      CONFIG_ESP_HOSTED_ENABLE_BT_NIMBLE=y
+      CONFIG_ESP_HOSTED_NIMBLE_HCI_VHCI=y
+      CONFIG_ESP_HOSTED_SDIO_HOST_INTERFACE=y
+
+So the arrangement is: **the Bluetooth host stack runs on the P4 and
+the radio is an ESP32-C6 reached over SDIO.** The controller is
+disabled locally because there is nothing to control locally, and HCI
+goes out over the hosted link instead.
+
+### The Arduino BLE classes say so in their own gate
+
+This is not an inference about what might work. The core's BLE headers
+carry a two-armed condition, and the second arm is exactly this case:
+
+    libraries/BLE/src/BLEDevice.h:36     #if defined(SOC_BLE_SUPPORTED) || defined(CONFIG_ESP_HOSTED_ENABLE_BT_NIMBLE)
+    libraries/BLE/src/BLEHIDDevice.h:36  #if defined(SOC_BLE_SUPPORTED) || defined(CONFIG_ESP_HOSTED_ENABLE_BT_NIMBLE)
+    libraries/BLE/src/BLESecurity.h:34   #if defined(SOC_BLE_SUPPORTED) || defined(CONFIG_ESP_HOSTED_ENABLE_BT_NIMBLE)
+
+Those three headers are the three this project's firmware includes.
+
+### pad-ble compiles for the P4 unedited
+
+The test that settles it, run 2026-09-24:
+
+    arduino-cli compile --fqbn esp32:esp32:esp32p4 firmware/pad-ble
+
+    Sketch uses 791942 bytes (60%) of program storage space.
+    Global variables use 26564 bytes (8%) of dynamic memory.
+
+Not one line of `pad-ble.ino` or `keymap.h` changed. The same sketch is
+56% of a C6's flash and 60% of the P4's partition.
+
+**A compile is not a run.** It proves the classes exist and link for
+this target. It proves nothing about the radio, because the radio is a
+second chip that this workstation has never spoken to.
+
+### The pins do not collide, which was not obvious
+
+The hosted link is not free: it occupies real GPIOs on the P4 side,
+and they are fixed by the module's wiring, not chosen.
+
+    SDIO to the C6      GPIO 14, 15, 16, 17, 18, 19
+    C6 reset            GPIO 54
+    boot strapping      GPIO 35 (BOOT_MODE), GPIO 36 (BOOT_MODE2, pullup)
+    console UART        GPIO 37 (TX), GPIO 38 (RX)
+
+`pad-ble` uses GPIO 2, 3, 6, 10 and 11. None of those appear above, so
+the pad map carries over unchanged, the same way it was chosen to avoid
+the C6's strapping pins. That is luck rather than design and is worth
+re-checking against the board's own exposed header before wiring.
+
+### What is still unknown about it
+
+- **The SDIO pin map above is the core's default**, written for
+  Espressif's own P4 board. A different module may wire the two parts
+  differently. If BLE initialises and finds no controller, this is the
+  first suspect, and it is a build-time setting rather than a wiring
+  fault.
+- **The C6 must be running matching esp-hosted slave firmware.** Vendor
+  boards ship it flashed. A version mismatch between host and slave is
+  a known and confusing failure, and it is not a hardware problem.
+- **Nothing has been flashed to this board and nothing has run on it.**
+
+### What it means for the two questions asked
+
+Both of them are answered yes by one board already in the room:
+
+| | |
+|---|---|
+| BLE keyboard to a phone | yes, host on the P4, radio on the onboard C6 |
+| USB-C keyboard to a phone | yes, `SOC_USB_OTG_PERIPH_NUM` is 2 and there is a UTMI PHY, so one of them is high speed |
+
+An S3 remains the simpler part for this job: one chip, one radio, no
+co-processor and no hosted link to go wrong. The P4 module is the more
+capable part that is already on the bench, and it is the only one here
+that can be tried in both modes without buying anything.
 
 ## Why SOC_USB_OTG_SUPPORTED is the line that matters
 
@@ -133,4 +238,5 @@ Nothing here has been built. The pad-ble circuit is still a drawing
 has paired with anything, and measure-first item 4, that an original
 pad's 4021 follows its buttons at 3.3 V, has been open since
 2026-09-07. A different part would change which of those are easy. It
-would not close any of them.
+would not close any of them, and the P4 compile above closes none of
+them either.

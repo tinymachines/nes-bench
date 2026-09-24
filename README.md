@@ -177,9 +177,13 @@ a package built twice at one commit is byte-identical.
   HID, and which does both, measured out of the vendor's own
   `soc_caps.h` for eight targets rather than recalled. The short of it:
   the C6 on hand is the one part in the family that can never be a USB
-  keyboard, and the S3 is the only one that can be both. Written
-  2026-09-24 while the C6 was refusing to flash, so it also records
-  what an S3 would and would not change about that.
+  keyboard. Written 2026-09-24 while the C6 was refusing to flash, so
+  it also records what a different part would and would not change
+  about that. Amended the same day when the bench's other board turned
+  out to be an ESP32-P4-Module: the P4 die has no radio, the module
+  carries a C6 as one, the core's BLE classes are gated to allow
+  exactly that, and `firmware/pad-ble` compiles for `esp32p4` with no
+  edit at all.
 - `head/99-nes-bench-serial.rules`: keeps ModemManager off the bench's
   serial instruments. It probes every tty that appears with AT commands
   for tens of seconds looking for a cellular modem, which is exactly
