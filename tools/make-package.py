@@ -111,6 +111,17 @@ def git_time():
     Measured 2026-09-23: cairo 1.16 honours SOURCE_DATE_EPOCH, and two
     builds a second apart came out byte-identical with it set.
 
+    THAT FIXED HALF OF IT, AND THE HALF NOBODY LOOKS AT. cairo's
+    /CreationDate went reproducible while the date PRINTED in every
+    title block stayed date.today(), so the same commit rebuilt on a
+    different day produced a different document, differing in twelve
+    places by one digit. Found 2026-09-25 by the site session, which
+    served rev F at a sha that did not match the one this session had
+    quoted hours earlier; HEAD had not moved and the only difference in
+    the text was 2026-09-24 against 2026-09-25. A reproducible build
+    that prints an irreproducible date is not reproducible, it just
+    hides where it is not. The date now comes from here too.
+
     This is only true of a clean tree. The title block already shows the
     short sha, and a dirty tree makes that sha a claim about content it
     does not describe; that was true before this and is not changed by
@@ -123,9 +134,23 @@ def git_time():
         return None
 
 
+def sheet_date():
+    """The date the title block shows: the COMMIT's, not today's.
+
+    One commit has to mean one document. Using today's date meant a
+    rebuild tomorrow of a tree nobody touched produced a different PDF,
+    which is the exact signal SOURCE_DATE_EPOCH was added to make
+    trustworthy. Falls back to today only where there is no commit to
+    ask, and there is nothing reproducible to protect in that case."""
+    ts = git_time()
+    if not ts:
+        return date.today().isoformat()
+    return date.fromtimestamp(int(ts)).isoformat()
+
+
 def page_meta(cfg, title, n, total):
     return {"org": cfg["org"], "project": cfg["project"], "docno": cfg["docno"], "rev": cfg["rev"],
-            "date": date.today().isoformat(), "drawn": cfg["drawn"], "title": title,
+            "date": sheet_date(), "drawn": cfg["drawn"], "title": title,
             "sheet": f"{n} of {total}", "source": f"git {git_rev()}", "scale": "NTS",
             "revisions": [tuple(r) for r in cfg.get("revisions", [])]}
 
