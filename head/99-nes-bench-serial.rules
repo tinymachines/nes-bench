@@ -49,3 +49,20 @@ SUBSYSTEM=="tty", ATTRS{idVendor}=="2341", ENV{ID_MM_DEVICE_IGNORE}="1"
 # the name. This bench has one. If that changes, match on
 # ATTRS{serial} here and keep the serial out of the repository.
 SUBSYSTEM=="tty", ATTRS{idVendor}=="2341", ATTRS{idProduct}=="0043", SYMLINK+="nes-bridge"
+
+# ---------------------------------------------------------------
+# AND A NAME FOR THE ESP32-P4's UART BRIDGE, for the same reason.
+#
+# MEASURED 2026-09-25: this one board answered on ttyUSB1, then
+# ttyACM1, then ttyACM2 in a single day, and in between ttyACM1 became
+# the UNO. Flashing an ESP32 image at a hardcoded ttyACM1 therefore
+# fired it at an ATmega328P three times; esptool failed at connect, so
+# nothing was written, but only because an AVR does not answer an
+# Espressif sync. The bridge got a name after the same lesson and its
+# name held through every one of those moves.
+#
+# The board is a Waveshare ESP32-P4-Module-DEV-KIT and 55d3 is the
+# CH343 on its PWR USB TO UART port, which is the one we flash through.
+# Matching the product, not the serial, keeps the board's own identity
+# out of the repository.
+SUBSYSTEM=="tty", ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="55d3", ENV{ID_MM_DEVICE_IGNORE}="1", SYMLINK+="p4-uart"

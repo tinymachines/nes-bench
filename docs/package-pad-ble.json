@@ -2,7 +2,7 @@
   "org": "tinymachines",
   "project": "nes-bench",
   "docno": "TM-NESB-003",
-  "rev": "F",
+  "rev": "G",
   "drawn": "bisenbek",
   "page": "ansi-a",
   "title": "Original pad to Bluetooth keyboard, pad-ble v1",
@@ -56,6 +56,11 @@
       "F",
       "2026-09-24",
       "the P4 gets its own three drawings; three of the five lead colours in rev E were typed, not read, and are corrected"
+    ],
+    [
+      "G",
+      "2026-09-25",
+      "GPIO37 and GPIO38 move from free to spoken for: they are the console UART, and nothing on the board claims them"
     ]
   ],
   "sheets": [

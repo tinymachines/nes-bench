@@ -70,6 +70,14 @@ RESERVED = {
     "GPIO25": "USB1P1_P, the other half.",
     "GPIO7": "ESP_I2C_SDA to the audio codec, with a 2.2k pullup on the board.",
     "GPIO8": "ESP_I2C_SCL to the audio codec, with a 2.2k pullup on the board.",
+    # Added 2026-09-25, and missed on the first pass because nothing on
+    # the BOARD claims them: they are the P4's own UART, and the board
+    # prints them TXD and RXD on pins 7 and 9. With cdc_on_boot=0 that
+    # is where Serial goes, which is every byte of every bring-up on
+    # this bench. Taking them costs the instrument, not the circuit,
+    # which is why a scan of the schematic's nets did not flag them.
+    "GPIO37": "the console UART's TXD. Serial lives here.",
+    "GPIO38": "the console UART's RXD. Serial lives here.",
 }
 
 # The same eight in a few words, for a table cell. The sentences above
@@ -85,6 +93,8 @@ RESERVED_SHORT = {
     "GPIO25": "USB1P1_P",
     "GPIO7": "codec SDA, 2.2k pullup",
     "GPIO8": "codec SCL, 2.2k pullup",
+    "GPIO37": "console UART TXD",
+    "GPIO38": "console UART RXD",
 }
 
 # Not on the header at all, recorded so nobody goes looking. The SDIO
