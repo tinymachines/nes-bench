@@ -1,0 +1,188 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1560 1060" width="1560" height="1060" role="img" aria-label="pad-ble v1 on the ESP32-P4: one pad into header P6, as a BLE keyboard">
+
+  <style>
+    text { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; fill: #1f2328; }
+    .title { font-size: 15px; font-weight: 700; font-family: ui-sans-serif, system-ui, sans-serif; }
+    .sub { font-size: 11px; fill: #57606a; font-family: ui-sans-serif, system-ui, sans-serif; }
+    .ref { font-size: 12px; font-weight: 700; }
+    .part { font-size: 10px; fill: #57606a; }
+    .pin { font-size: 9.5px; }
+    .pinno { font-size: 9px; fill: #57606a; }
+    .linkflag { fill: #fdf3e3; stroke: #a35c00; stroke-width: 1.1; }
+    .linkno { font-size: 9px; fill: #a35c00; font-weight: 700; }
+    .net { font-size: 9.5px; fill: #0a5b9c; font-weight: 600; }
+    .rail5 { font-size: 9px; fill: #b3261e; font-weight: 700; }
+    .rail3 { font-size: 9px; fill: #b35c00; font-weight: 700; }
+    .gnd { font-size: 9px; fill: #1f2328; font-weight: 700; }
+    .note { font-size: 10px; fill: #57606a; font-family: ui-sans-serif, system-ui, sans-serif; }
+    .box { fill: #ffffff; stroke: #1f2328; stroke-width: 1.3; }
+    .offsheet { fill: #eaf3fb; stroke: #0a5b9c; stroke-width: 1.1; }
+    .conn { fill: #f3f5f7; stroke: #1f2328; stroke-width: 1.3; }
+    .zone { fill: none; stroke: #57606a; stroke-dasharray: 5 4; stroke-width: 1; }
+    .lead { stroke: #1f2328; stroke-width: 1; }
+    .wire { stroke: #0a5b9c; stroke-width: 1.2; fill: none; }
+    .w5 { stroke: #b3261e; stroke-width: 1.2; fill: none; }
+    .w3 { stroke: #b35c00; stroke-width: 1.2; fill: none; }
+    .wg { stroke: #1f2328; stroke-width: 1.2; fill: none; }
+    .lane { stroke: #1f2328; stroke-width: 1.4; fill: none; }
+    .lanelbl { font-size: 11px; font-weight: 700; }
+    .win { fill: #b3261e; fill-opacity: 0.10; stroke: none; }
+    .safe { fill: #1a7f37; fill-opacity: 0.12; stroke: none; }
+    .mark { stroke: #0a5b9c; stroke-width: 1.2; stroke-dasharray: 3 3; }
+    .auth { font-size: 9px; fill: #b3261e; font-family: ui-sans-serif, system-ui, sans-serif; font-style: italic; }
+  </style>
+
+<rect x="0" y="0" width="1560" height="1060" fill="#ffffff"/>
+<g class="sheet-heading" data-height="60">
+<text class="title" x="24" y="30">pad-ble v1 on the ESP32-P4: one pad into header P6, as a BLE keyboard</text>
+<text class="sub" x="24" y="46">The part that flashes. A Waveshare ESP32-P4-Module-DEV-KIT, its header read from the vendor schematic 2026-09-24. The P4 die has no radio; the module carries an ESP32-C6 as one. Nothing wired yet.</text>
+</g>
+<rect class="zone" x="20" y="66" width="690" height="700" rx="6"/>
+<text class="sub" x="28" y="80" text-anchor="start">THE PAD, polled at 3V3 exactly as the bridge polls one</text>
+<rect class="conn" x="150" y="100" width="176.0" height="232" rx="3"/>
+<text class="ref" x="156" y="114" text-anchor="start">J1</text>
+<text class="part" x="156" y="126" text-anchor="start">original pad, on the bridge</text>
+<text class="part" x="151" y="345" text-anchor="start">the pad half of the cut cable</text>
+<line class="lead" x1="124" y1="156" x2="150" y2="156"/>
+<text class="pin" x="155" y="159.5" text-anchor="start">GND</text>
+<text class="pinno" x="146" y="154" text-anchor="end">1</text>
+<line class="wg" x1="124" y1="156" x2="124" y2="164"/><line class="wg" x1="118" y1="164" x2="130" y2="164"/><line class="wg" x1="121" y1="167" x2="127" y2="167"/>
+<line class="lead" x1="124" y1="182" x2="150" y2="182"/>
+<text class="pin" x="155" y="185.5" text-anchor="start">CLK</text>
+<text class="pinno" x="146" y="180" text-anchor="end">2</text>
+<path class="wire" d="M124,182 l-6,-6 h-53.4 v12 h53.4 z"/>
+<text class="net" x="115" y="185.5" text-anchor="end">PAD_CLK</text>
+<line class="lead" x1="124" y1="208" x2="150" y2="208"/>
+<text class="pin" x="155" y="211.5" text-anchor="start">OUT0</text>
+<text class="pinno" x="146" y="206" text-anchor="end">3</text>
+<path class="wire" d="M124,208 l-6,-6 h-65.80000000000001 v12 h65.80000000000001 z"/>
+<text class="net" x="115" y="211.5" text-anchor="end">PAD_LATCH</text>
+<line class="lead" x1="124" y1="234" x2="150" y2="234"/>
+<text class="pin" x="155" y="237.5" text-anchor="start">D0</text>
+<text class="pinno" x="146" y="232" text-anchor="end">4</text>
+<path class="wire" d="M124,234 l-6,-6 h-53.4 v12 h53.4 z"/>
+<text class="net" x="115" y="237.5" text-anchor="end">PAD1_D0</text>
+<line class="lead" x1="124" y1="260" x2="150" y2="260"/>
+<text class="pin" x="155" y="263.5" text-anchor="start">+5V</text>
+<text class="pinno" x="146" y="258" text-anchor="end">5</text>
+<line class="w3" x1="124" y1="260" x2="124" y2="251"/><line class="w3" x1="119" y1="251" x2="129" y2="251"/>
+<text class="rail3" x="124" y="249" text-anchor="middle">3V3</text>
+<line class="lead" x1="124" y1="286" x2="150" y2="286"/>
+<text class="pin" x="155" y="289.5" text-anchor="start">n/c</text>
+<text class="pinno" x="146" y="284" text-anchor="end">6</text>
+<line class="lead" x1="121" y1="283" x2="127" y2="289"/><line class="lead" x1="121" y1="289" x2="127" y2="283"/>
+<line class="lead" x1="124" y1="312" x2="150" y2="312"/>
+<text class="pin" x="155" y="315.5" text-anchor="start">n/c</text>
+<text class="pinno" x="146" y="310" text-anchor="end">7</text>
+<line class="lead" x1="121" y1="309" x2="127" y2="315"/><line class="lead" x1="121" y1="315" x2="127" y2="309"/>
+<text class="note" x="330" y="110" text-anchor="start">Unchanged from pad-ble.svg, and that is the point: GPIO2, 3 and</text>
+<text class="note" x="330" y="123" text-anchor="start">6 exist and are free on BOTH parts, so poll_pad in</text>
+<text class="note" x="330" y="136" text-anchor="start">firmware/pad-ble runs unedited on either. One sketch, one pad</text>
+<text class="note" x="330" y="149" text-anchor="start">map, two targets.</text>
+<text class="note" x="330" y="162" text-anchor="start"></text>
+<text class="note" x="330" y="175" text-anchor="start">The pad's 4021 is a CMOS part rated 3 to 18 V, so at 3V3 its D0</text>
+<text class="note" x="330" y="188" text-anchor="start">is 3V3 logic and needs no shifter. That is the datasheet, not</text>
+<text class="note" x="330" y="201" text-anchor="start">this bench: MEASURE FIRST, item 4, open since 2026-09-07. If a</text>
+<text class="note" x="330" y="214" text-anchor="start">pad will not follow its buttons at 3V3, add a 74LVC245 and feed</text>
+<text class="note" x="330" y="227" text-anchor="start">the pad 5 V; the 245 is on hand.</text>
+<text class="note" x="330" y="240" text-anchor="start"></text>
+<text class="note" x="330" y="253" text-anchor="start">Pin 5 is the supply and 6 and 7 carry nothing, as measured on</text>
+<text class="note" x="330" y="266" text-anchor="start">this console's own cable (docs/wiring.md). RING THE CABLE OUT</text>
+<text class="note" x="330" y="279" text-anchor="start">UNPLUGGED: a tone through a cable still in the console runs</text>
+<text class="note" x="330" y="292" text-anchor="start">through its pull-ups, and pins that share nothing beep.</text>
+<path class="wire" d="M330,690 l-6,-6 h-53.4 v12 h53.4 z"/>
+<text class="net" x="321" y="693.5" text-anchor="end">PAD1_D0</text>
+<line class="lead" x1="330" y1="690" x2="348" y2="690"/><rect class="box" x="348" y="683" width="44" height="14"/><line class="lead" x1="392" y1="690" x2="410" y2="690"/>
+<text class="pinno" x="370" y="680" text-anchor="middle">R1</text>
+<text class="pin" x="370" y="694" text-anchor="middle">10k</text>
+<line class="w3" x1="410" y1="690" x2="410" y2="681"/><line class="w3" x1="405" y1="681" x2="415" y2="681"/>
+<text class="rail3" x="410" y="679" text-anchor="middle">3V3</text>
+<rect class="zone" x="730" y="66" width="810" height="700" rx="6"/>
+<text class="sub" x="738" y="80" text-anchor="start">THE CONTROLLER, on its own USB power, wired at header P6</text>
+<rect class="conn" x="900" y="100" width="210" height="180" rx="3"/>
+<text class="ref" x="906" y="114" text-anchor="start">U1</text>
+<text class="part" x="906" y="126" text-anchor="start">ESP32-P4-Module-DEV-KIT</text>
+<text class="part" x="901" y="293" text-anchor="start">header P6; pin numbers are P6's own</text>
+<line class="lead" x1="874" y1="156" x2="900" y2="156"/>
+<text class="pin" x="905" y="159.5" text-anchor="start">GPIO2</text>
+<text class="pinno" x="896" y="154" text-anchor="end">22</text>
+<path class="wire" d="M874,156 l-6,-6 h-65.80000000000001 v12 h65.80000000000001 z"/>
+<text class="net" x="865" y="159.5" text-anchor="end">PAD_LATCH</text>
+<line class="lead" x1="874" y1="182" x2="900" y2="182"/>
+<text class="pin" x="905" y="185.5" text-anchor="start">GPIO3</text>
+<text class="pinno" x="896" y="180" text-anchor="end">20</text>
+<path class="wire" d="M874,182 l-6,-6 h-53.4 v12 h53.4 z"/>
+<text class="net" x="865" y="185.5" text-anchor="end">PAD_CLK</text>
+<line class="lead" x1="874" y1="208" x2="900" y2="208"/>
+<text class="pin" x="905" y="211.5" text-anchor="start">GPIO6</text>
+<text class="pinno" x="896" y="206" text-anchor="end">16</text>
+<path class="wire" d="M874,208 l-6,-6 h-53.4 v12 h53.4 z"/>
+<text class="net" x="865" y="211.5" text-anchor="end">PAD1_D0</text>
+<line class="lead" x1="874" y1="234" x2="900" y2="234"/>
+<text class="pin" x="905" y="237.5" text-anchor="start">3V3</text>
+<text class="pinno" x="896" y="232" text-anchor="end">18</text>
+<line class="w3" x1="874" y1="234" x2="874" y2="225"/><line class="w3" x1="869" y1="225" x2="879" y2="225"/>
+<text class="rail3" x="874" y="223" text-anchor="middle">3V3</text>
+<line class="lead" x1="874" y1="260" x2="900" y2="260"/>
+<text class="pin" x="905" y="263.5" text-anchor="start">GND</text>
+<text class="pinno" x="896" y="258" text-anchor="end">26</text>
+<line class="wg" x1="874" y1="260" x2="874" y2="268"/><line class="wg" x1="868" y1="268" x2="880" y2="268"/><line class="wg" x1="871" y1="271" x2="877" y2="271"/>
+<line class="lead" x1="1110" y1="156" x2="1136" y2="156"/>
+<text class="pin" x="1105" y="159.5" text-anchor="end">BLE</text>
+<path class="offsheet" d="M1136 148 L1167.0 148 L1175.0 156 L1167.0 164 L1136 164 Z"/>
+<text class="net" x="1141" y="159.5" text-anchor="start">radio</text>
+<line class="lead" x1="1110" y1="182" x2="1136" y2="182"/>
+<text class="pin" x="1105" y="185.5" text-anchor="end">USB-C</text>
+<path class="offsheet" d="M1136 174 L1160.8 174 L1168.8 182 L1160.8 190 L1136 190 Z"/>
+<text class="net" x="1141" y="185.5" text-anchor="start">VBUS</text>
+<line class="w3" x1="820" y1="330" x2="820" y2="321"/><line class="w3" x1="815" y1="321" x2="825" y2="321"/>
+<text class="rail3" x="820" y="319" text-anchor="middle">3V3</text>
+<line class="lead" x1="820" y1="330" x2="838" y2="330"/><rect class="box" x="838" y="323" width="44" height="14"/><line class="lead" x1="882" y1="330" x2="900" y2="330"/>
+<text class="pinno" x="860" y="320" text-anchor="middle">C1</text>
+<text class="pin" x="860" y="334" text-anchor="middle">100nF</text>
+<line class="wg" x1="900" y1="330" x2="900" y2="338"/><line class="wg" x1="894" y1="338" x2="906" y2="338"/><line class="wg" x1="897" y1="341" x2="903" y2="341"/>
+<text class="note" x="760" y="390" text-anchor="start">PIN 1 IS NOT WHERE A RASPBERRY PI PUTS IT. The header is</text>
+<text class="note" x="760" y="403" text-anchor="start">Pi-shaped and numbered the other way round: 5V on 1 and 3 where</text>
+<text class="note" x="760" y="416" text-anchor="start">a Pi has 2 and 4, 3V3 on 2 and 18 where a Pi has 1 and 17, and</text>
+<text class="note" x="760" y="429" text-anchor="start">every ground one pin from where a Pi user reaches. A HAT fits</text>
+<text class="note" x="760" y="442" text-anchor="start">this board and does not work. Count from the schematic.</text>
+<text class="note" x="760" y="455" text-anchor="start"></text>
+<text class="note" x="760" y="468" text-anchor="start">ALL FIVE ABOVE ARE EVEN PINS, so the whole circuit lands in one</text>
+<text class="note" x="760" y="481" text-anchor="start">row and no wire crosses the header. That is the same virtue the</text>
+<text class="note" x="760" y="494" text-anchor="start">C6 sheet has, arrived at the same way: by choosing pins for it.</text>
+<text class="note" x="760" y="507" text-anchor="start"></text>
+<text class="note" x="760" y="520" text-anchor="start">FOUR PINS REACH P6 AND ARE STILL NOT YOURS. GPIO54 (pin 31) is</text>
+<text class="note" x="760" y="533" text-anchor="start">the onboard C6's RESET, and taking it kills the radio that makes</text>
+<text class="note" x="760" y="546" text-anchor="start">this part worth using. GPIO45 (39) switches the MicroSD's power,</text>
+<text class="note" x="760" y="559" text-anchor="start">GPIO53 (36) is the speaker amplifier's CTRL, GPIO36 (23) is a</text>
+<text class="note" x="760" y="572" text-anchor="start">strapping pin. GPIO24 and 25 (28, 27) are the USB pair, and</text>
+<text class="note" x="760" y="585" text-anchor="start">GPIO7 and 8 (4, 6) are the codec's I2C with pullups on board.</text>
+<text class="note" x="760" y="598" text-anchor="start"></text>
+<text class="note" x="760" y="611" text-anchor="start">MODE_SW AND LED MOVED, and had to. On the C6 they were GPIO10</text>
+<text class="note" x="760" y="624" text-anchor="start">and GPIO11 and cost nothing because nothing was wired to them.</text>
+<text class="note" x="760" y="637" text-anchor="start">Here those numbers are the ES8311 codec's I2S and are not on the</text>
+<text class="note" x="760" y="650" text-anchor="start">header at all. They are GPIO21 and GPIO20 now, P6 pins 12 and</text>
+<text class="note" x="760" y="663" text-anchor="start">14, free and on the same even row. Declared, still not wired.</text>
+<text class="note" x="760" y="676" text-anchor="start"></text>
+<text class="note" x="760" y="689" text-anchor="start">C1 goes across the breadboard's own 3V3 and GND rails, not the</text>
+<text class="note" x="760" y="702" text-anchor="start">board's pins: the module is regulated already and this is for</text>
+<text class="note" x="760" y="715" text-anchor="start">the breadboard's inductance, as on the bridge since 2026-09-15.</text>
+<rect class="zone" x="20" y="790" width="1520" height="210" rx="6"/>
+<text class="sub" x="28" y="804" text-anchor="start">WHAT THIS BOARD CAN AND CANNOT DO, and the radio is not on the die</text>
+<text class="pin" x="40" y="824" text-anchor="start">BLE HID</text>
+<text class="pin" x="168" y="824" text-anchor="start">Works, and PROVEN ON THIS BOARD 2026-09-24: the bench Pi's own radio heard it advertise at B0:A6:04:8A:D7:0E, which is not the P4's MAC.</text>
+<text class="pin" x="168" y="838" text-anchor="start">THE P4 HAS NO RADIO. soc_caps.h defines neither SOC_BLE_SUPPORTED nor SOC_WIFI_SUPPORTED for it. The module carries an ESP32-C6 as its radio,</text>
+<text class="pin" x="168" y="852" text-anchor="start">reached over SDIO on GPIO14 to 19 with reset on GPIO54, and the NimBLE host runs on the P4 with CONFIG_BT_CONTROLLER_DISABLED=y. The core's</text>
+<text class="pin" x="168" y="866" text-anchor="start">BLE classes are gated #if defined(SOC_BLE_SUPPORTED) || defined(CONFIG_ESP_HOSTED_ENABLE_BT_NIMBLE), and the P4 sets the second arm.</text>
+<text class="pin" x="40" y="884" text-anchor="start">Flashing</text>
+<text class="pin" x="168" y="884" text-anchor="start">First try, no boot button, no reset dance, where the C6 never once answered. On /dev/ttyACM1 through the board's CH343 bridge at 1a86:55d3.</text>
+<text class="pin" x="168" y="898" text-anchor="start">The factory image was read off and kept before anything was written: 16 MB, sha256 ad22bf07..., so this board goes back if it has to.</text>
+<text class="pin" x="40" y="916" text-anchor="start">USB HID</text>
+<text class="pin" x="168" y="916" text-anchor="start">POSSIBLE ON THIS PART, unlike the C6, and not built. soc_caps.h gives it SOC_USB_OTG_SUPPORTED with two OTG peripherals and a UTMI PHY, so one</text>
+<text class="pin" x="168" y="930" text-anchor="start">is high speed. A HID keyboard is an 8-byte report on an interrupt endpoint and a pad offers 60 a second, so the speed buys nothing: what it</text>
+<text class="pin" x="168" y="944" text-anchor="start">buys is a USB-C cable to a phone with no pairing at all. The board has a HOST/DEVICE jumper and a socket marked USB for exactly this.</text>
+<text class="pin" x="40" y="962" text-anchor="start">Gamepad HID</text>
+<text class="pin" x="168" y="962" text-anchor="start">Not built. iOS refuses a generic HID gamepad, taking only the MFi, Xbox, PlayStation and Switch Pro layouts, which is why keyboard mode came first.</text>
+<text class="pin" x="40" y="980" text-anchor="start">Two players</text>
+<text class="pin" x="168" y="980" text-anchor="start">Not on this sheet. A keyboard report carries six key slots and two pads can ask for ten, so a second pad could be polled and never sent.</text>
+</svg>

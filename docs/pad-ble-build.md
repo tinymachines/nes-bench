@@ -207,13 +207,17 @@ defines it.
 | lead | net | goes in | which is |
 |---|---|---|---|
 | Red | `3V3` | **P6 pin 18** | 3V3 |
-| Black | `GND` | **P6 pin 26** | GND |
-| Blue | `PAD_LATCH` | **P6 pin 22** | GPIO2 |
-| Yellow | `PAD_CLK` | **P6 pin 20** | GPIO3 |
+| Yellow | `GND` | **P6 pin 26** | GND |
+| Black | `PAD_LATCH` | **P6 pin 22** | GPIO2 |
+| Blue | `PAD_CLK` | **P6 pin 20** | GPIO3 |
 | Green | `PAD1_D0` | **P6 pin 16** | GPIO6 |
 
 **Every one of those is an even pin, so all five wires land in one row
-and nothing crosses the header.** The 10k pullup from `PAD1_D0` up to
+and nothing crosses the header.** The lead colours are looked up from
+`tools/bringup.py`'s `LEADS`, the cable as it was actually rung out on
+2026-09-09, not from the colours anyone remembers: rev E carried three
+of the five wrong because they were typed from a set of colours rather
+than read from the measurement. The 10k pullup from `PAD1_D0` up to
 3V3 is unchanged and still belongs on the breadboard beside the board.
 
 ### Pin 1 is not where a Raspberry Pi puts it

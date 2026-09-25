@@ -153,3 +153,12 @@ The original pad as a wireless HID device. A separate project.
 | U1 | ESP32-C6-DevKitC-1 v1.2 | NimBLE HID keyboard; no USB device controller |
 | C1 | 100nF | 3V3 to GND |
 
+## pad-ble-p4
+
+**The one to build.** The same circuit on the board that actually flashes: a Waveshare ESP32-P4-Module-DEV-KIT, wired at header P6.
+
+| ref | part | on the sheet |
+|---|---|---|
+| R1 | 10k | PAD1_D0 to 3V3 |
+| C1 | 100nF | 3V3 to GND |
+

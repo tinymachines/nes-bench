@@ -324,6 +324,18 @@ PADBLE_TERMINALS = {
     "J1": {"x": 108, "y": 262, "title": "J1  the pad", "sub": "the plug half of the cable"},
 }
 
+# The P4 build: the board is NOT on the breadboard. It sits beside it,
+# as the bench photograph of 2026-09-24 shows, so its header is an
+# off-board terminal like the pad is, and the breadboard carries only
+# the pullup, the decoupling cap and the junctions. Five jumpers reach
+# P6. The terminal rows are labelled with P6's own pin numbers, because
+# the hole is what a person needs at the bench.
+PADBLE_P4_RES = {"R1": (26, 28)}
+PADBLE_P4_TERMINALS = {
+    "J1": {"x": 108, "y": 262, "title": "J1  the pad", "sub": "the plug half of the cable"},
+    "U1": {"x": 1580, "y": 232, "title": "U1  header P6", "sub": "on the P4 board, beside the board"},
+}
+
 SHEETS = {
     "v1b": dict(netlist="bench-v1b", out="breadboard-v1b.svg", cols=40, rails=("+5V", "GND"),
                 chips=CHIPS, devkits={}, caps=CAPS, res=RES, res_part=RES_PART, res_note=RES_NOTE,
@@ -337,6 +349,12 @@ SHEETS = {
                    title="pad-ble v1 on the breadboard: where everything goes",
                    sub="The devkit's pin labels are MEASURED off the board (the bench eye cannot read that silkscreen). It straddles "
                        "the channel, so only rows A and J are reachable in its columns. Every wire is read out of the schematic."),
+    "padble-p4": dict(netlist="pad-ble-p4", out="breadboard-pad-ble-p4.svg", cols=56, rails=("3V3", "GND"),
+                      chips={}, devkits={}, caps={"C1": 36}, res=PADBLE_P4_RES, res_part=PADBLE_RES_PART,
+                      res_note=PADBLE_RES_NOTE, cap_to_gnd={}, terminals=PADBLE_P4_TERMINALS, term_pins=True,
+                      title="pad-ble v1 on the ESP32-P4: where everything goes",
+                      sub="THE BOARD IS NOT ON THE BREADBOARD: it sits beside it and five jumpers reach header P6, whose own pin "
+                          "numbers label the terminals. Every wire is read out of the schematic."),
 }
 
 
@@ -362,7 +380,8 @@ def render(key, nl, sheets, offsheet, outdir):
         k = (n["ref"], n["pinname"])
         if n["ref"] in TERMINALS and k not in terms:
             tm = TERMINALS[n["ref"]]
-            terms[k] = {"x": tm["x"], "y": tm["y"] + seen[n["ref"]] * 30, "name": n["pinname"]}
+            terms[k] = {"x": tm["x"], "y": tm["y"] + seen[n["ref"]] * 30, "name": n["pinname"],
+                        "pin": n.get("pin")}
             seen[n["ref"]] += 1
 
     d = Draw()
@@ -384,7 +403,14 @@ def render(key, nl, sheets, offsheet, outdir):
         d.text(tm["x"] - (92 if left else 4), y0 - 16, tm["sub"], "col")
         for v in rows:
             d.add(f'<circle cx="{v["x"]}" cy="{v["y"]}" r="4" fill="#333"/>')
-            d.text(tm["x"] - (12 if left else -12), v["y"] + 4, v["name"], "termt", "end" if left else "start")
+            label = v["name"]
+            if cfg.get("term_pins") and v.get("pin") is not None:
+                # The P4 board is not ON the board: five jumpers reach a
+                # header beside it, so the useful label is the HOLE, not
+                # the GPIO. Gated per sheet because v1b's own terminals
+                # carry pin numbers and that sheet must not move.
+                label = f'{v["pin"]}  {v["name"]}'
+            d.text(tm["x"] - (12 if left else -12), v["y"] + 4, label, "termt", "end" if left else "start")
 
     for ref, col in CAPS.items():
         d.add(f'<rect class="pass" x="{cx(col)-9}" y="{Y_RAIL_BN+4}" width="18" height="{Y_RAIL_BP-Y_RAIL_BN-8}" rx="3"/>')

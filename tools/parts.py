@@ -32,6 +32,7 @@ SHEETS = [
     ("bench-v2", "sheet_v2", "The C6 alternative to v2b. Not the build."),
     ("pad-adapter", "sheet_pad", "The original pad as a wireless HID device. A separate project."),
     ("pad-ble", "sheet_padble", "**Buildable now.** The subset of the adapter whose parts are all on hand: two pads, two pullups, the C6 on USB power."),
+    ("pad-ble-p4", "sheet_padble_p4", "**The one to build.** The same circuit on the board that actually flashes: a Waveshare ESP32-P4-Module-DEV-KIT, wired at header P6."),
 ]
 
 # AUTHORED, and the only authored thing here: where each part is. A

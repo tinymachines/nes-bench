@@ -29,7 +29,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-SHEETS = ["bench-v1b-1", "bench-v1b-2", "bench-v1b-3", "bench-v2b-1", "bench-v2b-2", "bench-v2b-3", "bench-v2b-4", "bench-v1", "bench-v2", "logical-timing", "pad-adapter", "pad-ble", "breadboard-v1b", "breadboard-pad-ble", "wiring-v1b", "wiring-v1b-build", "wiring-v1b-head", "wiring-pad-ble", "exercise-stack"]
+SHEETS = ["bench-v1b-1", "bench-v1b-2", "bench-v1b-3", "bench-v2b-1", "bench-v2b-2", "bench-v2b-3", "bench-v2b-4", "bench-v1", "bench-v2", "logical-timing", "pad-adapter", "pad-ble", "pad-ble-p4", "breadboard-v1b", "breadboard-pad-ble", "breadboard-pad-ble-p4", "wiring-v1b", "wiring-v1b-build", "wiring-v1b-head", "wiring-pad-ble", "wiring-pad-ble-p4", "exercise-stack"]
 
 
 def renderer():

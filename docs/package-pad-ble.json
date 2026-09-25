@@ -2,14 +2,14 @@
   "org": "tinymachines",
   "project": "nes-bench",
   "docno": "TM-NESB-003",
-  "rev": "E",
+  "rev": "F",
   "drawn": "bisenbek",
   "page": "ansi-a",
   "title": "Original pad to Bluetooth keyboard, pad-ble v1",
   "intro": [
-    "Two original NES controllers into an ESP32-C6, which presents them to a phone or a laptop as a plain Bluetooth keyboard. It is the bench bridge's own pad poll with a radio behind it instead of a shift register, and it stands alone: no Pi, no UNO, no console.",
-    "THIS IS A DRAWING, NOT A BUILD, and the part has changed under it. The C6 these three drawings are around has never accepted a flash. On 2026-09-24 a Waveshare ESP32-P4-Module-DEV-KIT on the same bench flashed first try and put a BLE advertisement on the air, heard by an independent radio, so the build is moving to that part. Sheet 5 is the P4's header, read from Waveshare's own schematic. The firmware builds for both. Nothing has been wired to either, and it rests on one thing open since 2026-09-07: that an original pad's 4021 follows its buttons at 3.3 V. The datasheet says it should; this bench has not seen it.",
-    "What HAS been measured is the board rather than the circuit. The part was identified off its own silkscreen, which reads RGB@IO8 and so names a C6 and not an S3, and its header order was read by hand from photographs, sixteen pins a side, because the bench eye cannot resolve a silkscreen that small. Those readings are what let the breadboard sheet say which hole."
+    "One original NES controller into an ESP32, which presents it to a phone or a laptop as a plain Bluetooth keyboard. It is the bench bridge's own pad poll with a radio behind it instead of a shift register, and it stands alone: no Pi, no UNO, no console.",
+    "THIS IS A DRAWING, NOT A BUILD, AND THE PART HAS CHANGED UNDER IT. The ESP32-C6 of sheets 2 to 4 never accepted a flash. On 2026-09-24 a Waveshare ESP32-P4-Module-DEV-KIT flashed first try and put a BLE advertisement on the air that an independent radio heard, so sheets 5 to 10 are that board and are the ones to build from. The C6 sheets stay because a published drawing is a record. Nothing has been wired to either.",
+    "IT RESTS ON ONE THING OPEN SINCE 2026-09-07: that an original pad's 4021 follows its buttons at 3.3 V. The datasheet says it should; this bench has not seen it. The P4's header was read from Waveshare's own schematic, not off the board, and the lead colours are looked up from the cable as it was rung out: rev E carried three of five wrong because they were typed from memory."
   ],
   "revisions": [
     [
@@ -51,6 +51,11 @@
       "E",
       "2026-09-24",
       "the board built is the Waveshare ESP32-P4-Module-DEV-KIT; its header read from the vendor schematic and added as a sheet"
+    ],
+    [
+      "F",
+      "2026-09-24",
+      "the P4 gets its own three drawings; three of the five lead colours in rev E were typed, not read, and are corrected"
     ]
   ],
   "sheets": [
@@ -75,6 +80,24 @@
       "svg": "breadboard-pad-ble.svg",
       "page": "ansi-b",
       "title": "Breadboard: which hole each part and jumper goes in"
+    },
+    {
+      "kind": "schematic",
+      "svg": "pad-ble-p4.svg",
+      "page": "ansi-b",
+      "title": "pad-ble v1 on the ESP32-P4: one pad into header P6"
+    },
+    {
+      "kind": "schematic",
+      "svg": "wiring-pad-ble-p4.svg",
+      "page": "ansi-b",
+      "title": "Wiring, ESP32-P4: every wire at right angles, P6's own pins"
+    },
+    {
+      "kind": "schematic",
+      "svg": "breadboard-pad-ble-p4.svg",
+      "page": "ansi-b",
+      "title": "Breadboard, ESP32-P4: the board sits beside it, not on it"
     },
     {
       "kind": "pinmap",

@@ -1120,6 +1120,117 @@ def sheet_padble():
     sh.done(OUT / "pad-ble.svg")
 
 
+def sheet_padble_p4():
+    """The same adapter on the part that actually works.
+
+    pad-ble.svg is this circuit around an ESP32-C6-DevKitC-1, and that
+    board has never accepted a flash: two evenings of "no serial data
+    received" with the port, the cable, the wiring and ModemManager
+    each ruled out by test. On 2026-09-24 a Waveshare
+    ESP32-P4-Module-DEV-KIT on the same bench connected first try, took
+    the firmware and put a BLE advertisement on the air that an
+    independent radio heard.
+
+    So this is the buildable sheet now, and the C6 one stays where it
+    is. A published drawing is a record of what was drawn; overwriting
+    it in place loses that, and somebody holding a C6 still needs it.
+
+    EVERY PIN HERE COMES OUT OF tools/p4_header.py, which read them
+    from Waveshare's own schematic and holds itself to two counts a
+    misreading fails. Nothing on this sheet is typed twice.
+    """
+    import p4_header as ph
+
+    sh = Sheet(1560, 1060, "pad-ble v1 on the ESP32-P4: one pad into header P6, as a BLE keyboard",
+               "The part that flashes. A Waveshare ESP32-P4-Module-DEV-KIT, its header read from the vendor "
+               "schematic 2026-09-24. The P4 die has no radio; the module carries an ESP32-C6 as one. Nothing wired yet.")
+
+    sh.zone(20, 66, 690, 700, "THE PAD, polled at 3V3 exactly as the bridge polls one")
+    pad_socket(sh, 150, 100, "J1", "PAD_LATCH", "PAD_CLK", "PAD1_D0")
+    sh.note(330, 110, [
+        "Unchanged from pad-ble.svg, and that is the point: GPIO2, 3 and",
+        "6 exist and are free on BOTH parts, so poll_pad in",
+        "firmware/pad-ble runs unedited on either. One sketch, one pad",
+        "map, two targets.",
+        "",
+        "The pad's 4021 is a CMOS part rated 3 to 18 V, so at 3V3 its D0",
+        "is 3V3 logic and needs no shifter. That is the datasheet, not",
+        "this bench: MEASURE FIRST, item 4, open since 2026-09-07. If a",
+        "pad will not follow its buttons at 3V3, add a 74LVC245 and feed",
+        "the pad 5 V; the 245 is on hand.",
+        "",
+        "Pin 5 is the supply and 6 and 7 carry nothing, as measured on",
+        "this console's own cable (docs/wiring.md). RING THE CABLE OUT",
+        "UNPLUGGED: a tone through a cable still in the console runs",
+        "through its pull-ups, and pins that share nothing beep.",
+    ])
+    sh.twopin(330, 690, "R1", "10k", "PAD1_D0", "3V3")
+
+    sh.zone(730, 66, 810, 700, "THE CONTROLLER, on its own USB power, wired at header P6")
+    pins = [(ph.PAD_BLE[n][0], ph.PAD_BLE[n][1], n)
+            for n in ("PAD_LATCH", "PAD_CLK", "PAD1_D0", "3V3", "GND")]
+    sh.chip(900, 100, 210, "U1", "ESP32-P4-Module-DEV-KIT", pins,
+            [(None, "BLE", "radio"), (None, "USB-C", "VBUS")],
+            conn=True, extra="header P6; pin numbers are P6's own")
+    sh.twopin(820, 330, "C1", "100nF", "3V3", "GND")
+    sh.note(760, 390, [
+        "PIN 1 IS NOT WHERE A RASPBERRY PI PUTS IT. The header is",
+        "Pi-shaped and numbered the other way round: 5V on 1 and 3 where",
+        "a Pi has 2 and 4, 3V3 on 2 and 18 where a Pi has 1 and 17, and",
+        "every ground one pin from where a Pi user reaches. A HAT fits",
+        "this board and does not work. Count from the schematic.",
+        "",
+        "ALL FIVE ABOVE ARE EVEN PINS, so the whole circuit lands in one",
+        "row and no wire crosses the header. That is the same virtue the",
+        "C6 sheet has, arrived at the same way: by choosing pins for it.",
+        "",
+        "FOUR PINS REACH P6 AND ARE STILL NOT YOURS. GPIO54 (pin 31) is",
+        "the onboard C6's RESET, and taking it kills the radio that makes",
+        "this part worth using. GPIO45 (39) switches the MicroSD's power,",
+        "GPIO53 (36) is the speaker amplifier's CTRL, GPIO36 (23) is a",
+        "strapping pin. GPIO24 and 25 (28, 27) are the USB pair, and",
+        "GPIO7 and 8 (4, 6) are the codec's I2C with pullups on board.",
+        "",
+        "MODE_SW AND LED MOVED, and had to. On the C6 they were GPIO10",
+        "and GPIO11 and cost nothing because nothing was wired to them.",
+        "Here those numbers are the ES8311 codec's I2S and are not on the",
+        "header at all. They are GPIO21 and GPIO20 now, P6 pins 12 and",
+        "14, free and on the same even row. Declared, still not wired.",
+        "",
+        "C1 goes across the breadboard's own 3V3 and GND rails, not the",
+        "board's pins: the module is regulated already and this is for",
+        "the breadboard's inductance, as on the bridge since 2026-09-15.",
+    ])
+
+    sh.zone(20, 790, 1520, 210, "WHAT THIS BOARD CAN AND CANNOT DO, and the radio is not on the die")
+    rows = [
+        ("BLE HID", [
+            "Works, and PROVEN ON THIS BOARD 2026-09-24: the bench Pi's own radio heard it advertise at B0:A6:04:8A:D7:0E, which is not the P4's MAC.",
+            "THE P4 HAS NO RADIO. soc_caps.h defines neither SOC_BLE_SUPPORTED nor SOC_WIFI_SUPPORTED for it. The module carries an ESP32-C6 as its radio,",
+            "reached over SDIO on GPIO14 to 19 with reset on GPIO54, and the NimBLE host runs on the P4 with CONFIG_BT_CONTROLLER_DISABLED=y. The core's",
+            "BLE classes are gated #if defined(SOC_BLE_SUPPORTED) || defined(CONFIG_ESP_HOSTED_ENABLE_BT_NIMBLE), and the P4 sets the second arm."]),
+        ("Flashing", [
+            "First try, no boot button, no reset dance, where the C6 never once answered. On /dev/ttyACM1 through the board's CH343 bridge at 1a86:55d3.",
+            "The factory image was read off and kept before anything was written: 16 MB, sha256 ad22bf07..., so this board goes back if it has to."]),
+        ("USB HID", [
+            "POSSIBLE ON THIS PART, unlike the C6, and not built. soc_caps.h gives it SOC_USB_OTG_SUPPORTED with two OTG peripherals and a UTMI PHY, so one",
+            "is high speed. A HID keyboard is an 8-byte report on an interrupt endpoint and a pad offers 60 a second, so the speed buys nothing: what it",
+            "buys is a USB-C cable to a phone with no pairing at all. The board has a HOST/DEVICE jumper and a socket marked USB for exactly this."]),
+        ("Gamepad HID", [
+            "Not built. iOS refuses a generic HID gamepad, taking only the MFi, Xbox, PlayStation and Switch Pro layouts, which is why keyboard mode came first."]),
+        ("Two players", [
+            "Not on this sheet. A keyboard report carries six key slots and two pads can ask for ten, so a second pad could be polled and never sent."]),
+    ]
+    y = 824
+    for label, lines in rows:
+        sh.text(40, y, label, "pin")
+        for l in lines:
+            sh.text(168, y, l, "pin")
+            y += 14
+        y += 4
+    sh.done(OUT / "pad-ble-p4.svg")
+
+
 # ------------------------------------------------------------ the two stacks
 # Flow types on the exercise sheet, each a colour and a stroke. What an
 # arrow carries decides its class; the direction is the way the thing
@@ -1436,4 +1547,5 @@ if __name__ == "__main__":
     sheet_logic()
     sheet_pad()
     sheet_padble()
+    sheet_padble_p4()
     sheet_exercise()

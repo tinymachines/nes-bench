@@ -111,9 +111,32 @@ PAD_BLE = {
     "GND": (26, "GND"),
 }
 
-# The cut cable's lead colours, the same five as the bridge.
-PAD_COLOUR = {"GND": "Black", "PAD_CLK": "Yellow", "PAD_LATCH": "Blue",
-              "PAD1_D0": "Green", "3V3": "Red"}
+# Which pin of the pad's own connector each net is, so the lead colour
+# can be LOOKED UP instead of typed.
+PAD_J1_PIN = {"GND": 1, "PAD_CLK": 2, "PAD_LATCH": 3, "PAD1_D0": 4, "3V3": 5}
+
+
+def pad_colour():
+    """The cut cable's lead colours, from the one place that measured them.
+
+    TYPED BY HAND ONCE, 2026-09-24, AND THREE OF THE FIVE WERE WRONG.
+    The owner had said "same five colours as the bridge, Black, Yellow,
+    Blue, Green, Red", which is a set and not an order, and I assigned
+    them to nets by guess: GND black, CLK yellow, LATCH blue. The cable
+    was rung out on 2026-09-09 and the answer has been in
+    tools/bringup.py's LEADS ever since: GND is YELLOW, CLK is BLUE and
+    OUT0 is BLACK. Only D0 green and +5V red were right, and those two
+    were luck.
+
+    It reached rev E and went live before anyone read it against the
+    measurement. So this no longer holds a copy: it reads LEADS, and a
+    pin that is not there raises rather than guesses."""
+    import bringup
+    by_pin = {p: c for p, _n, c in bringup.LEADS}
+    return {net: by_pin[pin].capitalize() for net, pin in PAD_J1_PIN.items()}
+
+
+PAD_COLOUR = pad_colour()
 
 
 def gpios():
@@ -154,9 +177,19 @@ def checks():
             bad.append(f"{net}: {name} is reserved ({RESERVED[name]})")
         if pin % 2:
             bad.append(f"{net}: pin {pin} is on the odd row, so a wire crosses")
-    # 5. Every wire has a colour and every colour a wire.
+    # 5. Every wire has a colour and every colour a wire, and every
+    #    colour is the one the cable was rung out as, not a guess.
     if set(PAD_COLOUR) != set(PAD_BLE):
         bad.append("the colour table and the pin table name different wires")
+    if set(PAD_J1_PIN) != set(PAD_BLE):
+        bad.append("PAD_J1_PIN and PAD_BLE name different wires")
+    import bringup
+    for pin, name, colour in bringup.LEADS:
+        net = [n for n, p in PAD_J1_PIN.items() if p == pin]
+        if not net:
+            bad.append(f"J1 pin {pin} ({name}) is not claimed by any net here")
+        elif PAD_COLOUR[net[0]].lower() != colour:
+            bad.append(f"{net[0]}: {PAD_COLOUR[net[0]]} against the rung-out {colour}")
     # 6. The long and short reasons name the same eight pins, and the
     #    short ones stay short enough for the column they are drawn in.
     if set(RESERVED_SHORT) != set(RESERVED):

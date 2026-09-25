@@ -28,9 +28,10 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 
-SHEETS = ["bench-v1b", "bench-v1b-head", "bench-v2b", "bench-v1", "bench-v2", "pad-adapter", "pad-ble"]
+SHEETS = ["bench-v1b", "bench-v1b-head", "bench-v2b", "bench-v1", "bench-v2", "pad-adapter", "pad-ble", "pad-ble-p4"]
 FN = {"bench-v1b": "sheet_v1b", "bench-v1b-head": "sheet_v1b_head", "bench-v2b": "sheet_v2b", "bench-v1": "sheet_v1",
-      "bench-v2": "sheet_v2", "pad-adapter": "sheet_pad", "pad-ble": "sheet_padble"}
+      "bench-v2": "sheet_v2", "pad-adapter": "sheet_pad", "pad-ble": "sheet_padble",
+      "pad-ble-p4": "sheet_padble_p4"}
 
 # A net named this is a deliberate no-connect, not a wire.
 NC = {"NC", "", None}

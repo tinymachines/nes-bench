@@ -138,6 +138,22 @@ ROW_PADBLE = [
             "bottom": [(None, "BLE"), (None, "USB-C")]}),
 ]
 
+# The same three parts on the board that actually flashes. The pad and
+# the pullup are identical, because they are: only the controller
+# changed. U1's numbers here are HEADER P6's OWN, read from Waveshare's
+# schematic through tools/p4_header.py, so a wire in this drawing names
+# the hole it goes in rather than a GPIO you then have to look up.
+ROW_PADBLE_P4 = [
+    ("J1", {"kind": "header", "label": "J1 pad 1", "sub": "the plug half of an original pad",
+            "top": [(1, "GND"), (2, "CLK"), (3, "OUT0"), (4, "D0"), (5, "+5V")], "bottom": []}),
+    ("R1", {"kind": "header", "label": "R1 10k", "sub": "the pad's D0 pullup",
+            "top": [(1, "1"), (2, "2")], "bottom": []}),
+    ("U1", {"kind": "header", "label": "U1 ESP32-P4-Module-DEV-KIT", "sub": "header P6; 3.3 V logic; radio is an onboard C6",
+            "top": [(22, "GPIO2"), (20, "GPIO3"), (16, "GPIO6"),
+                    (18, "3V3"), (26, "GND")],
+            "bottom": [(None, "BLE"), (None, "USB-C")]}),
+]
+
 # What differs between the two sheets: the netlist, the row, the rails,
 # the words. Everything about routing and drawing is shared.
 SHEETS = {
@@ -161,6 +177,14 @@ SHEETS = {
                        "key slots. The pad runs from 3V3, not 5 V, which is measure-first item 4.",
                    built_title="pad-ble v1 as built",
                    rails_note="3V3 and GND from the devkit's own pins: no separate supply on this build"),
+    "padble-p4": dict(netlist="pad-ble-p4", row=ROW_PADBLE_P4, caps={"C1": "U1"}, rails=("3V3", "GND"),
+                      out="wiring-pad-ble-p4", status=None, aria="pad-ble adapter wiring diagram, ESP32-P4",
+                      title="pad-ble v1 on the ESP32-P4: one pad into header P6, at right angles",
+                      sub="The sheet to build from. Every wire read out of pad-ble-p4.svg, and U1's numbers are header P6's "
+                          "own, so a wire names the hole. ALL FIVE ARE EVEN PINS: the whole circuit lands in one row and "
+                          "nothing crosses the header. The pad runs from 3V3, not 5 V, which is measure-first item 4.",
+                      built_title="pad-ble v1 on the ESP32-P4 as built",
+                      rails_note="3V3 and GND from header P6 pins 18 and 26: no separate supply on this build"),
 }
 PALETTE = ["#7a3fbf", "#0f8f9e", "#b5651d", "#8d1f5e", "#3f6f2a", "#5b5bd6", "#c2185b",
            "#00796b", "#e65100", "#4527a0", "#2e7d32", "#6d4c41", "#0277bd", "#ad1457",

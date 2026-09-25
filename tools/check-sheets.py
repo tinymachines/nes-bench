@@ -274,6 +274,73 @@ def check_padble():
     return bad
 
 
+def check_padble_p4():
+    """The P4 sheet against the header it was read from and the firmware.
+
+    Held differently from check_padble, and deliberately. That one
+    parses the sheet's source for a literal pin block; this sheet has
+    no literal block to parse, because its pins are BUILT from
+    tools/p4_header.py, so parsing the source would only prove that a
+    loop exists. What is worth checking is the three-way agreement:
+    the header module, the drawn netlist and the firmware.
+
+    The third leg is the one that would hurt silently. Wire the board
+    exactly as the drawing says, flash firmware that polls three other
+    pins, and the pad reads nothing with no error anywhere.
+    """
+    sys.path.insert(0, str(ROOT / "tools"))
+    import p4_header as ph
+    import netlist as nl_mod
+
+    bad = 0
+    sheets, _offsheet = nl_mod.collect()
+    if "pad-ble-p4" not in sheets:
+        print("  the P4 sheet draws nothing: netlist.collect() has no pad-ble-p4")
+        return 1
+    u1 = {n["pinname"]: n for n in sheets["pad-ble-p4"] if n["ref"] == "U1"}
+
+    # 1. Every wire the header module claims is drawn, on that pin.
+    for net, (pin, name) in ph.PAD_BLE.items():
+        node = u1.get(name)
+        if node is None:
+            print(f"  the P4 sheet draws no {name} on U1, which p4_header says carries {net}")
+            bad += 1
+            continue
+        if str(node.get("pin")) != str(pin):
+            print(f"  {name}: the P4 sheet has it on pin {node.get('pin')}, p4_header says P6 pin {pin}")
+            bad += 1
+        if node["net"] != net:
+            print(f"  {name}: the P4 sheet calls it {node['net']!r}, p4_header says {net!r}")
+            bad += 1
+
+    # 2. No pin the board has already spoken for got drawn anyway.
+    for name, node in u1.items():
+        if name in ph.RESERVED:
+            print(f"  the P4 sheet wires {name}, which is {ph.RESERVED[name]}")
+            bad += 1
+
+    # 3. The firmware's P4 block polls the pins the sheet draws, and its
+    #    two spare pins are free on this header rather than a codec's.
+    src = (ROOT / "firmware/pad-ble/pad-ble.ino").read_text()
+    fw = dict(re.findall(r"static const int (\w+)\s*=\s*(\d+);", src))
+    p4 = dict(re.findall(r"static const int (\w+)\s*=\s*(\d+);",
+                         src[src.index("#if CONFIG_IDF_TARGET_ESP32P4"):src.index("#else")]))
+    for fwname, net in (("PAD_LATCH", "PAD_LATCH"), ("PAD_CLOCK", "PAD_CLK"), ("PAD1_DATA", "PAD1_D0")):
+        want = ph.PAD_BLE[net][1]
+        if f"GPIO{fw.get(fwname)}" != want:
+            print(f"  {fwname}: the firmware polls GPIO{fw.get(fwname)}, the P4 sheet draws {want}")
+            bad += 1
+    for spare in ("MODE_SW", "LED_PIN"):
+        g = f"GPIO{p4.get(spare)}"
+        if g not in ph.free():
+            print(f"  the P4 build puts {spare} on {g}, which is not free on header P6")
+            bad += 1
+
+    if not bad:
+        print(f"check-sheets: {len(ph.PAD_BLE)} P4 pins agree between p4_header, the sheet and firmware/pad-ble")
+    return bad
+
+
 def main():
     w = draw_bench.read_wiring()
     want = {}
@@ -304,6 +371,7 @@ def main():
     bad += check_port_pinout()
     bad += check_head()
     bad += check_padble()
+    bad += check_padble_p4()
     # The committed SVGs are what the generator writes.
     n_sheets = 0
     with tempfile.TemporaryDirectory() as d:
