@@ -120,6 +120,17 @@ file that does not hash to its record, a record naming a commit that is
 not the checkout's head, or a record written from a dirty tree. Each
 refusal names `--check` as the command that says the same thing here.
 
+**`docs/parts.md` IS A CROSS-REPO INTERFACE TOO, and that is not
+obvious from here.** The site keeps a Japanese translation of it and
+its deploy refuses when the two disagree on headings, so adding a
+sheet to `tools/parts.py`, renaming a section or dropping a part row
+stops somebody else's build. It happened on 2026-09-25: this file
+gained `## pad-ble-p4` and lost two rows, and the site's heading check
+caught it mid-deploy. Nothing here can test that, because the file it
+is held to lives in the other repository. So: when a change moves a
+heading or a row in `parts.md`, say so when you tell the site the
+package has moved, rather than leaving it to their gate.
+
 **Run every check, not the ones you would have picked:**
 
     tools/check-all.sh    # all fourteen, about 3 seconds
