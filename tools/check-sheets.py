@@ -336,8 +336,27 @@ def check_padble_p4():
             print(f"  the P4 build puts {spare} on {g}, which is not free on header P6")
             bad += 1
 
+    # 4. The USB build polls the same three pins, and its keymap is the
+    #    same FILE, not a copy. Two sketches drifting on pins would be
+    #    silent: wire for one, flash the other, read nothing.
+    usb = ROOT / "firmware/pad-usb/pad-usb.ino"
+    if usb.exists():
+        u = dict(re.findall(r"static const int (\w+)\s*=\s*(\d+);", usb.read_text()))
+        for fwname, net in (("PAD_LATCH", "PAD_LATCH"), ("PAD_CLOCK", "PAD_CLK"), ("PAD1_DATA", "PAD1_D0")):
+            want = ph.PAD_BLE[net][1]
+            if f"GPIO{u.get(fwname)}" != want:
+                print(f"  pad-usb {fwname}: polls GPIO{u.get(fwname)}, the P4 sheet draws {want}")
+                bad += 1
+        km = ROOT / "firmware/pad-usb/keymap.h"
+        if not km.is_symlink():
+            print("  firmware/pad-usb/keymap.h is a copy, not a symlink: the two builds will drift")
+            bad += 1
+        elif km.resolve() != (ROOT / "firmware/pad-ble/keymap.h").resolve():
+            print(f"  firmware/pad-usb/keymap.h points at {km.resolve()}, not pad-ble's")
+            bad += 1
+
     if not bad:
-        print(f"check-sheets: {len(ph.PAD_BLE)} P4 pins agree between p4_header, the sheet and firmware/pad-ble")
+        print(f"check-sheets: {len(ph.PAD_BLE)} P4 pins agree between p4_header, the sheet, pad-ble and pad-usb")
     return bad
 
 
