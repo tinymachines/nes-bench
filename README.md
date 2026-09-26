@@ -120,16 +120,25 @@ file that does not hash to its record, a record naming a commit that is
 not the checkout's head, or a record written from a dirty tree. Each
 refusal names `--check` as the command that says the same thing here.
 
-**`docs/parts.md` IS A CROSS-REPO INTERFACE TOO, and that is not
-obvious from here.** The site keeps a Japanese translation of it and
-its deploy refuses when the two disagree on headings, so adding a
-sheet to `tools/parts.py`, renaming a section or dropping a part row
-stops somebody else's build. It happened on 2026-09-25: this file
-gained `## pad-ble-p4` and lost two rows, and the site's heading check
-caught it mid-deploy. Nothing here can test that, because the file it
-is held to lives in the other repository. So: when a change moves a
-heading or a row in `parts.md`, say so when you tell the site the
-package has moved, rather than leaving it to their gate.
+**EVERY DOCUMENT THE SITE PULLS HAS A JAPANESE SHADOW, AND ITS HEADINGS
+ARE AN INTERFACE.** The site keeps a translation of each pulled file at
+`docs/ja/nes/<name>.md` and its deploy refuses when the two disagree on
+HEADING COUNT. So adding a section, renaming one or dropping one stops
+somebody else's build, in any file they pull, not only the generated
+ones.
+
+It caught two different files on 2026-09-25. First `docs/parts.md`,
+which gained `## pad-ble-p4` and lost two rows. Then, after I had
+written this paragraph naming only `parts.md`, `docs/pad-ble-build.md`
+gained six headings in one commit and stopped the deploy again. The
+rule was broader than the example, which is the usual way a note like
+this is wrong.
+
+Nothing here can gate it: the files it is held to live in the other
+repository and a fresh checkout has no sight of them. So it is a thing
+a person has to say. **When a commit adds, renames or removes a heading
+in any document the site pulls, say so in the same message that tells
+them the package has moved.**
 
 **Run every check, not the ones you would have picked:**
 

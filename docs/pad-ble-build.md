@@ -1,10 +1,15 @@
-# pad-ble: an original pad as a Bluetooth keyboard, standalone
+# pad-ble: an original pad as a USB or Bluetooth keyboard, standalone
 
-The bridge's own pad poll with a radio behind it instead of a shift
-register. No Pi, no UNO, no console: a pad, the ESP32-C6 already seated
-on the breadboard, and one resistor. It pairs to a phone, a tablet or
-a laptop as a plain BLE keyboard, which is what lets a forty-year-old
-controller drive a browser emulator with no app at either end.
+The bridge's own pad poll with a host interface behind it instead of a
+shift register. No Pi, no UNO, no console: a pad, one ESP32 board and
+one resistor. It presents to a phone, a tablet or a laptop as a plain
+keyboard, which is what lets a forty-year-old controller drive a
+browser emulator with no app at either end.
+
+**The board is a Waveshare ESP32-P4-Module-DEV-KIT and the interface
+is USB**, both of which changed under this document; the reasoning is
+in "The direction changed twice" below. The ESP32-C6 the early sheets
+are drawn around never accepted a flash.
 
 Written 2026-09-21, updated 2026-09-23.
 
