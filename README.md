@@ -148,7 +148,7 @@ thing to remember:
     python3 tools/check-pulled-headings.py --update  # after you have told them
 
 `tools/pulled-docs.json` holds the list, the slug each maps to, and the
-count last agreed. The authority for the list is `NES_DOCS` in their
+count last agreed. The authority for the list is `DOCS` in their
 `web/scripts/pull-nesdocs.mjs` and **it grows**, so this catches a
 change to what they pull today and cannot catch a newly pulled file.
 Prose may change freely; only headings block their deploy.

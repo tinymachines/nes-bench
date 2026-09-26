@@ -1,5 +1,5 @@
 {
- "_about": "The documents the site pulls, and their heading counts. The site holds each against a Japanese shadow at docs/ja/nes/<slug>.md in ITS repository and refuses to deploy on a count mismatch. Authority for the list is NES_DOCS in their web/scripts/pull-nesdocs.mjs; this copy was given by that session on 2026-09-25. See tools/check-pulled-headings.py.",
+ "_about": "The documents the site pulls, and their heading counts. The site holds each against a Japanese shadow at docs/ja/nes/<slug>.md in ITS repository and refuses to deploy on a count mismatch. Authority for the list is DOCS in their web/scripts/pull-nesdocs.mjs; this copy was given by that session on 2026-09-25. See tools/check-pulled-headings.py.",
  "docs": {
   "bench-plan.md": {
    "slug": "bench-plan",

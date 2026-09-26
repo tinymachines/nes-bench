@@ -28,8 +28,12 @@ slug, not our filename, so pad-ble-build.md is held against pad-ble.md
 over there. The mapping is recorded here so a reader can find the file
 that will break.
 
-THE LIST IS THEIRS TOO, AND IT GROWS. The authority is NES_DOCS in
-their web/scripts/pull-nesdocs.mjs; this is a copy taken 2026-09-25.
+THE LIST IS THEIRS TOO, AND IT GROWS. The authority is DOCS in
+their web/scripts/pull-nesdocs.mjs, which covers several repositories
+and not only this one; the 22 below are this repository's rows of it,
+copied 2026-09-25. They have put a comment at that list saying a new
+nes-bench entry, or a Japanese shadow appearing for one, is news for
+here.
 A document of ours that they start pulling will not appear here by
 itself, so this catches changes to what they pull TODAY, which is the
 common case, and not a newly pulled file.
