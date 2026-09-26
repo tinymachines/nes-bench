@@ -1141,9 +1141,9 @@ def sheet_padble_p4():
     """
     import p4_header as ph
 
-    sh = Sheet(1560, 1060, "pad-ble v1 on the ESP32-P4: one pad into header P6, as a BLE keyboard",
-               "The part that flashes. A Waveshare ESP32-P4-Module-DEV-KIT, its header read from the vendor "
-               "schematic 2026-09-24. The P4 die has no radio; the module carries an ESP32-C6 as one. Nothing wired yet.")
+    sh = Sheet(1560, 1060, "pad-ble v1 on the ESP32-P4: one pad into header P6, as a USB keyboard",
+               "The build is USB now, not BLE. A Waveshare ESP32-P4-Module-DEV-KIT, header read from the vendor schematic "
+               "2026-09-24 and every hole confirmed with firmware/header-probe 2026-09-25. The wiring is the same either way.")
 
     sh.zone(20, 66, 690, 700, "THE PAD, polled at 3V3 exactly as the bridge polls one")
     pad_socket(sh, 150, 100, "J1", "PAD_LATCH", "PAD_CLK", "PAD1_D0")
@@ -1172,8 +1172,8 @@ def sheet_padble_p4():
     sh.chip(900, 100, 210, "U1", "ESP32-P4-Module-DEV-KIT", pins,
             [(None, "BLE", "radio"), (None, "USB-C", "VBUS")],
             conn=True, extra="header P6; pin numbers are P6's own")
-    sh.twopin(820, 330, "C1", "100nF", "3V3", "GND")
-    sh.note(760, 390, [
+    sh.twopin(820, 300, "C1", "100nF", "3V3", "GND")
+    ctrl_note = [
         "PIN 1 IS NOT WHERE A RASPBERRY PI PUTS IT. The header is",
         "Pi-shaped and numbered the other way round: 5V on 1 and 3 where",
         "a Pi has 2 and 4, 3V3 on 2 and 18 where a Pi has 1 and 17, and",
@@ -1181,63 +1181,71 @@ def sheet_padble_p4():
         "this board and does not work. Count from the schematic.",
         "",
         "THE WHOLE CIRCUIT IS FIVE HOLES IN A ROW. Find the SECOND 3V3",
-        "on the even row; the even row there reads",
+        "on the even row; it reads",
         "",
         "        6    3V3    3    2    0    GND",
         "       p16   p18   p20  p22  p24  p26",
         "",
-        "and the build takes every one of them EXCEPT 0. Data, supply,",
-        "clock, latch, skip, ground. One landmark to find and one hole",
-        "to skip, which is a better instruction than five numbers:",
-        "wiring this by number on 2026-09-25, two of the three signal",
-        "wires went in wrong. All five being even was chosen so nothing",
-        "crosses the header; that they are also consecutive was not",
-        "noticed until somebody built it.",
+        "and the build takes all of them EXCEPT 0. One landmark and one",
+        "hole to skip beats five numbers: wired by number on 2026-09-25,",
+        "two of the three signal wires went in wrong.",
         "",
-        "FOUR PINS REACH P6 AND ARE STILL NOT YOURS. GPIO54 (pin 31) is",
-        "the onboard C6's RESET, and taking it kills the radio that makes",
-        "this part worth using. GPIO45 (39) switches the MicroSD's power,",
-        "GPIO53 (36) is the speaker amplifier's CTRL, GPIO36 (23) is a",
-        "strapping pin. GPIO24 and 25 (28, 27) are the USB pair, and",
-        "GPIO7 and 8 (4, 6) are the codec's I2C with pullups on board.",
+        "TEN PINS REACH P6 AND ARE STILL NOT YOURS. Worst is GPIO54",
+        "(pin 31), the onboard C6's RESET: take it and the radio dies.",
+        "Sheets 8 to 10 list all ten with what each is wired to.",
         "",
         "MODE_SW AND LED MOVED, and had to. On the C6 they were GPIO10",
         "and GPIO11 and cost nothing because nothing was wired to them.",
-        "Here those numbers are the ES8311 codec's I2S and are not on the",
-        "header at all. They are GPIO21 and GPIO20 now, P6 pins 12 and",
-        "14, free and on the same even row. Declared, still not wired.",
+        "Here those numbers are the ES8311 codec's I2S and are not on",
+        "the header at all. They are GPIO21 and GPIO20 now, P6 pins 12",
+        "and 14, free and on the same even row. Declared, not wired.",
         "",
         "C1 goes across the breadboard's own 3V3 and GND rails, not the",
         "board's pins: the module is regulated already and this is for",
         "the breadboard's inductance, as on the bridge since 2026-09-15.",
-    ])
+    ]
+    # Same guard as the band below, and for the same reason: a note that
+    # grows past its zone is invisible in the SVG source and obvious only
+    # in a render nobody looks at. THE CONTROLLER ZONE ENDS AT y=766.
+    note_y = 350
+    assert note_y + 14 * len(ctrl_note) <= 766, (
+        f"the controller note overflows its zone by "
+        f"{note_y + 14 * len(ctrl_note) - 766} px: shorten it or move it up")
+    sh.note(760, note_y, ctrl_note)
 
-    sh.zone(20, 790, 1520, 210, "WHAT THIS BOARD CAN AND CANNOT DO, and the radio is not on the die")
+    sh.zone(20, 782, 1520, 262, "WHAT THIS BOARD DOES, MEASURED, and why the direction changed on 2026-09-25")
     rows = [
-        ("BLE HID", [
-            "Works, and PROVEN ON THIS BOARD 2026-09-24: the bench Pi's own radio heard it advertise at B0:A6:04:8A:D7:0E, which is not the P4's MAC.",
-            "THE P4 HAS NO RADIO. soc_caps.h defines neither SOC_BLE_SUPPORTED nor SOC_WIFI_SUPPORTED for it. The module carries an ESP32-C6 as its radio,",
-            "reached over SDIO on GPIO14 to 19 with reset on GPIO54, and the NimBLE host runs on the P4 with CONFIG_BT_CONTROLLER_DISABLED=y. The core's",
-            "BLE classes are gated #if defined(SOC_BLE_SUPPORTED) || defined(CONFIG_ESP_HOSTED_ENABLE_BT_NIMBLE), and the P4 sets the second arm."]),
-        ("Flashing", [
-            "First try, no boot button, no reset dance, where the C6 never once answered. On /dev/ttyACM1 through the board's CH343 bridge at 1a86:55d3.",
-            "The factory image was read off and kept before anything was written: 16 MB, sha256 ad22bf07..., so this board goes back if it has to."]),
         ("USB HID", [
-            "POSSIBLE ON THIS PART, unlike the C6, and not built. soc_caps.h gives it SOC_USB_OTG_SUPPORTED with two OTG peripherals and a UTMI PHY, so one",
-            "is high speed. A HID keyboard is an 8-byte report on an interrupt endpoint and a pad offers 60 a second, so the speed buys nothing: what it",
-            "buys is a USB-C cable to a phone with no pairing at all. The board has a HOST/DEVICE jumper and a socket marked USB for exactly this."]),
-        ("Gamepad HID", [
-            "Not built. iOS refuses a generic HID gamepad, taking only the MFi, Xbox, PlayStation and Switch Pro layouts, which is why keyboard mode came first."]),
+            "THIS IS THE BUILD. Boots clean, 18% of flash, and prints B FF with no pad wired, which is right: D0 floats with no pullup so all",
+            "eight bits read pressed. soc_caps.h gives the P4 SOC_USB_OTG_SUPPORTED with two OTG peripherals, which the C6 never had. No radio,",
+            "no co-processor, no SDIO, no pairing: a USB-C cable to a phone and nothing in the path that can fail. Plug the HOST into the socket",
+            "marked USB, not PWR USB TO UART, and set the jumper to DEVICE. The UART socket stays on the bench head for the serial log."]),
+        ("BLE HID", [
+            "REACHES THE AIR BUT CRASHES THIS FIRMWARE, and not in our code. The P4 has no radio; the module's ESP32-C6 is it, over SDIO. The host's",
+            "esp-hosted 2.12.11 asks that C6 for its firmware version, gets no answer, and the failure path reads a pointer nobody filled in:",
+            "always 2881 ms after BLEDevice::init. Five explanations tested and eliminated (build options and PSRAM, the security block, a delay",
+            "before init, a delay after init, our own GPIO setup). A smaller sketch survives the IDENTICAL timeout, so the garbage it reads is",
+            "harmless there: luck, not correctness. The proper fix is the C6's slave firmware, through the C6 UART header. Not done."]),
+        ("Proven", [
+            "The radio itself works: on 2026-09-24 the bench Pi's own receiver heard this board advertise at B0:A6:04:8A:D7:0E, which is NOT the",
+            "P4's MAC, because the advertisement came off the C6. The BLE fault is the version RPC and its aftermath, not the link."]),
+        ("Flashing", [
+            "First try, where the C6 devkit never once answered. On /dev/p4-uart through the board's CH343 at 1a86:55d3. The factory image was read",
+            "off and kept before anything was written: 16 MB, sha256 ad22bf07..., so this board goes back if it has to."]),
         ("Two players", [
             "Not on this sheet. A keyboard report carries six key slots and two pads can ask for ten, so a second pad could be polled and never sent."]),
     ]
-    y = 824
+    y = 812
     for label, lines in rows:
         sh.text(40, y, label, "pin")
         for l in lines:
             sh.text(168, y, l, "pin")
-            y += 14
-        y += 4
+            y += 13
+        y += 3
+    # The band is drawn to hold exactly these rows. A sheet has no guard
+    # against text leaving its zone, and on 2026-09-25 this one grew two
+    # paragraphs and ran into the band below before anybody read it.
+    assert y <= 1044, f"the capability band overflows its zone by {y - 1044} px: shorten it or grow the zone"
     sh.done(OUT / "pad-ble-p4.svg")
 
 

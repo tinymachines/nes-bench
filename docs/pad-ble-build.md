@@ -277,6 +277,85 @@ the pad map untouched. **Not proven: anything at all about the pad.**
 No pad has been wired to this board, and measure-first item 4 below is
 still open.
 
+## The direction changed twice, and this is why
+
+**2026-09-25.** This began as a Bluetooth adapter and ships as a USB
+one. Both moves were forced by measurement, not preference, and both
+are worth keeping because the reasoning is reusable.
+
+### Move one: the C6 to the P4
+
+The ESP32-C6 never accepted a flash. Two evenings of `no serial data
+received`, with the port, the cable, the wiring and ModemManager each
+ruled out by test. A Waveshare ESP32-P4-Module-DEV-KIT on the same
+bench connected first try, took the firmware, and put a BLE
+advertisement on the air that an independent radio heard. That is
+`docs/esp32-part-choice.md`.
+
+### Move two: BLE to USB
+
+The BLE firmware crashes on the P4, and not in this project's code.
+
+    E rpc_core: Response not received for [0x15e](Req_GetCoprocessorFwVersion)
+    Guru Meditation Error: Core 1 panic'ed (Load access fault)
+
+The P4 has no radio. The module carries an ESP32-C6 as one, reached
+over SDIO, and the host's **esp-hosted 2.12.11** asks that C6 for its
+firmware version. It gets no answer, and the failure path then reads a
+pointer nobody filled in. **Always 2881 ms after `BLEDevice::init`**,
+in every variant tried.
+
+Five explanations were tested and eliminated:
+
+| tried | result |
+|---|---|
+| build options, 16M flash and PSRAM on | no change |
+| removing the `BLESecurity` block | no change |
+| `delay(3000)` before `BLEDevice::init` | crash moved by exactly 3000 ms |
+| `delay(4000)` after `BLEDevice::init` | never reached; the crash is inside init |
+| moving all GPIO setup after BLE | no change |
+
+**The radio probe hits the identical timeout at the identical latency
+and survives it.** That is what names the kind of bug: the failure path
+reads uninitialised memory, and whether it kills you depends on what
+was in that memory, which differs per binary. The probe is lucky. It is
+not correct.
+
+So the fault is the unanswered RPC, and the honest fix is the C6's
+slave firmware, through the board's `C6 UART` header. **That has not
+been done.**
+
+### Why USB rather than a workaround
+
+USB removes the component that is failing instead of stepping around
+it: no radio, no co-processor, no SDIO link, no pairing. The P4
+declares `SOC_USB_OTG_SUPPORTED` with two OTG peripherals and a UTMI
+PHY, which the C6 never had at all, so this is a thing only this part
+can do. It is also what was asked for on the first day of this work.
+
+`firmware/pad-usb` boots clean at 18% of flash and prints `B FF` with
+no pad wired, which is correct: `D0` floats with no pullup, so all
+eight bits read pressed, and the six-slot limit reports `DROPPED`
+rather than losing keys quietly. **With the pullup fitted it should
+read `B 00`**, and that is the next confirmation, needing no host.
+
+Its `keymap.h` is a **symlink** to `firmware/pad-ble/keymap.h`, so both
+builds send the same eight buttons as the same eight keys, and
+`tools/test-pad-keymap.sh` holds that one file to its own descriptor on
+the desk. `tools/check-sheets.py` refuses a copy.
+
+### What did not change
+
+The wiring. Both builds poll `GPIO2`, `GPIO3` and `GPIO6`, the same map
+`firmware/bridge/bridge.ino` already uses, so the five wires and the
+run they sit in are unaffected by either move.
+
+### Using it
+
+Plug the host into the socket marked **`USB`**, not `PWR USB TO UART`,
+and set the jumper to **`DEVICE`**. The UART socket stays on the bench
+head, which is where the serial log comes from.
+
 ## Measure first
 
 Before anything is powered, and in this order:

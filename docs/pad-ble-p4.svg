@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1560 1060" width="1560" height="1060" role="img" aria-label="pad-ble v1 on the ESP32-P4: one pad into header P6, as a BLE keyboard">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1560 1060" width="1560" height="1060" role="img" aria-label="pad-ble v1 on the ESP32-P4: one pad into header P6, as a USB keyboard">
 
   <style>
     text { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; fill: #1f2328; }
@@ -34,8 +34,8 @@
 
 <rect x="0" y="0" width="1560" height="1060" fill="#ffffff"/>
 <g class="sheet-heading" data-height="60">
-<text class="title" x="24" y="30">pad-ble v1 on the ESP32-P4: one pad into header P6, as a BLE keyboard</text>
-<text class="sub" x="24" y="46">The part that flashes. A Waveshare ESP32-P4-Module-DEV-KIT, its header read from the vendor schematic 2026-09-24. The P4 die has no radio; the module carries an ESP32-C6 as one. Nothing wired yet.</text>
+<text class="title" x="24" y="30">pad-ble v1 on the ESP32-P4: one pad into header P6, as a USB keyboard</text>
+<text class="sub" x="24" y="46">The build is USB now, not BLE. A Waveshare ESP32-P4-Module-DEV-KIT, header read from the vendor schematic 2026-09-24 and every hole confirmed with firmware/header-probe 2026-09-25. The wiring is the same either way.</text>
 </g>
 <rect class="zone" x="20" y="66" width="690" height="700" rx="6"/>
 <text class="sub" x="28" y="80" text-anchor="start">THE PAD, polled at 3V3 exactly as the bridge polls one</text>
@@ -135,64 +135,60 @@
 <text class="pin" x="1105" y="185.5" text-anchor="end">USB-C</text>
 <path class="offsheet" d="M1136 174 L1160.8 174 L1168.8 182 L1160.8 190 L1136 190 Z"/>
 <text class="net" x="1141" y="185.5" text-anchor="start">VBUS</text>
-<line class="w3" x1="820" y1="330" x2="820" y2="321"/><line class="w3" x1="815" y1="321" x2="825" y2="321"/>
-<text class="rail3" x="820" y="319" text-anchor="middle">3V3</text>
-<line class="lead" x1="820" y1="330" x2="838" y2="330"/><rect class="box" x="838" y="323" width="44" height="14"/><line class="lead" x1="882" y1="330" x2="900" y2="330"/>
-<text class="pinno" x="860" y="320" text-anchor="middle">C1</text>
-<text class="pin" x="860" y="334" text-anchor="middle">100nF</text>
-<line class="wg" x1="900" y1="330" x2="900" y2="338"/><line class="wg" x1="894" y1="338" x2="906" y2="338"/><line class="wg" x1="897" y1="341" x2="903" y2="341"/>
-<text class="note" x="760" y="390" text-anchor="start">PIN 1 IS NOT WHERE A RASPBERRY PI PUTS IT. The header is</text>
-<text class="note" x="760" y="403" text-anchor="start">Pi-shaped and numbered the other way round: 5V on 1 and 3 where</text>
-<text class="note" x="760" y="416" text-anchor="start">a Pi has 2 and 4, 3V3 on 2 and 18 where a Pi has 1 and 17, and</text>
-<text class="note" x="760" y="429" text-anchor="start">every ground one pin from where a Pi user reaches. A HAT fits</text>
-<text class="note" x="760" y="442" text-anchor="start">this board and does not work. Count from the schematic.</text>
-<text class="note" x="760" y="455" text-anchor="start"></text>
-<text class="note" x="760" y="468" text-anchor="start">THE WHOLE CIRCUIT IS FIVE HOLES IN A ROW. Find the SECOND 3V3</text>
-<text class="note" x="760" y="481" text-anchor="start">on the even row; the even row there reads</text>
-<text class="note" x="760" y="494" text-anchor="start"></text>
-<text class="note" x="760" y="507" text-anchor="start">        6    3V3    3    2    0    GND</text>
-<text class="note" x="760" y="520" text-anchor="start">       p16   p18   p20  p22  p24  p26</text>
-<text class="note" x="760" y="533" text-anchor="start"></text>
-<text class="note" x="760" y="546" text-anchor="start">and the build takes every one of them EXCEPT 0. Data, supply,</text>
-<text class="note" x="760" y="559" text-anchor="start">clock, latch, skip, ground. One landmark to find and one hole</text>
-<text class="note" x="760" y="572" text-anchor="start">to skip, which is a better instruction than five numbers:</text>
-<text class="note" x="760" y="585" text-anchor="start">wiring this by number on 2026-09-25, two of the three signal</text>
-<text class="note" x="760" y="598" text-anchor="start">wires went in wrong. All five being even was chosen so nothing</text>
-<text class="note" x="760" y="611" text-anchor="start">crosses the header; that they are also consecutive was not</text>
-<text class="note" x="760" y="624" text-anchor="start">noticed until somebody built it.</text>
-<text class="note" x="760" y="637" text-anchor="start"></text>
-<text class="note" x="760" y="650" text-anchor="start">FOUR PINS REACH P6 AND ARE STILL NOT YOURS. GPIO54 (pin 31) is</text>
-<text class="note" x="760" y="663" text-anchor="start">the onboard C6's RESET, and taking it kills the radio that makes</text>
-<text class="note" x="760" y="676" text-anchor="start">this part worth using. GPIO45 (39) switches the MicroSD's power,</text>
-<text class="note" x="760" y="689" text-anchor="start">GPIO53 (36) is the speaker amplifier's CTRL, GPIO36 (23) is a</text>
-<text class="note" x="760" y="702" text-anchor="start">strapping pin. GPIO24 and 25 (28, 27) are the USB pair, and</text>
-<text class="note" x="760" y="715" text-anchor="start">GPIO7 and 8 (4, 6) are the codec's I2C with pullups on board.</text>
-<text class="note" x="760" y="728" text-anchor="start"></text>
-<text class="note" x="760" y="741" text-anchor="start">MODE_SW AND LED MOVED, and had to. On the C6 they were GPIO10</text>
-<text class="note" x="760" y="754" text-anchor="start">and GPIO11 and cost nothing because nothing was wired to them.</text>
-<text class="note" x="760" y="767" text-anchor="start">Here those numbers are the ES8311 codec's I2S and are not on the</text>
-<text class="note" x="760" y="780" text-anchor="start">header at all. They are GPIO21 and GPIO20 now, P6 pins 12 and</text>
-<text class="note" x="760" y="793" text-anchor="start">14, free and on the same even row. Declared, still not wired.</text>
-<text class="note" x="760" y="806" text-anchor="start"></text>
-<text class="note" x="760" y="819" text-anchor="start">C1 goes across the breadboard's own 3V3 and GND rails, not the</text>
-<text class="note" x="760" y="832" text-anchor="start">board's pins: the module is regulated already and this is for</text>
-<text class="note" x="760" y="845" text-anchor="start">the breadboard's inductance, as on the bridge since 2026-09-15.</text>
-<rect class="zone" x="20" y="790" width="1520" height="210" rx="6"/>
-<text class="sub" x="28" y="804" text-anchor="start">WHAT THIS BOARD CAN AND CANNOT DO, and the radio is not on the die</text>
-<text class="pin" x="40" y="824" text-anchor="start">BLE HID</text>
-<text class="pin" x="168" y="824" text-anchor="start">Works, and PROVEN ON THIS BOARD 2026-09-24: the bench Pi's own radio heard it advertise at B0:A6:04:8A:D7:0E, which is not the P4's MAC.</text>
-<text class="pin" x="168" y="838" text-anchor="start">THE P4 HAS NO RADIO. soc_caps.h defines neither SOC_BLE_SUPPORTED nor SOC_WIFI_SUPPORTED for it. The module carries an ESP32-C6 as its radio,</text>
-<text class="pin" x="168" y="852" text-anchor="start">reached over SDIO on GPIO14 to 19 with reset on GPIO54, and the NimBLE host runs on the P4 with CONFIG_BT_CONTROLLER_DISABLED=y. The core's</text>
-<text class="pin" x="168" y="866" text-anchor="start">BLE classes are gated #if defined(SOC_BLE_SUPPORTED) || defined(CONFIG_ESP_HOSTED_ENABLE_BT_NIMBLE), and the P4 sets the second arm.</text>
-<text class="pin" x="40" y="884" text-anchor="start">Flashing</text>
-<text class="pin" x="168" y="884" text-anchor="start">First try, no boot button, no reset dance, where the C6 never once answered. On /dev/ttyACM1 through the board's CH343 bridge at 1a86:55d3.</text>
-<text class="pin" x="168" y="898" text-anchor="start">The factory image was read off and kept before anything was written: 16 MB, sha256 ad22bf07..., so this board goes back if it has to.</text>
-<text class="pin" x="40" y="916" text-anchor="start">USB HID</text>
-<text class="pin" x="168" y="916" text-anchor="start">POSSIBLE ON THIS PART, unlike the C6, and not built. soc_caps.h gives it SOC_USB_OTG_SUPPORTED with two OTG peripherals and a UTMI PHY, so one</text>
-<text class="pin" x="168" y="930" text-anchor="start">is high speed. A HID keyboard is an 8-byte report on an interrupt endpoint and a pad offers 60 a second, so the speed buys nothing: what it</text>
-<text class="pin" x="168" y="944" text-anchor="start">buys is a USB-C cable to a phone with no pairing at all. The board has a HOST/DEVICE jumper and a socket marked USB for exactly this.</text>
-<text class="pin" x="40" y="962" text-anchor="start">Gamepad HID</text>
-<text class="pin" x="168" y="962" text-anchor="start">Not built. iOS refuses a generic HID gamepad, taking only the MFi, Xbox, PlayStation and Switch Pro layouts, which is why keyboard mode came first.</text>
-<text class="pin" x="40" y="980" text-anchor="start">Two players</text>
-<text class="pin" x="168" y="980" text-anchor="start">Not on this sheet. A keyboard report carries six key slots and two pads can ask for ten, so a second pad could be polled and never sent.</text>
+<line class="w3" x1="820" y1="300" x2="820" y2="291"/><line class="w3" x1="815" y1="291" x2="825" y2="291"/>
+<text class="rail3" x="820" y="289" text-anchor="middle">3V3</text>
+<line class="lead" x1="820" y1="300" x2="838" y2="300"/><rect class="box" x="838" y="293" width="44" height="14"/><line class="lead" x1="882" y1="300" x2="900" y2="300"/>
+<text class="pinno" x="860" y="290" text-anchor="middle">C1</text>
+<text class="pin" x="860" y="304" text-anchor="middle">100nF</text>
+<line class="wg" x1="900" y1="300" x2="900" y2="308"/><line class="wg" x1="894" y1="308" x2="906" y2="308"/><line class="wg" x1="897" y1="311" x2="903" y2="311"/>
+<text class="note" x="760" y="350" text-anchor="start">PIN 1 IS NOT WHERE A RASPBERRY PI PUTS IT. The header is</text>
+<text class="note" x="760" y="363" text-anchor="start">Pi-shaped and numbered the other way round: 5V on 1 and 3 where</text>
+<text class="note" x="760" y="376" text-anchor="start">a Pi has 2 and 4, 3V3 on 2 and 18 where a Pi has 1 and 17, and</text>
+<text class="note" x="760" y="389" text-anchor="start">every ground one pin from where a Pi user reaches. A HAT fits</text>
+<text class="note" x="760" y="402" text-anchor="start">this board and does not work. Count from the schematic.</text>
+<text class="note" x="760" y="415" text-anchor="start"></text>
+<text class="note" x="760" y="428" text-anchor="start">THE WHOLE CIRCUIT IS FIVE HOLES IN A ROW. Find the SECOND 3V3</text>
+<text class="note" x="760" y="441" text-anchor="start">on the even row; it reads</text>
+<text class="note" x="760" y="454" text-anchor="start"></text>
+<text class="note" x="760" y="467" text-anchor="start">        6    3V3    3    2    0    GND</text>
+<text class="note" x="760" y="480" text-anchor="start">       p16   p18   p20  p22  p24  p26</text>
+<text class="note" x="760" y="493" text-anchor="start"></text>
+<text class="note" x="760" y="506" text-anchor="start">and the build takes all of them EXCEPT 0. One landmark and one</text>
+<text class="note" x="760" y="519" text-anchor="start">hole to skip beats five numbers: wired by number on 2026-09-25,</text>
+<text class="note" x="760" y="532" text-anchor="start">two of the three signal wires went in wrong.</text>
+<text class="note" x="760" y="545" text-anchor="start"></text>
+<text class="note" x="760" y="558" text-anchor="start">TEN PINS REACH P6 AND ARE STILL NOT YOURS. Worst is GPIO54</text>
+<text class="note" x="760" y="571" text-anchor="start">(pin 31), the onboard C6's RESET: take it and the radio dies.</text>
+<text class="note" x="760" y="584" text-anchor="start">Sheets 8 to 10 list all ten with what each is wired to.</text>
+<text class="note" x="760" y="597" text-anchor="start"></text>
+<text class="note" x="760" y="610" text-anchor="start">MODE_SW AND LED MOVED, and had to. On the C6 they were GPIO10</text>
+<text class="note" x="760" y="623" text-anchor="start">and GPIO11 and cost nothing because nothing was wired to them.</text>
+<text class="note" x="760" y="636" text-anchor="start">Here those numbers are the ES8311 codec's I2S and are not on</text>
+<text class="note" x="760" y="649" text-anchor="start">the header at all. They are GPIO21 and GPIO20 now, P6 pins 12</text>
+<text class="note" x="760" y="662" text-anchor="start">and 14, free and on the same even row. Declared, not wired.</text>
+<text class="note" x="760" y="675" text-anchor="start"></text>
+<text class="note" x="760" y="688" text-anchor="start">C1 goes across the breadboard's own 3V3 and GND rails, not the</text>
+<text class="note" x="760" y="701" text-anchor="start">board's pins: the module is regulated already and this is for</text>
+<text class="note" x="760" y="714" text-anchor="start">the breadboard's inductance, as on the bridge since 2026-09-15.</text>
+<rect class="zone" x="20" y="782" width="1520" height="262" rx="6"/>
+<text class="sub" x="28" y="796" text-anchor="start">WHAT THIS BOARD DOES, MEASURED, and why the direction changed on 2026-09-25</text>
+<text class="pin" x="40" y="812" text-anchor="start">USB HID</text>
+<text class="pin" x="168" y="812" text-anchor="start">THIS IS THE BUILD. Boots clean, 18% of flash, and prints B FF with no pad wired, which is right: D0 floats with no pullup so all</text>
+<text class="pin" x="168" y="825" text-anchor="start">eight bits read pressed. soc_caps.h gives the P4 SOC_USB_OTG_SUPPORTED with two OTG peripherals, which the C6 never had. No radio,</text>
+<text class="pin" x="168" y="838" text-anchor="start">no co-processor, no SDIO, no pairing: a USB-C cable to a phone and nothing in the path that can fail. Plug the HOST into the socket</text>
+<text class="pin" x="168" y="851" text-anchor="start">marked USB, not PWR USB TO UART, and set the jumper to DEVICE. The UART socket stays on the bench head for the serial log.</text>
+<text class="pin" x="40" y="867" text-anchor="start">BLE HID</text>
+<text class="pin" x="168" y="867" text-anchor="start">REACHES THE AIR BUT CRASHES THIS FIRMWARE, and not in our code. The P4 has no radio; the module's ESP32-C6 is it, over SDIO. The host's</text>
+<text class="pin" x="168" y="880" text-anchor="start">esp-hosted 2.12.11 asks that C6 for its firmware version, gets no answer, and the failure path reads a pointer nobody filled in:</text>
+<text class="pin" x="168" y="893" text-anchor="start">always 2881 ms after BLEDevice::init. Five explanations tested and eliminated (build options and PSRAM, the security block, a delay</text>
+<text class="pin" x="168" y="906" text-anchor="start">before init, a delay after init, our own GPIO setup). A smaller sketch survives the IDENTICAL timeout, so the garbage it reads is</text>
+<text class="pin" x="168" y="919" text-anchor="start">harmless there: luck, not correctness. The proper fix is the C6's slave firmware, through the C6 UART header. Not done.</text>
+<text class="pin" x="40" y="935" text-anchor="start">Proven</text>
+<text class="pin" x="168" y="935" text-anchor="start">The radio itself works: on 2026-09-24 the bench Pi's own receiver heard this board advertise at B0:A6:04:8A:D7:0E, which is NOT the</text>
+<text class="pin" x="168" y="948" text-anchor="start">P4's MAC, because the advertisement came off the C6. The BLE fault is the version RPC and its aftermath, not the link.</text>
+<text class="pin" x="40" y="964" text-anchor="start">Flashing</text>
+<text class="pin" x="168" y="964" text-anchor="start">First try, where the C6 devkit never once answered. On /dev/p4-uart through the board's CH343 at 1a86:55d3. The factory image was read</text>
+<text class="pin" x="168" y="977" text-anchor="start">off and kept before anything was written: 16 MB, sha256 ad22bf07..., so this board goes back if it has to.</text>
+<text class="pin" x="40" y="993" text-anchor="start">Two players</text>
+<text class="pin" x="168" y="993" text-anchor="start">Not on this sheet. A keyboard report carries six key slots and two pads can ask for ten, so a second pad could be polled and never sent.</text>
 </svg>

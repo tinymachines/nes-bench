@@ -2,14 +2,14 @@
   "org": "tinymachines",
   "project": "nes-bench",
   "docno": "TM-NESB-003",
-  "rev": "H",
+  "rev": "I",
   "drawn": "bisenbek",
   "page": "ansi-a",
-  "title": "Original pad to Bluetooth keyboard, pad-ble v1",
+  "title": "Original pad to a USB or Bluetooth keyboard, pad-ble v1",
   "intro": [
-    "One original NES controller into an ESP32, which presents it to a phone or a laptop as a plain Bluetooth keyboard. It is the bench bridge's own pad poll with a radio behind it instead of a shift register, and it stands alone: no Pi, no UNO, no console.",
-    "THIS IS A DRAWING, NOT A BUILD, AND THE PART HAS CHANGED UNDER IT. The ESP32-C6 of sheets 2 to 4 never accepted a flash. On 2026-09-24 a Waveshare ESP32-P4-Module-DEV-KIT flashed first try and put a BLE advertisement on the air that an independent radio heard, so sheets 5 to 10 are that board and are the ones to build from. The C6 sheets stay because a published drawing is a record. Nothing has been wired to either.",
-    "IT RESTS ON ONE THING OPEN SINCE 2026-09-07: that an original pad's 4021 follows its buttons at 3.3 V. The datasheet says it should; this bench has not seen it. The P4's header was read from Waveshare's own schematic, not off the board, and the lead colours are looked up from the cable as it was rung out: rev E carried three of five wrong because they were typed from memory."
+    "One original NES controller into an ESP32, which presents it to a phone or a laptop as a plain keyboard: the bench bridge's own pad poll with a host interface behind it instead of a shift register. No Pi, no UNO, no console.",
+    "THE BUILD IS USB NOW. It began as Bluetooth on an ESP32-C6 that never accepted a flash, moved to a Waveshare ESP32-P4-Module-DEV-KIT that flashed first try, and moved again on 2026-09-25 when the BLE firmware crashed on that board: the P4 has no radio, the module's ESP32-C6 is it, and the host stack asks that C6 for a version it never answers. The P4 has real USB OTG, so USB removes the failing part rather than working around it. Sheet 5's band has the measurement.",
+    "THE WIRING IS THE SAME EITHER WAY, and every hole is now named by firmware/header-probe rather than counted from a photograph. Sheets 2 to 4 are the original C6 design, kept because a published drawing is a record. Still unproven, open since 2026-09-07: that an original pad's 4021 follows its buttons at 3.3 V."
   ],
   "revisions": [
     [
@@ -66,6 +66,11 @@
       "H",
       "2026-09-25",
       "the five holes are a contiguous run around the second 3V3, skipping 0; the ESP side measured and correct"
+    ],
+    [
+      "I",
+      "2026-09-25",
+      "the build is USB, not BLE: the hosted link to the module's C6 crashes BLE init, and the P4 has real USB OTG"
     ]
   ],
   "sheets": [
