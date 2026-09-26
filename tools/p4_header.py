@@ -121,6 +121,38 @@ PAD_BLE = {
     "GND": (26, "GND"),
 }
 
+# THE WHOLE CIRCUIT IS A RUN OF FIVE HOLES IN A ROW, AND THAT IS THE
+# USEFUL WAY TO SAY IT.
+#
+# The five pins above were chosen to be even, so nothing crosses the
+# header. Nobody noticed until the owner wired the board on 2026-09-25
+# that they are also CONSECUTIVE: the even row reads
+#
+#     6   3V3   3   2   0   GND
+#    p16  p18  p20 p22 p24  p26
+#
+# and the build takes every one of them except 0. Find the SECOND 3V3
+# on that row and the circuit is that hole and the four around it.
+#
+# This is worth more than the pin numbers it replaces. Wiring by
+# number, two of three signal wires went in wrong: yellow landed on
+# SCL down at pin 6, which the board pulls up itself, and a grey
+# landed on 0, one hole past the latch. Wiring by shape, there is one
+# landmark to find and one hole to skip.
+#
+# The check below holds the pin choice to that shape, so if a pin ever
+# moves, the sheets that describe a contiguous run stop being true
+# loudly rather than quietly.
+PAD_RUN = (16, 18, 20, 22, 24, 26)
+PAD_SKIP = 24
+
+
+def run_picture():
+    """The run as the board prints it, for a sheet or a note."""
+    return "   ".join(P6[p] if P6[p] in ("3V3", "GND") else P6[p].replace("GPIO", "")
+                      for p in PAD_RUN)
+
+
 # Which pin of the pad's own connector each net is, so the lead colour
 # can be LOOKED UP instead of typed.
 PAD_J1_PIN = {"GND": 1, "PAD_CLK": 2, "PAD_LATCH": 3, "PAD1_D0": 4, "3V3": 5}
@@ -200,7 +232,14 @@ def checks():
             bad.append(f"J1 pin {pin} ({name}) is not claimed by any net here")
         elif PAD_COLOUR[net[0]].lower() != colour:
             bad.append(f"{net[0]}: {PAD_COLOUR[net[0]]} against the rung-out {colour}")
-    # 6. The long and short reasons name the same eight pins, and the
+    # 6. The circuit really is the contiguous run the sheets describe.
+    if sorted(pin for pin, _ in PAD_BLE.values()) != [p for p in PAD_RUN if p != PAD_SKIP]:
+        bad.append("the five pins are no longer PAD_RUN minus PAD_SKIP, so the sheets' run is wrong")
+    if list(PAD_RUN) != list(range(PAD_RUN[0], PAD_RUN[-1] + 1, 2)):
+        bad.append("PAD_RUN is not consecutive on the even row")
+    if PAD_SKIP not in PAD_RUN:
+        bad.append("PAD_SKIP is not in PAD_RUN")
+    # 7. The long and short reasons name the same eight pins, and the
     #    short ones stay short enough for the column they are drawn in.
     if set(RESERVED_SHORT) != set(RESERVED):
         bad.append("RESERVED and RESERVED_SHORT name different pins")

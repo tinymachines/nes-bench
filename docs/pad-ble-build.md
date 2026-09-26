@@ -213,7 +213,23 @@ defines it.
 | Green | `PAD1_D0` | **P6 pin 16** | GPIO6 |
 
 **Every one of those is an even pin, so all five wires land in one row
-and nothing crosses the header.** The lead colours are looked up from
+and nothing crosses the header. They are also CONSECUTIVE, which is the
+useful way to say it:**
+
+    6    3V3    3    2    0    GND
+   p16   p18   p20  p22  p24  p26
+
+**Find the second `3V3` on the even row and the circuit is that hole
+and the four around it, taking every one except `0`.** Data, supply,
+clock, latch, skip, ground.
+
+That the five are even was chosen, so nothing crosses the header. That
+they are also a run was not noticed until the board was wired on
+2026-09-25, and it matters: wiring it from the pin numbers, two of the
+three signal wires went in wrong. Yellow landed on `SCL`, which the
+board pulls up itself, so the clock would have been fighting hardware
+and the symptom would have been silence. A grey landed on `0`, one
+hole past the latch. Both were found by measuring, not by looking. The lead colours are looked up from
 `tools/bringup.py`'s `LEADS`, the cable as it was actually rung out on
 2026-09-09, not from the colours anyone remembers: rev E carried three
 of the five wrong because they were typed from a set of colours rather

@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1902 531" width="1902" height="531" role="img" aria-label="pad-ble adapter wiring diagram, ESP32-P4">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2014 531" width="2014" height="531" role="img" aria-label="pad-ble adapter wiring diagram, ESP32-P4">
 <style>
  text{font-family:ui-sans-serif,'DejaVu Sans',sans-serif;fill:#222}
  .title{font-size:24px;font-weight:700}
@@ -18,10 +18,10 @@
  .railline{fill:none;stroke-width:3}
  .notch{fill:#fff;stroke:#222;stroke-width:1.2}
 </style>
-<rect x="0" y="0" width="1902" height="531" fill="#ffffff"/>
+<rect x="0" y="0" width="2014" height="531" fill="#ffffff"/>
 <g class="sheet-heading" data-height="60">
 <text class="title" x="24.0" y="30.0" text-anchor="start">pad-ble v1 on the ESP32-P4: one pad into header P6, at right angles</text>
-<text class="sub" x="24.0" y="46.0" text-anchor="start">The sheet to build from. Every wire read out of pad-ble-p4.svg, and U1's numbers are header P6's own, so a wire names the hole. ALL FIVE ARE EVEN PINS: the whole circuit lands in one row and nothing crosses the header. The pad runs from 3V3, not 5 V, which is measure-first item 4.</text>
+<text class="sub" x="24.0" y="46.0" text-anchor="start">The sheet to build from. Every wire read out of pad-ble-p4.svg, and U1's numbers are header P6's own, so a wire names the hole. THE FIVE HOLES ARE A RUN: find the second 3V3 on the even row and the circuit is 6, 3V3, 3, 2, skip 0, GND. The pad runs from 3V3, not 5 V, which is measure-first item 4.</text>
 </g>
 <line class="railline" x1="40.0" y1="122.0" x2="728.0" y2="122.0" stroke="#b35c00"/>
 <text class="rail" x="734.0" y="126.0" text-anchor="start">3V3</text>
@@ -110,5 +110,5 @@
 <text class="net" x="186.0" y="179.0" text-anchor="start">PAD1_D0</text>
 <line class="wire" x1="566.0" y1="417.0" x2="566.0" y2="443.0" stroke="#444"/>
 <text class="net" x="560.0" y="447.0" text-anchor="end">radio: BLE</text>
-<text class="note" x="1878" y="515" text-anchor="end">3 nets on tracks, 0 of them crossing the row; 7 supply pins on the rails. drawn by tools/wiring-diagram.py</text>
+<text class="note" x="1990" y="515" text-anchor="end">3 nets on tracks, 0 of them crossing the row; 7 supply pins on the rails. drawn by tools/wiring-diagram.py</text>
 </svg>

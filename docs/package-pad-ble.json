@@ -2,7 +2,7 @@
   "org": "tinymachines",
   "project": "nes-bench",
   "docno": "TM-NESB-003",
-  "rev": "G",
+  "rev": "H",
   "drawn": "bisenbek",
   "page": "ansi-a",
   "title": "Original pad to Bluetooth keyboard, pad-ble v1",
@@ -61,6 +61,11 @@
       "G",
       "2026-09-25",
       "GPIO37 and GPIO38 move from free to spoken for: they are the console UART, and nothing on the board claims them"
+    ],
+    [
+      "H",
+      "2026-09-25",
+      "the five holes are a contiguous run around the second 3V3, skipping 0; the ESP side measured and correct"
     ]
   ],
   "sheets": [

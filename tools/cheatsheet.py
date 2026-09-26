@@ -294,7 +294,7 @@ def p4_pinmap():
     t0 = ("The five wires, and every one on the even row",
           "Read from Waveshare's schematic for this board, connector P6, 2026-09-24. PIN 1 IS NOT WHERE A "
           "RASPBERRY PI PUTS IT: 5V is on 1 and 3 where a Pi has 2 and 4, and every ground sits one pin away "
-          "from where a Pi user reaches. The five below are all EVEN pins, so no wire crosses the header. "
+          "from where a Pi user reaches. The five below are all EVEN pins, so no wire crosses the header, and they are CONSECUTIVE: find the second 3V3 on that row and the circuit is 6, 3V3, 3, 2, skip 0, GND. Wiring this by pin number on 2026-09-25 put two of three signal wires in the wrong hole; by that shape there is one landmark and one hole to skip. "
           "Colours are the same five leads as the bridge; use the lead, not the colour rule.",
           ["lead", "net", "P6 pin", "what it is"], wires)
     t1 = ("On the header and already spoken for",

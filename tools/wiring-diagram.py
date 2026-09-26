@@ -181,8 +181,8 @@ SHEETS = {
                       out="wiring-pad-ble-p4", status=None, aria="pad-ble adapter wiring diagram, ESP32-P4",
                       title="pad-ble v1 on the ESP32-P4: one pad into header P6, at right angles",
                       sub="The sheet to build from. Every wire read out of pad-ble-p4.svg, and U1's numbers are header P6's "
-                          "own, so a wire names the hole. ALL FIVE ARE EVEN PINS: the whole circuit lands in one row and "
-                          "nothing crosses the header. The pad runs from 3V3, not 5 V, which is measure-first item 4.",
+                          "own, so a wire names the hole. THE FIVE HOLES ARE A RUN: find the second 3V3 on the even row and the "
+                          "circuit is 6, 3V3, 3, 2, skip 0, GND. The pad runs from 3V3, not 5 V, which is measure-first item 4.",
                       built_title="pad-ble v1 on the ESP32-P4 as built",
                       rails_note="3V3 and GND from header P6 pins 18 and 26: no separate supply on this build"),
 }
