@@ -1,0 +1,115 @@
+{
+ "_about": "The documents the site pulls, and their heading counts. The site holds each against a Japanese shadow at docs/ja/nes/<slug>.md in ITS repository and refuses to deploy on a count mismatch. Authority for the list is NES_DOCS in their web/scripts/pull-nesdocs.mjs; this copy was given by that session on 2026-09-25. See tools/check-pulled-headings.py.",
+ "docs": {
+  "bench-plan.md": {
+   "slug": "bench-plan",
+   "headings": 12,
+   "shadow": true
+  },
+  "wiring.md": {
+   "slug": "bench-wiring",
+   "headings": 13,
+   "shadow": true
+  },
+  "script.md": {
+   "slug": "bench-script",
+   "headings": 1,
+   "shadow": true
+  },
+  "bench-report.md": {
+   "slug": "bench-report",
+   "headings": 13,
+   "shadow": true
+  },
+  "bench-build-v1-v2.md": {
+   "slug": "bench-build",
+   "headings": 19,
+   "shadow": true
+  },
+  "bench-v1b-uno.md": {
+   "slug": "bench-v1b",
+   "headings": 20,
+   "shadow": true
+  },
+  "build-guide.md": {
+   "slug": "build-guide",
+   "headings": 23,
+   "shadow": true
+  },
+  "pad-ble-build.md": {
+   "slug": "pad-ble",
+   "headings": 26,
+   "shadow": true
+  },
+  "esp32-part-choice.md": {
+   "slug": "esp32-part-choice",
+   "headings": 14,
+   "shadow": false
+  },
+  "rig.md": {
+   "slug": "rig",
+   "headings": 11,
+   "shadow": true
+  },
+  "as-built-v1b.md": {
+   "slug": "as-built",
+   "headings": 3,
+   "shadow": true
+  },
+  "cartridge.md": {
+   "slug": "cartridge",
+   "headings": 7,
+   "shadow": true
+  },
+  "eyes-vs-scope.md": {
+   "slug": "eyes-vs-scope",
+   "headings": 7,
+   "shadow": true
+  },
+  "cheat-sheet.md": {
+   "slug": "cheat-sheet",
+   "headings": 9,
+   "shadow": true
+  },
+  "cheat-sheet-head.md": {
+   "slug": "cheat-sheet-head",
+   "headings": 7,
+   "shadow": true
+  },
+  "parts.md": {
+   "slug": "parts",
+   "headings": 10,
+   "shadow": true
+  },
+  "lab-notebook.md": {
+   "slug": "lab-notebook",
+   "headings": 15,
+   "shadow": true
+  },
+  "milestone-2026-09-15-rig-and-bridge.md": {
+   "slug": "milestone-rig-and-bridge",
+   "headings": 5,
+   "shadow": true
+  },
+  "exercise.md": {
+   "slug": "exercise",
+   "headings": 15,
+   "shadow": true
+  },
+  "encyclopedia.md": {
+   "slug": "encyclopedia",
+   "headings": 8,
+   "shadow": true
+  },
+  "mario-dissection.md": {
+   "slug": "mario-dissection",
+   "headings": 10,
+   "shadow": true
+  },
+  "open-items.md": {
+   "slug": "open-items",
+   "headings": 7,
+   "shadow": true
+  }
+ }
+}

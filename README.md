@@ -134,11 +134,24 @@ gained six headings in one commit and stopped the deploy again. The
 rule was broader than the example, which is the usual way a note like
 this is wrong.
 
-Nothing here can gate it: the files it is held to live in the other
-repository and a fresh checkout has no sight of them. So it is a thing
-a person has to say. **When a commit adds, renames or removes a heading
-in any document the site pulls, say so in the same message that tells
-them the package has moved.**
+The shadow is named after **their slug**, not our filename, so
+`pad-ble-build.md` is held against `pad-ble.md` over there.
+
+Nothing here can check the other side: those files live in the other
+repository and a fresh checkout has no sight of them. But this side can
+know when one of ITS pulled documents changed heading count, which is
+exactly the moment somebody has to speak. So that is a gate now, not a
+thing to remember:
+
+    python3 tools/check-pulled-headings.py           # the 22 and their slugs
+    python3 tools/check-pulled-headings.py --check   # in check-all.sh
+    python3 tools/check-pulled-headings.py --update  # after you have told them
+
+`tools/pulled-docs.json` holds the list, the slug each maps to, and the
+count last agreed. The authority for the list is `NES_DOCS` in their
+`web/scripts/pull-nesdocs.mjs` and **it grows**, so this catches a
+change to what they pull today and cannot catch a newly pulled file.
+Prose may change freely; only headings block their deploy.
 
 **Run every check, not the ones you would have picked:**
 
