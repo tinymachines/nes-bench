@@ -407,14 +407,17 @@ def console_port(sh, x, y, ref, nets, supply="+5V"):
               + ("" if used else "; pin 5 not used here"))
 
 
-def pad_socket(sh, x, y, ref, latch, clk, d0, vcc="3V3"):
+def pad_socket(sh, x, y, ref, latch, clk, d0, vcc="3V3",
+               part="original pad, on the bridge", extra="the pad half of the cut cable"):
     """The pad end of a cut controller cable, numbered as `console_port`
     is: the supply on pin 5, nothing carried on 6 and 7. It is the same
-    cable, so it has the same conductors."""
-    return sh.chip(x, y, 130, ref, "original pad, on the bridge", [
+    cable, so it has the same conductors. `part` and `extra` default to
+    what every existing sheet has always said, so only a sheet that
+    names a different pad draws one."""
+    return sh.chip(x, y, 130, ref, part, [
         (1, "GND", "GND"), (2, "CLK", clk), (3, "OUT0", latch), (4, "D0", d0),
         (5, "+5V", vcc), (6, "n/c", "NC"), (7, "n/c", "NC")], [], conn=True,
-        extra="the pad half of the cut cable")
+        extra=extra)
 
 
 def hct165(sh, x, y, ref, pl, cp, qh, inputs, part="74HCT165  at +5V"):
@@ -1140,13 +1143,16 @@ def sheet_padble_p4():
     misreading fails. Nothing on this sheet is typed twice.
     """
     import p4_header as ph
+    og = ph.og_lead_by_pin()
 
     sh = Sheet(1560, 1060, "pad-ble v1 on the ESP32-P4: one pad into header P6, as a USB keyboard",
                "The build is USB now, not BLE. A Waveshare ESP32-P4-Module-DEV-KIT, header read from the vendor schematic "
                "2026-09-24 and every hole confirmed with firmware/header-probe 2026-09-25. The wiring is the same either way.")
 
     sh.zone(20, 66, 690, 700, "THE PAD, polled at 3V3 exactly as the bridge polls one")
-    pad_socket(sh, 150, 100, "J1", "PAD_LATCH", "PAD_CLK", "PAD1_D0")
+    pad_socket(sh, 150, 100, "J1", "PAD_LATCH", "PAD_CLK", "PAD1_D0",
+               part="original NES pad (MN4021B)",
+               extra="  ".join(f"{k} {og[k]}" for k in sorted(og)) + ", NOT measured")
     sh.note(330, 110, [
         "Unchanged from pad-ble.svg, and that is the point: GPIO2, 3 and",
         "6 exist and are free on BOTH parts, so poll_pad in",
@@ -1164,13 +1170,12 @@ def sheet_padble_p4():
         "UNPLUGGED: a tone through a cable still in the console runs",
         "through its pull-ups, and pins that share nothing beep.",
         "",
-        "J1'S PINS ARE SIGNALS, NOT COLOURS, and the colours depend on",
-        "the pad. The first pad on this build was a REPLICA; an original",
-        "(MN4021B inside) uses Nintendo's colours, and RED and YELLOW",
-        "are different signals on each. Wired by the replica's colours,",
-        "an original puts its DATA output on the GROUND rail. Beep each",
-        "wire to the pad's own 4021 first: the header sheet's wire table",
-        "gives the chip pin for every one.",
+        "J1 IS DRAWN AS AN ORIGINAL PAD, in Nintendo's colours, which",
+        "are documented and NOT YET MEASURED: beep each wire to the",
+        "MN4021B first, at the pin the header sheet's wire table gives.",
+        "The first pad on this build was a REPLICA, whose colours differ,",
+        "and RED and YELLOW are different signals on each: wired by the",
+        "replica's colours, an original puts its DATA on the GROUND rail.",
     ])
     sh.twopin(330, 690, "R1", "10k", "PAD1_D0", "3V3")
 

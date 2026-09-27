@@ -24,7 +24,7 @@
 </style>
 <rect width="1900" height="980" fill="#ffffff"/>
 <text class="h1" x="60.0" y="60.0" text-anchor="start">pad-ble v1 on the ESP32-P4: where everything goes</text>
-<text class="h2" x="60.0" y="84.0" text-anchor="start">THE BOARD IS NOT ON THE BREADBOARD: it sits beside it and five jumpers reach header P6, whose own pin numbers label the terminals. The lead colours in the key are the REPLICA cable's; an original pad's differ, so wire an original by signal, from the header sheet's wire table.</text>
+<text class="h2" x="60.0" y="84.0" text-anchor="start">An ORIGINAL pad in Nintendo's colours, documented and NOT yet measured: beep each wire to its MN4021B first. The board sits beside the breadboard. A replica's colours differ; red and yellow swap meaning.</text>
 <rect class="bb" x="174" y="158" width="1482" height="502" rx="8"/>
 <rect class="chan" x="174" y="393.0" width="1482" height="26"/>
 <line class="railp" x1="188" y1="196" x2="1642" y2="196"/>
@@ -823,21 +823,21 @@
 <text class="col" x="1500.0" y="556.0" text-anchor="middle">51</text>
 <text class="col" x="1630.0" y="264.0" text-anchor="middle">56</text>
 <text class="col" x="1630.0" y="556.0" text-anchor="middle">56</text>
-<rect class="term" x="12" y="216" width="104" height="208" rx="5"/>
-<text class="kb" x="16.0" y="232.0" text-anchor="start">J1  the pad</text>
-<text class="col" x="16.0" y="246.0" text-anchor="start">the plug half of the cable</text>
-<circle cx="108" cy="262" r="4" fill="#333"/>
-<text class="termt" x="96.0" y="266.0" text-anchor="end">1  GND</text>
-<circle cx="108" cy="292" r="4" fill="#333"/>
-<text class="termt" x="96.0" y="296.0" text-anchor="end">2  CLK</text>
-<circle cx="108" cy="322" r="4" fill="#333"/>
-<text class="termt" x="96.0" y="326.0" text-anchor="end">3  OUT0</text>
-<circle cx="108" cy="352" r="4" fill="#333"/>
-<text class="termt" x="96.0" y="356.0" text-anchor="end">4  D0</text>
-<circle cx="108" cy="382" r="4" fill="#333"/>
-<text class="termt" x="96.0" y="386.0" text-anchor="end">5  +5V</text>
-<circle cx="108" cy="412" r="4" fill="#333"/>
-<text class="termt" x="96.0" y="416.0" text-anchor="end">6  n/c</text>
+<rect class="term" x="13" y="216" width="140" height="208" rx="5"/>
+<text class="kb" x="17.0" y="232.0" text-anchor="start">J1  original pad</text>
+<text class="col" x="17.0" y="246.0" text-anchor="start">MN4021B; colours NOT measured</text>
+<circle cx="145" cy="262" r="4" fill="#333"/>
+<text class="termt" x="133.0" y="266.0" text-anchor="end">1  GND  brown</text>
+<circle cx="145" cy="292" r="4" fill="#333"/>
+<text class="termt" x="133.0" y="296.0" text-anchor="end">2  CLK  red</text>
+<circle cx="145" cy="322" r="4" fill="#333"/>
+<text class="termt" x="133.0" y="326.0" text-anchor="end">3  OUT0  orange</text>
+<circle cx="145" cy="352" r="4" fill="#333"/>
+<text class="termt" x="133.0" y="356.0" text-anchor="end">4  D0  yellow</text>
+<circle cx="145" cy="382" r="4" fill="#333"/>
+<text class="termt" x="133.0" y="386.0" text-anchor="end">5  +5V  white</text>
+<circle cx="145" cy="412" r="4" fill="#333"/>
+<text class="termt" x="133.0" y="416.0" text-anchor="end">6  n/c</text>
 <rect class="term" x="1572" y="186" width="104" height="238" rx="5"/>
 <text class="kb" x="1576.0" y="202.0" text-anchor="start">U1  header P6</text>
 <text class="col" x="1576.0" y="216.0" text-anchor="start">on the P4 board, beside the board</text>
@@ -860,35 +860,35 @@
 <rect class="pass" x="850" y="477" width="52" height="14" rx="3"/>
 <text class="col" x="876.0" y="472.0" text-anchor="middle">R1 10k</text>
 <text class="col" x="914.0" y="462.0" text-anchor="start">the pad's D0 to 3V3</text>
-<path class="w" stroke="#1f9c53" opacity="0.85" d="M108 352 Q456 546 850 484"/>
-<circle cx="468" cy="482" r="9" fill="#ffffff" stroke="#1f9c53" stroke-width="1.6"/>
-<text class="wn" x="467.6" y="486.0" text-anchor="middle">1</text>
-<path class="w" stroke="#1f9c53" opacity="0.85" d="M850 484 Q1182 262 1580 292"/>
-<circle cx="1198" cy="325" r="9" fill="#ffffff" stroke="#1f9c53" stroke-width="1.6"/>
+<path class="w" stroke="#d9b400" opacity="0.85" d="M145 352 Q474 546 850 484"/>
+<circle cx="486" cy="482" r="9" fill="#ffffff" stroke="#d9b400" stroke-width="1.6"/>
+<text class="wn" x="485.5" y="485.9" text-anchor="middle">1</text>
+<path class="w" stroke="#d9b400" opacity="0.85" d="M850 484 Q1182 262 1580 292"/>
+<circle cx="1198" cy="325" r="9" fill="#ffffff" stroke="#d9b400" stroke-width="1.6"/>
 <text class="wn" x="1198.5" y="329.1" text-anchor="middle">2</text>
-<path class="w" stroke="#1b64c8" opacity="0.85" d="M108 292 Q847 407 1580 262"/>
-<circle cx="845" cy="342" r="9" fill="#ffffff" stroke="#1b64c8" stroke-width="1.6"/>
-<text class="wn" x="845.3" y="346.0" text-anchor="middle">3</text>
-<path class="w" stroke="#222222" opacity="0.85" d="M108 322 Q836 147 1580 232"/>
-<circle cx="840" cy="212" r="9" fill="#ffffff" stroke="#222222" stroke-width="1.6"/>
-<text class="wn" x="840.0" y="216.1" text-anchor="middle">4</text>
-<path class="w" stroke="#d02b2b" opacity="0.9" d="M108 382 L108 622"/>
+<path class="w" stroke="#d02b2b" opacity="0.85" d="M145 292 Q865 407 1580 262"/>
+<circle cx="864" cy="342" r="9" fill="#ffffff" stroke="#d02b2b" stroke-width="1.6"/>
+<text class="wn" x="863.9" y="346.0" text-anchor="middle">3</text>
+<path class="w" stroke="#e8741a" opacity="0.85" d="M145 322 Q854 147 1580 232"/>
+<circle cx="858" cy="212" r="9" fill="#ffffff" stroke="#e8741a" stroke-width="1.6"/>
+<text class="wn" x="858.4" y="216.1" text-anchor="middle">4</text>
+<path class="w" stroke="#b8b8b8" opacity="0.9" d="M145 382 L145 622"/>
 <path class="w" stroke="#d02b2b" opacity="0.9" d="M902 484 L902 622"/>
 <path class="w" stroke="#d02b2b" opacity="0.9" d="M1580 322 L1580 622"/>
-<path class="w" stroke="#1b64c8" opacity="0.9" d="M108 262 L108 596"/>
+<path class="w" stroke="#7b4a24" opacity="0.9" d="M145 262 L145 596"/>
 <path class="w" stroke="#1b64c8" opacity="0.9" d="M1580 352 L1580 596"/>
 <text class="h1" x="60.0" y="732.0" text-anchor="start">4 numbered jumpers, and 5 short wires to the rails</text>
-<text class="h2" x="60.0" y="754.0" text-anchor="start">Every one of these is read out of the schematic. Red stubs go to the nearest + rail, blue stubs to the nearest - rail; they are not numbered because they are all the same instruction.</text>
-<circle cx="69" cy="780" r="9" fill="#ffffff" stroke="#1f9c53" stroke-width="1.6"/>
+<text class="h2" x="60.0" y="754.0" text-anchor="start">Every one of these is read out of the schematic. Red stubs go to the nearest + rail, blue stubs to the nearest - rail, except a stub from the pad, which is drawn in its own lead's colour; they are not numbered because they are all the same instruction.</text>
+<circle cx="69" cy="780" r="9" fill="#ffffff" stroke="#d9b400" stroke-width="1.6"/>
 <text class="wn" x="69.0" y="784.0" text-anchor="middle">1</text>
-<text class="k" x="86.0" y="784.0" text-anchor="start">PAD1_D0, the green lead:  J1 D0  to  R1 col 26 row H</text>
-<circle cx="69" cy="799" r="9" fill="#ffffff" stroke="#1f9c53" stroke-width="1.6"/>
+<text class="k" x="86.0" y="784.0" text-anchor="start">PAD1_D0, the yellow lead:  J1 D0  to  R1 col 26 row H</text>
+<circle cx="69" cy="799" r="9" fill="#ffffff" stroke="#d9b400" stroke-width="1.6"/>
 <text class="wn" x="69.0" y="803.0" text-anchor="middle">2</text>
-<text class="k" x="86.0" y="803.0" text-anchor="start">PAD1_D0, the green lead:  R1 col 26 row H  to  U1 GPIO6</text>
-<circle cx="669" cy="780" r="9" fill="#ffffff" stroke="#1b64c8" stroke-width="1.6"/>
+<text class="k" x="86.0" y="803.0" text-anchor="start">PAD1_D0, the yellow lead:  R1 col 26 row H  to  U1 GPIO6</text>
+<circle cx="669" cy="780" r="9" fill="#ffffff" stroke="#d02b2b" stroke-width="1.6"/>
 <text class="wn" x="669.0" y="784.0" text-anchor="middle">3</text>
-<text class="k" x="686.0" y="784.0" text-anchor="start">PAD_CLK, the blue lead:  J1 CLK  to  U1 GPIO3</text>
-<circle cx="669" cy="799" r="9" fill="#ffffff" stroke="#222222" stroke-width="1.6"/>
+<text class="k" x="686.0" y="784.0" text-anchor="start">PAD_CLK, the red lead:  J1 CLK  to  U1 GPIO3</text>
+<circle cx="669" cy="799" r="9" fill="#ffffff" stroke="#e8741a" stroke-width="1.6"/>
 <text class="wn" x="669.0" y="803.0" text-anchor="middle">4</text>
-<text class="k" x="686.0" y="803.0" text-anchor="start">PAD_LATCH, the black lead:  J1 OUT0  to  U1 GPIO2</text>
+<text class="k" x="686.0" y="803.0" text-anchor="start">PAD_LATCH, the orange lead:  J1 OUT0  to  U1 GPIO2</text>
 </svg>

@@ -85,8 +85,19 @@ ROW = [
 ]
 # Decoupling, drawn between the bottom rails beside its chip.
 CAPS = {"C1": "U1", "C2": "U2", "C3": "U3"}
-# The cut cable's lead colours, by pin, both halves (docs/cheat-sheet.md).
-LEAD = {1: "yellow", 2: "blue", 3: "black", 4: "green", 5: "red"}
+# The bench's cut cable's lead colours, by pin, both halves
+# (docs/cheat-sheet.md). It is a REPLICA pad's cable, which nobody knew
+# until 2026-09-26. The default for every sheet; a sheet may name its own.
+REPLICA_LEAD = {1: "yellow", 2: "blue", 3: "black", 4: "green", 5: "red"}
+
+
+def original_lead():
+    """An original pad's colours at J1, from tools/p4_header.py.
+    Nintendo's documented scheme, NOT measured on this bench's pad."""
+    import sys
+    sys.path.insert(0, str(ROOT / "tools"))
+    import p4_header as ph
+    return ph.og_lead_by_pin()
 RAIL_COLOUR = {"+5V": "#d02b2b", "GND": "#1b64c8", "PI_5V": "#d02b2b",
                # The same 3V3 the schematics use for their rail flags
                # (.rail3 in draw-schematics.py), so a reader moving between
@@ -144,7 +155,7 @@ ROW_PADBLE = [
 # schematic through tools/p4_header.py, so a wire in this drawing names
 # the hole it goes in rather than a GPIO you then have to look up.
 ROW_PADBLE_P4 = [
-    ("J1", {"kind": "header", "label": "J1 pad 1", "sub": "the plug half of an original pad",
+    ("J1", {"kind": "header", "label": "J1 original pad", "sub": "MN4021B inside; colours NOT measured",
             "top": [(1, "GND"), (2, "CLK"), (3, "OUT0"), (4, "D0"), (5, "+5V")], "bottom": []}),
     ("R1", {"kind": "header", "label": "R1 10k", "sub": "the pad's D0 pullup",
             "top": [(1, "1"), (2, "2")], "bottom": []}),
@@ -173,16 +184,17 @@ SHEETS = {
     "padble": dict(netlist="pad-ble", row=ROW_PADBLE, caps={"C1": "U1"}, rails=("3V3", "GND"), out="wiring-pad-ble",
                    status=None, aria="pad-ble adapter wiring diagram",
                    title="pad-ble v1: two original pads into an ESP32-C6, at right angles",
-                   sub="The standalone adapter, every wire read out of pad-ble.svg. One pad, because a keyboard report has six "
+                   sub="The standalone adapter, every wire read out of pad-ble.svg; J1's colours are the bench's REPLICA cable. One pad, because a keyboard report has six "
                        "key slots. The pad runs from 3V3, not 5 V, which is measure-first item 4.",
                    built_title="pad-ble v1 as built",
                    rails_note="3V3 and GND from the devkit's own pins: no separate supply on this build"),
     "padble-p4": dict(netlist="pad-ble-p4", row=ROW_PADBLE_P4, caps={"C1": "U1"}, rails=("3V3", "GND"),
                       out="wiring-pad-ble-p4", status=None, aria="pad-ble adapter wiring diagram, ESP32-P4",
                       title="pad-ble v1 on the ESP32-P4: one pad into header P6, at right angles",
-                      sub="The sheet to build from; U1's numbers are header P6's own. The five holes are a run: the second 3V3 "
-                          "on the even row, then 6, 3V3, 3, 2, skip 0, GND. J1's LEAD COLOURS ARE THE REPLICA CABLE'S: an original "
-                          "pad uses different ones, and red and yellow swap meaning. The header sheet's wire table has both.",
+                      sub="The sheet to build from, for an ORIGINAL pad: J1's colours are Nintendo's, documented and NOT yet "
+                          "measured, so beep each to the MN4021B first. U1's numbers are header P6's own: the second 3V3 on the even "
+                          "row, then 6, 3V3, 3, 2, skip 0, GND. A replica's colours differ; red and yellow swap meaning.",
+                      lead=original_lead,
                       built_title="pad-ble v1 on the ESP32-P4 as built",
                       rails_note="3V3 and GND from header P6 pins 18 and 26: no separate supply on this build"),
 }
@@ -278,6 +290,7 @@ def build(status=None, sheet="v1b"):
     as-built copy of it."""
     S = SHEETS[sheet]
     ROW, CAPS = S["row"], S["caps"]
+    LEAD = S["lead"]() if callable(S.get("lead")) else REPLICA_LEAD
     RAIL_A, RAIL_B = S["rails"]          # the two rails, the supply and GND
     nl = load(ROOT / "tools" / "netlist.py", "nl")
     sheets, offsheet = nl.collect()

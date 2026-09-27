@@ -213,6 +213,22 @@ CHIP_4021 = {16: "VDD", 8: "VSS", 9: "P/S", 10: "CLOCK", 3: "Q8"}
 OG_ROLE = {"3V3": "VDD", "GND": "VSS", "PAD_LATCH": "P/S", "PAD_CLK": "CLOCK", "PAD1_D0": "Q8"}
 
 
+# How to DRAW a lead of each colour on a light breadboard. White gets a
+# light grey, because a white stroke on a cream board is invisible and a
+# drawing of a wire you cannot see is worse than no drawing.
+LEAD_HEX = {"white": "#b8b8b8", "brown": "#7b4a24", "orange": "#e8741a",
+            "red": "#d02b2b", "yellow": "#d9b400", "blue": "#1b64c8",
+            "black": "#222222", "green": "#1f9c53"}
+
+
+def og_lead_by_pin():
+    """The original pad's lead colour at each pin of J1, the pad plug, in
+    the drawings' numbering (1 GND, 2 CLK, 3 OUT0, 4 D0, 5 supply). This
+    is what the P4 drawings show at J1, so the drawing and the table on
+    the header sheet are one fact, not two copies of it."""
+    return {PAD_J1_PIN[net]: colour.lower() for net, (colour, _pin) in OG_PAD.items()}
+
+
 def collisions():
     """Colours that BOTH cables use, for different signals.
 

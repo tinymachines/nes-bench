@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1209 531" width="1209" height="531" role="img" aria-label="pad-ble adapter wiring diagram">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1500 531" width="1500" height="531" role="img" aria-label="pad-ble adapter wiring diagram">
 <style>
  text{font-family:ui-sans-serif,'DejaVu Sans',sans-serif;fill:#222}
  .title{font-size:24px;font-weight:700}
@@ -18,10 +18,10 @@
  .railline{fill:none;stroke-width:3}
  .notch{fill:#fff;stroke:#222;stroke-width:1.2}
 </style>
-<rect x="0" y="0" width="1209" height="531" fill="#ffffff"/>
+<rect x="0" y="0" width="1500" height="531" fill="#ffffff"/>
 <g class="sheet-heading" data-height="60">
 <text class="title" x="24.0" y="30.0" text-anchor="start">pad-ble v1: two original pads into an ESP32-C6, at right angles</text>
-<text class="sub" x="24.0" y="46.0" text-anchor="start">The standalone adapter, every wire read out of pad-ble.svg. One pad, because a keyboard report has six key slots. The pad runs from 3V3, not 5 V, which is measure-first item 4.</text>
+<text class="sub" x="24.0" y="46.0" text-anchor="start">The standalone adapter, every wire read out of pad-ble.svg; J1's colours are the bench's REPLICA cable. One pad, because a keyboard report has six key slots. The pad runs from 3V3, not 5 V, which is measure-first item 4.</text>
 </g>
 <line class="railline" x1="40.0" y1="122.0" x2="728.0" y2="122.0" stroke="#b35c00"/>
 <text class="rail" x="734.0" y="126.0" text-anchor="start">3V3</text>
@@ -105,5 +105,5 @@
 <text class="net" x="186.0" y="179.0" text-anchor="start">PAD1_D0</text>
 <line class="wire" x1="566.0" y1="417.0" x2="566.0" y2="443.0" stroke="#444"/>
 <text class="net" x="560.0" y="447.0" text-anchor="end">radio: BLE</text>
-<text class="note" x="1185" y="515" text-anchor="end">3 nets on tracks, 0 of them crossing the row; 7 supply pins on the rails. drawn by tools/wiring-diagram.py</text>
+<text class="note" x="1476" y="515" text-anchor="end">3 nets on tracks, 0 of them crossing the row; 7 supply pins on the rails. drawn by tools/wiring-diagram.py</text>
 </svg>

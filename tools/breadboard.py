@@ -68,8 +68,21 @@ RES_NOTE = {"R1": "to the scope CH1 (the trigger)", "R2": "CON_CLK in, CP out"}
 CAP_TO_GND = {"C4": 6}
 # The cut cable's lead colours, which are the ones in your hand. Pin
 # order is the measured pinout: 1 GND, 2 CLK, 3 OUT0, 4 D0, 5 +5V.
-LEAD = {1: ("yellow", "#d9b400"), 2: ("blue", "#1b64c8"), 3: ("black", "#222222"),
-        4: ("green", "#1f9c53"), 5: ("red", "#d02b2b")}
+# The bench's own cut cable, rung out 2026-09-09. It is a REPLICA pad's
+# cable, which nobody knew until 2026-09-26. Every sheet uses it unless
+# its config names another, so bench-v1b is byte for byte what it was.
+LEAD = REPLICA_LEAD = {1: ("yellow", "#d9b400"), 2: ("blue", "#1b64c8"), 3: ("black", "#222222"),
+                       4: ("green", "#1f9c53"), 5: ("red", "#d02b2b")}
+
+
+def original_lead():
+    """An original pad's colours at J1, from tools/p4_header.py, drawn in
+    the colour of the lead. Nintendo's documented scheme, NOT measured."""
+    import sys
+    from pathlib import Path
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    import p4_header as ph
+    return {pin: (name, ph.LEAD_HEX[name]) for pin, name in ph.og_lead_by_pin().items()}
 # ---------------------------------------------------------- pad-ble
 # MEASURED 2026-09-22 from photographs of the board itself. The bench
 # eye cannot resolve this silkscreen (about a millimetre, rotated, below
@@ -332,7 +345,7 @@ PADBLE_TERMINALS = {
 # the hole is what a person needs at the bench.
 PADBLE_P4_RES = {"R1": (26, 28)}
 PADBLE_P4_TERMINALS = {
-    "J1": {"x": 108, "y": 262, "title": "J1  the pad", "sub": "the plug half of the cable"},
+    "J1": {"x": 145, "y": 262, "w": 140, "title": "J1  original pad", "sub": "MN4021B; colours NOT measured"},
     "U1": {"x": 1580, "y": 232, "title": "U1  header P6", "sub": "on the P4 board, beside the board"},
 }
 
@@ -347,15 +360,15 @@ SHEETS = {
                    chips={}, devkits=PADBLE_DEVKITS, caps={"C1": 36}, res=PADBLE_RES, res_part=PADBLE_RES_PART,
                    res_note=PADBLE_RES_NOTE, cap_to_gnd={}, terminals=PADBLE_TERMINALS,
                    title="pad-ble v1 on the breadboard: where everything goes",
-                   sub="The devkit's pin labels are MEASURED off the board (the bench eye cannot read that silkscreen). It straddles "
-                       "the channel, so only rows A and J are reachable in its columns. Every wire is read out of the schematic."),
+                   sub="The devkit's pin labels are MEASURED off the board. It straddles the channel, so only rows A and J are reachable "
+                       "in its columns. The lead colours in the key are the bench's REPLICA cable; an original pad's differ."),
     "padble-p4": dict(netlist="pad-ble-p4", out="breadboard-pad-ble-p4.svg", cols=56, rails=("3V3", "GND"),
                       chips={}, devkits={}, caps={"C1": 36}, res=PADBLE_P4_RES, res_part=PADBLE_RES_PART,
                       res_note=PADBLE_RES_NOTE, cap_to_gnd={}, terminals=PADBLE_P4_TERMINALS, term_pins=True,
+                      lead=original_lead,
                       title="pad-ble v1 on the ESP32-P4: where everything goes",
-                      sub="THE BOARD IS NOT ON THE BREADBOARD: it sits beside it and five jumpers reach header P6, whose own pin "
-                          "numbers label the terminals. The lead colours in the key are the REPLICA cable's; an original pad's "
-                          "differ, so wire an original by signal, from the header sheet's wire table."),
+                      sub="An ORIGINAL pad in Nintendo's colours, documented and NOT yet measured: beep each wire to its MN4021B "
+                          "first. The board sits beside the breadboard. A replica's colours differ; red and yellow swap meaning."),
 }
 
 
@@ -363,8 +376,9 @@ def use(cfg):
     """Bind the sheet's tables. One code path draws both boards; a
     second copy of the routing would drift from this one and a reader
     comparing two breadboard pictures could not tell which was lying."""
-    global CHIPS, DEVKITS, CAPS, RES, RES_PART, RES_NOTE, CAP_TO_GND, TERMINALS, COLS
+    global CHIPS, DEVKITS, CAPS, RES, RES_PART, RES_NOTE, CAP_TO_GND, TERMINALS, COLS, LEAD
     CHIPS, DEVKITS, CAPS = cfg["chips"], cfg["devkits"], cfg["caps"]
+    LEAD = cfg["lead"]() if callable(cfg.get("lead")) else REPLICA_LEAD
     RES, RES_PART, RES_NOTE = cfg["res"], cfg["res_part"], cfg["res_note"]
     CAP_TO_GND, TERMINALS, COLS = cfg["cap_to_gnd"], cfg["terminals"], cfg["cols"]
 
@@ -399,13 +413,19 @@ def render(key, nl, sheets, offsheet, outdir):
             continue
         y0, y1 = min(v["y"] for v in rows), max(v["y"] for v in rows)
         left = tm["x"] < X0
-        d.add(f'<rect class="term" x="{tm["x"]-(96 if left else 8)}" y="{y0-46}" width="104" height="{y1-y0+58}" rx="5"/>')
-        d.text(tm["x"] - (92 if left else 4), y0 - 30, tm["title"], "kb")
-        d.text(tm["x"] - (92 if left else 4), y0 - 16, tm["sub"], "col")
+        # A terminal may ask for more room when its rows carry more words;
+        # 104 is what every terminal has always been, so none of them move.
+        w = tm.get("w", 104)
+        d.add(f'<rect class="term" x="{tm["x"]-(w-8 if left else 8)}" y="{y0-46}" width="{w}" height="{y1-y0+58}" rx="5"/>')
+        d.text(tm["x"] - (w - 12 if left else 4), y0 - 30, tm["title"], "kb")
+        d.text(tm["x"] - (w - 12 if left else 4), y0 - 16, tm["sub"], "col")
         for v in rows:
             d.add(f'<circle cx="{v["x"]}" cy="{v["y"]}" r="4" fill="#333"/>')
             label = v["name"]
-            if cfg.get("term_pins") and v.get("pin") is not None:
+            if cfg.get("term_pins") and v.get("pin") is not None and ref == "J1" and cfg.get("lead") \
+                    and v["pin"] in LEAD:
+                label = f'{v["pin"]}  {v["name"]}  {LEAD[v["pin"]][0]}'
+            elif cfg.get("term_pins") and v.get("pin") is not None:
                 # The P4 board is not ON the board: five jumpers reach a
                 # header beside it, so the useful label is the HOLE, not
                 # the GPIO. Gated per sheet because v1b's own terminals
@@ -440,7 +460,16 @@ def render(key, nl, sheets, offsheet, outdir):
                     continue
                 rail = (Y_RAIL_TP if net == rail_p else Y_RAIL_TN) if pt["half"] == "upper" \
                     else (Y_RAIL_BP if net == rail_p else Y_RAIL_BN)
-                d.add(f'<path class="w" stroke="{col}" opacity="0.9" d="M{pt["x"]:.0f} {pt["y"]:.0f} L{pt["x"]:.0f} {rail}"/>')
+                stub = col
+                if cfg.get("lead") and n["ref"] == "J1" and isinstance(n["pin"], int) and n["pin"] in LEAD:
+                    # On a sheet that names its pad, a stub FROM the pad is
+                    # drawn in the colour of the lead that makes it. The
+                    # drawing's rule, red for the + rail, collides with an
+                    # original pad, where RED IS THE CLOCK: a red stub on
+                    # the supply beside a red clock jumper is the exact
+                    # confusion this sheet exists to prevent.
+                    stub = LEAD[n["pin"]][1]
+                d.add(f'<path class="w" stroke="{stub}" opacity="0.9" d="M{pt["x"]:.0f} {pt["y"]:.0f} L{pt["x"]:.0f} {rail}"/>')
                 rails.append((net, pt["at"]))
             continue
         if len(pts) < 2:
@@ -463,8 +492,11 @@ def render(key, nl, sheets, offsheet, outdir):
 
     ky = BOT_BAND + 70
     d.text(60, ky, f"{len(wires)} numbered jumpers, and {len(rails)} short wires to the rails", "h1")
-    d.text(60, ky + 22, "Every one of these is read out of the schematic. Red stubs go to the nearest + rail, blue stubs to "
-                        "the nearest - rail; they are not numbered because they are all the same instruction.", "h2")
+    stubs = ("Red stubs go to the nearest + rail, blue stubs to the nearest - rail, except a stub from the pad, which is "
+             "drawn in its own lead's colour; " if cfg.get("lead") else
+             "Red stubs go to the nearest + rail, blue stubs to the nearest - rail; ")
+    d.text(60, ky + 22, "Every one of these is read out of the schematic. " + stubs +
+                        "they are not numbered because they are all the same instruction.", "h2")
     col_w, per = 600, (len(wires) + 2) // 3
     for i, (n, net, at1, at2, colour) in enumerate(wires):
         cxx = 60 + (i // per) * col_w

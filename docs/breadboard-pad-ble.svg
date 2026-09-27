@@ -24,7 +24,7 @@
 </style>
 <rect width="1900" height="980" fill="#ffffff"/>
 <text class="h1" x="60.0" y="60.0" text-anchor="start">pad-ble v1 on the breadboard: where everything goes</text>
-<text class="h2" x="60.0" y="84.0" text-anchor="start">The devkit's pin labels are MEASURED off the board (the bench eye cannot read that silkscreen). It straddles the channel, so only rows A and J are reachable in its columns. Every wire is read out of the schematic.</text>
+<text class="h2" x="60.0" y="84.0" text-anchor="start">The devkit's pin labels are MEASURED off the board. It straddles the channel, so only rows A and J are reachable in its columns. The lead colours in the key are the bench's REPLICA cable; an original pad's differ.</text>
 <rect class="bb" x="174" y="158" width="1482" height="502" rx="8"/>
 <rect class="chan" x="174" y="393.0" width="1482" height="26"/>
 <line class="railp" x1="188" y1="196" x2="1642" y2="196"/>
