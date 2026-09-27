@@ -32,9 +32,13 @@
 #endif
 
 // ---------------------------------------------------------------- report
-// A boot-protocol keyboard, report ID 1: one modifier byte, one reserved
-// byte, six key slots. This is the shape every host has accepted since
-// USB 1.1 and it is deliberately not a clever one.
+// The boot keyboard's LAYOUT, report ID 1: one modifier byte, one
+// reserved byte, six key slots. This is the shape every host has
+// accepted since USB 1.1 and it is deliberately not a clever one. It is
+// NOT a boot-protocol keyboard: a boot report carries no ID, and the USB
+// build's interface declares no boot subclass. Full operating systems
+// read it through this descriptor; a BIOS or a boot-only KVM will not.
+// See docs/pad-usb-protocol.md.
 //
 // The LED output report is here because a keyboard that declares no
 // output report is a slightly unusual keyboard, and the goal is a host

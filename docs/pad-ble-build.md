@@ -468,7 +468,10 @@ because every version of this adapter rests on it.
 
 ## What the host sees
 
-A boot-protocol keyboard, report ID 1, with the layout browser
+A keyboard with the boot keyboard's report layout, report ID 1 (not a
+boot-protocol keyboard, corrected 2026-09-27: a boot report carries no
+ID, and a BIOS or a boot-only KVM will not see it; every full operating
+system does, see `pad-usb-protocol.md`), with the layout browser
 emulators default to: A is `x`, B is `z`, Select is right shift, Start
 is enter, and the d-pad is the arrows. Select is a modifier rather than
 a key slot because right shift is a modifier, and a host that tracks
