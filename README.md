@@ -151,7 +151,17 @@ thing to remember:
 count last agreed. The authority for the list is `DOCS` in their
 `web/scripts/pull-nesdocs.mjs` and **it grows**, so this catches a
 change to what they pull today and cannot catch a newly pulled file.
-Prose may change freely; only headings block their deploy.
+
+**Only headings block their deploy, and that is exactly the danger with
+a CORRECTION.** A fixed fact changes no heading, so it blocks nothing
+and flags nothing, and the translation keeps the wrong one. Rev E's
+three wrong lead colours were corrected in English in rev F; the
+Japanese `pad-ble` table kept them through revs F, G, H and I and was
+live with them until the site session found it on 2026-09-26. So when
+a commit CORRECTS something in a pulled document, name the document
+and the corrected text in the message to the site, as a correction,
+separately from any heading change. The gate cannot see this; only the
+announcement can.
 
 **Run every check, not the ones you would have picked:**
 
