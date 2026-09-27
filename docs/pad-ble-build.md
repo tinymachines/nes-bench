@@ -361,6 +361,78 @@ Plug the host into the socket marked **`USB`**, not `PWR USB TO UART`,
 and set the jumper to **`DEVICE`**. The UART socket stays on the bench
 head, which is where the serial log comes from.
 
+## The pad on the bench was a replica
+
+**2026-09-26.** With `firmware/pad-usb` running, the build read `B 00`
+and pressing A changed nothing. Every connection was then proven, in
+order, before the pad itself was suspected:
+
+| checked | how | result |
+|---|---|---|
+| ESP side, hole by hole | `firmware/header-probe` | correct, after two wires were moved |
+| the junction, lead to jumper | the owner's list against the table | correct |
+| both rails | meter | 3.3 V |
+| the pad's supply lead | meter at the junction row | 3.3 V |
+| the pad's latch lead | meter, board holding it high | 3.3 V |
+| the D0 pullup | by eye | a real 10k, not a wire |
+| D0 with the latch held high, no clock | `firmware/pad-diag` | **never moved** in two minutes of presses |
+
+Then the owner recognised the controller: **a cheap replica, the same
+brand as the pad on the bridge, which works there at 5 V.** Replicas
+often carry a custom chip imitating the 4021 rather than a real one,
+and those are commonly 5 V only. That is very probably the whole story.
+It is not measured: nobody has yet put this replica on 5 V alone.
+
+`pad-diag`'s test is weaker for a replica than it looked. It relies on
+genuine 4021 behaviour, where holding the latch high makes D0 follow
+button A continuously. A clone chip may load only on an edge, so for
+the replica "no response" was ambiguous. For a real 4021 it is fair.
+
+**Measure-first item 4 is therefore still open.** It asks whether an
+*original* pad follows its buttons at 3.3 V, and no original has been
+on this build.
+
+### An original pad, and why its colours are not the replica's
+
+The owner opened an original pad and photographed it. Its chip reads
+**`MN4021B`**, Panasonic's CMOS 4021, so `pad-diag` is a fair test for
+it. Its cable uses Nintendo's own colours:
+
+| signal | P6 pin | replica lead | original lead | beep the original to 4021 pin |
+|---|---|---|---|---|
+| supply | 18 | red | **white** | 16, VDD |
+| ground | 26 | yellow | **brown** | 8, VSS |
+| latch | 22 | black | **orange** | 9, P/S |
+| clock | 20 | blue | **red** | 10, CLOCK |
+| data | 16 | green | **yellow** | 3, Q8 |
+
+**Red and yellow are in both columns and mean different signals in
+each.** Red is the replica's supply and an original's clock; yellow is
+the replica's ground and an original's data. Wire an original by the
+replica's colours and **its data output goes to the ground rail**, so
+the chip shorts its own output every time it drives high.
+
+The original column is **Nintendo's documented scheme, not measured on
+this pad yet.** With the pad open the chip is in reach, so beep each
+wire to the 4021 pin in the last column before any power goes near it.
+Pin 1 is the corner under the notch and its dot; 1 to 8 run along one
+side and 9 to 16 back along the other, so 16 sits beside the notch.
+
+`tools/p4_header.py` holds both columns and checks that the original's
+chip pins are the 4021's for each job, and that the two colours really
+do collide, so the warning above cannot quietly go stale.
+
+### A cable colour is not a signal
+
+This is the third time on this build that a colour has been mistaken
+for a fact. First the lead colours were typed from a list rather than
+read from the rung-out cable; then that table was tied to the
+measurement of the bridge's cable and assumed to describe this one;
+now two different pads turn out to spend the same colour names on
+different signals. **Wire by signal and confirm by continuity. The
+colour is a hint about which wire to pick up, never about what it
+carries.**
+
 ## Measure first
 
 Before anything is powered, and in this order:

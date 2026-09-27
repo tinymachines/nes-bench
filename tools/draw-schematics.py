@@ -1163,6 +1163,14 @@ def sheet_padble_p4():
         "this console's own cable (docs/wiring.md). RING THE CABLE OUT",
         "UNPLUGGED: a tone through a cable still in the console runs",
         "through its pull-ups, and pins that share nothing beep.",
+        "",
+        "J1'S PINS ARE SIGNALS, NOT COLOURS, and the colours depend on",
+        "the pad. The first pad on this build was a REPLICA; an original",
+        "(MN4021B inside) uses Nintendo's colours, and RED and YELLOW",
+        "are different signals on each. Wired by the replica's colours,",
+        "an original puts its DATA output on the GROUND rail. Beep each",
+        "wire to the pad's own 4021 first: the header sheet's wire table",
+        "gives the chip pin for every one.",
     ])
     sh.twopin(330, 690, "R1", "10k", "PAD1_D0", "3V3")
 

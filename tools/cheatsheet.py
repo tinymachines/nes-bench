@@ -284,19 +284,22 @@ def p4_pinmap():
     Waveshare's own schematic and holds itself to two counts that a
     one-row-out misreading fails. Nothing here is typed twice."""
     import p4_header as ph
-    wires = [[ph.PAD_COLOUR[n], n, f"pin {pin} ({name})", what]
-             for n, what in [("3V3", "the pad's supply, and the pullup's top"),
-                             ("GND", "the pad's ground"),
-                             ("PAD_LATCH", "OUT0: its fall latches the buttons"),
-                             ("PAD_CLK", "eight clocks, one per button"),
-                             ("PAD1_D0", "the pad answers; pressed is LOW")]
-             for pin, name in [ph.PAD_BLE[n]]]
-    t0 = ("The five wires, and every one on the even row",
-          "Read from Waveshare's schematic for this board, connector P6, 2026-09-24. PIN 1 IS NOT WHERE A "
-          "RASPBERRY PI PUTS IT: 5V is on 1 and 3 where a Pi has 2 and 4, and every ground sits one pin away "
-          "from where a Pi user reaches. The five below are all EVEN pins, so no wire crosses the header, and they are CONSECUTIVE: find the second 3V3 on that row and the circuit is 6, 3V3, 3, 2, skip 0, GND. Wiring this by pin number on 2026-09-25 put two of three signal wires in the wrong hole; by that shape there is one landmark and one hole to skip. "
-          "Colours are the same five leads as the bridge; use the lead, not the colour rule.",
-          ["lead", "net", "P6 pin", "what it is"], wires)
+    rows = []
+    for n, what in [("3V3", "supply"), ("GND", "ground"), ("PAD_LATCH", "latch"),
+                    ("PAD_CLK", "clock"), ("PAD1_D0", "data")]:
+        pin, _name = ph.PAD_BLE[n]
+        og_colour, og_pin = ph.OG_PAD[n]
+        rows.append([what, f"pin {pin}", ph.PAD_COLOUR[n], og_colour, f"pin {og_pin} ({ph.CHIP_4021[og_pin]})"])
+    plain = {"3V3": "supply", "GND": "ground", "PAD_LATCH": "latch", "PAD_CLK": "clock", "PAD1_D0": "data"}
+    clash = " and ".join(f"{c.upper()} is {plain[r]} on the replica but {plain[o]} on an original"
+                         for c, (r, o) in sorted(ph.collisions().items()))
+    t0 = ("The five wires, and which lead is which on each kind of pad",
+          "Every one is an EVEN pin on P6, and they are CONSECUTIVE: find the second 3V3 on that row and the circuit is "
+          "6, 3V3, 3, 2, skip 0, GND. THE LEAD COLOURS DEPEND ON THE PAD. The replica column is the bench's cable, rung out "
+          "2026-09-09. The original column is Nintendo's documented scheme, NOT YET MEASURED: beep each wire to the pad's "
+          "own 4021 at the pin shown before powering it. DO NOT WIRE ONE BY THE OTHER'S COLOURS: " + clash + ", so an "
+          "original wired by replica colours puts its data output on the ground rail.",
+          ["signal", "P6 pin", "replica lead", "original lead", "original: beep to 4021"], rows)
     t1 = ("On the header and already spoken for",
           "These reach the header and are still not yours. Driving one fights a part soldered to the board.",
           ["GPIO", "P6 pin", "already wired to"],

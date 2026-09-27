@@ -180,9 +180,9 @@ SHEETS = {
     "padble-p4": dict(netlist="pad-ble-p4", row=ROW_PADBLE_P4, caps={"C1": "U1"}, rails=("3V3", "GND"),
                       out="wiring-pad-ble-p4", status=None, aria="pad-ble adapter wiring diagram, ESP32-P4",
                       title="pad-ble v1 on the ESP32-P4: one pad into header P6, at right angles",
-                      sub="The sheet to build from. Every wire read out of pad-ble-p4.svg, and U1's numbers are header P6's "
-                          "own, so a wire names the hole. THE FIVE HOLES ARE A RUN: find the second 3V3 on the even row and the "
-                          "circuit is 6, 3V3, 3, 2, skip 0, GND. The pad runs from 3V3, not 5 V, which is measure-first item 4.",
+                      sub="The sheet to build from; U1's numbers are header P6's own. The five holes are a run: the second 3V3 "
+                          "on the even row, then 6, 3V3, 3, 2, skip 0, GND. J1's LEAD COLOURS ARE THE REPLICA CABLE'S: an original "
+                          "pad uses different ones, and red and yellow swap meaning. The header sheet's wire table has both.",
                       built_title="pad-ble v1 on the ESP32-P4 as built",
                       rails_note="3V3 and GND from header P6 pins 18 and 26: no separate supply on this build"),
 }

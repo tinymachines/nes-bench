@@ -354,7 +354,8 @@ SHEETS = {
                       res_note=PADBLE_RES_NOTE, cap_to_gnd={}, terminals=PADBLE_P4_TERMINALS, term_pins=True,
                       title="pad-ble v1 on the ESP32-P4: where everything goes",
                       sub="THE BOARD IS NOT ON THE BREADBOARD: it sits beside it and five jumpers reach header P6, whose own pin "
-                          "numbers label the terminals. Every wire is read out of the schematic."),
+                          "numbers label the terminals. The lead colours in the key are the REPLICA cable's; an original pad's "
+                          "differ, so wire an original by signal, from the header sheet's wire table."),
 }
 
 

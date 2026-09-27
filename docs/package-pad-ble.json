@@ -2,7 +2,7 @@
   "org": "tinymachines",
   "project": "nes-bench",
   "docno": "TM-NESB-003",
-  "rev": "I",
+  "rev": "J",
   "drawn": "bisenbek",
   "page": "ansi-a",
   "title": "Original pad to a USB or Bluetooth keyboard, pad-ble v1",
@@ -71,6 +71,11 @@
       "I",
       "2026-09-25",
       "the build is USB, not BLE: the hosted link to the module's C6 crashes BLE init, and the P4 has real USB OTG"
+    ],
+    [
+      "J",
+      "2026-09-26",
+      "the first pad was a replica; an original's lead colours differ, and red and yellow are different signals on each"
     ]
   ],
   "sheets": [

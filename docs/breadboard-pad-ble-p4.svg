@@ -24,7 +24,7 @@
 </style>
 <rect width="1900" height="980" fill="#ffffff"/>
 <text class="h1" x="60.0" y="60.0" text-anchor="start">pad-ble v1 on the ESP32-P4: where everything goes</text>
-<text class="h2" x="60.0" y="84.0" text-anchor="start">THE BOARD IS NOT ON THE BREADBOARD: it sits beside it and five jumpers reach header P6, whose own pin numbers label the terminals. Every wire is read out of the schematic.</text>
+<text class="h2" x="60.0" y="84.0" text-anchor="start">THE BOARD IS NOT ON THE BREADBOARD: it sits beside it and five jumpers reach header P6, whose own pin numbers label the terminals. The lead colours in the key are the REPLICA cable's; an original pad's differ, so wire an original by signal, from the header sheet's wire table.</text>
 <rect class="bb" x="174" y="158" width="1482" height="502" rx="8"/>
 <rect class="chan" x="174" y="393.0" width="1482" height="26"/>
 <line class="railp" x1="188" y1="196" x2="1642" y2="196"/>

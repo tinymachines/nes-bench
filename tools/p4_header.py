@@ -181,6 +181,52 @@ def pad_colour():
 PAD_COLOUR = pad_colour()
 
 
+# AN ORIGINAL PAD'S OWN COLOURS, WHICH ARE NOT THE REPLICA'S.
+#
+# PAD_COLOUR above is the cable the bench cut and rang out on
+# 2026-09-09, and that cable, like the pad first wired to this build, is
+# a cheap REPLICA. The owner found that out on 2026-09-26 while the
+# build read B 00 with every wire proven correct, then opened an
+# original pad and photographed it. Its chip reads MN4021B, Panasonic's
+# CMOS 4021, and its wires are Nintendo's own colours, which share only
+# two names with the replica's and MEAN DIFFERENT THINGS by both.
+#
+# AUTHORED, NOT MEASURED. This is Nintendo's documented scheme for the
+# NES controller cable. It is to be confirmed on each pad by continuity
+# from every wire to the pad's own 4021 BEFORE power goes near it, and
+# the chip pin each should beep to is recorded here for exactly that.
+# Flip OG_PAD_MEASURED when a pad has been rung out this way.
+OG_PAD = {
+    "3V3": ("White", 16),
+    "GND": ("Brown", 8),
+    "PAD_LATCH": ("Orange", 9),
+    "PAD_CLK": ("Red", 10),
+    "PAD1_D0": ("Yellow", 3),
+}
+OG_PAD_MEASURED = False
+
+# The 4021's own pinout (CD4021B datasheet; the MN4021B is the same
+# part), for the five pins the cable reaches. Pin 1 is the corner under
+# the notch and dot; 1 to 8 run along one side, 9 to 16 back along the
+# other, so 16 sits beside the notch and 9 diagonally opposite pin 1.
+CHIP_4021 = {16: "VDD", 8: "VSS", 9: "P/S", 10: "CLOCK", 3: "Q8"}
+OG_ROLE = {"3V3": "VDD", "GND": "VSS", "PAD_LATCH": "P/S", "PAD_CLK": "CLOCK", "PAD1_D0": "Q8"}
+
+
+def collisions():
+    """Colours that BOTH cables use, for different signals.
+
+    The reason this exists: an original wired by the replica's colours
+    puts its DATA output (yellow) on the GROUND rail, so the chip shorts
+    its own output every time it drives high. A colour name is not a
+    signal, and here the same name is two different signals."""
+    rep = {c.lower(): net for net, c in PAD_COLOUR.items()}
+    og = {c.lower(): net for net, (c, _p) in OG_PAD.items()}
+    return {c: (rep[c], og[c]) for c in rep if c in og and rep[c] != og[c]}
+
+
+
+
 def gpios():
     """Every distinct GPIO the header brings out."""
     return sorted({v for v in P6.values() if v.startswith("GPIO")},
@@ -239,7 +285,21 @@ def checks():
         bad.append("PAD_RUN is not consecutive on the even row")
     if PAD_SKIP not in PAD_RUN:
         bad.append("PAD_SKIP is not in PAD_RUN")
-    # 7. The long and short reasons name the same eight pins, and the
+    # 7. The original's table names the same five nets, each to the
+    #    4021 pin that carries that job, so the continuity check it
+    #    prescribes can actually find the wire.
+    if set(OG_PAD) != set(PAD_BLE):
+        bad.append("OG_PAD and PAD_BLE name different wires")
+    for net, (_c, pin) in OG_PAD.items():
+        if CHIP_4021.get(pin) != OG_ROLE.get(net):
+            bad.append(f"{net}: OG_PAD sends it to 4021 pin {pin}, which is "
+                       f"{CHIP_4021.get(pin)}, not {OG_ROLE.get(net)}")
+    # 8. The two cables' shared colours DO collide, and the sheets warn
+    #    about it. If they ever stopped colliding the warning would be
+    #    stale, so the check holds the fact rather than the prose.
+    if collisions() != {"red": ("3V3", "PAD_CLK"), "yellow": ("GND", "PAD1_D0")}:
+        bad.append(f"the colour collisions changed: {collisions()}; re-read the sheets' warning")
+    # 9. The long and short reasons name the same eight pins, and the
     #    short ones stay short enough for the column they are drawn in.
     if set(RESERVED_SHORT) != set(RESERVED):
         bad.append("RESERVED and RESERVED_SHORT name different pins")
