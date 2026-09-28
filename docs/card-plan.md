@@ -85,7 +85,7 @@ has not been checked.
 Steps 1 to 3, and the refresh of step 5: the card is labelled `OSCR`, a
 Genesys microSD reader is on the Pi, the udev rule is installed and
 exercised both ways, and the 45 files are on the card, read back
-identical. `tools/oscr-card.py` is not written yet; the refresh was done
+identical. `tools/oscr-card.py` is still not written (2026-09-28); the pull of step 5 and the three-way comparison of step 6 were done by hand the same day (`cartridge.md`, `eyes-vs-scope.md`). The refresh was done
 by hand with the checks the tool will carry.
 
 ## The order

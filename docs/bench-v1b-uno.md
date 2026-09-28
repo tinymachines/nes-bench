@@ -27,7 +27,7 @@ spec, and three things fall out:
 | C1..C3 | 100 nF | |
 | R2 | 1 k, CON_CLK to U2's CP | on hand; on the sheet since 2026-09-15 |
 | C4 | 100 pF, CP to GND | on hand; on the sheet since 2026-09-15 |
-| R1 | 100 R (+ two 1 k if EXT TRIG needs a divider) | |
+| R1 | 100 R, the trigger into the scope's CH1 (the DS1054Z has no EXT TRIG; 2.5 V measured 2026-09-15) | |
 | J1 | console port header harness | |
 | J2 | the console's other port housing | |
 | | DIP-14 and DIP-16 sockets | the kit |
@@ -324,6 +324,9 @@ controller is not bridged.
 The same drawing with the build's state on it, from `docs/build-status-v1b.json`
 (dated, read off the bench's eye): grey is built and seen right, a ringed number
 needs a check and the note under the rails says what, full colour is not built yet.
+The state file was last read on 2026-09-15 and has not been re-read since: the five
+ringed checks are J2's lead order, which the pad playing through the bridge settled
+on 2026-09-18, and the head's hands (2026-09-17) came after it.
 
 ![v1b as built: grey done, ringed needs a check](wiring-v1b-build.svg)
 
@@ -361,6 +364,9 @@ tied to GND rather than a note, so the wiring list now says to tie them.
 6. Join: U3 outputs to U2 inputs, D5 and D2 to J1 pins 3 and 2, GND
    to GND. Console on, `MODE PASS`, a game: L lines, 8 per latch.
 7. Trigger, reset, power as before.
+
+All seven done: 1 to 6 by 2026-09-15 (`milestone-2026-09-15-rig-and-bridge.md`),
+7 on 2026-09-17, `tools/bench-check.py` green twice from the workstation.
 
 ## What v1b gives up
 

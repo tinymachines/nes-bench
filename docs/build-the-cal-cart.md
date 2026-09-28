@@ -279,6 +279,7 @@ interpret.
 With the cartridge in the console and the strip reading off the
 grabber, C1 of the plan begins: the palette screen through the scope
 and the capture path against the model, per entry. The tool for that,
-`tools/cal.py`, starts with `grab`, which reads the strip off a grabbed
+`tools/cal.py`, is built (`calibration-plan.md`, C1) and starts with
+`grab`, which reads the strip off a grabbed
 frame by the manifest's rectangles the way the model's reader does, and
 refuses a frame whose strip does not read rather than guessing.

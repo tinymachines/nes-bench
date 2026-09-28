@@ -83,7 +83,7 @@ RESERVED = {
     "GPIO38": "the console UART's RXD. Serial lives here.",
 }
 
-# The same eight in a few words, for a table cell. The sentences above
+# The same pins in a few words, for a table cell. The sentences above
 # are for a person reading; these are for a column 184 px wide. Kept
 # beside each other and checked against each other, because two lists
 # of the same thing drift the moment they are apart.
@@ -101,7 +101,8 @@ RESERVED_SHORT = {
 }
 
 # Not on the header at all, recorded so nobody goes looking. The SDIO
-# group is the link to the radio and is the reason the P4 can do BLE.
+# group is the link to the radio and is the reason the P4 can do BLE in
+# principle; on this board BLE crashes at init over it (pad-usb.ino).
 OFF_HEADER = {
     "GPIO9 to GPIO13": "I2S to the audio codec",
     "GPIO14 to GPIO19": "SDIO to the onboard C6",
@@ -325,7 +326,7 @@ def checks():
     #    stale, so the check holds the fact rather than the prose.
     if collisions() != {"red": ("3V3", "PAD_CLK"), "yellow": ("GND", "PAD1_D0")}:
         bad.append(f"the colour collisions changed: {collisions()}; re-read the sheets' warning")
-    # 9. The long and short reasons name the same eight pins, and the
+    # 9. The long and short reasons name the same pins, and the
     #    short ones stay short enough for the column they are drawn in.
     if set(RESERVED_SHORT) != set(RESERVED):
         bad.append("RESERVED and RESERVED_SHORT name different pins")

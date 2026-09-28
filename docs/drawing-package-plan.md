@@ -1,7 +1,13 @@
 # Plan: a drawing package, and the road to a fabricated board
 
-Written 2026-09-09. **M1 is built and is in this commit.** M2 to M5 are
-proposed and nothing has been done on them.
+Written 2026-09-09. **M1 is built and is in this commit.** M2 to M5 were
+proposed and nothing had been done on them that day; M2 to M11 below
+have since closed, each dated where it stands (all by 2026-09-10). Since
+then, and not planned here: a third package, TM-NESB-003 for the pad
+adapter (2026-09-23, `package-pad-ble.json`, the P4 drawings from
+2026-09-24), reproducible PDFs with a build record beside each, a
+post-commit hook that rebuilds them, and `tools/check-all.sh` running
+every desk check. Left open: the v2b board has never been ordered.
 
 ## What this is for
 
@@ -22,7 +28,7 @@ produce a netlist cannot produce a board**, no matter how good it looks.
 `tools/draw-schematics.py` has always drawn each pin as
 `(number, name, net)`. Nobody had ever read it back. So the sheets have
 carried a complete netlist since the day they were written, and
-`tools/netlist.py` now extracts it: 8 references, 67 pins and 24 nets on
+`tools/netlist.py` now extracts it: 8 references, 67 pins and 24 nets on the day (12, 85 and 25 by rev N) on
 v1b alone.
 
 That single fact is what makes both goals reachable from where we are,
@@ -40,12 +46,14 @@ rather than from a rewrite in a different tool.
   and one PDF. `rsvg-convert` writes the multi-page PDF at exactly 0.75
   points per unit, so an ANSI B sheet measures 17 by 11 inches in the
   PDF and prints as one.
-- Five sheet kinds so far: `cover` with a sheet index, `schematic` which
+- Five sheet kinds at M1 (M10 added `pinmap` and `chip`): `cover` with a sheet index, `schematic` which
   nests an existing SVG scaled to fit, `wiring` and `parts` which are
   derived, and `steps` which comes from the bring-up tool.
 - **Nothing in the package is committed.** The SVGs are the artefact and
   `check-sheets.py` holds them to the wiring tables; the PDF is a
-  rendering, made on demand, like the PNGs.
+  rendering, made on demand, like the PNGs (since 2026-09-23 a
+  reproducible one, rebuilt by the post-commit hook, with a build
+  record beside it that the site's pull checks).
 
 Two things it already taught, both fixed:
 
@@ -104,7 +112,8 @@ A schematic says what connects. It does not say where to put it. The
   placement is authored, one table at the top of that file: which column
   each package starts in, where each cable comes in, where the
   decoupling sits. **Every wire is derived from the netlist**: 21
-  numbered jumpers and 16 rail stubs on v1b. Changing a net in the
+  numbered jumpers and 16 rail stubs on v1b at M3 (23 and 20 after the
+  2026-09-15 clock filter). Changing a net in the
   schematic changes the picture, which is how the claim is tested.
 
   Three things it taught:
@@ -132,7 +141,7 @@ A schematic says what connects. It does not say where to put it. The
 - `<sheet>.protel.net`, which nearly every other tool takes,
 - `<sheet>-bom.csv`, grouped by value and footprint.
 
-v1b is 10 components and 21 routable nets; v2b is 21 and 39. Neither
+On 2026-09-09 v1b was 10 components and 21 routable nets; v2b 21 and 39. Neither
 needs KiCad installed to produce.
 
 **The connections are derived; the footprints are a decision.** A 100 nF
@@ -280,7 +289,8 @@ Two things it cost, both worth the same lesson:
 
 Left open, by name: the v2b package, and a breadboard sheet split into
 two letter pages if the ANSI B one turns out to be a nuisance to print.
-The v2b package is M7.
+The v2b package is M7 (done). The split breadboard sheet was never
+wanted.
 
 ## M7: the v2b package. DONE 2026-09-10
 
@@ -327,7 +337,7 @@ made it necessary:
   paper at 19 px. It is set smaller when it has to be, down to 10 px,
   which is the same trade the revision strip makes by truncating.
 
-Still open: routing the v2b board, and the breadboard sheet on ANSI B.
+Still open that day: routing the v2b board (M8, done), and the breadboard sheet on ANSI B (never wanted).
 
 ## M8: the board is routed. DONE 2026-09-10
 

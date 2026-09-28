@@ -10,23 +10,37 @@ the bench made scriptable, so those items close unattended and repeat.
 
 The bridge sits inline between the console's controller port and an
 original pad. A shift register on the bridge is the pad the console
-clocks; an ESP32 sets its eight inputs between polls and counts the
-console's latch and clock pulses in hardware; a Raspberry Pi 4 on the
-LAN is the head, taking scripts from the workstation, driving the
-reset and power relays, and triggering the scope. Nothing on a
-microcontroller is in the nanosecond path: that is the shift
+clocks; a microcontroller sets its eight inputs between polls and
+counts the console's latch and clock pulses in hardware; a Raspberry
+Pi 4 on the LAN is the head, taking scripts from the workstation,
+driving the reset and power relays, and triggering the scope. Nothing
+on a microcontroller is in the nanosecond path: that is the shift
 register's job, as it is in the pad.
+
+**As built (v1, complete 2026-09-17).** The bridge is v1b, an Arduino
+UNO with everything at 5 V (`docs/bench-v1b-uno.md`): a 74HC595 sets
+the 74HC165's eight inputs, Timer1 counts the console's latches and
+INT0 its clocks. It was joined to an unmodified NES-001 on 2026-09-15
+and the console read every byte back; the Pi's hands on reset and
+power held on 2026-09-17, `tools/bench-check.py` green twice from the
+workstation (`docs/milestone-2026-09-15-rig-and-bridge.md`). The v1
+ESP32-C6 design in `docs/wiring.md` and `docs/bench.svg` was never
+built; v2 and v2b are drawings. The pad adapter, a separate board, is
+built as USB on an ESP32-P4 and reached a host on 2026-09-27
+(`docs/pad-usb-protocol.md`).
 
 - `docs/bench-plan.md`: the milestones B0 to B3 with their gates,
   written before any firmware.
-- `docs/wiring.md`: the pin table to build from, and the measurements
-  to make with a meter before the console is powered through it.
+- `docs/wiring.md`: the v1 (ESP32-C6) pin table and the measure-first
+  list. The C6 wiring was never built; the console-port pinout and
+  the poll measurements there are the bench's.
 
 - `docs/bench-report.md`: the bench's running report, B0 to B3 on the
   machine side (the firmware compiles, the head and every tool run
   against fakes with red mutations, the model logs polls) and the
-  part's side waiting on the build. The die answered B0's DMC question
-  first and the model changed for it.
+  part's side, which closed from 2026-09-15 with the bridge on the
+  console. The die answered B0's DMC question first and the model
+  changed for it.
 - `docs/procedures/`: one working document per cycle. What to touch, in
   what order, what the tools then run, and the operator's own
   observations, which nothing else here has a place for. Read on GitHub
@@ -93,13 +107,13 @@ register's job, as it is in the pad.
   `firmware/bridge-uno/`.
 - `docs/bench-build-v1-v2.md` with `bench-v1.svg`, `bench-v2.svg`,
   `logical-timing.svg`, `pad-adapter.svg`: the electronics review's
-  schematics, parts lists and build order for v1 (the plan as it
-  stands) and v2 (atomic bytes, two ports, a sync separator), one
-  poll as timing lanes, and an original pad as a BLE or USB pad for a
-  phone. Drawn by `tools/draw-schematics.py`; `tools/check-sheets.py`
+  schematics, parts lists and build order for v1 (the C6 version,
+  never built) and v2 (atomic bytes, two ports, a sync separator,
+  drawn only), one poll as timing lanes, and an original pad as a BLE
+  or USB pad for a phone. Drawn by `tools/draw-schematics.py`; `tools/check-sheets.py`
   holds the v1 sheet to the wiring tables.
-- `docs/bench.svg`: the bench as one drawing, the loop above and the
-  bridge's chips with every pin below. Derived: `tools/draw-bench.py`
+- `docs/bench.svg`: the v1 (C6) bench as one drawing, the loop above
+  and the bridge's chips with every pin below. Derived: `tools/draw-bench.py`
   reads the pin tables in `docs/wiring.md`, so the drawing cannot
   disagree with the document (`--check` refuses a stale one).
 ## Committing here has an obligation attached
@@ -143,7 +157,7 @@ know when one of ITS pulled documents changed heading count, which is
 exactly the moment somebody has to speak. So that is a gate now, not a
 thing to remember:
 
-    python3 tools/check-pulled-headings.py           # the 22 and their slugs
+    python3 tools/check-pulled-headings.py           # every pulled file and its slug
     python3 tools/check-pulled-headings.py --check   # in check-all.sh
     python3 tools/check-pulled-headings.py --update  # after you have told them
 
@@ -165,7 +179,7 @@ announcement can.
 
 **Run every check, not the ones you would have picked:**
 
-    tools/check-all.sh    # all fourteen, about 3 seconds
+    tools/check-all.sh    # every check, about 3 seconds
 
 Choosing a subset by hand is how a stale `docs/parts.md` reached a push
 on 2026-09-23: four gates run, fourteen available, and the one that
@@ -200,21 +214,33 @@ would have to keep in step, and it is cheap because the builds are
 reproducible: `SOURCE_DATE_EPOCH` comes from the commit's own time, so
 a package built twice at one commit is byte-identical.
 
-- `firmware/bridge/`: the ESP32 sketch (arduino-cli, esp32 core 3.x;
-  the bench's board is an ESP32-C6-DevKitC-1).
-- `firmware/pad-ble/`: the other direction, and standalone. An original
-  NES pad as a Bluetooth Low Energy keyboard, so it drives a phone, a
-  tablet or a browser emulator with no app and no bench: the bridge's
-  own `poll_pad` with a radio behind it instead of a shift register
-  (`docs/pad-adapter.svg`, and section 4 of `bench-build-v1-v2.md`).
-  The report descriptor and the key mapping are plain C in `keymap.h`
-  and are held on the desk by `tools/test-pad-keymap.sh`, which parses
-  the descriptor the way a host parses it; everything else in there
-  needs the part and has met no pad. The build document, with both
-  drawings, the wire list and the two measure-first items it rests on,
-  is `docs/pad-ble-build.md`, with three drawings from one netlist: the
-  schematic, the right-angle wiring, and the breadboard sheet that says
-  which hole. The devkit's header order is measured and lives once, as
+- `firmware/bridge-uno/`: the bridge as built, on the Arduino UNO
+  (`tools/build-uno.sh` compiles it; `tools/test-uno-schedule.sh` holds
+  its poll schedule on the desk). `firmware/bridge/` is the v1 ESP32-C6
+  sketch, which compiles and was never flashed to a bench.
+- `firmware/pad-usb/`: the other direction, and standalone. An original
+  NES pad as a USB keyboard, so it drives a phone, a tablet or a
+  browser emulator with no app and no bench: the bridge's own
+  `poll_pad` with a host interface behind it instead of a shift
+  register (`docs/pad-adapter.svg`, and section 4 of
+  `bench-build-v1-v2.md`). Built on a Waveshare ESP32-P4-Module-DEV-KIT
+  and proven on 2026-09-27: an original pad answers at 3.3 V, the P4's
+  full-speed USB controller presents it on the Type-C socket marked
+  USB, and a Linux host enumerates it and receives all eight keys
+  (`docs/pad-usb-protocol.md`, layer by layer). Not yet: a phone, a
+  browser page, latency. `firmware/pad-ble/` is the same adapter as a
+  Bluetooth keyboard; BLE crashes on the P4 (the module's onboard C6
+  does not answer the host stack) and the C6 devkit never accepted a
+  flash, so it has met no host. `firmware/pad-diag/` holds the latch
+  high so a meter can watch one button, and `firmware/header-probe/`
+  names the header hole a wire is in. The report descriptor and the
+  key mapping are plain C in `pad-ble/keymap.h`, one file both builds
+  share, held on the desk by `tools/test-pad-keymap.sh`, which parses
+  the descriptor the way a host parses it. The build document, with
+  the drawings, the wire list and the two measure-first items it
+  rested on, is `docs/pad-ble-build.md`, with three drawings from one
+  netlist: the schematic, the right-angle wiring, and the breadboard
+  sheet that says which hole. The devkit's header order is measured and lives once, as
   `C6_HEADER` in `tools/breadboard.py`. The part moved on 2026-09-24:
   the C6 never accepted a flash and a Waveshare ESP32-P4-Module-DEV-KIT
   on the same bench took one first try and reached the air, so
@@ -265,10 +291,9 @@ a package built twice at one commit is byte-identical.
   `sniff.py` (the
   bridge over serial alone), `compare-logs.py` (two poll logs, latch for
   latch), `fake-bridge.py` (the protocol with no part behind it, for
-  running the head on a box without an ESP32), `draw-bench.py`.
+  running the head on a box without a bridge), `draw-bench.py`.
 
-The bridge is not built yet. Captures and dumps of cartridges are never
-committed (`captures/`, `roms/` and `*.nes` are ignored); the family's
+Captures and dumps of cartridges are never committed (`captures/`, `roms/` and `*.nes` are ignored); the family's
 own test and bars cartridges are the only ROMs any repository carries.
 
 MIT.

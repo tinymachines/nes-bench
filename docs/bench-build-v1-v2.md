@@ -59,7 +59,8 @@ are not committed.
 
 Convention on all of them: net-label schematics (same name, same wire),
 each supply as a rail symbol over the one shared ground, pressed = LOW
-at the register. Nothing is built. Every timing width is authored until
+at the register. v1b is built (2026-09-15, `bench-v1b-uno.md`); v1,
+v2 and the adapter sheet are drawings. Every timing width is authored until
 B0's measure-first item 3 replaces it, and the sheets say so where the
 number appears.
 
@@ -237,7 +238,8 @@ and stated. Port 1 keeps its hardware counter.
 ## 3. The Raspberry Pi's role
 
 The Pi is the head. It is the only always-on Linux box at the bench,
-and it does the four things the C6 cannot:
+and it does the four things the C6 cannot (on the built bench the UNO
+is in the C6's place, and the split is the same):
 
 1. **USB host.** The C6 is a USB device (its UART port). Something has
    to be on the other end, reading the L stream and writing commands.
@@ -266,6 +268,16 @@ Pi costs nothing extra (it is on hand) and keeps the firmware small
 enough to reason about. Keep it.
 
 ## 4. The pad adapter: original pad to BLE or USB HID
+
+**As built (2026-09-27).** Neither part in the table below. The C6
+never accepted a flash; the board is a Waveshare ESP32-P4-Module-DEV-KIT,
+BLE crashes on it (the module's onboard C6 does not answer the host
+stack), and the build is USB: `firmware/pad-usb` on the P4's full-speed
+controller, an original pad at 3.3 V, every key at a Linux host. Steps
+1 to 3 of the build order below are done that way; 4 to 7 and a phone
+are open. The record is `pad-ble-build.md`, the board choice
+`esp32-part-choice.md`, the protocol `pad-usb-protocol.md`. The section
+as written on 2026-09-07 follows.
 
 The bridge already contains the adapter: `poll_pad()` in
 `bridge.ino` polls a real pad at 3V3 on three GPIOs. The adapter is
@@ -322,7 +334,8 @@ are the whole thing.
 
 1. Measure-first item 4 on the bench first: an original pad at 3V3
    follows its buttons. If it does not, the adapter needs a 74LVC245
-   and 5 V to the pad, and the sheet says where.
+   and 5 V to the pad, and the sheet says where. DONE 2026-09-27: it
+   does, no 245 needed.
 2. Wire J1 to **GPIO2 (latch), GPIO3 (clock), GPIO6 (D0)** and
    3V3/GND, with a 10 k from D0 up to 3V3. Flash the bench's
    `poll_pad` and print the byte. Buttons appear.
@@ -330,9 +343,11 @@ are the whole thing.
    are the S3's numbers and they are strapping pins on the C6, which
    is the part on hand. The three above are the map
    `firmware/bridge/bridge.ino` already polls a pad on, so `poll_pad`
-   runs unedited.
+   runs unedited. DONE 2026-09-27, on the P4 (`B 01` to `B 80`).
 3. Add the HID service (NimBLE on either chip; TinyUSB on the S3).
    Keyboard mode first, since a phone will show it working with no app.
+   DONE 2026-09-27 as TinyUSB on the P4; the host so far is a Linux
+   box, not a phone.
 4. Gamepad mode behind the switch.
 5. Second socket on GPIO7, shared latch and clock.
 6. Bench mode: a UDP sender and a `PAD` request on `headd.py`.

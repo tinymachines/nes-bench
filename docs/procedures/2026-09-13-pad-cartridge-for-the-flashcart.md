@@ -51,7 +51,7 @@ the one the model traced, and the one the die ran are one file.
    still wants it on a console).
 2. **you:** before writing, check the sum on whatever machine holds the
    card: `sha256sum pad.nes` must print the table's.
-3. **you:** at sitting 5, say which of the two the console runs; the
+3. **you:** when the flashcart is written, say which of the two the console runs; the
    bridge's log and the model's are compared latch for latch, and the
    count above is the number the comparison is held to.
 

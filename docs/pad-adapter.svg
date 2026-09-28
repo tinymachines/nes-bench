@@ -35,7 +35,7 @@
 <rect x="0" y="0" width="1700" height="940" fill="#ffffff"/>
 <g class="sheet-heading" data-height="60">
 <text class="title" x="24" y="30">OG pad to BLE / USB HID adapter: the bridge's pad poll, made portable</text>
-<text class="sub" x="24" y="46">ESP32-S3 for USB HID + BLE; ESP32-C6 works for BLE only (its USB port is serial/JTAG, not a device controller). Nothing built.</text>
+<text class="sub" x="24" y="46">ESP32-S3 for USB HID + BLE; ESP32-C6 works for BLE only (its USB port is serial/JTAG, not a device controller). Not built as drawn; the one-pad USB subset is, on an ESP32-P4 (TM-NESB-003).</text>
 </g>
 <rect class="zone" x="20" y="60" width="720" height="560" rx="6"/>
 <text class="sub" x="28" y="74" text-anchor="start">PADS, polled at 3V3 exactly as the bridge polls them</text>
@@ -113,9 +113,9 @@
 <line class="lead" x1="131" y1="549" x2="137" y2="555"/><line class="lead" x1="131" y1="555" x2="137" y2="549"/>
 <text class="note" x="340" y="100" text-anchor="start">The pad's 4021 is a CMOS part rated 3 to 18 V.</text>
 <text class="note" x="340" y="113" text-anchor="start">At 3V3 its D0 is 3V3 logic and needs no shifter.</text>
-<text class="note" x="340" y="126" text-anchor="start">Measure-first item 4 on the bench settles this</text>
-<text class="note" x="340" y="139" text-anchor="start">before any adapter is built; if a pad will not run</text>
-<text class="note" x="340" y="152" text-anchor="start">at 3V3, add a 74LVC245 and feed the pad 5 V.</text>
+<text class="note" x="340" y="126" text-anchor="start">Measure-first item 4 CLOSED 2026-09-27 on the P4 build:</text>
+<text class="note" x="340" y="139" text-anchor="start">an original runs at 3V3, no 245 needed; if a pad will</text>
+<text class="note" x="340" y="152" text-anchor="start">not run at 3V3, add a 74LVC245 and feed the pad 5 V.</text>
 <text class="note" x="340" y="165" text-anchor="start"></text>
 <text class="note" x="340" y="178" text-anchor="start">Poll: OUT0 high 12 us, low, 8 clocks at 1 us,</text>
 <text class="note" x="340" y="191" text-anchor="start">read D0 before each rising edge. 1 kHz.</text>

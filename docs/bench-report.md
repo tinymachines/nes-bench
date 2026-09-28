@@ -1,11 +1,15 @@
-# Bench report: B0 to B3, machine side closed, the part's side waiting on the build
+# Bench report: B0 to B3, machine side closed, the part's side closed from 2026-09-15
 
 Begun 2026-09-06 as B0's report and grown into the bench's running
 report as B1, B2 and B3 got their tools before the hardware arrived.
-Plan: `docs/bench-plan.md`, first. Nothing here has met the console
-yet: the bridge is flashed and answering on the Pi (sitting 1,
-2026-09-08, the section below) and not yet joined to the console's
-port. What closed is everything the four milestones could close on the
+Plan: `docs/bench-plan.md`, first. The sections below stop at sitting
+1 (2026-09-08), when the bridge was flashed and answering on the Pi
+and not yet joined to the console's port. What happened after is in
+`milestone-2026-09-15-rig-and-bridge.md`: the v1b bridge on the
+console on 2026-09-15, reading every byte back, and the Pi's hands on
+reset and power holding on 2026-09-17. Where a sentence below says
+the bridge does not exist yet, that is the date it was written. What
+closed is everything the four milestones could close on the
 machine, each tool with a green run on a
 synthesis and a sabotage run that goes red, and one thing B0 was going to
 measure on the part turned out to be measurable on the die first,
@@ -46,7 +50,7 @@ sides (the bridge writes it after latch n-1, the model's controller
 applies it at the strobe's rise before latch n; `nes` @ a99b4eb,
 `tests/pad_log.rs`). The scope half shares scope-capture's proven
 dialect and adds the external-trigger single shot, untested: the scope
-was off the LAN when this was written. The relays have no Pi wired.
+was off the LAN when this was written. The relays have no Pi wired (wired 2026-09-17: OK1 across reset, K1 across power).
 
 ## Added 2026-09-07: the B1 tool, green on the synthesis before any capture
 
@@ -231,9 +235,11 @@ which a cheap crystal covers on its own. Anything that scores this
 console's video against the broadcast line rate will be wrong by three
 quarters of a part per thousand and will look like a timebase fault.
 
-Not closed by any of this: the external trigger has still never been
-fired by anything but `:TFORce`, because the bridge that raises it does
-not exist yet. What is proven is the arm, the wait, the read and the
+Not closed by any of this at the time: the trigger had never been
+fired by anything but `:TFORce`, because the bridge that raises it did
+not exist yet. Closed 2026-09-15: `TRIG n` from the bridge stops the
+single shot on CH1 (the DS1054Z has no EXT input). What was proven
+here is the arm, the wait, the read and the
 record's geometry, which is everything around the trigger.
 
 ## What the die said before the part could
@@ -327,7 +333,7 @@ sitting on 2026-09-07, and CH1 is the channel B2's alignment classifier
 wants for the master clock. A drawing that claims a channel another tool
 needs is the kind of thing that costs an afternoon at the bench.
 
-Still true: nothing here has met the console. What is proven is that the
+True until 2026-09-15: nothing here had met the console. What is proven is that the
 firmware compiles, the protocol is unchanged, the checks can fail, and
 the one new hardware limit cannot silently corrupt a run.
 
@@ -420,8 +426,10 @@ number that had no business being what it was.
 
 ## What B0 still needs from the bench
 
-In the plan's order, once the bridge is built per `docs/wiring.md` and
-its "measure first" list is done:
+In the plan's order, written before the bridge was built. The bridge
+is built (v1b, 2026-09-15) and item 1 holds: eight clocks on every
+poll, three runs of about 1,200 polls, `tools/bench-check.py`. Items 2
+to 5 stand as written.
 
 1. Clocks per latch on a game without DMC: 8 on every poll over a
    minute; `tools/sniff.py` then `tools/compare-logs.py` against

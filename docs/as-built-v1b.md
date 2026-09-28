@@ -39,12 +39,19 @@ reasoning, so a reader knows what was seen and what was inferred.
   board.
 - **The ribbon** from the UNO's digital header carries exactly the nine
   pins the schematic uses: 2, 3, 5, 6, 7, 8, 10, 11 and 13, nothing on 4,
-  9 or 12. The colour of each is on the cheat sheet.
+  9 or 12. The colour of each is on the cheat sheet. Superseded
+  2026-09-15: the UNO's leads now run direct from its header
+  (`build-status-v1b.json`, the second rig pose).
 - **The eyes.** The Pi's camera was on the bench but still pointed at
   the windows; every frame it gave was the same three blinds. These
-  photographs came from a phone.
+  photographs came from a phone. The rig was locked on 2026-09-15
+  (`rig.md`).
 
 ## What to do with it
+
+This was the plan on 2026-09-11; it was wired over the next four days
+and the bridge read right through the console on 2026-09-15
+(`milestone-2026-09-15-rig-and-bridge.md`).
 
 Wire the supplies first (short stubs from each VCC and GND pin to the
 nearest rail, the spare inverter inputs to GND), then the console side,

@@ -5,6 +5,14 @@ there another part in the drawer that does Bluetooth, and is there one
 that would let the adapter be a USB-C cable to a phone instead of a
 radio?
 
+**Since it was written.** The P4 module flashed that same day; BLE
+crashed on it on 2026-09-25 (the host stack asks the module's C6 for a
+version it never answers); the build is USB on the P4's full-speed
+controller (`pad-usb-protocol.md`); and measure-first item 4 closed on
+2026-09-27 with an original pad at 3.3 V and every key at a Linux
+host. The tables below are the vendor's headers and still hold; the
+status sentences are dated where they have gone stale.
+
 This document answers it from the vendor's own headers rather than
 from memory, because the one time this question was answered from
 memory the answer was a pin map for the wrong chip.
@@ -44,7 +52,7 @@ Read as a parts table:
 | **ESP32-C6** (on hand) | yes | **no** | serial/JTAG only |
 | ESP32-H2 | yes | no | no Wi-Fi either: BLE and 802.15.4 |
 | ESP32-C5 | yes | no | serial/JTAG only |
-| ESP32-P4 | **no radio in the silicon**, see below | yes, two OTG | the module on this bench carries a C6 and does both |
+| ESP32-P4 | **no radio in the silicon**, see below | yes, two OTG | the module on this bench carries a C6 as its radio; USB proven 2026-09-27, BLE crashes at init (`pad-ble-build.md`) |
 
 ## The board on this bench is a P4 module, and that changes its row
 
@@ -135,7 +143,7 @@ re-checking against the board's own exposed header before wiring.
 - **The C6 must be running matching esp-hosted slave firmware.** Vendor
   boards ship it flashed. A version mismatch between host and slave is
   a known and confusing failure, and it is not a hardware problem.
-- **Nothing has been flashed to this board and nothing has run on it.**
+- **Nothing had been flashed to this board when this was written** (it flashed later the same day, and pad-usb has run on it since).
 
 ### What it means for the two questions asked
 
@@ -143,8 +151,8 @@ Both of them are answered yes by one board already in the room:
 
 | | |
 |---|---|
-| BLE keyboard to a phone | yes, host on the P4, radio on the onboard C6 |
-| USB-C keyboard to a phone | yes, `SOC_USB_OTG_PERIPH_NUM` is 2 and there is a UTMI PHY, so one of them is high speed |
+| BLE keyboard to a phone | in principle, host on the P4, radio on the onboard C6; in practice BLE init crashes on this board until the C6's slave firmware answers (2026-09-25) |
+| USB-C keyboard to a phone | yes, `SOC_USB_OTG_PERIPH_NUM` is 2 and there is a UTMI PHY, so one of them is high speed. Built on the FULL-speed one and the Type-C socket marked USB (`pad-usb-protocol.md`, layer 4): the high-speed controller reaches only the USB-A stack. A phone is not yet tried |
 
 An S3 remains the simpler part for this job: one chip, one radio, no
 co-processor and no hosted link to go wrong. The P4 module is the more
@@ -177,15 +185,15 @@ keyboard.
 
 ## What is actually in the drawer
 
-`docs/parts.md` lists one: **ESP32-C6-DevKitC-1 v1.2**. That is the
-part every pad-ble sheet is drawn around, and by the table above it is
-the one part in the family that can never do the USB version of this
-job.
+On 2026-09-24 morning `docs/parts.md` listed one: **ESP32-C6-DevKitC-1
+v1.2**. That was the part every pad-ble sheet was drawn around, and by
+the table above it is the one part in the family that can never do the
+USB version of this job. (`parts.md` now carries a `pad-ble-p4` section
+and sheets 5 to 7 of TM-NESB-003 are the P4.)
 
-Nothing ESP-shaped is on the workstation's USB bus (`lsusb`,
-2026-09-24), so any other board is unrecorded. A larger board with a
-Pi-shaped 40-pin header was mentioned; it has not been identified, and
-until it is, nothing here says what it can do.
+Nothing ESP-shaped was on the workstation's USB bus (`lsusb`,
+2026-09-24 morning). The larger board with a Pi-shaped 40-pin header
+that was mentioned is the P4 module identified above.
 
 ## Identifying an unknown board
 
@@ -200,7 +208,7 @@ In order of effort, cheapest first:
    enumerating. A `10c4:ea60` or `1a86:7523` is a bridge chip, which
    says nothing about the part behind it.
 4. **`esptool chip-id`.** Prints the family by name. It needs download
-   mode, which is the thing currently failing on the C6, so it is last.
+   mode, which is the thing that was failing on the C6, so it is last.
 
 ## USB-C to a phone, if the part is an S3
 
@@ -233,10 +241,12 @@ is bought.**
 
 ## What this document does not claim
 
-Nothing here has been built. The pad-ble circuit is still a drawing
-(TM-NESB-003 rev D), no pad has been wired to any firmware, no host
-has paired with anything, and measure-first item 4, that an original
-pad's 4021 follows its buttons at 3.3 V, has been open since
-2026-09-07. A different part would change which of those are easy. It
-would not close any of them, and the P4 compile above closes none of
-them either.
+As of 2026-09-24, when it was written: nothing here had been built.
+The pad-ble circuit was a drawing (TM-NESB-003 rev D), no pad had been
+wired to any firmware, no host had paired with anything, and
+measure-first item 4, that an original pad's 4021 follows its buttons
+at 3.3 V, had been open since 2026-09-07. A different part would change
+which of those are easy; it would not close any of them, and the P4
+compile above closed none of them either. What closed them was the
+bench, three days later: the wiring, the pad at 3.3 V and a Linux host
+receiving every key (`pad-usb-protocol.md`). Still not done: a phone.

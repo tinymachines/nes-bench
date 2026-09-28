@@ -25,7 +25,7 @@ way, and what is next.
   (`tools/board-overlay.py --read --zoomed`) and the as-built
   photograph is drawn on those frames with every check and placement
   called out.
-- **The drawing package at rev M**, thirteen sheets, the as-built
+- **The drawing package at rev M** that day (rev P, 23 pages, by 2026-09-28), thirteen sheets, the as-built
   wiring sheet at 55 pins done and 5 to check (J2's lead order), the
   cheat sheet with the scope's channels and each probe's landing as a
   board column.
@@ -65,12 +65,17 @@ should generate, not a thing to write.
    known state on its own** (bring-up sitting 5, steps 6.2 and 6.3):
    the PC817 on the reset pads, the relay in one lead of the adapter,
    both driven from the Pi's header. Until these hold, every run that
-   needs a fresh console needs a hand.
+   needs a fresh console needs a hand. DONE 2026-09-17: OK1 across the
+   reset button, K1 across the power switch, `tools/bench-check.py`
+   green twice from the workstation.
 2. **The pad through the bridge** (steps 4.2 and 5.2): the pad in hand,
    three buttons seen in the pad byte, then a button seen by the game.
    This also settles J2's lead order, the last check on the sheet.
+   DONE 2026-09-18: a hand's play recorded through the bridge and
+   replayed latch for latch (`bench-v1b-uno.md`, `exercise.md` E2).
 3. **B1, the first recording**: MODE PASS, a game, the bridge's log
    and a triggered capture, which is what the trace plan's window
-   check needs.
+   check needs. DONE 2026-09-18: E2 played twice with captures
+   (`exercise.md`).
 4. The calibration cartridge's part side (`open-items.md`) when the
-   chips arrive.
+   chips arrive (SST39SF040, ordered 2026-09-21).

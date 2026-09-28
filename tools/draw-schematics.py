@@ -959,13 +959,13 @@ def sheet_logic():
 # ------------------------------------------------------------ pad adapter
 def sheet_pad():
     sh = Sheet(1700, 940, "OG pad to BLE / USB HID adapter: the bridge's pad poll, made portable",
-               "ESP32-S3 for USB HID + BLE; ESP32-C6 works for BLE only (its USB port is serial/JTAG, not a device controller). Nothing built.")
+               "ESP32-S3 for USB HID + BLE; ESP32-C6 works for BLE only (its USB port is serial/JTAG, not a device controller). Not built as drawn; the one-pad USB subset is, on an ESP32-P4 (TM-NESB-003).")
     sh.zone(20, 60, 720, 560, "PADS, polled at 3V3 exactly as the bridge polls them")
     pad_socket(sh, 160, 90, "J1", "PAD_LATCH", "PAD_CLK", "PAD1_D0")
     pad_socket(sh, 160, 340, "J2", "PAD_LATCH", "PAD_CLK", "PAD2_D0")
     sh.note(340, 100, ["The pad's 4021 is a CMOS part rated 3 to 18 V.", "At 3V3 its D0 is 3V3 logic and needs no shifter.",
-                       "Measure-first item 4 on the bench settles this", "before any adapter is built; if a pad will not run",
-                       "at 3V3, add a 74LVC245 and feed the pad 5 V.",
+                       "Measure-first item 4 CLOSED 2026-09-27 on the P4 build:", "an original runs at 3V3, no 245 needed; if a pad will",
+                       "not run at 3V3, add a 74LVC245 and feed the pad 5 V.",
                        "", "Poll: OUT0 high 12 us, low, 8 clocks at 1 us,", "read D0 before each rising edge. 1 kHz.",
                        "The same poll_pad() as firmware/bridge/bridge.ino."])
     sh.twopin(400, 268, "R1", "10k", "PAD1_D0", "3V3")
@@ -1160,10 +1160,10 @@ def sheet_padble_p4():
         "map, two targets.",
         "",
         "The pad's 4021 is a CMOS part rated 3 to 18 V, so at 3V3 its D0",
-        "is 3V3 logic and needs no shifter. That is the datasheet, not",
-        "this bench: MEASURE FIRST, item 4, open since 2026-09-07. If a",
-        "pad will not follow its buttons at 3V3, add a 74LVC245 and feed",
-        "the pad 5 V; the 245 is on hand.",
+        "is 3V3 logic and needs no shifter. MEASURED 2026-09-27: an",
+        "original's MN4021B follows its buttons at 3V3, 27 presses in",
+        "30 s under firmware/pad-diag. No 74LVC245 needed. A 10 ohm part",
+        "fitted as the 10k pull-up hid it first: read the bands.",
         "",
         "Pin 5 is the supply and 6 and 7 carry nothing, as measured on",
         "this console's own cable (docs/wiring.md). RING THE CABLE OUT",
@@ -1229,10 +1229,10 @@ def sheet_padble_p4():
     sh.zone(20, 782, 1520, 262, "WHAT THIS BOARD DOES, MEASURED, and why the direction changed on 2026-09-25")
     rows = [
         ("USB HID", [
-            "THIS IS THE BUILD. Boots clean, 18% of flash, and prints B FF with no pad wired, which is right: D0 floats with no pullup so all",
-            "eight bits read pressed. soc_caps.h gives the P4 SOC_USB_OTG_SUPPORTED with two OTG peripherals, which the C6 never had. No radio,",
-            "no co-processor, no SDIO, no pairing: a USB-C cable to a phone and nothing in the path that can fail. Plug the HOST into the socket",
-            "marked USB, not PWR USB TO UART, and set the jumper to DEVICE. The UART socket stays on the bench head for the serial log."]),
+            "THIS IS THE BUILD, PROVEN 2026-09-27: an original pad at 3V3, every button and chord, and a Linux host enumerating 303a:0002 NES Pad",
+            "at full speed and receiving all eight keys. TinyUSB driven directly on the P4's FULL-speed OTG controller, PHY 0 (GPIO24/25) swapped",
+            "from USB-Serial-JTAG to it: the Type-C socket marked USB, not PWR USB TO UART. The HOST/DEVICE jumper is the high-speed switch's and",
+            "does not matter here. No radio, no co-processor, no pairing. Not yet tried: a phone, a browser page, latency. UART stays the log."]),
         ("BLE HID", [
             "REACHES THE AIR BUT CRASHES THIS FIRMWARE, and not in our code. The P4 has no radio; the module's ESP32-C6 is it, over SDIO. The host's",
             "esp-hosted 2.12.11 asks that C6 for its firmware version, gets no answer, and the failure path reads a pointer nobody filled in:",

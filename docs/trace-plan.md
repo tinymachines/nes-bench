@@ -312,7 +312,12 @@ reads per latch; the scope's frame at `TRIG n` against the window's
 decoded frame; and the half-cycle of latch n in the trace against the
 trigger's sample in the record, which gives the console's CPU
 half-cycle for any sample the scope took. This is C2 of the closed
-cycle seen from the model's side, and it needs the wiring.
+cycle seen from the model's side, and it needed the wiring. The first
+two held on 2026-09-18 under E2 (`exercise.md`): the bridge's log
+against `pad-log`, 315 latches agreeing on every byte and clock, and
+the scope's frame at `TRIG 300` against the model's at the same latch.
+The third, the half-cycle against the trigger's sample, is not yet
+written up.
 
 ## Decided here
 

@@ -59,6 +59,6 @@ two images `dd` splits out of `cal.nes` into the ROMs.
 
 ## What is not known yet
 
-- The chips themselves: not on the bench yet (2026-09-13 evening).
+- The chips themselves: not on the bench yet (2026-09-13 evening); SST39SF040s ordered 2026-09-21, their arrival to be recorded here.
 - The reader's dump of the finished cart, whose body crc32 must be
   `21091B99` (MEASURED 2026-09-13 on the exported file).

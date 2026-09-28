@@ -30,8 +30,9 @@ that will break.
 
 THE LIST IS THEIRS TOO, AND IT GROWS. The authority is DOCS in
 their web/scripts/pull-nesdocs.mjs, which covers several repositories
-and not only this one; the 22 below are this repository's rows of it,
-copied 2026-09-25. They have put a comment at that list saying a new
+and not only this one; the rows in tools/pulled-docs.json are this
+repository's rows of it, copied 2026-09-25 and grown since (23 on
+2026-09-27, when pad-usb-protocol was added). They have put a comment at that list saying a new
 nes-bench entry, or a Japanese shadow appearing for one, is news for
 here.
 A document of ours that they start pulling will not appear here by

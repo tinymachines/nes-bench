@@ -53,17 +53,19 @@ missing between here and the first full turn.
 |---|---|
 | the head (`head/headd.py`): script words, relays, scope, runs served | runs on the Pi as `nes-bench-head.service` since 2026-09-18, conflicting with the serial bridge for the port; E2 played through it (`exercise.md`) |
 | the bridge firmware (`firmware/bridge-uno`) | on the UNO, answers `STATUS`; B0 sniff mode |
-| the register, the pad on the bridge, the relays | not wired: sittings 3, 4 and 5 are the user's |
+| the register, the pad on the bridge, the relays | register wired and reading right through the console (2026-09-15); reset and power from the Pi held (2026-09-17); the original pad on the bridge (4.2, 5.2) still open |
 | the scope over SCPI | proven; `eyes.py pair` uses the same dialect |
 | the grabber | `/dev/video2`, whole frames, driver in `head/roxio-em28xx/` |
 | the sound card | ALSA card 3, records; nothing on its input yet |
-| the camera | `/dev/video0`; not yet aimed at the board |
-| the cartridge dump | reader flashed; the card plan is written, the reader on the Pi is not |
+| the camera | the BRIO on the rig over the board, `tools/eye.py`, locked 2026-09-15 (`rig.md`) |
+| the cartridge dump | dumped from the Pi and verified against the reader's database, 2026-09-12 (`cartridge.md`) |
 | the model at a latch | `capture-score` renders it; `b1-score.py` drives it |
 | the comparison of pictures | `eyes.py compare`: decoder against grabber |
 
-So today the cycle can capture but not emit: a hand plays, the scope
-and the grabber watch. The emitting half is the wiring.
+On 2026-09-12 the cycle could capture but not emit: a hand plays, the
+scope and the grabber watch. The emitting half was the wiring, and from
+2026-09-18 it emits too: `MODE INJECT` scripts drive the part and a
+hand's log replays (`exercise.md`, E2 and E3).
 
 ## What is missing, and the order it closes in
 
@@ -84,6 +86,12 @@ the console grid in `eyes-vs-scope.md`. The finding: the two eyes agree
 to a degree of hue and the model sits twelve to fourteen degrees off
 both on the saturated colours. The mutation stated above is not yet
 run: the tool has no `--expect-fail` and it should, before C1.
+
+Where the three stand (2026-09-28): C1's hand was recorded and replayed
+on 2026-09-19 (E3), but the head words `EYES`, `EARS` and `PHOTO`
+below are not built and nothing records sound; C2 was done on
+2026-09-18 as E2, scope only; C3's replay and bisect were done on
+2026-09-18 and 19 as E3, with no grabber movie.
 
 **C1, the hand recorded with pictures.** Sittings 3 and 4 (the
 register and the pad on the bridge), the head owning the UNO's port
@@ -117,8 +125,9 @@ sees them.
 
 ## Three things decided here
 
-- **The head owns the port once the bridge is built.** Until sitting 4
-  closes, the bring-up tool needs the UNO through the serial bridge
+- **The head owns the port once the bridge is built** (it does, since
+  2026-09-18: `nes-bench-head.service`). Until sitting 4 closed, the
+  bring-up tool needs the UNO through the serial bridge
   unit; after it, the head does, and it carries a `bridge` word for the
   bring-up tool's occasional question. Two owners of one port is how
   the flashing trap in `head/README.md` happened.

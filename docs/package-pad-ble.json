@@ -2,14 +2,14 @@
   "org": "tinymachines",
   "project": "nes-bench",
   "docno": "TM-NESB-003",
-  "rev": "K",
+  "rev": "L",
   "drawn": "bisenbek",
   "page": "ansi-a",
   "title": "Original pad to a USB or Bluetooth keyboard, pad-ble v1",
   "intro": [
     "One original NES controller into an ESP32, which presents it to a phone or a laptop as a plain keyboard: the bench bridge's own pad poll with a host interface behind it instead of a shift register. No Pi, no UNO, no console.",
     "THE BUILD IS USB NOW. It began as Bluetooth on an ESP32-C6 that never accepted a flash, moved to a Waveshare ESP32-P4-Module-DEV-KIT that flashed first try, and moved again on 2026-09-25 when the BLE firmware crashed on that board: the P4 has no radio, the module's ESP32-C6 is it, and the host stack asks that C6 for a version it never answers. The P4 has real USB OTG, so USB removes the failing part rather than working around it. Sheet 5's band has the measurement.",
-    "THE WIRING IS THE SAME EITHER WAY, and every hole is now named by firmware/header-probe rather than counted from a photograph. Sheets 2 to 4 are the original C6 design, kept because a published drawing is a record. Still unproven, open since 2026-09-07: that an original pad's 4021 follows its buttons at 3.3 V."
+    "THE WIRING IS THE SAME EITHER WAY, and every hole is now named by firmware/header-probe rather than counted from a photograph. Sheets 2 to 4 are the original C6 design, kept because a published drawing is a record. Proven 2026-09-27, after twenty days open: an original pad's MN4021B follows its buttons at 3.3 V, and a Linux host receives all eight buttons as keys over USB. A phone has not been tried."
   ],
   "revisions": [
     [
@@ -81,6 +81,11 @@
       "K",
       "2026-09-26",
       "J1 drawn as an original pad in its own colours on all three P4 sheets; rev J only captioned the replica's"
+    ],
+    [
+      "L",
+      "2026-09-28",
+      "measure-first item 4 closed and the host result on the cover and sheet 5; the DEVICE jumper note removed, it belongs to the high-speed switch"
     ]
   ],
   "sheets": [

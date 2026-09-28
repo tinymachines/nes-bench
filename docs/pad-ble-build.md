@@ -22,9 +22,12 @@ the bench's Pi; **a phone has not been tried.** Bluetooth remains
 unbuilt on this board. What each layer is and how each was proven is
 `pad-usb-protocol.md`.
 
-What HAS been measured is the board, not the circuit: which part it is,
-where it sits on the breadboard, and the order of its header pins. Each
-of those says where it was read and by what. The two are kept apart on
+Until 2026-09-27 what had been measured was the board, not the circuit:
+which part it is, where it sits on the breadboard, and the order of its
+header pins. Since that evening the circuit is measured too: the pad
+answers at 3.3 V and a host receives every button as its key ("Tested
+on the bench" below, and `pad-usb-protocol.md`). Each measurement says
+where it was read and by what. The two are kept apart on
 purpose, because a page that mixes a measurement of the part with a
 plan for a circuit launders one into the other.
 
@@ -40,7 +43,10 @@ around the ones they do not.
 
 ## What decided the part, and it was read not recalled
 
-The board on the breadboard is an **ESP32-C6-DevKitC-1 v1.2**. That was
+(The C6 design, kept as a record; superseded from "The direction
+changed twice" below. The board built is the P4.)
+
+The board on the breadboard was an **ESP32-C6-DevKitC-1 v1.2**. That was
 settled on 2026-09-21 off the bench eye at zoom 500, not from the parts
 list: its silkscreen reads `RGB@IO8`, and the C6 devkit puts its RGB LED
 on GPIO8 where the S3 devkit puts its on GPIO48. Both boards carry two
@@ -256,12 +262,14 @@ Every ground is one pin away from where a Pi user reaches for it. **A
 Pi HAT will fit this board and will not work.** Count from the
 schematic, not from habit.
 
-### Four pins that reach the header and are still not yours
+### Ten pins that reach the header and are still not yours
 
     GPIO54  pin 31   the onboard C6's RESET. Take it and the radio dies.
     GPIO45  pin 39   the MicroSD card's power switch
     GPIO53  pin 36   the speaker amplifier's CTRL
     GPIO36  pin 23   BOOT_MODE2, a strapping pin, pulled up
+    GPIO37  pin 7    the console UART's TXD: Serial lives here
+    GPIO38  pin 9    the console UART's RXD (both added 2026-09-25, rev G)
 
 `GPIO24` and `GPIO25` (pins 28 and 27) are the FULL-speed USB pair
 (`USB1P1`, USB 1.1, corrected 2026-09-27: this said high speed) and the
@@ -345,8 +353,9 @@ can do. It is also what was asked for on the first day of this work.
 `firmware/pad-usb` boots clean at 18% of flash and prints `B FF` with
 no pad wired, which is correct: `D0` floats with no pullup, so all
 eight bits read pressed, and the six-slot limit reports `DROPPED`
-rather than losing keys quietly. **With the pullup fitted it should
-read `B 00`**, and that is the next confirmation, needing no host.
+rather than losing keys quietly. With the pullup fitted it read `B 00`
+(2026-09-26), and on 2026-09-27 every button, `01` through `80` and
+chords, once a 10 ohm part fitted as that pullup was replaced by a 10k.
 
 Its `keymap.h` is a **symlink** to `firmware/pad-ble/keymap.h`, so both
 builds send the same eight buttons as the same eight keys, and
@@ -469,28 +478,33 @@ Before anything is powered, and in this order:
    pull-ups and port buffers, and pins that share nothing beep. That
    first pass put two port pins on one lead, repeatably, and it was the
    instrument talking. Write the result beside the colour table above.
-2. **An original pad at 3V3 follows its buttons.** This is measure-first
-   item 4 and it has been open since 2026-09-07. The 4021 is a CMOS part
-   rated 3 to 18 V, so the datasheet says yes, but these pads are forty
-   years old and some may not be genuine. If one will not run at 3V3,
-   the fix is drawn on the adapter sheet already: a 74LVC245 and 5 V to
-   the pad, and the 245 is on hand.
+2. **An original pad at 3V3 follows its buttons.** This was measure-first
+   item 4, open from 2026-09-07 and CLOSED 2026-09-27: an original's
+   MN4021B follows its buttons at 3V3, 27 presses in 30 s under
+   `firmware/pad-diag`, then every button under `firmware/pad-usb`. The
+   4021 is a CMOS part rated 3 to 18 V, so the datasheet said yes; these
+   pads are forty years old and some are not genuine, which is why it was
+   measured. For a pad that will not run at 3V3 the fix is drawn on the
+   adapter sheet: a 74LVC245 and 5 V to the pad, and the 245 is on hand.
+   The replica is not measured at 5 V.
 
-Nothing beyond this point is worth doing until item 2 has an answer,
-because every version of this adapter rests on it.
+Every version of this adapter rested on item 2, which is why it was
+measured before anything else was believed.
 
 ## Build order
 
 1. Wire one pad only: GND, OUT0 to GPIO2, CLK to GPIO3, D0 to GPIO6,
    supply to 3V3, and the 10k from GPIO6 up to 3V3.
-2. Flash `firmware/pad-ble` and open the serial port at 115200. It
-   prints `B <pad1> <pad2> unlinked` on every change of either pad.
+2. Flash `firmware/pad-usb` and watch the UART socket at 115200
+   (`tools/pad-watch.py`). It prints `B <byte>` on every change.
 3. **First light is that byte following your thumbs, and it needs no
-   radio.** If it moves, the hardware half is done and everything after
-   it is software. If it does not, no amount of Bluetooth would have
-   helped, and the answer is measure-first item 2.
-4. Only then pair it. It advertises as `NES Pad` and should appear in a
-   phone's Bluetooth settings as an ordinary keyboard.
+   host.** If it moves, the hardware half is done and everything after
+   it is software. If it does not, no amount of USB would have helped,
+   and the answer is measure-first item 2 (or a resistor's bands).
+4. Only then plug a host into the Type-C socket marked USB. It
+   enumerates as `tinymachines NES Pad`, an ordinary keyboard. (On a
+   board whose radio answers, `firmware/pad-ble` advertises as `NES Pad`
+   instead; on the P4 it crashes at init, see below.)
 
 ## What the host sees
 
@@ -537,11 +551,11 @@ types: neither announces itself.
 **Tested on the bench, 2026-09-27, over USB:** the wiring, the pad's
 own timing at 3.3 V, and a host receiving every button as its key.
 **Not tested, and not to be described as working.** The radio and the
-pairing. The firmware
-compiles for the C6 at 56% of flash and that is all that is known about
-it.
+pairing. `firmware/pad-ble` compiles for the C6 (56% of flash) and for
+the P4 (60%), and on the P4 crashes 2881 ms after `BLEDevice::init`;
+that is all that is known about it.
 
-## The trap that will cost the most time
+## The trap that will cost the most time (BLE build only)
 
 A reflash can clear this board's bond store while the phone still holds
 its side. A one-sided bond refuses to pair and reports nothing at either

@@ -25,7 +25,7 @@ page is the setup, the pictures, and what the first comparison said.
   at 50 MSa/s, 240 ms, about fourteen frames per record. The tool saves
   its whole setup before touching it and restores it afterwards, so the
   other experiment on the same scope is never disturbed.
-- **The Pi**, `nesbench`, holds the grabber and the camera and answers to
+- **The Pi** holds the grabber and the camera and answers to
   the workstation over ssh; the workstation holds the decoder, the tool
   and the record.
 

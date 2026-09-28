@@ -1,6 +1,11 @@
 # 2026-09-09: parts to gather, and sitting 3's build
 
-**State: open, and it is a shopping and soldering-iron task rather than a
+**Outcome: sitting 3 built.** Read off the eye as it was wired
+(`2026-09-13-breadboard-qa.md`) and reading right through the console on
+2026-09-15. Whether the v2b parts (the LM1881N and its resistors) were
+ordered is not recorded here.
+
+**State when written: open, and it is a shopping and soldering-iron task rather than a
 measuring one.** Sitting 2 is finished: six of fourteen steps hold, the
 cut cable is mapped, and the console's own poll is measured. Sitting 3 is
 the first thing on this bench that gets built rather than measured, and
@@ -79,4 +84,4 @@ it.
 
 ## Outcome
 
-Open.
+Sitting 3 built by 2026-09-15 (see the top); the v2b order unrecorded.

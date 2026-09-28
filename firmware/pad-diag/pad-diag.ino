@@ -1,8 +1,12 @@
 // pad-diag: does the pad answer at all, with the clocking taken away?
 //
-// A QA tool, not part of the adapter. firmware/pad-usb reads B 00 on
-// every poll and pressing A changes nothing. The wiring is right by
-// every check: the ESP side hole by hole with firmware/header-probe,
+// A QA tool, not part of the adapter. Written 2026-09-26, when
+// firmware/pad-usb read B 00 on every poll and pressing A changed
+// nothing. RESOLVED 2026-09-27: an original pad answered here, 27
+// presses in 30 s, once a 10 ohm part fitted as the 10k pull-up was
+// replaced; the first pad was a replica, which may load only on an
+// edge, so "no response" here is ambiguous for one. The wiring was
+// right by every check: the ESP side hole by hole with firmware/header-probe,
 // the junction by the owner's list, 3.3 V on both rails by meter, and a
 // real 10k from D0 to the rail. So the question is no longer where a
 // wire goes. It is whether the pad answers.

@@ -31,7 +31,7 @@ Every distinct part across every sheet, with where it is.
 | 74HCT165 | on hand | the C6 sheets' register. HCT there because the C6 drives it at 3.3 V |
 | 74LVC245 | on hand | C6 sheets only; no UNO sheet uses one any more |
 | ESP32-C6-DevKitC-1 v1.2 | on hand | DevKitC-1 v1.2, the alternative build |
-| 10k | check | pad adapter only. A common value; check the drawer before ordering |
+| 10k | on hand | pad adapter only; fitted on the P4 build 2026-09-27. The first part fitted there was 10 ohms: read the bands |
 | TP4056 + protection | to order | pad adapter only |
 | MCP1700-3302 LDO | to order | pad adapter only |
 | slide | to order | pad adapter only, the power switch |
@@ -145,7 +145,7 @@ The original pad as a wireless HID device. A separate project.
 
 ## pad-ble
 
-**Buildable now.** The subset of the adapter whose parts are all on hand: two pads, two pullups, the C6 on USB power.
+**The C6 design, superseded.** One pad, one pullup, the C6 on USB power; the board never accepted a flash, see pad-ble-p4.
 
 | ref | part | on the sheet |
 |---|---|---|

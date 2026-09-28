@@ -151,7 +151,8 @@ at `tinymachines.ai/nes/cal.nes` with `/nes/cal.json` beside it.
 physical cart, `docs/build-the-cal-cart.md`), the reader's dump against
 the CRC above, the auto-cycle and Select seen on the grabber, and the
 first strip read off a grabbed frame: `tools/cal.py grab`, which is
-C1's first tool and not yet written.
+C1's first tool, built (C1 below) and waiting for a frame from the
+part.
 
 **C1: colour. MACHINE SIDE BUILT 2026-09-13, PART SIDE OPEN.**
 `tools/cal.py` exists (`nes-bench` @ 4cbd14b): `grab` finds the console's

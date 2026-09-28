@@ -81,10 +81,10 @@
 <text class="note" x="330" y="149" text-anchor="start">map, two targets.</text>
 <text class="note" x="330" y="162" text-anchor="start"></text>
 <text class="note" x="330" y="175" text-anchor="start">The pad's 4021 is a CMOS part rated 3 to 18 V, so at 3V3 its D0</text>
-<text class="note" x="330" y="188" text-anchor="start">is 3V3 logic and needs no shifter. That is the datasheet, not</text>
-<text class="note" x="330" y="201" text-anchor="start">this bench: MEASURE FIRST, item 4, open since 2026-09-07. If a</text>
-<text class="note" x="330" y="214" text-anchor="start">pad will not follow its buttons at 3V3, add a 74LVC245 and feed</text>
-<text class="note" x="330" y="227" text-anchor="start">the pad 5 V; the 245 is on hand.</text>
+<text class="note" x="330" y="188" text-anchor="start">is 3V3 logic and needs no shifter. MEASURED 2026-09-27: an</text>
+<text class="note" x="330" y="201" text-anchor="start">original's MN4021B follows its buttons at 3V3, 27 presses in</text>
+<text class="note" x="330" y="214" text-anchor="start">30 s under firmware/pad-diag. No 74LVC245 needed. A 10 ohm part</text>
+<text class="note" x="330" y="227" text-anchor="start">fitted as the 10k pull-up hid it first: read the bands.</text>
 <text class="note" x="330" y="240" text-anchor="start"></text>
 <text class="note" x="330" y="253" text-anchor="start">Pin 5 is the supply and 6 and 7 carry nothing, as measured on</text>
 <text class="note" x="330" y="266" text-anchor="start">this console's own cable (docs/wiring.md). RING THE CABLE OUT</text>
@@ -180,10 +180,10 @@
 <rect class="zone" x="20" y="782" width="1520" height="262" rx="6"/>
 <text class="sub" x="28" y="796" text-anchor="start">WHAT THIS BOARD DOES, MEASURED, and why the direction changed on 2026-09-25</text>
 <text class="pin" x="40" y="812" text-anchor="start">USB HID</text>
-<text class="pin" x="168" y="812" text-anchor="start">THIS IS THE BUILD. Boots clean, 18% of flash, and prints B FF with no pad wired, which is right: D0 floats with no pullup so all</text>
-<text class="pin" x="168" y="825" text-anchor="start">eight bits read pressed. soc_caps.h gives the P4 SOC_USB_OTG_SUPPORTED with two OTG peripherals, which the C6 never had. No radio,</text>
-<text class="pin" x="168" y="838" text-anchor="start">no co-processor, no SDIO, no pairing: a USB-C cable to a phone and nothing in the path that can fail. Plug the HOST into the socket</text>
-<text class="pin" x="168" y="851" text-anchor="start">marked USB, not PWR USB TO UART, and set the jumper to DEVICE. The UART socket stays on the bench head for the serial log.</text>
+<text class="pin" x="168" y="812" text-anchor="start">THIS IS THE BUILD, PROVEN 2026-09-27: an original pad at 3V3, every button and chord, and a Linux host enumerating 303a:0002 NES Pad</text>
+<text class="pin" x="168" y="825" text-anchor="start">at full speed and receiving all eight keys. TinyUSB driven directly on the P4's FULL-speed OTG controller, PHY 0 (GPIO24/25) swapped</text>
+<text class="pin" x="168" y="838" text-anchor="start">from USB-Serial-JTAG to it: the Type-C socket marked USB, not PWR USB TO UART. The HOST/DEVICE jumper is the high-speed switch's and</text>
+<text class="pin" x="168" y="851" text-anchor="start">does not matter here. No radio, no co-processor, no pairing. Not yet tried: a phone, a browser page, latency. UART stays the log.</text>
 <text class="pin" x="40" y="867" text-anchor="start">BLE HID</text>
 <text class="pin" x="168" y="867" text-anchor="start">REACHES THE AIR BUT CRASHES THIS FIRMWARE, and not in our code. The P4 has no radio; the module's ESP32-C6 is it, over SDIO. The host's</text>
 <text class="pin" x="168" y="880" text-anchor="start">esp-hosted 2.12.11 asks that C6 for its firmware version, gets no answer, and the failure path reads a pointer nobody filled in:</text>

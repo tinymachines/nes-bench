@@ -31,7 +31,7 @@ SHEETS = [
     ("bench-v1", "sheet_v1", "The ESP32-C6 alternative to v1b. Not the build."),
     ("bench-v2", "sheet_v2", "The C6 alternative to v2b. Not the build."),
     ("pad-adapter", "sheet_pad", "The original pad as a wireless HID device. A separate project."),
-    ("pad-ble", "sheet_padble", "**Buildable now.** The subset of the adapter whose parts are all on hand: two pads, two pullups, the C6 on USB power."),
+    ("pad-ble", "sheet_padble", "**The C6 design, superseded.** One pad, one pullup, the C6 on USB power; the board never accepted a flash, see pad-ble-p4."),
     ("pad-ble-p4", "sheet_padble_p4", "**The one to build.** The same circuit on the board that actually flashes: a Waveshare ESP32-P4-Module-DEV-KIT, wired at header P6."),
 ]
 
@@ -59,7 +59,7 @@ STATUS = {
     "1k": ("on hand", "R2, the clock pin's series element, placed 2026-09-15"),
     "100pF": ("on hand", "C4, the clock pin's filter, placed 2026-09-15"),
     "74HCT165": ("on hand", "the C6 sheets' register. HCT there because the C6 drives it at 3.3 V"),
-    "10k": ("check", "pad adapter only. A common value; check the drawer before ordering"),
+    "10k": ("on hand", "pad adapter only; fitted on the P4 build 2026-09-27. The first part fitted there was 10 ohms: read the bands"),
     "330R": ("check", "pad adapter only, the LED"),
     "slide": ("to order", "pad adapter only, the power switch"),
     "power": ("to order", "pad adapter only, the battery"),

@@ -152,7 +152,7 @@ Gate:
 
 ## The pieces, and where they live
 
-- `firmware/`: the ESP32 sketch. A line protocol over USB serial, in
+- `firmware/`: the bridge sketch (v1, ESP32-C6, in `bridge/`; as built, the UNO, in `bridge-uno/`). A line protocol over USB serial, in
   the shape of `halfwave`'s: `MODE PASS` / `MODE INJECT`, `SET hh` (the
   byte to hold now), `AT n hh` (the byte to hold from latch n), `TRIG
   n`, `RESET` (zero the counters), and a stream of `L n hh c` lines,
@@ -197,7 +197,9 @@ things it adds to the plan:
   the play page's (A is x, B is z, Select the right shift, Start
   enter, the cross the arrows), so a phone with the adapter drives
   `/nes/play` with no more code. An ESP32-S3 is the part for USB; the
-  C6 on hand does BLE. Its own milestone, after the bench's four.
+  C6 on hand does BLE. Its own milestone, after the bench's four. (As
+  built: an ESP32-P4-Module, USB, an original pad at 3.3 V, every key
+  at a Linux host on 2026-09-27, `pad-usb-protocol.md`.)
 
 ## Added 2026-09-08: v1b, the UNO bridge, and the firmware that fits it
 

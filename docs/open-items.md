@@ -52,9 +52,9 @@ entry is the one that raised it, with its date.
   and HID descriptor pass 76 desk checks with the mutation red, but no
   pad has been wired to it and no host has paired it. The pad half is
   now proven by the USB build above; the pairing has met no phone, and
-  on the P4 it cannot until the onboard C6 answers esp-hosted. First light is `poll_pads` printing a byte
-  that follows the buttons, which needs no radio and settles the half
-  that matters.
+  on the P4 it cannot until the onboard C6 answers esp-hosted. Closes
+  with the module's C6 answering (new slave firmware over the C6 UART
+  header) and a phone pairing.
 - ~~**The pad cable's lead colours disagree (2026-09-21)**~~ CLOSED
   2026-09-22: the same five colours as the bridge, confirmed at the
   bench, so the metered table stands unchanged (pin 1 yellow, 2 blue,

@@ -5,8 +5,8 @@
 // firmware/bridge/bridge.ino's own, with the same timings on the same
 // pins. What is new is a radio behind it instead of a shift register.
 //
-// Standalone: no Pi, no UNO, no bridge, no console. A pad, a C6 and two
-// resistors. Wiring, per the corrected sheet:
+// Standalone: no Pi, no UNO, no bridge, no console. A pad, an ESP32
+// board and one resistor. Wiring, per the corrected sheet:
 //
 //   pad GND    -> GND
 //   pad +5V    -> 3V3        the 4021 is a CMOS part rated 3 to 18 V
@@ -30,15 +30,18 @@
 // WHAT IS TESTED AND WHAT IS NOT. keymap.h is plain C and
 // tools/test-pad-keymap.sh compiles and exercises it natively, so the
 // report descriptor and the mapping are held on the desk. Everything in
-// THIS file needs the part: the pad's timing at 3.3 V is measure-first
-// item 4 and has never been done, and the pairing has met no phone.
-// Nothing here should be described as working until it has.
+// THIS file needs the part. The pad's timing at 3.3 V (measure-first
+// item 4) was proven on 2026-09-27 through firmware/pad-usb's identical
+// poll_pad on the P4; the pairing has met no phone, and on the P4
+// BLEDevice::init crashes (pad-usb.ino says why). Nothing about the
+// radio here should be described as working until it has.
 //
 // WHY A KEYBOARD AND NOT A GAMEPAD. Every host accepts a BLE keyboard
 // with no app, no driver and no pairing shim, and browser emulators take
 // keys. A generic HID gamepad is refused by iOS, which accepts only the
 // MFi, Xbox, PlayStation and Switch Pro layouts. Gamepad mode belongs
-// behind the mode switch on GPIO10 and is not in this build.
+// behind the mode switch (GPIO10 on the C6, GPIO21 on the P4) and is not
+// in this build.
 //
 // ONE PAD, and that is the design rather than a first step. A keyboard
 // report carries six key slots and two pads can ask for ten, so a

@@ -1,5 +1,9 @@
 # 2026-09-13: the bridge on the breadboard, read off the eye while it was built
 
+**Outcome: closed 2026-09-17.** The bridge reads every byte through the
+console (2026-09-15) and both hands hold from the Pi (2026-09-17). Open
+from it: the original pad through the bridge (steps 4.2 and 5.2).
+
 The BRIO's timed frames (`scripts/grab.sh`, every five minutes) and a few
 aimed close-ups (`tools/eye.py grab --zoom 200|300 --pan --tilt`) read
 against the cheat sheet (`docs/cheat-sheet.md`, the pin table per chip).

@@ -118,8 +118,9 @@ right=captures/rig/right.jpg,middle=captures/rig/middle.jpg`, with
 overlay (`tools/board-overlay.py captures/rig/all.jpg`) looked at with
 the rings on the holes, and then the check again with `--baseline`, which
 refuses if any check fails on the frames the baseline would be made of.
-The baseline's measurements are `docs/rig-baseline.json`, dated; its
-frames are `captures/rig/baseline-*.jpg`.
+The baseline's measurements go to `docs/rig-baseline.json`, dated; its
+frames to `captures/rig/baseline-*.jpg`. Neither exists yet: no
+baseline has been taken (2026-09-28).
 
 ### The signal paths, the same way
 
@@ -167,7 +168,9 @@ it listens. The relay module's input is active low: the head daemon
 drives it so (fixed 2026-09-16), and the Pi's GPIO27 rests as an input
 with a pull-down until something claims it, which is the relay ON. A
 `gpio=27=op,dh` line in the Pi's config.txt is the cure, to be set once
-the relay is in and its rest state measured.
+the relay is in and its rest state measured. The relay has been in and
+driven since 2026-09-17; whether that line was set is not recorded
+here (`bench.local.md` is where it would be).
 
 ## When something moves
 

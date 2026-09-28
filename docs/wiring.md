@@ -4,7 +4,10 @@ Authored 2026-09-06 from the published NES-001 controller port pinout
 and corrected 2026-09-09 where this console disagreed with it,
 the 74HCT165, 74HCT04 and 74LVC245 datasheets, and the ESP32's pin
 rules; revised 2026-09-07 against the gear photographed in this
-directory (`IMG_5660` to `IMG_5675`). Nothing here has been built.
+directory (`IMG_5660` to `IMG_5675`). The C6 wiring here was never
+built: the bench is v1b, the same bridge on an Arduino UNO at 5 V
+(`bench-v1b-uno.md`, built 2026-09-15). What is measured here, the
+port pinout and the poll timings, is the bench's.
 Every line under "Measure first" is a meter check to make before the
 console is powered through any of this, because a pinout copied from a
 page is a claim, and a 5 V line on an ESP32 pin is a dead ESP32.
@@ -35,8 +38,9 @@ scope on one sheet, is `bench-v1.svg`, drawn by
   and C21 220 pF, C23 1 uF (Rubycon 50 V), R7 20 K, R8 12 K, all
   readable in `IMG_5669`, `IMG_5674`, `IMG_5675`. N7's stage was
   authored from the schematic; the board agrees.
-- **The microcontroller is an ESP32-C6-DevKitC-1 v1.2** (`IMG_5662`,
-  `IMG_5664`), not a classic ESP32: RISC-V, GPIO0 to 23 on the
+- **The microcontroller in this plan is an ESP32-C6-DevKitC-1 v1.2**
+  (`IMG_5662`, `IMG_5664`), not a classic ESP32 (the built bridge
+  uses an Arduino UNO instead, `bench-v1b-uno.md`): RISC-V, GPIO0 to 23 on the
   headers, four pulse-counter units, two USB-C ports (one to a UART
   bridge on GPIO16 and 17, one the chip's own USB on GPIO12 and 13).
   Strapping pins 8, 9 and 15 (and 4 and 5, to be safe) are left
@@ -159,7 +163,7 @@ side. Nothing is cut, and the console's other port stays as it is.
 | pad plug pin | signal | to |
 |---|---|---|
 | 1 | GND | GND |
-| 7 | +5 V | ESP32 3V3 (the 4021 runs from 3 V; measured in B0 before it is trusted) |
+| 7 | +5 V | ESP32 3V3 (the 4021 runs from 3 V; measured 2026-09-27 on the pad adapter, item 4 below) |
 | 3 | OUT0 | ESP32-C6 GPIO2 (output, the bridge's own latch) |
 | 2 | CLK | ESP32-C6 GPIO3 (output, the bridge's own clock) |
 | 4 | D0 | ESP32-C6 GPIO6 (input; 3.3 V because the pad is) |
@@ -268,9 +272,10 @@ With the meter, before anything is powered through the bridge:
    width, the clock pulse width and count, and D0's idle and pressed
    levels. These numbers replace the authored ones above.
 4. The pad alone, powered from 3.3 V on the bench with the bridge's
-   own poll: D0 follows the buttons. If a pad's 4021 does not run at
-   3.3 V (it should from the datasheet), the pad side gets a second
-   74LVC245 and 5 V, and this file says so.
+   own poll: D0 follows the buttons. MEASURED 2026-09-27 on the pad
+   adapter (`pad-usb-protocol.md`): an original pad's MN4021B follows
+   its buttons at 3.3 V, 27 presses in 30 s, every button. No second
+   74LVC245 is needed for an original; a replica is not measured.
 5. The reset button's pads with the console on: which pad is ground,
    and the level the other sits at (it should be pulled up); the PC817
    module's GND goes to the ground side and its OUT to the other.
@@ -287,9 +292,9 @@ With the meter, before anything is powered through the bridge:
 | 1 | 74HCT04 (or a single-gate 74HCT1G04) |
 | 1 | 74LVC245 |
 | 1 | PC817 optocoupler module (on hand) |
-| 1 | relay module, 3.3 V logic input, contacts rated for the adapter's current |
+| 1 | relay module, contacts rated for the adapter's current (the one on hand: 5 V coil, active-low opto input) |
 | 1 | a breakout for the controller harness header, or crimp pins to tap it |
 | 3 | 100 nF ceramic capacitors |
 | 1 | 100 ohm resistor (trigger) |
-| 1 | BNC cable to EXT TRIG |
+| 1 | probe or BNC into CH1 (the DS1054Z has no EXT TRIG) |
 | | breadboard or perfboard, wire |
