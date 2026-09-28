@@ -12,8 +12,11 @@ in `esp32-part-choice.md`. This page is the protocol and the plan.
 
 **A real button press reaches a host.** An original pad at 3.3 V, the
 P4, full-speed USB and a Linux host (the bench's Pi) carry all eight
-buttons through as their keys, chords included. **Not yet: a phone, and
-a browser** (steps 6 and 7). Getting there moved the firmware off the
+buttons through as their keys, chords included. **A browser sees them
+too** (step 6, 2026-09-28, on `tinymachines.ai/lab/pad-keydown`): every
+button as its `code`, one report per change, the host's autorepeat
+visible as the host's. **Not yet: a game moving on a phone** (step 7).
+Getting there moved the firmware off the
 Arduino core's USB classes and onto a different USB controller; layer 4
 says why, and what was wrong about the first version of this page.
 
@@ -265,6 +268,27 @@ any host; one that binds by `key` makes B depend on the phone's
 language settings. US and Japanese layouts both put Z and X in the
 same place, which is why this will not show up on the bench.
 
+MEASURED 2026-09-28 with `tools/keydown-page.html`, served unlisted at
+`tinymachines.ai/lab/pad-keydown` (the page is self-contained and
+copies its record as JSON lines; the host it ran on is not yet named
+here). Two runs, eight buttons each, pressed one at a time:
+
+- every press arrived as its `code`, in the order pressed: `KeyX`,
+  `KeyZ`, `ShiftRight`, `Enter`, `ArrowUp`, `ArrowDown`, `ArrowLeft`,
+  `ArrowRight`; every `keyup` followed its `keydown`; A and B were
+  held about 65 ms in the first run and 210 to 250 ms in the second,
+  the arrows 150 to 500 ms, and nothing was lost at either length;
+- `key` is the host's, exactly as above: in the first run something on
+  the host held its own `ShiftLeft` across A and B (the adapter never
+  sends a left shift; Select is the right one, and it arrived as
+  `ShiftRight` in both runs), so A and B came through as `X` and `Z`;
+  in the second run, with nothing held, as `x` and `z`;
+- the one `repeat: true` line was the host's autorepeat, 500 ms after
+  `ArrowRight` went down and 17 ms before it went up. The adapter sends
+  one report per change (`pad-usb.ino`), so a repeated `keydown` is
+  the host repeating a held key, and an emulator that counts presses
+  must ignore it, as it ignores a real keyboard's.
+
 ## Why USB now, and Bluetooth later
 
 BLE was the first plan and is still the reason `pad-ble` is named what
@@ -292,8 +316,8 @@ fails places the fault in its own layer.
 | 3 | layers 1 and 2: the byte follows the buttons | `firmware/pad-usb`, `tools/pad-watch.py` | each button alone prints its own bit, `01` through `80`, and idle is `00` | **passes**, and chords (`03`, `A0`) |
 | 4 | layer 4: the host enumerates it | the host's USB log | `303a:0002`, `NES Pad`, class HID, and the speed | **passes**, full speed |
 | 5 | layer 3: the host reads the report the way it was meant | the input device, read directly on Linux | A gives `KEY_X`, Select gives `KEY_RIGHTSHIFT` | **passes**, all eight keys and chords |
-| 6 | the host: the browser sees it | a `keydown` logger page | A gives `code` `KeyX` | not run |
-| 7 | the whole chain on the device it is for | a phone and a browser emulator | the game moves | not run |
+| 6 | the host: the browser sees it | `tools/keydown-page.html` at `tinymachines.ai/lab/pad-keydown` | A gives `code` `KeyX` | **passes** 2026-09-28, all eight codes, two runs; the host's autorepeat and modifiers seen as the host's |
+| 7 | the whole chain on the device it is for | a phone and a browser emulator | the game moves | not run; a browser emulator that binds by `code` has every event it needs (step 6) |
 
 Step 2 closed measure-first item 4. Step 3 needs no host at all:
 the P4 prints every change on its serial log whether or not anything
@@ -301,9 +325,13 @@ is plugged into `USB`, which is why it comes before step 4.
 
 ## Open, and not claimed
 
-- **A phone** (step 7): whether it enumerates, and whether it powers
-  the board alone.
-- **A browser** (step 6).
+- **A phone** (step 7): whether it enumerates, whether it powers the
+  board alone with the UART cable out, and whether a browser emulator
+  on it moves. Step 6's host is to be named; if it was the phone, the
+  first two are answered and this page should say so.
+- **Latency of the host layer.** The keydown page stamps events with
+  the host's clock only, so it says nothing about the time from
+  button to event.
 - **Latency.** Bounded by the code, not measured: a change waits at
   most one 16 ms poll, then at most one host poll. The bench can
   measure it end to end, since the bridge stamps every console poll.

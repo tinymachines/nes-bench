@@ -40,13 +40,17 @@ entry is the one that raised it, with its date.
   follows its buttons at 3.3 V on the P4, 27 presses of A in 30 s under
   `pad-diag`, then all eight bits under `pad-usb`. The first try failed
   on a 10 ohm part fitted as the 10k data pull-up.
-- **The USB pad adapter works on a Linux host and has met no phone
-  (2026-09-27).** `firmware/pad-usb` on the P4's full-speed controller,
-  host in the Type-C socket marked USB: the Pi enumerates
-  `303a:0002 tinymachines NES Pad` at full speed and receives every
-  button as its key, chords included. Closes with a phone running a
-  browser emulator (`pad-usb-protocol.md` steps 6 and 7), which also
-  answers whether a phone alone powers the board.
+- **The USB pad adapter works on a Linux host and in a browser, and
+  has not moved a game on a phone (2026-09-27, 2026-09-28).**
+  `firmware/pad-usb` on the P4's full-speed controller, host in the
+  Type-C socket marked USB: the Pi enumerates `303a:0002 tinymachines
+  NES Pad` at full speed and receives every button as its key, chords
+  included; on 2026-09-28 a browser page (`tools/keydown-page.html`,
+  unlisted at `tinymachines.ai/lab/pad-keydown`) saw all eight as their
+  `code`, twice, with the host's autorepeat marked as the host's
+  (`pad-usb-protocol.md` step 6; the host is to be named there). Closes
+  with a phone running a browser emulator (step 7), which also answers
+  whether a phone alone powers the board.
 - **The BLE pad adapter is written and has met nothing (2026-09-21).**
   `firmware/pad-ble` compiles for the C6 (56% of flash) and its mapping
   and HID descriptor pass 76 desk checks with the mutation red, but no
