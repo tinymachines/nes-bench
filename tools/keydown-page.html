@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>keydown: none yet</title>
+<!--
+  nes-bench pad-usb: the keydown logger. Step 6 of docs/pad-usb-protocol.md.
+
+  Self-contained: no script, no style, no fetch outside this file, so it
+  can be served from anywhere, including an unlisted path on the public
+  site, and opened on a phone with the pad on its USB-C port. Everything
+  it sees stays on the screen; the Copy button puts the record on the
+  clipboard as JSON lines. When it is served by tools/keydown-log.py on
+  127.0.0.1 it also POSTs each line there, which is the Pi's route.
+
+  The source of this file is tools/keydown-page.html in the nes-bench
+  repository; a copy anywhere else is a copy.
+-->
+<style>
+:root { --bg: #fff; --fg: #111; --dim: #777; --amber: #b86400; --ok: #1a7f37; --line: #ddd; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #111; --fg: #eee; --dim: #999; --amber: #e8a040; --ok: #4cc26a; --line: #333; }
+}
+body { font: 15px/1.45 ui-monospace, Menlo, Consolas, monospace; margin: 0; padding: 16px; background: var(--bg); color: var(--fg); }
+h1 { font-size: 17px; margin: 0 0 6px; }
+p { margin: 4px 0; color: var(--dim); }
+#expect { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin: 12px 0; }
+#expect div { border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; font-size: 13px; }
+#expect div.seen { border-color: var(--ok); color: var(--ok); }
+#expect b { display: block; font-weight: 600; }
+#bar { display: flex; gap: 8px; margin: 8px 0 12px; }
+button { font: inherit; padding: 6px 12px; border: 1px solid var(--line); border-radius: 6px; background: transparent; color: var(--fg); }
+#focus { position: absolute; opacity: 0; width: 1px; height: 1px; left: -9999px; }
+#log { white-space: pre; overflow-x: auto; }
+#log div.up { color: var(--dim); }
+#log div.rep { color: var(--amber); }
+#count { color: var(--dim); }
+</style>
+</head>
+<body>
+<h1>NES pad, USB: keydown logger</h1>
+<p>Plug the pad adapter into this device and press a button. Grey is key up. Amber is the host's own autorepeat while a button is held, not a second press. Tap the page first if nothing appears.</p>
+<div id="expect">
+  <div id="e-KeyX"><b>A</b>KeyX</div>
+  <div id="e-KeyZ"><b>B</b>KeyZ</div>
+  <div id="e-ShiftRight"><b>Select</b>ShiftRight</div>
+  <div id="e-Enter"><b>Start</b>Enter</div>
+  <div id="e-ArrowUp"><b>Up</b>ArrowUp</div>
+  <div id="e-ArrowDown"><b>Down</b>ArrowDown</div>
+  <div id="e-ArrowLeft"><b>Left</b>ArrowLeft</div>
+  <div id="e-ArrowRight"><b>Right</b>ArrowRight</div>
+</div>
+<div id="bar">
+  <button id="copy" type="button">Copy log</button>
+  <button id="clear" type="button">Clear</button>
+  <span id="count">0 events</span>
+</div>
+<input id="focus" aria-hidden="true" tabindex="-1" autocomplete="off">
+<div id="log"></div>
+<script>
+(function () {
+  var log = document.getElementById('log');
+  var count = document.getElementById('count');
+  var focus = document.getElementById('focus');
+  var records = [];
+  var seen = {};
+  var local = location.hostname === '127.0.0.1' || location.hostname === 'localhost';
+
+  function line(e, kind) {
+    var rec = { n: records.length + 1, t: Date.now(), kind: kind, code: e.code || '', key: e.key,
+                keyCode: e.keyCode, repeat: !!e.repeat, shift: e.shiftKey };
+    records.push(rec);
+    var el = document.createElement('div');
+    el.textContent = String(rec.n).padStart(4) + ' ' + kind.padEnd(4) + ' code=' + rec.code.padEnd(11)
+      + ' key=' + JSON.stringify(rec.key) + (rec.repeat ? '  repeat' : '');
+    if (kind === 'up') el.className = 'up';
+    if (rec.repeat) el.className = 'rep';
+    log.insertBefore(el, log.firstChild);
+    count.textContent = records.length + ' events';
+    if (kind === 'down' && !rec.repeat) {
+      document.title = 'keydown: ' + rec.code;
+      var box = document.getElementById('e-' + rec.code);
+      if (box && !seen[rec.code]) { seen[rec.code] = true; box.className = 'seen'; }
+    }
+    if (local) {
+      try {
+        fetch('/log', { method: 'POST', headers: { 'content-type': 'application/json' },
+                        body: JSON.stringify(rec) }).catch(function () {});
+      } catch (err) {}
+    }
+  }
+  window.addEventListener('keydown', function (e) { line(e, 'down'); e.preventDefault(); });
+  window.addEventListener('keyup', function (e) { line(e, 'up'); e.preventDefault(); });
+
+  // A phone gives hardware-keyboard events to the focused element; an
+  // off-screen input keeps one focused without raising the soft keyboard
+  // (inputmode none) and without a caret on the page.
+  focus.setAttribute('inputmode', 'none');
+  function refocus() { try { focus.focus({ preventScroll: true }); } catch (err) {} }
+  document.addEventListener('click', function (e) { if (e.target.tagName !== 'BUTTON') refocus(); });
+  document.addEventListener('touchend', function (e) { if (e.target.tagName !== 'BUTTON') refocus(); });
+  refocus();
+
+  document.getElementById('copy').addEventListener('click', function () {
+    var text = records.map(function (r) { return JSON.stringify(r); }).join('\n') + '\n';
+    var done = function () { count.textContent = records.length + ' events, copied'; refocus(); };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done, function () { window.prompt('Copy this', text); refocus(); });
+    } else { window.prompt('Copy this', text); refocus(); }
+  });
+  document.getElementById('clear').addEventListener('click', function () {
+    records = []; seen = {}; log.textContent = ''; count.textContent = '0 events';
+    document.title = 'keydown: none yet';
+    var boxes = document.querySelectorAll('#expect div'); for (var i = 0; i < boxes.length; i++) boxes[i].className = '';
+    refocus();
+  });
+})();
+</script>
+</body>
+</html>
