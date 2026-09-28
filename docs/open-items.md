@@ -35,13 +35,24 @@ entry is the one that raised it, with its date.
   arrives at its own rate with its own axes, and whether BlueZ on this
   head pairs the pad at all. Closes with a pad paired on the Pi and
   `bench.py <head> pad on` playing one screen of anything.
+- ~~**An original pad at 3V3 (measure-first item 4, open since
+  2026-09-07)**~~ CLOSED 2026-09-27: an original pad (genuine MN4021B)
+  follows its buttons at 3.3 V on the P4, 27 presses of A in 30 s under
+  `pad-diag`, then all eight bits under `pad-usb`. The first try failed
+  on a 10 ohm part fitted as the 10k data pull-up.
+- **The USB pad adapter works on a Linux host and has met no phone
+  (2026-09-27).** `firmware/pad-usb` on the P4's full-speed controller,
+  host in the Type-C socket marked USB: the Pi enumerates
+  `303a:0002 tinymachines NES Pad` at full speed and receives every
+  button as its key, chords included. Closes with a phone running a
+  browser emulator (`pad-usb-protocol.md` steps 6 and 7), which also
+  answers whether a phone alone powers the board.
 - **The BLE pad adapter is written and has met nothing (2026-09-21).**
   `firmware/pad-ble` compiles for the C6 (56% of flash) and its mapping
   and HID descriptor pass 76 desk checks with the mutation red, but no
-  pad has been wired to it and no host has paired it. Two things it
-  rests on are unproven here, and one of them is old: **an original pad
-  at 3V3 is measure-first item 4** and has never been done, and the
-  pairing has met no phone. First light is `poll_pads` printing a byte
+  pad has been wired to it and no host has paired it. The pad half is
+  now proven by the USB build above; the pairing has met no phone, and
+  on the P4 it cannot until the onboard C6 answers esp-hosted. First light is `poll_pads` printing a byte
   that follows the buttons, which needs no radio and settles the half
   that matters.
 - ~~**The pad cable's lead colours disagree (2026-09-21)**~~ CLOSED

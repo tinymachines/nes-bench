@@ -11,13 +11,16 @@ is USB**, both of which changed under this document; the reasoning is
 in "The direction changed twice" below. The ESP32-C6 the early sheets
 are drawn around never accepted a flash.
 
-Written 2026-09-21, updated 2026-09-23.
+Written 2026-09-21, updated 2026-09-27.
 
-**Nothing here has been built, and nothing about the circuit has been
-measured.** The firmware compiles and its key mapping is tested on the
-desk, but the wiring below has never had current in it, no pad has been
-wired to it, no host has paired it, and one thing it rests on has been
-an open measure-first item since 2026-09-07.
+**Built and working over USB, 2026-09-27.** An original pad, wired to
+the P4 by signal, reads all eight buttons at 3.3 V (measure-first item
+4, open since 2026-09-07, is closed), and a Linux host receives them as
+key events: A `KEY_X`, B `KEY_Z`, Select `KEY_RIGHTSHIFT`, Start
+`KEY_ENTER`, the d-pad the four arrows, chords included. The host was
+the bench's Pi; **a phone has not been tried.** Bluetooth remains
+unbuilt on this board. What each layer is and how each was proven is
+`pad-usb-protocol.md`.
 
 What HAS been measured is the board, not the circuit: which part it is,
 where it sits on the breadboard, and the order of its header pins. Each
@@ -260,7 +263,9 @@ schematic, not from habit.
     GPIO53  pin 36   the speaker amplifier's CTRL
     GPIO36  pin 23   BOOT_MODE2, a strapping pin, pulled up
 
-`GPIO24` and `GPIO25` (pins 28 and 27) are the high-speed USB pair, and
+`GPIO24` and `GPIO25` (pins 28 and 27) are the FULL-speed USB pair
+(`USB1P1`, USB 1.1, corrected 2026-09-27: this said high speed) and the
+Type-C socket marked `USB` is wired to them, and
 `GPIO7` and `GPIO8` (pins 4 and 6) are the audio codec's I2C with 2.2k
 pullups already on the board. The full table, with what is free, is
 `tools/p4_header.py` and sheet 5 of TM-NESB-003.
@@ -278,9 +283,8 @@ unmentioned pin is silence.
 
 Proven by test on 2026-09-24: it flashes, it runs, its BLE address
 reaches an independent receiver, and the firmware compiles for it with
-the pad map untouched. **Not proven: anything at all about the pad.**
-No pad has been wired to this board, and measure-first item 4 below is
-still open.
+the pad map untouched. **2026-09-27: the pad is proven too**, over USB,
+as the status at the top says. Bluetooth on this board is still not.
 
 ## The direction changed twice, and this is why
 
@@ -357,9 +361,25 @@ run they sit in are unaffected by either move.
 
 ### Using it
 
-Plug the host into the socket marked **`USB`**, not `PWR USB TO UART`,
-and set the jumper to **`DEVICE`**. The UART socket stays on the bench
-head, which is where the serial log comes from.
+Plug the host into the Type-C socket marked **`USB`**, not `PWR USB TO
+UART`. The UART socket stays on the bench head, which is where the
+serial log comes from and what the board is flashed over.
+
+**Corrected 2026-09-27: the jumper does not matter, and the first
+firmware could not work on that socket.** The P4 has a high-speed and a
+full-speed USB controller. The Arduino core's USB classes put the
+keyboard on the high-speed one, which on this kit reaches only the
+USB-A stack J8, through a switch the HOST/DEVICE jumper drives, on a
+port whose 5 V the board itself drives; a host plugged in there would
+meet the board's supply with its own. The `USB` Type-C socket is the
+full-speed pair on GPIO24/25, built as a device port (its 5 V is an
+input, behind a diode), and by default the chip's own USB-Serial-JTAG
+answers there: plugged in with the first firmware, the host saw
+`303a:1001`, a debug unit, and never a keyboard. `firmware/pad-usb` now
+drives TinyUSB itself on the full-speed controller and swaps PHY 0
+(GPIO24/25) over to it, since the P4 gives that PHY to the debug unit
+by default. The reasoning, the schematic references and the
+measurements are in `pad-usb-protocol.md`, layer 4.
 
 ## The pad on the bench was a replica
 
@@ -388,9 +408,15 @@ genuine 4021 behaviour, where holding the latch high makes D0 follow
 button A continuously. A clone chip may load only on an edge, so for
 the replica "no response" was ambiguous. For a real 4021 it is fair.
 
-**Measure-first item 4 is therefore still open.** It asks whether an
-*original* pad follows its buttons at 3.3 V, and no original has been
-on this build.
+**Measure-first item 4 stayed open until an original was on the build,
+and on 2026-09-27 it closed:** holding A with `pad-diag` drove D0 low
+through 27 presses in 30 seconds. The same evening's first attempt
+failed for a reason worth keeping: the resistor fitted as the data
+pull-up was **10 ohms, not 10k**. A 4021 cannot pull a line low against
+10 ohms (it would have to sink about 330 mA), so D0 dipped a little on
+each press and never crossed the threshold, which looks exactly like a
+pad that does not answer. Read the bands, or meter it, before blaming
+the chip.
 
 ### An original pad, and why its colours are not the replica's
 
@@ -508,8 +534,10 @@ compared with what the code actually writes. Those two are worth
 mechanising because a bad descriptor still pairs and a bad mapping still
 types: neither announces itself.
 
-**Not tested, and not to be described as working.** The radio, the
-pairing, the pad's own timing at 3.3 V, and the wiring. The firmware
+**Tested on the bench, 2026-09-27, over USB:** the wiring, the pad's
+own timing at 3.3 V, and a host receiving every button as its key.
+**Not tested, and not to be described as working.** The radio and the
+pairing. The firmware
 compiles for the C6 at 56% of flash and that is all that is known about
 it.
 
@@ -523,8 +551,9 @@ host as well, because doing only one is the failure.
 
 ## Open, and recorded in `open-items.md`
 
-- The adapter has met no pad and no host.
-- An original pad at 3V3 is unproven (measure-first item 4).
+- The USB adapter has met no phone; its only host so far is the Pi.
+- The BLE build has met no pad and no host on this board, and cannot
+  until the onboard C6's firmware answers (see above).
 - The bench eye cannot read a devkit's silkscreen, which is why the
   header order above was read by hand. It will be true of the next
   devkit too.

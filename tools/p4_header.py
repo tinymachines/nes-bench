@@ -66,7 +66,10 @@ RESERVED = {
     "GPIO45": "the MicroSD card's power switch (Q1's gate).",
     "GPIO53": "the speaker amplifier's CTRL.",
     "GPIO36": "BOOT_MODE2, a strapping pin, pulled up.",
-    "GPIO24": "USB1P1_N, half of the high-speed USB pair.",
+    # FULL speed (USB1P1 is USB 1.1), corrected 2026-09-27: this said
+    # high speed. It is the Type-C socket marked USB, and pad-usb's
+    # keyboard runs on it; see docs/pad-usb-protocol.md, layer 4.
+    "GPIO24": "USB1P1_N, half of the full-speed USB pair (the USB socket).",
     "GPIO25": "USB1P1_P, the other half.",
     "GPIO7": "ESP_I2C_SDA to the audio codec, with a 2.2k pullup on the board.",
     "GPIO8": "ESP_I2C_SCL to the audio codec, with a 2.2k pullup on the board.",
@@ -196,6 +199,13 @@ PAD_COLOUR = pad_colour()
 # from every wire to the pad's own 4021 BEFORE power goes near it, and
 # the chip pin each should beep to is recorded here for exactly that.
 # Flip OG_PAD_MEASURED when a pad has been rung out this way.
+#
+# 2026-09-27: the owner's pad has NOT been rung out, so this stays
+# False, but the table held in use: its five wires were traced from
+# photographs of the pad's board to exactly these pins, and wired by
+# signal to the P4 in these colours they carried all eight buttons
+# (docs/pad-usb-protocol.md, steps 2 to 5). A use that works is strong
+# evidence; it is not the continuity check this flag records.
 OG_PAD = {
     "3V3": ("White", 16),
     "GND": ("Brown", 8),

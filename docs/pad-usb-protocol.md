@@ -5,16 +5,17 @@ the pad is plugged into the bench's ESP32-P4 as a USB keyboard. Four
 layers, each with its own protocol, then the host, and each one checked
 on its own before the next is trusted.
 
-Written 2026-09-27. The build itself, its wiring and why it is USB
+Written 2026-09-27, and by the end of that evening the plan below had
+run: steps 2 to 5 pass. The build itself, its wiring and why it is USB
 rather than Bluetooth are in `pad-ble-build.md`; the choice of board is
 in `esp32-part-choice.md`. This page is the protocol and the plan.
 
-**No layer here has carried a real button press to a host yet.** The
-P4 end of the wiring is measured hole by hole, the key mapping and
-report descriptor are tested on the desk, and the USB descriptors below
-are read out of the library the firmware is built against. The pad at
-3.3 V, the enumeration and the keystroke are the plan, and each is
-marked as such where it appears.
+**A real button press reaches a host.** An original pad at 3.3 V, the
+P4, full-speed USB and a Linux host (the bench's Pi) carry all eight
+buttons through as their keys, chords included. **Not yet: a phone, and
+a browser** (steps 6 and 7). Getting there moved the firmware off the
+Arduino core's USB classes and onto a different USB controller; layer 4
+says why, and what was wrong about the first version of this page.
 
 ## The chain has four layers
 
@@ -61,11 +62,13 @@ second, the console's own rate. The data line has a 10k pull-up to
 3.3 V, so a pad that is absent or unpowered reads `FF`, all eight
 pressed, rather than a random byte.
 
-**Open: whether an original pad works at 3.3 V.** The 4021 is rated
-3 to 18 V, so the datasheet says yes. This bench has not seen it, and
-it has been measure-first item 4 since 2026-09-07. The first pad tried
-was a replica that does not answer at 3.3 V; the original has a genuine
-MN4021B and is the one to test.
+**An original pad works at 3.3 V: measured 2026-09-27.** The 4021 is
+rated 3 to 18 V, so the datasheet said yes; the bench now says so too,
+closing measure-first item 4 (open since 2026-09-07). The first pad
+tried was a replica that does not answer at 3.3 V; the original has a
+genuine MN4021B. **Check the pull-up's value before blaming the pad:**
+the first attempt had 10 ohms fitted where 10k belongs, the chip could
+not pull the line down against it, and D0 only dipped on each press.
 
 ### The colours on the cable are not the signals
 
@@ -152,21 +155,22 @@ thinking about it.
 
 ## Layer 4: USB carries the report
 
-The P4 has its own USB controller (`SOC_USB_OTG_SUPPORTED`), which is
-the thing the ESP32-C6 on this bench lacked entirely. The firmware
-uses the Arduino core's `USBHID` over TinyUSB. What the host is told,
-read out of esp32 core 3.3.11 rather than observed:
+The P4 has **two** USB controllers of its own
+(`SOC_USB_OTG_SUPPORTED`, two OTG peripherals), which is the thing the
+ESP32-C6 on this bench lacked entirely: one high speed, one full speed.
+The firmware drives TinyUSB directly on the **full-speed** one, and the
+section after next says why it is not the obvious one. What the host
+is told, set in `firmware/pad-usb/usb_device.cpp` and read back from
+the host's own log:
 
-| descriptor | value | where it comes from |
+| descriptor | value | notes |
 |---|---|---|
-| vendor ID | `0x303A` (Espressif) | core default |
-| product ID | `0x0002` | core default |
-| product string | `NES Pad` | `pad-usb.ino` |
-| manufacturer | `tinymachines` | `pad-usb.ino` |
-| interface class | HID (3) | `USBHID` |
-| interface subclass, protocol | 0, 0 | `USBHID HID;` takes the default |
-| endpoints | one interrupt IN, one interrupt OUT | `TUD_HID_INOUT_DESCRIPTOR` |
-| polling interval field | 1 | same |
+| vendor ID, product ID | `303a:0002` | Espressif's VID and its TinyUSB example PID |
+| product, manufacturer, serial | `NES Pad`, `tinymachines`, `nes-bench pad-usb` | |
+| speed | **full speed, 12 Mbit/s** | measured: the host logged `new full-speed USB device` |
+| interface class | HID (3), subclass 0, protocol 0 | |
+| endpoints | one interrupt IN, 16 bytes | holds the nine a report takes; the LED report comes over the control pipe |
+| polling interval | 1 ms | one frame at full speed |
 
 The sequence on plug-in: the host resets the device, reads its device
 and configuration descriptors, sees a HID interface, fetches the report
@@ -177,7 +181,7 @@ operating system carries.
 
 ### It is a report-protocol keyboard, not a boot keyboard
 
-**Corrected 2026-09-27.** `keymap.h` and `pad-ble-build.md` call this a
+**Corrected 2026-09-27.** `keymap.h` and `pad-ble-build.md` called this a
 boot-protocol keyboard. The report *layout* is the boot layout, but the
 USB interface declares subclass 0 and protocol 0, not boot, and the
 report carries an ID, which boot reports never do. So a full operating
@@ -185,9 +189,9 @@ system (Android, iOS, macOS, Windows, Linux, ChromeOS) reads it through
 the descriptor and is unaffected, while a BIOS setup screen, some KVM
 switches and some TV boxes, which speak only boot protocol, will not
 see it. Nothing on this bench's list needs those. If one ever does, the
-change is `USBHID HID(HID_ITF_PROTOCOL_KEYBOARD)` and a descriptor with
-no report ID, and it would be the USB build's own descriptor rather
-than the shared one, since BLE wants the ID.
+change is `HID_ITF_PROTOCOL_KEYBOARD` in the interface descriptor and a
+report descriptor with no report ID, and it would be the USB build's
+own descriptor rather than the shared one, since BLE wants the ID.
 
 ### Two sockets, and which one is the keyboard
 
@@ -196,22 +200,51 @@ The board has two USB-C sockets and they are different devices:
 - **`PWR USB TO UART`** is a CH343 serial bridge (`1a86:55d3`), the one
   the firmware is flashed over and prints its log to. On the bench it
   is `/dev/p4-uart` on the head. It stays there.
-- **`USB`** is the P4's own controller, and it is the keyboard. The host
-  plugs in here, with the board's jumper set to **DEVICE**.
+- **`USB`** (H2, "USB1.1 Type-C" in Waveshare's schematic) is the P4's
+  full-speed pair on GPIO24/25, and it is the keyboard. The host plugs
+  in here. The HOST/DEVICE jumper does not matter to this build.
 
 Plugging the host into the UART socket gives it a serial port and no
 keyboard, and nothing at either end says why.
 
-### Unmeasured at this layer
+**The first version of this page was wrong here, and so was the
+firmware.** It said to plug into `USB` with the jumper on DEVICE, and
+that could never have worked, for two reasons found that evening:
 
-- **Which speed the port runs at.** The P4 has a high-speed PHY and a
-  full-speed one, and the polling interval field means 1 ms at full
-  speed but 125 µs at high speed. `lsusb -v` on a Linux host reads it
-  off in one line.
-- **Whether a phone powers it.** A phone acting as USB host has to
+1. **The Arduino core puts the keyboard on the high-speed controller**
+   on the P4 (`tusb_init(1)`, and a 512-byte endpoint that full speed
+   does not allow), and on this kit the high-speed pair goes only to a
+   switch (U15, FSUSB42) that the jumper drives, and from there either
+   to the onboard hub or, on DEVICE, to one port of the USB-A stack J8.
+   **That port's 5 V is driven by the board** (U6, always on), so a host
+   plugged into it would have its own 5 V meet the board's. It was not
+   used.
+2. **The P4 has two full-speed PHYs, and gives the one on GPIO24/25 to
+   its USB-Serial-JTAG by default.** Plugged into `USB`, the host saw
+   `303a:1001 USB JTAG/serial debug unit`. Connecting the PHY to the
+   OTG controller returned `ESP_OK` and changed nothing, because it
+   had connected the OTG controller to the OTHER PHY (GPIO26/27, wired
+   to no socket). One bit in `LP_SYS.usb_ctrl` swaps them
+   (`usb_wrap_ll_phy_select(&USB_WRAP, 0)`), and with it the host saw
+   the NES Pad.
+
+So `pad-usb` defines the six callbacks TinyUSB asks the application for
+itself, which also keeps the core's USB wrapper out of the link, and
+the USB-Serial-JTAG leaves that socket while it runs. Flashing is over
+the UART socket and is unaffected.
+
+### What was measured at this layer, and what was not
+
+- **Speed: full speed, measured.** A keyboard sends nine bytes a
+  press; 12 Mbit/s is several thousand times what it needs.
+- **Enumeration: measured.** The host's log names it
+  `303a:0002 tinymachines NES Pad`, `USB HID v1.11 Keyboard`, and the
+  firmware prints `# host: configured`.
+- **Whether a phone powers it: not measured.** A phone acting as USB host has to
   supply the board through that socket. Whether this board runs from
   that socket alone, and within what a phone will give, has not been
-  tried.
+  tried. On the bench the board was also powered through its UART
+  socket.
 
 ## The host turns the report into a key event
 
@@ -252,24 +285,25 @@ does.
 Each step proves one layer and needs nothing after it. A step that
 fails places the fault in its own layer.
 
-| step | proves | tool | passes when |
-|---|---|---|---|
-| 1 | the original's five wires reach the right 4021 pins | meter, pad unpowered | white 16, brown 8, orange 9, red 10, yellow 3 |
-| 2 | layer 1 at 3.3 V: the pad answers | `firmware/pad-diag` | holding A drives D0 low, releasing it lets it go high |
-| 3 | layers 1 and 2: the byte follows the buttons | `firmware/pad-usb`, `tools/pad-watch.py` | each button alone prints its own bit, `01` through `80`, and idle is `00` |
-| 4 | layer 4: the host enumerates it | `lsusb -v` on Linux | `303a:0002`, `NES Pad`, class HID, and the speed |
-| 5 | layer 3: the host reads the report the way it was meant | `evtest` on Linux | A gives `KEY_X`, Select gives `KEY_RIGHTSHIFT` |
-| 6 | the host: the browser sees it | a `keydown` logger page | A gives `code` `KeyX` |
-| 7 | the whole chain on the device it is for | a phone and a browser emulator | the game moves |
+| step | proves | tool | passes when | 2026-09-27 |
+|---|---|---|---|---|
+| 1 | the original's five wires reach the right 4021 pins | meter, pad unpowered | white 16, brown 8, orange 9, red 10, yellow 3 | traced from photographs of the pad's board, not beeped; step 3 confirms it in use |
+| 2 | layer 1 at 3.3 V: the pad answers | `firmware/pad-diag` | holding A drives D0 low, releasing it lets it go high | **passes**, 27 presses in 30 s |
+| 3 | layers 1 and 2: the byte follows the buttons | `firmware/pad-usb`, `tools/pad-watch.py` | each button alone prints its own bit, `01` through `80`, and idle is `00` | **passes**, and chords (`03`, `A0`) |
+| 4 | layer 4: the host enumerates it | the host's USB log | `303a:0002`, `NES Pad`, class HID, and the speed | **passes**, full speed |
+| 5 | layer 3: the host reads the report the way it was meant | the input device, read directly on Linux | A gives `KEY_X`, Select gives `KEY_RIGHTSHIFT` | **passes**, all eight keys and chords |
+| 6 | the host: the browser sees it | a `keydown` logger page | A gives `code` `KeyX` | not run |
+| 7 | the whole chain on the device it is for | a phone and a browser emulator | the game moves | not run |
 
-Steps 1 and 2 close measure-first item 4. Step 3 needs no host at all:
+Step 2 closed measure-first item 4. Step 3 needs no host at all:
 the P4 prints every change on its serial log whether or not anything
 is plugged into `USB`, which is why it comes before step 4.
 
 ## Open, and not claimed
 
-- **An original pad at 3.3 V** (measure-first item 4, step 2 above).
-- **Enumeration, speed and phone power** (layer 4, steps 4 and 7).
+- **A phone** (step 7): whether it enumerates, and whether it powers
+  the board alone.
+- **A browser** (step 6).
 - **Latency.** Bounded by the code, not measured: a change waits at
   most one 16 ms poll, then at most one host poll. The bench can
   measure it end to end, since the bridge stamps every console poll.
