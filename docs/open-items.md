@@ -50,12 +50,14 @@ entry is the one that raised it, with its date.
   unlisted at `tinymachines.ai/lab/pad-keydown`) saw all eight as their
   `code`, twice, with the host's autorepeat marked as the host's
   (`pad-usb-protocol.md` step 6; the host is to be named there). Step 7
-  ran the same day on an iPhone at `tinymachines.ai/nes/play`: it
-  enumerated, A, B, Select and Start moved the game, the cross did not,
-  because the phone keeps a hardware keyboard's arrows unless a field is
-  focused (the step 6 page keeps one focused; the emulator did not, and
-  now does). Closes with the cross moving there after that change, the
-  phone named, and whether it alone powers the board.
+  ran the same day on an iPhone in Safari at `tinymachines.ai/nes/play`:
+  it enumerated, A, B, Select and Start moved the game, the cross did
+  not, and instead moved a highlight around the page's frame, because
+  the phone keeps a hardware keyboard's arrows for its own focus
+  navigation unless a field is focused (the step 6 page keeps one
+  focused; the emulator did not, and now does). Closes with the cross
+  moving there after that change, and whether the phone alone powers
+  the board.
 - **The BLE pad adapter is written and has met nothing (2026-09-21).**
   `firmware/pad-ble` compiles for the C6 (56% of flash) and its mapping
   and HID descriptor pass 76 desk checks with the mutation red, but no
