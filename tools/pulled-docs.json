@@ -1,5 +1,5 @@
 {
- "_about": "The documents the site pulls, and their heading counts. The site holds each against a Japanese shadow at docs/ja/nes/<slug>.md in ITS repository and refuses to deploy on a count mismatch. Authority for the list is DOCS in their web/scripts/pull-nesdocs.mjs; this copy was given by that session on 2026-09-25. See tools/check-pulled-headings.py.",
+ "_about": "The documents the site pulls, and their heading counts. The site holds each against a Japanese shadow at docs/ja/nes/<slug>.md in ITS repository and refuses to deploy on a count mismatch. Authority for the list is DOCS in their web/scripts/pull-nesdocs.mjs; this copy was given by that session on 2026-09-25. See tools/check-pulled-headings.py. Three cart pages were added 2026-09-28 after the site's check-ja-docs reported them drifted: their slugs here are our filename stems, unconfirmed by the site session.",
  "docs": {
   "bench-plan.md": {
    "slug": "bench-plan",
@@ -114,6 +114,21 @@
   "pad-usb-protocol.md": {
    "slug": "pad-usb-protocol",
    "headings": 14,
+   "shadow": true
+  },
+  "build-the-cal-cart.md": {
+   "slug": "build-the-cal-cart",
+   "headings": 11,
+   "shadow": true
+  },
+  "calibration-plan.md": {
+   "slug": "calibration-plan",
+   "headings": 8,
+   "shadow": true
+  },
+  "cart-blanks.md": {
+   "slug": "cart-blanks",
+   "headings": 6,
    "shadow": true
   }
  }
