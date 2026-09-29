@@ -44,7 +44,7 @@
   "esp32-part-choice.md": {
    "slug": "esp32-part-choice",
    "headings": 14,
-   "shadow": false
+   "shadow": true
   },
   "rig.md": {
    "slug": "rig",
