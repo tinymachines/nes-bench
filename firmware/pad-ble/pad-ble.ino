@@ -17,8 +17,19 @@
 // NOT GPIO4 and GPIO5. Those are the ESP32-S3's numbers and they are
 // strapping pins on the C6. The sheet carried them until 2026-09-21.
 //
-//   arduino-cli compile --fqbn esp32:esp32:esp32c6 firmware/pad-ble
-//   arduino-cli upload  --fqbn esp32:esp32:esp32c6 -p /dev/ttyACM0 firmware/pad-ble
+//   arduino-cli compile --fqbn esp32:esp32:esp32c6:CDCOnBoot=cdc --export-binaries firmware/pad-ble
+//   arduino-cli upload  --fqbn esp32:esp32:esp32c6:CDCOnBoot=cdc -p /dev/ttyACM0 firmware/pad-ble
+//
+// CDCOnBoot=cdc puts Serial on the board's own USB socket. Without it
+// the C6 target sends Serial to the UART0 pins, the socket shows only
+// the ROM's boot lines, and a write from the host times out because
+// nothing on the chip drains it: MEASURED 2026-09-28, and it looked
+// exactly like a sketch that had hung before its first print. (The
+// bench reads the P4's log off its UART socket, so the P4 build does
+// not want this.) Flashed that day from the bench head with esptool
+// over the USB-Serial-JTAG (the four images from --export-binaries at
+// the offsets in build/*/flash_args), which is how a board that is
+// plugged into the Pi rather than the workstation gets its firmware.
 //
 // Serial at 115200, one line per change, plus commands:
 //
@@ -164,7 +175,14 @@ static void start_ble() {
   hid = new BLEHIDDevice(server);
   input = hid->inputReport(PAD_HID_REPORT_ID);
   hid->outputReport(PAD_HID_REPORT_ID);  // the LEDs the descriptor declares; writes ignored
-  hid->manufacturer("tinymachines");
+  // manufacturer() with no argument CREATES the characteristic and
+  // returns it; manufacturer(name) only writes through the pointer that
+  // call sets, and the library leaves that pointer uninitialised. The
+  // one-argument form alone was a load access fault at the first byte
+  // of setValue, MEASURED 2026-09-28 on the first C6 that ever got past
+  // BLEDevice::init (the P4 crashed before reaching this line, which
+  // is why the fault hid).
+  hid->manufacturer()->setValue("tinymachines");
   // Vendor 0x02E5 is Espressif's, which is what this actually is; a
   // borrowed vendor ID would be a claim about somebody else's hardware.
   hid->pnp(0x02, 0x02E5, 0x0001, 0x0100);

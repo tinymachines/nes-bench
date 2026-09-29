@@ -57,8 +57,15 @@ entry is the one that raised it, with its date.
   unless a field is focused (the step 6 page keeps one focused; the
   emulator did not, and now does). Step 7 passes; what stays open is
   whether the phone alone powers the board, with the UART cable out.
-- **The BLE pad adapter is written and has met nothing (2026-09-21).**
-  `firmware/pad-ble` compiles for the C6 (56% of flash) and its mapping
+- **The BLE pad adapter advertises from a second C6 and has met no pad
+  or phone (2026-09-21, 2026-09-28).** On 2026-09-28 a different C6
+  board took the firmware from the bench head over its USB-Serial-JTAG,
+  and the Pi's radio heard `NES Pad` on the air; getting there found
+  and fixed a fault in the sketch the P4 never reached (the
+  manufacturer characteristic written before it was created) and the
+  C6 build option that puts `Serial` on USB (`pad-ble-build.md`).
+  Closes with a pad on that board's GPIO2, 3 and 6 moving a phone.
+  Before that day: `firmware/pad-ble` compiled for the C6 (56% of flash) and its mapping
   and HID descriptor pass 76 desk checks with the mutation red, but no
   pad has been wired to it and no host has paired it. The pad half is
   now proven by the USB build above; the pairing has met no phone, and

@@ -550,10 +550,34 @@ types: neither announces itself.
 
 **Tested on the bench, 2026-09-27, over USB:** the wiring, the pad's
 own timing at 3.3 V, and a host receiving every button as its key.
-**Not tested, and not to be described as working.** The radio and the
-pairing. `firmware/pad-ble` compiles for the C6 (56% of flash) and for
-the P4 (60%), and on the P4 crashes 2881 ms after `BLEDevice::init`;
-that is all that is known about it.
+**Tested on the bench, 2026-09-28, over the air, on a second C6:** a
+different C6 board from the DevKitC-1 these drawings are around (8 MB
+flash, a vendor demo that probed for an SD card; the model is to be
+read off it) took `firmware/pad-ble` on the first attempt, flashed from
+the bench head with esptool over its USB-Serial-JTAG. It ran, and the
+Pi's own radio heard it advertising as `NES Pad`. Two things were found
+on the way, and both are corrections to what stood here before:
+
+- **The sketch had a fault of its own that the P4 could never reach.**
+  `hid->manufacturer("tinymachines")` writes through a characteristic
+  pointer that only the no-argument `manufacturer()` creates, and the
+  library leaves that pointer uninitialised. On the first C6 to get
+  past `BLEDevice::init` that was a load access fault at the first byte
+  of `setValue`, every boot. The one-argument call is now
+  `manufacturer()->setValue(...)`. The P4 crashed inside init, before
+  this line, which is why it hid.
+- **The C6 target sends `Serial` to the UART pins unless the build says
+  `CDCOnBoot=cdc`.** Without it the USB socket shows only the ROM's boot
+  lines, a write to it from the host times out, and the whole thing
+  reads exactly like a sketch that hung before its first print. The
+  build line in the sketch carries the option now.
+
+With both: `# advertising as "NES Pad", 65 descriptor bytes`, the pad
+byte polled and printed, `STATUS` and `KEYS` answered over USB.
+**Not yet tested, and not to be described as working:** a pad wired to
+this board, and a phone pairing with it. On the P4 the build still
+crashes 2881 ms after `BLEDevice::init`, and compiles at 60%; on the
+C6 it compiles at 55%.
 
 ## The trap that will cost the most time (BLE build only)
 
@@ -566,8 +590,10 @@ host as well, because doing only one is the failure.
 ## Open, and recorded in `open-items.md`
 
 - The USB adapter has met no phone; its only host so far is the Pi.
-- The BLE build has met no pad and no host on this board, and cannot
-  until the onboard C6's firmware answers (see above).
+- The BLE build has met no pad and no host. On the P4 it cannot until
+  the onboard C6's firmware answers (see above); on the second C6 it
+  advertises (2026-09-28) and waits for a pad on GPIO2, 3 and 6 and a
+  phone.
 - The bench eye cannot read a devkit's silkscreen, which is why the
   header order above was read by hand. It will be true of the next
   devkit too.
