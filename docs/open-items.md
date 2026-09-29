@@ -40,9 +40,8 @@ entry is the one that raised it, with its date.
   follows its buttons at 3.3 V on the P4, 27 presses of A in 30 s under
   `pad-diag`, then all eight bits under `pad-usb`. The first try failed
   on a 10 ohm part fitted as the 10k data pull-up.
-- **The USB pad adapter works on a Linux host and in a browser, and
-  moves a game on an iPhone by four buttons of eight (2026-09-27,
-  2026-09-28).**
+- **The USB pad adapter works on a Linux host, in a browser, and
+  moves a game on an iPhone (2026-09-27, 2026-09-28).**
   `firmware/pad-usb` on the P4's full-speed controller, host in the
   Type-C socket marked USB: the Pi enumerates `303a:0002 tinymachines
   NES Pad` at full speed and receives every button as its key, chords
@@ -51,13 +50,13 @@ entry is the one that raised it, with its date.
   `code`, twice, with the host's autorepeat marked as the host's
   (`pad-usb-protocol.md` step 6; the host is to be named there). Step 7
   ran the same day on an iPhone in Safari at `tinymachines.ai/nes/play`:
-  it enumerated, A, B, Select and Start moved the game, the cross did
-  not, and instead moved a highlight around the page's frame, because
-  the phone keeps a hardware keyboard's arrows for its own focus
-  navigation unless a field is focused (the step 6 page keeps one
-  focused; the emulator did not, and now does). Closes with the cross
-  moving there after that change, and whether the phone alone powers
-  the board.
+  it enumerated and all eight buttons moved the game, on the second
+  try. On the first, A, B, Select and Start moved it and the cross
+  instead moved a highlight around the page's frame, because the phone
+  keeps a hardware keyboard's arrows for its own focus navigation
+  unless a field is focused (the step 6 page keeps one focused; the
+  emulator did not, and now does). Step 7 passes; what stays open is
+  whether the phone alone powers the board, with the UART cable out.
 - **The BLE pad adapter is written and has met nothing (2026-09-21).**
   `firmware/pad-ble` compiles for the C6 (56% of flash) and its mapping
   and HID descriptor pass 76 desk checks with the mutation red, but no

@@ -15,10 +15,11 @@ P4, full-speed USB and a Linux host (the bench's Pi) carry all eight
 buttons through as their keys, chords included. **A browser sees them
 too** (step 6, 2026-09-28, on `tinymachines.ai/lab/pad-keydown`): every
 button as its `code`, one report per change, the host's autorepeat
-visible as the host's. **On an iPhone the game moves, by four buttons
-of eight** (step 7, 2026-09-28): A, B, Select and Start played on
-`tinymachines.ai/nes/play`, the cross did not, and the reason is the
-host layer, not the adapter; the section on the host says what.
+visible as the host's. **On an iPhone the game moves** (step 7,
+2026-09-28): all eight buttons played on `tinymachines.ai/nes/play`.
+The first try moved it by four, A, B, Select and Start, and the reason
+was the host layer, not the adapter; the section on the host says what,
+and what changed.
 Getting there moved the firmware off the
 Arduino core's USB classes and onto a different USB controller; layer 4
 says why, and what was wrong about the first version of this page.
@@ -320,7 +321,7 @@ fails places the fault in its own layer.
 | 4 | layer 4: the host enumerates it | the host's USB log | `303a:0002`, `NES Pad`, class HID, and the speed | **passes**, full speed |
 | 5 | layer 3: the host reads the report the way it was meant | the input device, read directly on Linux | A gives `KEY_X`, Select gives `KEY_RIGHTSHIFT` | **passes**, all eight keys and chords |
 | 6 | the host: the browser sees it | `tools/keydown-page.html` at `tinymachines.ai/lab/pad-keydown` | A gives `code` `KeyX` | **passes** 2026-09-28, all eight codes, two runs; the host's autorepeat and modifiers seen as the host's |
-| 7 | the whole chain on the device it is for | a phone and a browser emulator | the game moves | run 2026-09-28 on an iPhone in Safari and `tinymachines.ai/nes/play`, which binds by `code`: the board enumerated, A, B, Select and Start moved the game, the cross did not (the host keeps a hardware keyboard's arrows for itself unless a field is focused; the emulator now keeps one focused, as the step 6 page always did); passes when the cross moves too |
+| 7 | the whole chain on the device it is for | a phone and a browser emulator | the game moves | **passes** 2026-09-28 on an iPhone in Safari and `tinymachines.ai/nes/play`, which binds by `code`: the board enumerated and all eight buttons moved the game. The first try moved it by four, A, B, Select and Start, and not the cross: the host keeps a hardware keyboard's arrows for itself unless a field is focused, so the emulator now keeps one focused, as the step 6 page always did, and the cross moved on the next try |
 
 Step 2 closed measure-first item 4. Step 3 needs no host at all:
 the P4 prints every change on its serial log whether or not anything
@@ -328,21 +329,21 @@ is plugged into `USB`, which is why it comes before step 4.
 
 ## Open, and not claimed
 
-- **A phone** (step 7): an iPhone in Safari (a 16, the owner believes;
-  whether that names the phone or the iOS was not said) enumerates the
-  board and a browser emulator on it moves, by A, B, Select and Start
-  (2026-09-28, on `tinymachines.ai/nes/play`); the cross did not. What
-  the owner saw instead is the symptom from the other side: pressing
-  the cross moved a highlight around the page's outer frame, the
-  phone spending the arrows on its own focus navigation. The phone hands a
+- **A phone** (step 7, passed): an iPhone in Safari (a 16, the owner
+  believes; whether that names the phone or the iOS was not said)
+  enumerates the board and a browser emulator on it moves, all eight
+  buttons (2026-09-28, on `tinymachines.ai/nes/play`). On the first try
+  the cross did not, and what the owner saw instead was the symptom
+  from the other side: pressing the cross moved a highlight around the
+  page's outer frame, the phone spending the arrows on its own focus
+  navigation. The phone hands a
   hardware keyboard's arrow keys to the focused element and keeps them
   for scrolling when nothing is focused, while letters, Shift and Enter
   reach the page either way. The step 6 page keeps an off-screen input
   focused for exactly this, which is why it saw all eight; the emulator
-  did not, and now does (its `playEngine.ts`, the same input). Open
-  until the cross moves on the phone after that change, and until
-  whether the phone powered the board alone with the UART cable out is
-  written here. Step 6's host is still to be named too.
+  did not, and now does (its `playEngine.ts`, the same input), and
+  the cross moved on the next try. Still open here: whether the phone
+  powers the board alone with the UART cable out, and step 6's host.
 - **Latency of the host layer.** The keydown page stamps events with
   the host's clock only, so it says nothing about the time from
   button to event.
