@@ -24,9 +24,11 @@ cartridge from a checksum of 512 bytes read at two fixed addresses,
 not from the whole ROM. On this board that window matched plain Super
 Mario Bros., so the reader offered that entry and read with that game's
 sizes, mapper 0, 32 KB of program and 8 KB of characters. The result's
-checksum matched nothing: it had read one bank of a two-bank board, the
-other half `FF`. "CRC not found" was the reader being honest about a
-half-read image, not a broken cartridge.
+checksum matched nothing: it had read one bank of a two-bank board,
+whole, and no retail cartridge has that bank on its own (its first nine
+bytes are the board's own bank switch, standing where the game's reset
+was; the boards report has the rest). "CRC not found" was the reader
+being honest about a one-bank image, not a broken cartridge.
 
 ## The card, and the dump that checked out
 
