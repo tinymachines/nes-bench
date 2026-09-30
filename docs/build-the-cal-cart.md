@@ -240,7 +240,10 @@ console's lockout is defeated, so the CIC position U2 stays empty too;
 the H/V solder jumper follows the header's mirroring bit, which for
 this file is vertical (the picture never scrolls and uses one
 nametable, so either shows the same thing, but the board and the file
-should agree).
+should agree). On this board vertical is the pad marked H: the letters
+are backwards and the words printed beside them are right. That and
+every other jumper, both sides of the board, are in
+`cal-cart-build.md`, the record of the build as it goes.
 
 The chip is bigger than the image sixteen times over for PRG and
 sixty-four for CHR, and an NROM board drives only fifteen and thirteen
@@ -263,7 +266,9 @@ MEASURED 2026-09-13 on the exported `cal.nes`:
 | `prg.bin` (U4) | 16 of 32 KiB | 524288 | `3ca73ce7d67e78412739857f9fe6bccde7e09a03b6ebc5cbe5ab38c771efed94` |
 | `chr.bin` (U3) | 64 of 8 KiB | 524288 | `fb61eb01b3218701270f3924570ec2ebcee758c12f39154f99338f7cf826270d` |
 
-Burning, from the same spec: in XGpro select SST, SST39SF040; seat the
+Burning, from the same spec (what was actually used is `minipro` on
+the bench Pi, device `SST39SF040`, the commands in `cal-cart-build.md`):
+in XGpro select SST, SST39SF040; seat the
 chip bottom-justified in the ZIF socket, pin 1 toward the lever, the top
 eight positions empty, the arrow on the case matching; read a blank
 chip first and stop if its ID is not the part's (a relabelled fake

@@ -22,7 +22,9 @@ empty; the two ROM positions are U3 for CHR and U4 for PRG, each an
 SST39SF040 (512 KiB of 5 V parallel flash) with the image tiled to fill
 it (`tools/nesprep.py`, the tutorial's section 8); the console's
 lockout is defeated, so the CIC position U2 stays empty; the H/V
-jumper follows the file's mirroring bit, vertical.
+jumper follows the file's mirroring bit, vertical, which on this board
+is the pad marked H (its letters are backwards and its words are not:
+`cal-cart-build.md`, which also has every other jumper, both sides).
 
 Between them a board marked NES CART PCB, MAPPER 30, v1.2, with
 74HC139, 74HC377 and 74HC32 and a CHR RAM footprint marked 8 KB, 16 KB
@@ -53,12 +55,15 @@ own socket without the adapter.
 
 ![an XGecu Pro programmer with its ZIF socket](lab/cart-blank-programmer.jpg)
 
-An XGecu Pro (the TL866 family) with a 40-pin ZIF socket, its USB lead
+An XGecu Pro (the TL866 family; it enumerates as a TL866II Plus,
+MEASURED 2026-09-30) with a 40-pin ZIF socket, its USB lead
 and the two jumper wires that came with it. This is what writes the
-two images `dd` splits out of `cal.nes` into the ROMs.
+two images `tools/nesprep.py` makes from `cal.nes` into the ROMs.
 
 ## What is not known yet
 
-- The chips themselves: not on the bench yet (2026-09-13 evening); SST39SF040s ordered 2026-09-21, their arrival to be recorded here.
+- The chips themselves: on the bench 2026-09-30, and the first one
+  written that evening. The build from there is `cal-cart-build.md`,
+  which also names the parts photographed since.
 - The reader's dump of the finished cart, whose body crc32 must be
   `21091B99` (MEASURED 2026-09-13 on the exported file).
