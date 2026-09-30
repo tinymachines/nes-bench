@@ -609,8 +609,35 @@ same bridge at 921600, and booted: the key map printed, then
 down`, and the bench head's own radio listed `NES Pad`. `BLEDevice::init`
 does not crash on this part. Unlike the P4 over USB, this board's
 `Serial` is the CP2102 itself, so the `B xx` lines are readable on the
-bench head at 115200. **Still not tested:** a pad wired to `GPIO25`,
-`26` and `27`, and a phone pairing.
+bench head at 115200.
+
+The same night, the bench head became the build's first host. A
+non-interactive `bluetoothctl pair` fails with `AuthenticationFailed`,
+bluetoothd saying `No agent available for request type 2`, and leaves
+the device trusted but unbonded, a state in which BlueZ reconnects in a
+loop: the board printed `# linked` 126 times in fifteen seconds while
+the head's HID reads failed for want of encryption, and one `STATUS`
+answer came back as sixty-four bytes of `0xff`. A burst like it came
+once more, ahead of a `FORGET` answer, and a run of `# unlinked,
+advertising again` lines once filled a second. None of the three
+reproduces under control: opening the port three times gave no bytes
+and no reset, `STATUS` after idles of up to ten seconds came back
+clean every time, and one connect and one disconnect from the head
+each printed exactly one line. The core builds this part with no
+power management, so clock scaling is not the explanation either. Seen
+three times, reproduced never, recorded as that. With an agent
+registered first (`agent NoInputNoOutput`,
+`default-agent`, then `pair`) the Just Works pairing bonds, and the
+head grows a `NES Pad` keyboard on `uhid` (bus 0005, `e502:0100`,
+appearance `0x03c1`). After that one connect prints one `# linked`, and
+`STATUS` answers cleanly five times of five with the link down and
+again with it up. With no pad wired the byte reads `ff`, all eight
+pressed, which is right shift as the modifier and seven keys for six
+slots, `dropped 1`; the head held no keys, because that first report
+goes out before the host has subscribed. The board was left bonded but
+untrusted and disconnected on purpose: a floating data line must not
+type into anything until the pad is on it. **Still not tested:** a pad
+wired to `GPIO25`, `26` and `27`, and a phone pairing.
 
 ## The trap that will cost the most time (BLE build only)
 
@@ -620,10 +647,26 @@ end, on the phone or on the serial port. The `FORGET` command clears
 this end and then says, in as many words, to forget the device on the
 host as well, because doing only one is the failure.
 
+**Measured both ways on 2026-09-30, on the classic ESP32 with the bench
+head as the host.** Flashing the merged image blanks the board's bond
+store, and the head, still bonded, then connects and reports
+`Connection successful` while nothing works: bluetoothd's journal is
+the only tell, four `Request attribute has encountered an unlikely
+error` lines from its HID reads, and the stale `uhid` keyboard stays
+listed from the head's cache. `bluetoothctl remove`, then pairing with
+an agent, bonds again. The other way round, `FORGET` on the board with
+one bond stored answered `# 1 bond(s) were stored here` and `rc 0`, and
+the head's next connect fell to `Connected: no`; `remove` and a third
+pairing bonded again. Before that day `FORGET` did nothing on this
+part: the sketch cleared bonds only under NimBLE, and the classic
+ESP32's core is Bluedroid, where the bonds are listed and removed one
+at a time. The sketch carries that branch now.
+
 ## Open, and recorded in `open-items.md`
 
 - The USB adapter has met no phone; its only host so far is the Pi.
-- The BLE build has met no pad and no host. On the P4 it cannot until
+- The BLE build has met no pad, and its one host is the bench head
+  (2026-09-30, on the ESP32-WROOM-32). On the P4 it cannot until
   the onboard C6's firmware answers (see above); on the second C6 it
   advertises (2026-09-28) and waits for a pad on GPIO2, 3 and 6 and a
   phone; on the ESP32-WROOM-32 it advertises (2026-09-30) and waits for

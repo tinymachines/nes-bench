@@ -250,6 +250,27 @@ static void forget() {
   int rc = -1;
 #if defined(CONFIG_NIMBLE_ENABLED)
   rc = ble_store_clear();
+#elif defined(CONFIG_BT_BLUEDROID_ENABLED)
+  // The classic ESP32's core is Bluedroid, where there is no store to
+  // clear in one call: the bonds are listed and removed one by one.
+  // Without this branch FORGET printed rc -1 and cleared nothing on
+  // that part (MEASURED 2026-09-30: the build's map has no
+  // ble_store_clear), while a reflash of the merged image blanks the
+  // bond store anyway, which is the one-sided bond with no way out.
+  int n = esp_ble_get_bond_device_num();
+  if (n > 0) {
+    esp_ble_bond_dev_t *devs = (esp_ble_bond_dev_t *)malloc(n * sizeof(esp_ble_bond_dev_t));
+    if (devs && esp_ble_get_bond_device_list(&n, devs) == ESP_OK) {
+      rc = 0;
+      for (int i = 0; i < n; i++) {
+        if (esp_ble_remove_bond_device(devs[i].bd_addr) != ESP_OK) rc++;
+      }
+    }
+    free(devs);
+  } else {
+    rc = 0;
+  }
+  Serial.printf("# %d bond(s) were stored here\n", n);
 #endif
   Serial.printf("# bonds cleared here (rc %d). NOW FORGET THIS DEVICE ON THE HOST TOO:\n", rc);
   Serial.println("# a one-sided bond fails to pair and reports nothing at either end.");
