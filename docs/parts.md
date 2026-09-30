@@ -37,6 +37,7 @@ Every distinct part across every sheet, with where it is.
 | slide | to order | pad adapter only, the power switch |
 | power | to order | pad adapter only, the battery |
 | +330R | check | pad adapter only, the LED |
+| ESP32-WROOM-32 devkit | on hand | the 30-pin devkit on the breadboard, the BLE build since 2026-09-30 |
 
 ## bench-v1b
 
@@ -160,5 +161,15 @@ The original pad as a wireless HID device. A separate project.
 | ref | part | on the sheet |
 |---|---|---|
 | R1 | 10k | PAD1_D0 to 3V3 |
+| C1 | 100nF | 3V3 to GND |
+
+## pad-ble-esp32
+
+**The BLE build, on the board with a radio of its own.** The same circuit on a classic ESP32-WROOM-32 devkit, pins D25, D26 and D27; the C6 died and the P4 cannot do BLE.
+
+| ref | part | on the sheet |
+|---|---|---|
+| R1 | 10k | PAD1_D0 to 3V3 |
+| U1 | ESP32-WROOM-32 devkit | 30 pins; the labels are the board's own silkscreen; D<n> is GPIO<n> |
 | C1 | 100nF | 3V3 to GND |
 

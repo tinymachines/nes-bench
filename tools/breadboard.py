@@ -349,6 +349,28 @@ PADBLE_P4_TERMINALS = {
     "U1": {"x": 1580, "y": 232, "title": "U1  header P6", "sub": "on the P4 board, beside the board"},
 }
 
+# The classic ESP32 build: the devkit IS on the breadboard, straddling
+# the channel exactly as the C6 was drawn, and its two rows come from
+# tools/esp32_header.py, read off the owner's photograph of 2026-09-30.
+# THE COLUMN NUMBERS HERE ARE THE PHOTOGRAPH'S ROW NUMBERS: the board
+# sits with its USB socket at row 1, so its pins are in 6 to 20 and a
+# person at the bench counts the same numbers on the drawing and on the
+# board. Turned so USB is at the left, the EN side is the upper row.
+import esp32_header as _eh
+ESP32_HEADER = {"upper": _eh.EN_SIDE, "lower": _eh.D23_SIDE}
+ESP32_PIN = {label: ("upper" if _eh.PAD_SIDE[net] == "EN" else "lower", label)
+             for net, (label, _g) in _eh.PAD_BLE.items()}
+PADBLE_ESP32_DEVKITS = {
+    "U1": {"col": _eh.ROW0, "label": "ESP32-WROOM-32 devkit", "note": "BLE: the module's own radio; USB is the CP2102",
+           "header": ESP32_HEADER, "pins": ESP32_PIN},
+}
+# The pullup and the cap just past the devkit, where the photograph's
+# rows 21 to 25 are empty; the pad at the right, where its cable comes in.
+PADBLE_ESP32_RES = {"R1": (23, 25)}
+PADBLE_ESP32_TERMINALS = {
+    "J1": {"x": 1720, "y": 262, "w": 140, "title": "J1  original pad", "sub": "MN4021B; colours NOT measured"},
+}
+
 SHEETS = {
     "v1b": dict(netlist="bench-v1b", out="breadboard-v1b.svg", cols=40, rails=("+5V", "GND"),
                 chips=CHIPS, devkits={}, caps=CAPS, res=RES, res_part=RES_PART, res_note=RES_NOTE,
@@ -369,6 +391,14 @@ SHEETS = {
                       title="pad-ble v1 on the ESP32-P4: where everything goes",
                       sub="An ORIGINAL pad in Nintendo's colours, documented and NOT yet measured: beep each wire to its MN4021B "
                           "first. The board sits beside the breadboard. A replica's colours differ; red and yellow swap meaning."),
+    "padble-esp32": dict(netlist="pad-ble-esp32", out="breadboard-pad-ble-esp32.svg", cols=56, rails=("3V3", "GND"),
+                         chips={}, devkits=PADBLE_ESP32_DEVKITS, caps={"C1": 28}, res=PADBLE_ESP32_RES,
+                         res_part=PADBLE_RES_PART, res_note=PADBLE_RES_NOTE, cap_to_gnd={},
+                         terminals=PADBLE_ESP32_TERMINALS, term_pins=True, lead=original_lead,
+                         title="pad-ble v1 on a classic ESP32: where everything goes",
+                         sub="The devkit's labels are read off the owner's photograph of 2026-09-30, and the column numbers are that "
+                             "photograph's breadboard rows: USB at row 1, the pins in 6 to 20, the pad's three in 11 to 13 on the EN row. "
+                             "Only rows A and J are reachable under it. An ORIGINAL pad's colours; a replica's differ."),
 }
 
 
@@ -544,6 +574,16 @@ def main():
     for name, (row, label) in C6_PIN.items():
         assert label in C6_HEADER[row], f"{name}: the board carries no pin marked {label} on its {row} header"
     assert len(C6_HEADER["upper"]) == len(C6_HEADER["lower"]) == 16
+    # The classic ESP32 devkit, against the photograph's rows: D25 is
+    # row 13 on the EN side, 3V3 the first pin of the other side.
+    ek = PADBLE_ESP32_DEVKITS["U1"]
+    assert devkit_hole("U1", "D25", PADBLE_ESP32_DEVKITS) == (13, "upper")
+    assert devkit_hole("U1", "D27", PADBLE_ESP32_DEVKITS) == (11, "upper")
+    assert devkit_hole("U1", "GND", PADBLE_ESP32_DEVKITS) == (7, "upper")
+    assert devkit_hole("U1", "3V3", PADBLE_ESP32_DEVKITS) == (ek["col"], "lower")
+    for name, (row, label) in ESP32_PIN.items():
+        assert label in ESP32_HEADER[row], f"{name}: the board carries no pin marked {label} on its {row} header"
+    assert len(ESP32_HEADER["upper"]) == len(ESP32_HEADER["lower"]) == 15
     if a.check:
         print("breadboard: the pin-to-hole rule holds for both package sizes, both notch directions and the devkit")
         return 0

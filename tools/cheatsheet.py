@@ -320,10 +320,55 @@ def p4_pinmap():
     return [t0, t1, t2, t3]
 
 
+def esp32_pinmap():
+    """The classic ESP32 devkit's two rows, and what pad-ble takes of them.
+
+    Every row comes out of tools/esp32_header.py, read off the owner's
+    photograph of the board on its breadboard, so the numbers here are
+    the breadboard's own rows in that photograph. Nothing typed twice."""
+    import esp32_header as eh
+    ph = eh.pad_facts()
+    rows = []
+    for n, what in [("3V3", "supply"), ("GND", "ground"), ("PAD_LATCH", "latch"),
+                    ("PAD_CLK", "clock"), ("PAD1_D0", "data")]:
+        label, _g = eh.PAD_BLE[n]
+        og_colour, og_pin = ph.OG_PAD[n]
+        rows.append([what, f"{label}, row {eh.row_of(label, eh.PAD_SIDE[n])}", ph.PAD_COLOUR[n], og_colour,
+                     f"pin {og_pin} ({ph.CHIP_4021[og_pin]})"])
+    plain = {"3V3": "supply", "GND": "ground", "PAD_LATCH": "latch", "PAD_CLK": "clock", "PAD1_D0": "data"}
+    clash = " and ".join(f"{c.upper()} is {plain[r]} on the replica but {plain[o]} on an original"
+                         for c, (r, o) in sorted(ph.collisions().items()))
+    t0 = ("The five wires, and which lead is which on each kind of pad",
+          "USB at breadboard row 1, so the pins are rows 6 to 20 and a row number names a hole. The three signals are "
+          "ADJACENT on the EN side (" + eh.run_picture() + ", up from the USB end), GND four rows below on the same side, "
+          "3V3 the first pin across. NOT the C6 map: GPIO6 is this module's flash, GPIO3 its console. THE LEAD COLOURS "
+          "DEPEND ON THE PAD: replica rung out 2026-09-09; original NOT YET MEASURED, beep each to the 4021 first. " + clash + ".",
+          ["signal", "board pin", "replica lead", "original lead", "original: beep to 4021"], rows)
+    t1 = ("Spoken for, or not there at all",
+          "Two are the console this board is flashed and read over, two are strapping pins sampled at reset. Below "
+          "the line, what never reaches the header: the first row is why the C6 map cannot be used on this part.",
+          ["GPIO", "board pin", "already wired to"],
+          [[g, next(f"{l}, row {eh.row_of(l, sd)}" for sd, side in eh.SIDES.items() for l in side if eh.gpio_of(l) == g),
+            eh.RESERVED_SHORT[g]] for g in eh.RESERVED]
+          + [[g, "not on the header", why] for g, why in eh.OFF_HEADER.items()])
+    t2 = ("On the header and free",
+          "pad-ble takes D25, D26, D27; D4 and D2 are the mode switch and the LED, declared and not wired. Not listed: "
+          "D34, D35, VP, VN (GPIO34, 35, 36, 39), input only with no pullup, so not free for an output.",
+          ["GPIO", "board pin", "note"],
+          [[g, next(f"{l}, row {eh.row_of(l, sd)}" for sd, side in eh.SIDES.items() for l in side if eh.gpio_of(l) == g),
+            {"GPIO25": "PAD_LATCH", "GPIO26": "PAD_CLK", "GPIO27": "PAD1_D0",
+             "GPIO4": "MODE_SW, not wired", "GPIO2": "LED, not wired; strap",
+             "GPIO5": "strapping pin"}.get(g, "")]
+           for g in eh.free()])
+    return [t0, t1, t2]
+
+
 def pinmap(sheet="bench-v1b"):
     """Three tables: (title, note, headers, rows)."""
     if sheet == "pad-ble-p4":
         return p4_pinmap()
+    if sheet == "pad-ble-esp32":
+        return esp32_pinmap()
     if sheet == "bench-v1b-head":
         return head_pinmap(sheet)
     nl, bu, nodes, nets = collect(sheet)

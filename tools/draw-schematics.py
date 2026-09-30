@@ -1560,6 +1560,129 @@ def sheet_exercise():
     sh.done(OUT / "exercise-stack.svg")
 
 
+def sheet_padble_esp32():
+    """The BLE build on the part with a radio of its own.
+
+    The C6 devkit the first sheet is drawn around was found dead on
+    2026-09-29 (no ROM banner on either socket under any reset), and the
+    P4 cannot do BLE (its radio is a hosted C6 that never answers). A
+    classic ESP32-WROOM-32 devkit took firmware/pad-ble first try on
+    2026-09-30, advertised, and the bench head bonded with it as a
+    keyboard. So the BLE build lives here, and the two earlier sheets
+    stay where they are, as records.
+
+    EVERY PIN HERE COMES OUT OF tools/esp32_header.py, which read them
+    off the owner's photograph of the board on its breadboard and holds
+    itself to the counts and the rows in that photograph. Nothing on
+    this sheet is typed twice.
+    """
+    import esp32_header as eh
+    og = eh.pad_facts().og_lead_by_pin()
+
+    sh = Sheet(1560, 1060, "pad-ble v1 on a classic ESP32: one pad into a WROOM-32 devkit, as a BLE keyboard",
+               "The BLE build, on the part with its own radio. A 30-pin ESP32-WROOM-32 devkit, header read off the board "
+               "2026-09-30. NOT the C6 map: GPIO6 is this module's flash and GPIO3 its console, so the pad moves to D25, D26, D27.")
+
+    sh.zone(20, 66, 690, 700, "THE PAD, polled at 3V3 exactly as the bridge polls one")
+    j1_h = pad_socket(sh, 150, 100, "J1", "PAD_LATCH", "PAD_CLK", "PAD1_D0",
+                      part="original NES pad (MN4021B)",
+                      extra="  ".join(f"{k} {og[k]}" for k in sorted(og)) + ", NOT measured")
+    pad_note = [
+        "The pad side is the P4 sheet's: the same plug, pullup and poll.",
+        "Only the three pins it lands on move, because this part gives",
+        "no choice (see the controller zone).",
+        "",
+        "The pad's 4021 is a CMOS part rated 3 to 18 V, so at 3V3 its D0",
+        "is 3V3 logic and needs no shifter. MEASURED 2026-09-27: an",
+        "original's MN4021B follows its buttons at 3V3 (pad-ble-p4.svg).",
+        "Pin 5 is the supply; 6 and 7 carry nothing. RING THE CABLE OUT",
+        "UNPLUGGED. A 10 ohm part fitted as the 10k hid it first.",
+        "",
+        "J1 IS DRAWN AS AN ORIGINAL PAD, in Nintendo's colours, NOT YET",
+        "MEASURED: beep each wire to the MN4021B first. A REPLICA's differ,",
+        "and RED and YELLOW are different signals on each: wired by the",
+        "replica's colours, an original puts its DATA on the GROUND rail.",
+        "NO PAD IS WIRED TO THIS BOARD YET. With D27 floating the byte",
+        "reads ff, all eight pressed, and the blue LED on D2 is on.",
+    ]
+    # The line of lead colours under J1's box is drawn at its bottom
+    # plus 13; a note from y=110 at 14 px a line has to end above it.
+    # MEASURED, not assumed: the first guard here assumed 385 and the
+    # note ran two lines into the colours in the render.
+    colours_y = 100 + j1_h + 13
+    assert 110 + 14 * len(pad_note) <= colours_y - 8, (
+        f"the pad note runs into J1's colour line by {110 + 14 * len(pad_note) - (colours_y - 8)} px")
+    sh.note(330, 110, pad_note)
+    sh.twopin(330, 690, "R1", "10k", "PAD1_D0", "3V3")
+
+    sh.zone(730, 66, 810, 700, "THE CONTROLLER, on its own USB power, labels as the board prints them")
+    pins = [(None, eh.PAD_BLE[n][0], n) for n in ("PAD_LATCH", "PAD_CLK", "PAD1_D0")]
+    pins += [(None, eh.SPARE["MODE_SW"][0], "NC"), (None, eh.SPARE["LED"][0], "NC"),
+             (None, "3V3", "3V3"), (None, "GND", "GND")]
+    sh.chip(900, 100, 210, "U1", "ESP32-WROOM-32 devkit", pins,
+            [(None, "BLE", "radio"), (None, "micro-USB", "VBUS")],
+            extra="30 pins; the labels are the board's own silkscreen; D<n> is GPIO<n>")
+    sh.twopin(820, 430, "C1", "100nF", "3V3", "GND")
+    ctrl_note = [
+        "WHY NOT GPIO2, 3 AND 6. On an ESP32-WROOM-32 GPIO6 to GPIO11",
+        "are the module's own flash and never reach the header, and",
+        "GPIO3 is U0RXD, the receive side of the CP2102 that is this",
+        "board's only console. The C6 map would drive the flash the",
+        "program runs from. So: D25 latch, D26 clock, D27 data, ADJACENT",
+        "on the EN side, GND four pins below them on the same side, 3V3",
+        "the first pin of the other side. The EN side reads, up from",
+        "the USB end:",
+        "",
+        "        " + "  ".join(l[1:] if l.startswith("D") else l for l in eh.EN_SIDE),
+        "",
+        "D4 (MODE_SW) and D2 (LED) are NC here: the firmware reads one",
+        "with a pullup and drives the other. D2 is the devkit's own blue",
+        "LED, so the pad-held light needs no wiring on this board.",
+        "",
+        "ALSO NOT YOURS: TX0 and RX0 (the console), D12 and D15 (strapping",
+        "pins the module samples at reset), and D34, D35, VP, VN, which",
+        "are input only with no pullup. The header page lists them.",
+        "",
+        "C1 goes across the breadboard's own 3V3 and GND rails, not the",
+        "board's pins, as on every sheet since 2026-09-15.",
+    ]
+    note_y = 470
+    assert note_y + 14 * len(ctrl_note) <= 766, (
+        f"the controller note overflows its zone by "
+        f"{note_y + 14 * len(ctrl_note) - 766} px: shorten it or move it up")
+    sh.note(760, note_y, ctrl_note)
+
+    sh.zone(20, 782, 1520, 262, "WHAT THIS BOARD DOES, MEASURED 2026-09-30 with the bench head as the host")
+    rows = [
+        ("BLE HID", [
+            "ADVERTISES AND BONDS. Boots straight into firmware/pad-ble built for esp32:esp32:esp32 (84% of the app partition), prints the key map and",
+            "advertising as NES Pad, and the bench head's own radio lists it. BLEDevice::init does not crash here, unlike the P4. Paired from the head with an",
+            "agent registered (a non-interactive bluetoothctl pair fails, no agent for the request), it bonds and the head grows a NES Pad keyboard on uhid.",
+            "One connect prints one linked line, one disconnect one unlinked. NOT TESTED: a pad wired to it, a phone. A floating D27 reads ff, all pressed."]),
+        ("FORGET", [
+            "WORKS ON THIS PART NOW, AND DID NOT. The sketch cleared bonds only under NimBLE; this core is Bluedroid, so FORGET printed rc -1 and cleared",
+            "nothing while a reflash blanked the bond store anyway: the one-sided bond with no way out. It lists and removes the bonds one by one now, measured",
+            "both ways: board blank and head bonded, the head connects and gets nothing (bluetoothd's unlikely error lines are the only tell); FORGET with one",
+            "bond stored answers 1 bond(s) were stored here, rc 0, and the head's next connect drops until it removes its side and pairs again."]),
+        ("Flashing", [
+            "Through the CP2102 at /dev/ttyUSB0 on the bench head, esptool's default reset, the merged image at 0x0 at 921600. The board arrived running an AT",
+            "firmware (an at_customize partition, version line 2.4.0). Its ROM banner appears only when the reset is driven through RTS, not DTR alone."]),
+        ("Serial", [
+            "Unlike the P4 over USB, this board's Serial IS the CP2102, so the B xx lines and STATUS, KEYS and FORGET are readable on the bench head at 115200."]),
+        ("Two players", [
+            "Not on this sheet. A keyboard report carries six key slots and two pads can ask for ten, so a second pad could be polled and never sent."]),
+    ]
+    y = 812
+    for label, lines in rows:
+        sh.text(40, y, label, "pin")
+        for l in lines:
+            sh.text(168, y, l, "pin")
+            y += 13
+        y += 3
+    assert y <= 1044, f"the capability band overflows its zone by {y - 1044} px: shorten it or grow the zone"
+    sh.done(OUT / "pad-ble-esp32.svg")
+
+
 OUT = Path(sys.argv[1] if len(sys.argv) > 1 else ".")
 
 # The page a laid sheet is drawn to fit. Asked of the frame rather than
@@ -1579,4 +1702,5 @@ if __name__ == "__main__":
     sheet_pad()
     sheet_padble()
     sheet_padble_p4()
+    sheet_padble_esp32()
     sheet_exercise()

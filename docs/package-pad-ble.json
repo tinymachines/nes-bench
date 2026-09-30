@@ -2,14 +2,13 @@
   "org": "tinymachines",
   "project": "nes-bench",
   "docno": "TM-NESB-003",
-  "rev": "L",
+  "rev": "M",
   "drawn": "bisenbek",
   "page": "ansi-a",
   "title": "Original pad to a USB or Bluetooth keyboard, pad-ble v1",
   "intro": [
-    "One original NES controller into an ESP32, which presents it to a phone or a laptop as a plain keyboard: the bench bridge's own pad poll with a host interface behind it instead of a shift register. No Pi, no UNO, no console.",
-    "THE BUILD IS USB NOW. It began as Bluetooth on an ESP32-C6 that never accepted a flash, moved to a Waveshare ESP32-P4-Module-DEV-KIT that flashed first try, and moved again on 2026-09-25 when the BLE firmware crashed on that board: the P4 has no radio, the module's ESP32-C6 is it, and the host stack asks that C6 for a version it never answers. The P4 has real USB OTG, so USB removes the failing part rather than working around it. Sheet 5's band has the measurement.",
-    "THE WIRING IS THE SAME EITHER WAY, and every hole is now named by firmware/header-probe rather than counted from a photograph. Sheets 2 to 4 are the original C6 design, kept because a published drawing is a record. Proven 2026-09-27, after twenty days open: an original pad's MN4021B follows its buttons at 3.3 V, and a Linux host receives all eight buttons as keys over USB. A phone has not been tried."
+    "One original NES controller into an ESP32, presented to a phone or a laptop as a plain keyboard: the bridge's own pad poll with a host interface behind it. No Pi, no UNO, no console. Sheets 2 to 4 are the C6 design, kept as a record; that board died 2026-09-29.",
+    "TWO BUILDS, ONE CIRCUIT. USB on a Waveshare ESP32-P4-Module-DEV-KIT (sheets 5 to 10), proven 2026-09-27. BLE on a classic ESP32-WROOM-32 devkit (sheets 11 to 15, 2026-09-30) on D25, D26, D27, since GPIO6 is its flash and GPIO3 its console; it advertises and the bench head bonded with it. No pad wired to it yet; no phone tried on either."
   ],
   "revisions": [
     [
@@ -86,6 +85,11 @@
       "L",
       "2026-09-28",
       "measure-first item 4 closed and the host result on the cover and sheet 5; the DEVICE jumper note removed, it belongs to the high-speed switch"
+    ],
+    [
+      "M",
+      "2026-09-30",
+      "the BLE build moves to a classic ESP32-WROOM-32 devkit, the C6 being dead: three sheets and a header page of its own, pins D25, D26, D27 read off the board"
     ]
   ],
   "sheets": [
@@ -133,6 +137,29 @@
       "kind": "pinmap",
       "sheet": "pad-ble-p4",
       "title": "ESP32-P4 module header P6: where each wire goes"
+    },
+    {
+      "kind": "schematic",
+      "svg": "pad-ble-esp32.svg",
+      "page": "ansi-b",
+      "title": "pad-ble v1 on a classic ESP32: one pad into the devkit"
+    },
+    {
+      "kind": "schematic",
+      "svg": "wiring-pad-ble-esp32.svg",
+      "page": "ansi-b",
+      "title": "Wiring, classic ESP32: every wire at right angles"
+    },
+    {
+      "kind": "schematic",
+      "svg": "breadboard-pad-ble-esp32.svg",
+      "page": "ansi-b",
+      "title": "Breadboard, classic ESP32: on the board, rows 6 to 20"
+    },
+    {
+      "kind": "pinmap",
+      "sheet": "pad-ble-esp32",
+      "title": "WROOM-32 header: where each wire goes"
     },
     {
       "kind": "wiring",

@@ -383,6 +383,94 @@ def check_padble_p4():
     return bad
 
 
+def check_padble_esp32():
+    """The classic ESP32 sheet against the header read off the board, the
+    firmware's own block for that part, and the build doc's wire table.
+
+    Four legs this time, because the fourth is a table typed into prose
+    on 2026-09-30 from the same photograph: the doc says row 13 for the
+    latch, and if the module and the doc ever say different numbers a
+    builder will trust whichever they read first.
+    """
+    sys.path.insert(0, str(ROOT / "tools"))
+    import esp32_header as eh
+    import netlist as nl_mod
+
+    bad = 0
+    sheets, _offsheet = nl_mod.collect()
+    if "pad-ble-esp32" not in sheets:
+        print("  the classic ESP32 sheet draws nothing: netlist.collect() has no pad-ble-esp32")
+        return 1
+    u1 = {n["pinname"]: n for n in sheets["pad-ble-esp32"] if n["ref"] == "U1"}
+
+    # 1. Every wire the header module claims is drawn, on that label,
+    #    and the sheet keys the pin by the label (no number: a devkit
+    #    has none).
+    for net, (label, _g) in eh.PAD_BLE.items():
+        node = u1.get(label)
+        if node is None:
+            print(f"  the classic ESP32 sheet draws no {label} on U1, which esp32_header says carries {net}")
+            bad += 1
+            continue
+        if node["net"] != net:
+            print(f"  {label}: the sheet calls it {node['net']!r}, esp32_header says {net!r}")
+            bad += 1
+        if node.get("pin") is not None:
+            print(f"  {label}: the sheet numbers it {node['pin']}; the board prints labels, not numbers")
+            bad += 1
+
+    # 2. Nothing reserved got drawn, and the spares are the firmware's.
+    for label, node in u1.items():
+        g = eh.gpio_of(label)
+        if g in eh.RESERVED and node["net"] not in nl_mod.NC:
+            print(f"  the classic ESP32 sheet wires {label} ({g}), which is {eh.RESERVED[g]}")
+            bad += 1
+    for k, (label, _g) in eh.SPARE.items():
+        if label not in u1 or u1[label]["net"] not in nl_mod.NC:
+            print(f"  {k}: the sheet should declare {label} NC and does not")
+            bad += 1
+
+    # 3. The firmware's classic block polls the GPIOs the labels stand
+    #    for. Parsed from the CONFIG_IDF_TARGET_ESP32 block only.
+    src = (ROOT / "firmware/pad-ble/pad-ble.ino").read_text()
+    c_at = src.index("#if CONFIG_IDF_TARGET_ESP32\n")
+    fw = dict(re.findall(r"static const int (\w+)\s*=\s*(\d+);", src[c_at:src.index("#else", c_at)]))
+    for fwname, net in (("PAD_LATCH", "PAD_LATCH"), ("PAD_CLOCK", "PAD_CLK"), ("PAD1_DATA", "PAD1_D0")):
+        want = eh.PAD_BLE[net][1]
+        if f"GPIO{fw.get(fwname)}" != want:
+            print(f"  {fwname}: the classic ESP32 firmware polls GPIO{fw.get(fwname)}, the sheet draws {want}")
+            bad += 1
+    for fwname, k in (("MODE_SW", "MODE_SW"), ("LED_PIN", "LED")):
+        if f"GPIO{fw.get(fwname)}" != eh.SPARE[k][1]:
+            print(f"  {fwname}: the classic ESP32 firmware has GPIO{fw.get(fwname)}, esp32_header says {eh.SPARE[k][1]}")
+            bad += 1
+
+    # 4. The build doc's wire table says the same labels and rows.
+    doc = (ROOT / "docs/pad-ble-build.md").read_text()
+    first = {"GND": "GND", "+5V": "3V3", "OUT0": "PAD_LATCH", "CLK": "PAD_CLK", "D0": "PAD1_D0"}
+    seen = {}
+    for line in doc.splitlines():
+        cells = [c.strip() for c in line.strip().strip("|").split("|")]
+        if len(cells) != 3 or not cells[2].isdigit():
+            continue
+        head = cells[0].split(",")[0].strip()
+        if head in first:
+            m = re.match(r"`([^`]+)`", cells[1])
+            seen[first[head]] = (m.group(1) if m else cells[1], int(cells[2]))
+    if len(seen) != 5:
+        print(f"  the build doc's wire table has {len(seen)} of the five wires")
+        bad += 1
+    for net, (label, row) in seen.items():
+        want = (eh.PAD_BLE[net][0], eh.row_of(eh.PAD_BLE[net][0], eh.PAD_SIDE[net]))
+        if (label, row) != want:
+            print(f"  {net}: the build doc's table says {label} row {row}, esp32_header says {want[0]} row {want[1]}")
+            bad += 1
+
+    if not bad:
+        print("check-sheets: 5 classic ESP32 pins agree between esp32_header, the sheet, pad-ble and the build doc")
+    return bad
+
+
 def main():
     w = draw_bench.read_wiring()
     want = {}
@@ -414,6 +502,7 @@ def main():
     bad += check_head()
     bad += check_padble()
     bad += check_padble_p4()
+    bad += check_padble_esp32()
     # The committed SVGs are what the generator writes.
     n_sheets = 0
     with tempfile.TemporaryDirectory() as d:

@@ -88,9 +88,12 @@
 // MEASURED 2026-09-30 on the bench Pi: the board is an ESP32-D0WD-V3
 // (revision v3.1) behind a CP2102, by esptool chip-id; it arrived
 // running an AT firmware (an at_customize partition, version line
-// 2.4.0). The header positions of 25, 26 and 27 were NOT read off
-// this board: read them off the silkscreen before wiring, the way the
-// P4's were with tools/p4_header.py.
+// 2.4.0). Header positions READ OFF THE BOARD from the owner's photo
+// of 2026-09-30 (a 30-pin devkit, USB socket at the breadboard's row 1
+// end, the pins in rows 6 to 20): the three pad pins are adjacent on
+// the EN side, D25 in row 13, D26 in row 12, D27 in row 11; GND is
+// row 7 on both sides and 3V3 is row 6 on the D23 side. The full
+// order is in docs/pad-ble-build.md.
 static const int PAD_LATCH = 25;
 static const int PAD_CLOCK = 26;
 static const int PAD1_DATA = 27;

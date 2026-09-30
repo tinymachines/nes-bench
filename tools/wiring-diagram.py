@@ -165,7 +165,23 @@ ROW_PADBLE_P4 = [
             "bottom": [(None, "BLE"), (None, "USB-C")]}),
 ]
 
-# What differs between the two sheets: the netlist, the row, the rails,
+# The same three parts on a classic ESP32, the board with a radio of
+# its own. U1's pins are keyed by the LABEL THE BOARD PRINTS, read off
+# the owner's photograph through tools/esp32_header.py, because that
+# is what a person counts along on a devkit; the GPIO each stands for
+# is in the header page's table and in the firmware's own block.
+ROW_PADBLE_ESP32 = [
+    ("J1", {"kind": "header", "label": "J1 original pad", "sub": "MN4021B inside; colours NOT measured",
+            "top": [(1, "GND"), (2, "CLK"), (3, "OUT0"), (4, "D0"), (5, "+5V")], "bottom": []}),
+    ("R1", {"kind": "header", "label": "R1 10k", "sub": "the pad's D0 pullup",
+            "top": [(1, "1"), (2, "2")], "bottom": []}),
+    ("U1", {"kind": "header", "label": "U1 ESP32-WROOM-32 devkit", "sub": "30 pins; 3.3 V logic; the radio is the module's own",
+            "top": [(None, "D25"), (None, "D26"), (None, "D27"),
+                    (None, "3V3"), (None, "GND")],
+            "bottom": [(None, "BLE"), (None, "micro-USB")]}),
+]
+
+# What differs between the sheets: the netlist, the row, the rails,
 # the words. Everything about routing and drawing is shared.
 SHEETS = {
     "v1b": dict(netlist="bench-v1b", row=ROW, caps=CAPS, rails=("+5V", "GND"), out="wiring-v1b",
@@ -197,6 +213,15 @@ SHEETS = {
                       lead=original_lead,
                       built_title="pad-ble v1 on the ESP32-P4 as built",
                       rails_note="3V3 and GND from header P6 pins 18 and 26: no separate supply on this build"),
+    "padble-esp32": dict(netlist="pad-ble-esp32", row=ROW_PADBLE_ESP32, caps={"C1": "U1"}, rails=("3V3", "GND"),
+                         out="wiring-pad-ble-esp32", status=None, aria="pad-ble adapter wiring diagram, classic ESP32",
+                         title="pad-ble v1 on a classic ESP32: one pad into a WROOM-32 devkit, at right angles",
+                         sub="The BLE build, on the part with its own radio. U1's pins carry the board's printed labels: D25 latch, "
+                             "D26 clock, D27 data, adjacent on the EN side in breadboard rows 13, 12 and 11; GND is row 7 on that side "
+                             "and 3V3 row 6 across from it. NOT GPIO2, 3 and 6 here: 6 is the module's flash and 3 is the console.",
+                         lead=original_lead,
+                         built_title="pad-ble v1 on a classic ESP32 as built",
+                         rails_note="3V3 and GND from the devkit's own pins, rows 6 and 7: no separate supply on this build"),
 }
 PALETTE = ["#7a3fbf", "#0f8f9e", "#b5651d", "#8d1f5e", "#3f6f2a", "#5b5bd6", "#c2185b",
            "#00796b", "#e65100", "#4527a0", "#2e7d32", "#6d4c41", "#0277bd", "#ad1457",

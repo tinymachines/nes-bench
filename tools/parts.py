@@ -33,6 +33,7 @@ SHEETS = [
     ("pad-adapter", "sheet_pad", "The original pad as a wireless HID device. A separate project."),
     ("pad-ble", "sheet_padble", "**The C6 design, superseded.** One pad, one pullup, the C6 on USB power; the board never accepted a flash, see pad-ble-p4."),
     ("pad-ble-p4", "sheet_padble_p4", "**The one to build.** The same circuit on the board that actually flashes: a Waveshare ESP32-P4-Module-DEV-KIT, wired at header P6."),
+    ("pad-ble-esp32", "sheet_padble_esp32", "**The BLE build, on the board with a radio of its own.** The same circuit on a classic ESP32-WROOM-32 devkit, pins D25, D26 and D27; the C6 died and the P4 cannot do BLE."),
 ]
 
 # AUTHORED, and the only authored thing here: where each part is. A
@@ -44,6 +45,7 @@ STATUS = {
     "Raspberry Pi": ("on hand", "the head, already running the serial bridge"),
     "ESP32-C6": ("on hand", "DevKitC-1 v1.2, the alternative build"),
     "ESP32-S3": ("to order", "only if the pad adapter gets built"),
+    "ESP32-WROOM-32": ("on hand", "the 30-pin devkit on the breadboard, the BLE build since 2026-09-30"),
     "74HCT04": ("on hand", "SN74HCT04N, the tube that arrived 2026-09-09"),
     "74HC165": ("on hand", "the TI bag. v2b needs a second one"),
     "74HC595": ("on hand", "the box of 30"),

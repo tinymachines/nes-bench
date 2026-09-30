@@ -376,8 +376,35 @@ the program runs from and `GPIO3` is the UART console's receive line.
 So that one build polls `GPIO25` (latch), `GPIO26` (clock) and
 `GPIO27` (data), keeps the mode switch on `GPIO4` and lights the
 devkit's own LED on `GPIO2`; the reasoning is at the pin block in
-`pad-ble.ino`. Where those three pins sit on the header has not been
-read off the board.
+`pad-ble.ino`. Where those pins sit was read off the board on
+2026-09-30, from the owner's photograph of it on the breadboard rather
+than from a pinout page: a 30-pin devkit with the USB socket at the
+row 1 end and its pins in rows 6 to 20. Reading each column from the
+USB end: the `D23` side runs `3V3` (row 6), `GND`, `D15`, `D2`, `D4`,
+`RX2`, `TX2`, `D5`, `D18`, `D19`, `D21`, `RX0`, `TX0`, `D22`, `D23`
+(row 20); the `EN` side runs `VIN` (row 6), `GND`, `D13`, `D12`,
+`D14`, `D27`, `D26`, `D25`, `D33`, `D32`, `D35`, `D34`, `VN`, `VP`,
+`EN` (row 20). So the five wires on this board, with the pad's plug
+as before:
+
+| pad | board | row |
+|---|---|---|
+| GND | `GND`, `EN` side | 7 |
+| +5V | `3V3`, `D23` side | 6 |
+| OUT0, the latch | `D25` | 13 |
+| CLK | `D26` | 12 |
+| D0, with the 10k up to `3V3` | `D27` | 11 |
+
+The three signal pins are adjacent, and `GND` is four rows below them
+on the same side. The devkit's blue LED on `D2` is the pad-held light.
+This board has its own three drawings, made by the same tools as the
+P4's and held to the same header module: `pad-ble-esp32.svg` (the
+schematic), `wiring-pad-ble-esp32.svg` (every wire at right angles,
+the board's own labels) and `breadboard-pad-ble-esp32.svg` (the board
+on the breadboard, its column numbers the photograph's row numbers),
+with a header page listing every pin and its row. They are sheets 11
+to 15 of TM-NESB-003 from rev M, and `tools/esp32_header.py` is the
+one place the header is written down.
 
 ### Using it
 
