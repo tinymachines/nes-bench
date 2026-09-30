@@ -323,8 +323,12 @@ def check_padble_p4():
     #    two spare pins are free on this header rather than a codec's.
     src = (ROOT / "firmware/pad-ble/pad-ble.ino").read_text()
     fw = dict(re.findall(r"static const int (\w+)\s*=\s*(\d+);", src))
+    # The P4 block ends at the #else that FOLLOWS its #if, not the first
+    # #else in the file: since 2026-09-30 a classic-ESP32 block sits
+    # before it, and the first #else is that block's.
+    p4_at = src.index("#if CONFIG_IDF_TARGET_ESP32P4")
     p4 = dict(re.findall(r"static const int (\w+)\s*=\s*(\d+);",
-                         src[src.index("#if CONFIG_IDF_TARGET_ESP32P4"):src.index("#else")]))
+                         src[p4_at:src.index("#else", p4_at)]))
     for fwname, net in (("PAD_LATCH", "PAD_LATCH"), ("PAD_CLOCK", "PAD_CLK"), ("PAD1_DATA", "PAD1_D0")):
         want = ph.PAD_BLE[net][1]
         if f"GPIO{fw.get(fwname)}" != want:
@@ -335,6 +339,25 @@ def check_padble_p4():
         if g not in ph.free():
             print(f"  the P4 build puts {spare} on {g}, which is not free on header P6")
             bad += 1
+
+    # The classic-ESP32 block (2026-09-30) has no sheet to be held to,
+    # so it is held to the rule its own comment states: on a WROOM-32
+    # GPIO6 to GPIO11 are the module's flash and GPIO1 and GPIO3 are
+    # UART0, and a build that polled any of them would corrupt the
+    # flash it runs from or take away the board's only console.
+    if "#if CONFIG_IDF_TARGET_ESP32\n" in src:
+        c_at = src.index("#if CONFIG_IDF_TARGET_ESP32\n")
+        classic = dict(re.findall(r"static const int (\w+)\s*=\s*(\d+);",
+                                  src[c_at:src.index("#else", c_at)]))
+        taken = {1, 3, 6, 7, 8, 9, 10, 11}
+        for name in ("PAD_LATCH", "PAD_CLOCK", "PAD1_DATA", "MODE_SW", "LED_PIN"):
+            if name not in classic:
+                print(f"  the classic ESP32 build does not define {name}")
+                bad += 1
+            elif int(classic[name]) in taken:
+                print(f"  the classic ESP32 build puts {name} on GPIO{classic[name]}, "
+                      f"a WROOM-32 flash or UART0 pin")
+                bad += 1
 
     # 4. The USB build polls the same three pins, and its keymap is the
     #    same FILE, not a copy. Two sketches drifting on pins would be

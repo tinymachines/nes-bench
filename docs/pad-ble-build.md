@@ -368,6 +368,17 @@ The wiring. Both builds poll `GPIO2`, `GPIO3` and `GPIO6`, the same map
 `firmware/bridge/bridge.ino` already uses, so the five wires and the
 run they sit in are unaffected by either move.
 
+**One exception, added 2026-09-30: the classic ESP32.** With the
+DevKitC-1 dead (no ROM banner on either socket under any reset, see
+"Tested on the bench" below), an ESP32-WROOM-32 devkit took the BLE
+build instead, and on that module `GPIO6` to `GPIO11` are the flash
+the program runs from and `GPIO3` is the UART console's receive line.
+So that one build polls `GPIO25` (latch), `GPIO26` (clock) and
+`GPIO27` (data), keeps the mode switch on `GPIO4` and lights the
+devkit's own LED on `GPIO2`; the reasoning is at the pin block in
+`pad-ble.ino`. Where those three pins sit on the header has not been
+read off the board.
+
 ### Using it
 
 Plug the host into the Type-C socket marked **`USB`**, not `PWR USB TO
@@ -579,6 +590,28 @@ this board, and a phone pairing with it. On the P4 the build still
 crashes 2881 ms after `BLEDevice::init`, and compiles at 60%; on the
 C6 it compiles at 55%.
 
+**Tested on the bench, 2026-09-30, over the air, on a classic ESP32.**
+The DevKitC-1 v1.2 that the drawings are around is dead, not
+unflashable: on the night of 2026-09-29 it gave no ROM banner on its
+UART bridge at four baud rates under five reset sequences and a held
+BOOT+RST, and nothing ever enumerated on its native socket, which a
+live C6 does from ROM on power alone. In its place, a plain
+ESP32-WROOM-32 devkit on the bench head's USB: `esptool chip-id`
+through its CP2102 reads ESP32-D0WD-V3 (revision v3.1), 4 MB flash, and
+it arrived running an AT firmware (an `at_customize` partition, version
+line `2.4.0`). Its ROM banner appears only when the reset is driven
+through RTS; a DTR pulse alone shows nothing, which for a minute looked
+like a second dead board. `firmware/pad-ble` built for
+`esp32:esp32:esp32` on the test Pi at 83% of the default app partition,
+was flashed from the bench head as one merged image at `0x0` over the
+same bridge at 921600, and booted: the key map printed, then
+`# advertising as "NES Pad", 65 descriptor bytes` and `# pad ff  link
+down`, and the bench head's own radio listed `NES Pad`. `BLEDevice::init`
+does not crash on this part. Unlike the P4 over USB, this board's
+`Serial` is the CP2102 itself, so the `B xx` lines are readable on the
+bench head at 115200. **Still not tested:** a pad wired to `GPIO25`,
+`26` and `27`, and a phone pairing.
+
 ## The trap that will cost the most time (BLE build only)
 
 A reflash can clear this board's bond store while the phone still holds
@@ -593,7 +626,8 @@ host as well, because doing only one is the failure.
 - The BLE build has met no pad and no host. On the P4 it cannot until
   the onboard C6's firmware answers (see above); on the second C6 it
   advertises (2026-09-28) and waits for a pad on GPIO2, 3 and 6 and a
-  phone.
+  phone; on the ESP32-WROOM-32 it advertises (2026-09-30) and waits for
+  a pad on GPIO25, 26 and 27 and a phone.
 - The bench eye cannot read a devkit's silkscreen, which is why the
   header order above was read by hand. It will be true of the next
   devkit too.

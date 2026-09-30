@@ -17,6 +17,13 @@
 // NOT GPIO4 and GPIO5. Those are the ESP32-S3's numbers and they are
 // strapping pins on the C6. The sheet carried them until 2026-09-21.
 //
+// On a classic ESP32 (an ESP32-WROOM-32 devkit, added 2026-09-30 when
+// the C6 board turned out dead) the three pad pins are GPIO25, 26 and
+// 27 instead, for the reason at the pin block below, and the build is
+// plain, with Serial on the CP2102 that is the board's only socket:
+//
+//   arduino-cli compile --fqbn esp32:esp32:esp32 --export-binaries firmware/pad-ble
+//
 //   arduino-cli compile --fqbn esp32:esp32:esp32c6:CDCOnBoot=cdc --export-binaries firmware/pad-ble
 //   arduino-cli upload  --fqbn esp32:esp32:esp32c6:CDCOnBoot=cdc -p /dev/ttyACM0 firmware/pad-ble
 //
@@ -67,9 +74,32 @@
 #include <BLEUtils.h>
 #include "keymap.h"
 
+#if CONFIG_IDF_TARGET_ESP32
+// THE CLASSIC ESP32 CANNOT TAKE THE C6 MAP AT ALL.
+//
+// On an ESP32-WROOM-32 module GPIO6 to GPIO11 are wired to the
+// module's own SPI flash, so GPIO6 as the pad's data line and GPIO10
+// and GPIO11 as the spare pins would be driving the flash this program
+// runs from; and GPIO3 is U0RXD, the receive side of the UART bridge
+// that is this board's only serial console. None of the five below has
+// a second job on the WROOM-32. GPIO2 is the devkit's own blue LED, so
+// the pad-held light needs no wiring on this board.
+//
+// MEASURED 2026-09-30 on the bench Pi: the board is an ESP32-D0WD-V3
+// (revision v3.1) behind a CP2102, by esptool chip-id; it arrived
+// running an AT firmware (an at_customize partition, version line
+// 2.4.0). The header positions of 25, 26 and 27 were NOT read off
+// this board: read them off the silkscreen before wiring, the way the
+// P4's were with tools/p4_header.py.
+static const int PAD_LATCH = 25;
+static const int PAD_CLOCK = 26;
+static const int PAD1_DATA = 27;
+static const int MODE_SW = 4;   // reserved for gamepad mode; read, not used
+static const int LED_PIN = 2;   // the devkit's onboard LED
+#else
 // The pad side, exactly firmware/bridge/bridge.ino's C6 map. GPIO2, 3
-// and 6 exist and are free on BOTH parts this sketch builds for, so
-// poll_pad runs unedited either way and there is one pad map, not two.
+// and 6 exist and are free on BOTH the C6 and the P4, so poll_pad runs
+// unedited either way and there is one pad map, not two.
 static const int PAD_LATCH = 2;
 static const int PAD_CLOCK = 3;
 static const int PAD1_DATA = 6;
@@ -92,6 +122,7 @@ static const int LED_PIN = 20;  // P6 pin 14
 #else
 static const int MODE_SW = 10;  // reserved for gamepad mode; read, not used
 static const int LED_PIN = 11;
+#endif
 #endif
 
 static const char *DEVICE_NAME = "NES Pad";
