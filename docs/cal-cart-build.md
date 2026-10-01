@@ -130,6 +130,13 @@ should agree anyway.
 
 ![the back of the board](lab/cal-cart-board-back.jpg)
 
+![the back's jumper blocks, top to bottom as in the table](lab/cal-cart-jumpers-back.jpg)
+
+The close-up runs down the back between the ROM rows: the A/B against
+U block, the two blocks of C/G, A/B and U, and at the bottom the one
+that matters here, C/G/N over A/B/U, whose two columns each get their
+middle pad joined to the upper one.
+
 On the back, the resistor positions R0 to R7 carry a note: if sprites
 glitch, cut the middle traces and add 100 ohm resistors. That is a
 repair for a fault not yet seen, so nothing is cut.
