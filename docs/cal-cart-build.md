@@ -15,7 +15,7 @@ was measured.
 | The programmer answers | the bench can write a chip at all | held 2026-09-30 |
 | Chip 1 identifies, and is blank | the part is an SST39SF040 and not a relabelled one | held 2026-09-30 |
 | Chip 1 carries `prg.bin` | the program image is on the part, whole | held 2026-09-30 |
-| Chip 2 identifies, and carries `chr.bin` | the tile image likewise | open |
+| Chip 2 identifies, is blank, and carries `chr.bin` | the tile image likewise | held 2026-09-30 |
 | The board: five bridges, three capacitors, two chips | the cart exists | open |
 | The reader's dump | what the console will see is `cal.nes`: body crc32 `21091B99` | open |
 | The cart in the console | the strip reads off a grabbed frame (`tools/cal.py grab`) | open |
@@ -86,6 +86,20 @@ the PRG chip and goes in U4.
 Why the whole chip is compared and not the first 32 KiB: the image is
 tiled sixteen times to fill the part, so a short or relabelled die
 verifies in the low pages and fails only higher up.
+
+## The second chip carries the tile image
+
+Chip 2 went in seated right the first time: ID 0xBFB7, blank over the
+whole chip, then `chr.bin` written, the programmer's verify passed, a
+separate read of the whole chip compared equal to the image byte for
+byte and hashed to the tutorial's figure, and the ID read 0xBFB7
+afterwards (all MEASURED 2026-09-30). It is the CHR chip and goes in
+U3. Here the image is tiled sixty-four times, so the whole-chip
+comparison matters more than it did for the program.
+
+Both chips are now what the tutorial's table says they should be. They
+are identical to look at, so each is marked before it leaves the
+programmer: PRG for U4, CHR for U3.
 
 ## The board takes five solder bridges for NROM
 
@@ -192,8 +206,6 @@ something anyone said). The W65C02 is the CMOS part and not the NMOS
 
 ## What is open
 
-- Chip 2: ID, blank check, `chr.bin`, the same two-way verify. It goes
-  in U3.
 - The five bridges, the capacitors, the two chips on the board.
 - The reader's dump of the finished cart, whose body crc32 must be
   `21091B99`. It is also what proves the jumper table above.
