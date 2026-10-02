@@ -72,6 +72,9 @@ run "check-sheets" python3 tools/check-sheets.py
 # not needed to know the answer.
 run "test-pad-keymap" tools/test-pad-keymap.sh
 run "test-uno-schedule" tools/test-uno-schedule.sh
+# The lockout check's classifier on synthetic records: a live lock, a
+# defeated one, a supply rail, a 10X probe. Plain Python, no scope.
+run "lockout-check selftest" python3 tools/lockout-check.py --selftest
 
 if [ "$fail" -eq 0 ]; then
   echo "check-all: every check agrees"

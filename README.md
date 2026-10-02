@@ -57,6 +57,11 @@ built as USB on an ESP32-P4 and reached a host on 2026-09-27
   the console adds (pad, stack, PPU, picture). T0 to T4, before the code.
 - `docs/open-items.md`: what was seen and not closed, dated, with what
   closes each; struck through when done.
+- `docs/lockout.md`: the console's lockout chip: what defeating it is
+  (one pin, taken off the board the right way), how it goes wrong, how
+  a keyless cartridge tells the two states apart by eye, and
+  `tools/lockout-check.py`, which reads the answer off the reset line
+  in twelve seconds. Open: not yet measured on this console.
 - `docs/exercise.md` with `exercise-stack.svg`: the v1 bench exercised: the
   two stacks as one logical diagram with every flow typed, the dialect layer
   by layer, a regime of six steps each with its gate, and the three

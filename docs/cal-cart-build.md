@@ -16,7 +16,10 @@ was measured.
 | Chip 1 identifies, and is blank | the part is an SST39SF040 and not a relabelled one | held 2026-09-30 |
 | Chip 1 carries `prg.bin` | the program image is on the part, whole | held 2026-09-30 |
 | Chip 2 identifies, is blank, and carries `chr.bin` | the tile image likewise | held 2026-09-30 |
-| The board: five bridges, three capacitors, two chips | the cart exists | open |
+| The first board: five bridges, three capacitors, two chips | a cart exists | built 2026-10-01; a gray screen in the console |
+| Both chips read whole after the first board | the gray screen is not the chips | held 2026-10-01 |
+| The second board | a cart whose soldering is not in question | open |
+| The console's lockout is defeated | a cart with no lockout chip can run at all | open: `lockout.md` |
 | The reader's dump | what the console will see is `cal.nes`: body crc32 `21091B99` | open |
 | The cart in the console | the strip reads off a grabbed frame (`tools/cal.py grab`) | open |
 
@@ -168,7 +171,7 @@ and its silkscreen. The values are the guide's; none has been measured.
 | C1 | about 22 uF electrolytic, 10 V or more, polarised (the + is marked) | fit |
 | C3, C4 | about 0.1 uF ceramic, 10 V or more, one beside each ROM | fit |
 | C2 | about 0.1 uF ceramic, beside the lockout chip's position | fit, or leave with U2 |
-| U2 | the lockout chip (a CIC, or an ATtiny13 programmed as one) | empty: the console's lockout is defeated |
+| U2 | the lockout chip (a CIC, or an ATtiny13 programmed as one) | empty: the console's lockout is said to be defeated, and `lockout.md` is how that gets measured |
 | U5, U6, U7 | 74'32, 74'161, 74'02 | empty: marked for UxROM, "all but NROM" and AxROM |
 | C5, C6, C7 | their capacitors | empty with them |
 
@@ -176,6 +179,45 @@ The capacitors are not in the pile photographed on the day; they come
 from stock. A pair of 32-pin sockets at U3 and U4 would let a chip go
 back to the programmer when the ROM is revised; whether a socketed chip
 clears the shell has not been checked.
+
+## The first board gave a gray screen, and it was not the chips
+
+The first board was assembled on 2026-10-01 and went into the console
+bare, without a shell. **Which way up a bare board goes:** chip side
+up. In a front-loader the cartridge goes in label up, "pins 01-36 are
+the top side of the connector", and on an NES cartridge "most chips and
+components appear on the label side" (nesdev, Cartridge connector, read
+2026-10-01). This board agrees with that: its edge is numbered 5 to 35
+on the chip side and 40 to 70 on the back. A bare board has no shell to
+key it, so it fits upside down and a pin to either side, and pin 36 is
++5 V with ground at 72 across from it.
+
+Powered on, the screen was gray. Whether it was steady or blinking was
+not noted.
+
+Both chips then came off the board and back to the programmer. Each
+identified (0xBFB7), and each read back with no byte differing from
+its image: the one in U4 was `prg.bin`, the one in U3 was `chr.bin`
+(MEASURED 2026-10-01). So the chips were right, in the right
+positions, and unharmed by the board or the console. The program
+image's reset vector reads $8000 at the top of every one of its
+sixteen copies, which is where the console starts.
+
+That leaves two things, and they are being taken separately:
+
+- **The board.** Its builder's verdict on the soldering was that it
+  was poor, and a second board is being built. The two bridges beside
+  the program ROM are the ones that would stop the program being read
+  at all.
+- **The console.** This cart has no lockout chip, so it runs only on a
+  console whose lock is out of the way, and that had been taken on
+  trust. What the lock does to a keyless cart, how to tell by eye, and
+  a measurement of the reset line are in `lockout.md`. A steady gray
+  is not the lock's signature: a live lock blinks.
+
+The step the tutorial puts before the console was skipped here and
+should not be next time: the reader's dump reads the two halves
+separately and takes the console's connector out of the question.
 
 ## The rest of the pile is for other builds
 
@@ -206,7 +248,9 @@ something anyone said). The W65C02 is the CMOS part and not the NMOS
 
 ## What is open
 
-- The five bridges, the capacitors, the two chips on the board.
+- Steady or blinking: one look at the screen with this cart in, which
+  says whether the gray was the lock or the board (`lockout.md`).
+- The second board: five bridges, the capacitors, the two chips.
 - The reader's dump of the finished cart, whose body crc32 must be
   `21091B99`. It is also what proves the jumper table above.
 - The cart in the console, and the strip read off a grabbed frame.
