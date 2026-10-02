@@ -18,7 +18,7 @@ was measured.
 | Chip 2 identifies, is blank, and carries `chr.bin` | the tile image likewise | held 2026-09-30 |
 | The first board: five bridges, three capacitors, two chips | a cart exists | built 2026-10-01; a gray screen in the console |
 | Both chips read whole after the first board | the gray screen is not the chips | held 2026-10-01 |
-| The second board | a cart whose soldering is not in question | open |
+| The second board | a cart whose soldering is not in question | open: the checklist is below |
 | The console's lockout is defeated | a cart with no lockout chip can run at all | by eye 2026-10-01: the gray was steady; not yet off the reset line (`lockout.md`) |
 | The reader's dump | what the console will see is `cal.nes`: body crc32 `21091B99` | open |
 | The cart in the console | the strip reads off a grabbed frame (`tools/cal.py grab`) | open |
@@ -219,6 +219,65 @@ That leaves two things, and they are being taken separately:
 The step the tutorial puts before the console was skipped here and
 should not be next time: the reader's dump reads the two halves
 separately and takes the console's connector out of the question.
+
+## The second board, in the order it is soldered
+
+The two tables above, as one list to work down at the bench. Nothing
+here is new; it is the jumper table and the parts table in the order
+that makes the work easier, and the checks that come before a chip
+goes in.
+
+| part | position | note |
+|---|---|---|
+| 32-pin socket, then the PRG chip | U4 | notch to the outline's notch |
+| 32-pin socket, then the CHR chip | U3 | notch to the outline's notch |
+| about 22 uF electrolytic, 10 V or more | C1 | long leg in the hole marked + |
+| 0.1 uF ceramic | C3 | beside CHR |
+| 0.1 uF ceramic | C4 | beside PRG |
+| nothing | U2, U5, U6, U7, C2, C5, C6, C7 | left empty |
+
+Five bridges are made:
+
+| side | jumper, as labelled | do |
+|---|---|---|
+| front | H, V | middle pad to H |
+| front | B/C/G/N/U | join the two pads |
+| front | U against A/B/C G/N | middle pad to the A/B/C G/N side |
+| back | C/G/N over A/B/U, left column | middle pad to the C/G/N pad |
+| back | C/G/N over A/B/U, right column | middle pad to the C/G/N pad |
+
+Left open: the starred BRIDGE IF 28-PIN pads inside U4's outline, the
+front A and G G pads, EXP0, and every other jumper block on the back.
+Nothing is cut; the R0 to R7 traces stay as they are.
+
+The order:
+
+1. **The five bridges first**, while the board lies flat. Look at the
+   starred pads inside U4's outline before going on: the socket covers
+   them, and they have to be clean.
+2. **The two ceramics.**
+3. **The sockets.** Tack two diagonal corner pins, check the socket
+   sits flush and its notch is the right way, then the rest.
+4. **The electrolytic last**, long leg to the +.
+5. **Before a chip goes in, the meter.** Pin 32 to pin 16 of each
+   socket is +5 V to ground and must read open. Each of the five
+   bridges reads closed, and on each three-pad jumper the side that was
+   not made reads open.
+6. **Chips in**, PRG in U4 and CHR in U3, then the reader before the
+   console.
+
+On a three-pad jumper, flux both pads and use one small blob, kept
+away from the third pad. If a blob will not span the gap, a clipped
+piece of component lead laid across and soldered does.
+
+The iron, as advice and not as anything measured here: a
+temperature-controlled iron of 60 to 70 W and not a soldering gun (the
+wattage is for holding temperature against this board's copper, not
+for running hotter); 320 to 350 C with leaded 63/37 rosin-core solder,
+350 to 380 C with lead-free; a small chisel tip, about 1.6 to 2.4 mm,
+because a needle point passes heat poorly; solder of 0.6 to 0.8 mm; two
+to three seconds a joint, heating pad and pin together and feeding the
+solder into the joint.
 
 ## The rest of the pile is for other builds
 
