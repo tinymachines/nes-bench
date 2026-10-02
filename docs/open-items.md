@@ -133,8 +133,10 @@ entry is the one that raised it, with its date.
   console's lockout has never been measured.** Both chips read back
   whole, so it is the board's soldering or the console. The cart has no
   lockout chip and runs only if the lock is defeated, which the cart
-  pages have asserted since 2026-09-14. Closes with: steady or blinking
-  by eye, then `tools/lockout-check.py` on the reset line
+  pages have asserted since 2026-09-14. The gray was steady, not
+  blinking (the owner, 2026-10-02), so by eye the lock is not acting
+  and the board is the fault. Closes with: `tools/lockout-check.py` on
+  the reset line
   (`lockout.md`, `procedures/2026-10-02-is-the-lockout-defeated.md`),
   and a second board (`cal-cart-build.md`).
 - **C1: machine side built (`tools/cal.py`, self-test green, mutation red), part side OPEN:** scope records of the palette screen per variant with the cart in the console, then grabber frames. **C2 to C4: not started.**

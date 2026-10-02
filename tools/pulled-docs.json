@@ -1,5 +1,5 @@
 {
- "_about": "The documents the site pulls, and their heading counts. The site holds each against a Japanese shadow at docs/ja/nes/<slug>.md in ITS repository and refuses to deploy on a count mismatch. Authority for the list is DOCS in their web/scripts/pull-nesdocs.mjs; this copy was given by that session on 2026-09-25. See tools/check-pulled-headings.py. The four cart pages (build-the-cal-cart, calibration-plan, cart-blanks, calibration-screens) were added 2026-09-28 after the site's check-ja-docs reported three of them drifted; the site session confirmed their slugs are the filename stems and their shadows live under docs/ja/cart/<slug>.md, not docs/ja/nes/. cal-cart-build.md (the cart's build record) was offered to the site on 2026-09-30 as a fifth cart page; the site took it the same evening (slug cal-cart-build, shadow at docs/ja/cart/).",
+ "_about": "The documents the site pulls, and their heading counts. The site holds each against a Japanese shadow at docs/ja/nes/<slug>.md in ITS repository and refuses to deploy on a count mismatch. Authority for the list is DOCS in their web/scripts/pull-nesdocs.mjs; this copy was given by that session on 2026-09-25. See tools/check-pulled-headings.py. The four cart pages (build-the-cal-cart, calibration-plan, cart-blanks, calibration-screens) were added 2026-09-28 after the site's check-ja-docs reported three of them drifted; the site session confirmed their slugs are the filename stems and their shadows live under docs/ja/cart/<slug>.md, not docs/ja/nes/. cal-cart-build.md (the cart's build record) was offered to the site on 2026-09-30 as a fifth cart page; the site took it the same evening (slug cal-cart-build, shadow at docs/ja/cart/). lockout.md was offered on 2026-10-02 and taken the same day (slug lockout, cart section, shadow at docs/ja/cart/).",
  "docs": {
   "bench-plan.md": {
    "slug": "bench-plan",
@@ -139,6 +139,11 @@
   "cal-cart-build.md": {
    "slug": "cal-cart-build",
    "headings": 11,
+   "shadow": true
+  },
+  "lockout.md": {
+   "slug": "lockout",
+   "headings": 8,
    "shadow": true
   }
  }

@@ -196,16 +196,17 @@ on this board.
   and `tools/nesprep.py` since 2026-09-14, on the owner's word. Not
   measured.
 - **2026-10-01:** the calibration cart's first board, which has no
-  lockout chip, gave a gray screen. Whether it was steady or blinking
-  was not noted, and that is the one observation that would have said
-  which problem it was. Both of its chips read back whole afterwards
-  (`cal-cart-build.md`).
+  lockout chip, gave a gray screen. **Steady, not blinking** (the
+  owner's report, 2026-10-02). By the table above that is the lock not
+  resetting the console, so the modification holds, by eye, and the
+  gray belongs to the cartridge. Both of its chips read back whole
+  afterwards (`cal-cart-build.md`).
 - **2026-10-02:** the tool's whole path was run against the scope with
   no probe on the console. It recorded twelve seconds, said NOT SHOWN
   (the line sat low), and put the scope's setup back. That is the
   instrument proven, and nothing about the console.
 
-Open, in the order they are cheapest: steady or blinking, by eye; a
+Answered by eye. Still open, and what would make it a measurement: a
 photograph of the chip and its pin 4; the meter readings of step 5; the
 tool on the reset line. The working document for that sitting is
 `procedures/2026-10-02-is-the-lockout-defeated.md`.

@@ -19,7 +19,7 @@ was measured.
 | The first board: five bridges, three capacitors, two chips | a cart exists | built 2026-10-01; a gray screen in the console |
 | Both chips read whole after the first board | the gray screen is not the chips | held 2026-10-01 |
 | The second board | a cart whose soldering is not in question | open |
-| The console's lockout is defeated | a cart with no lockout chip can run at all | open: `lockout.md` |
+| The console's lockout is defeated | a cart with no lockout chip can run at all | by eye 2026-10-01: the gray was steady; not yet off the reset line (`lockout.md`) |
 | The reader's dump | what the console will see is `cal.nes`: body crc32 `21091B99` | open |
 | The cart in the console | the strip reads off a grabbed frame (`tools/cal.py grab`) | open |
 
@@ -192,8 +192,8 @@ on the chip side and 40 to 70 on the back. A bare board has no shell to
 key it, so it fits upside down and a pin to either side, and pin 36 is
 +5 V with ground at 72 across from it.
 
-Powered on, the screen was gray. Whether it was steady or blinking was
-not noted.
+Powered on, the screen was gray: steady, not blinking (the owner's
+report the next day).
 
 Both chips then came off the board and back to the programmer. Each
 identified (0xBFB7), and each read back with no byte differing from
@@ -213,7 +213,8 @@ That leaves two things, and they are being taken separately:
   console whose lock is out of the way, and that had been taken on
   trust. What the lock does to a keyless cart, how to tell by eye, and
   a measurement of the reset line are in `lockout.md`. A steady gray
-  is not the lock's signature: a live lock blinks.
+  is not the lock's signature: a live lock blinks. This one was
+  steady, so the lock is not what stopped the cart, and the board is.
 
 The step the tutorial puts before the console was skipped here and
 should not be next time: the reader's dump reads the two halves
@@ -248,8 +249,8 @@ something anyone said). The W65C02 is the CMOS part and not the NMOS
 
 ## What is open
 
-- Steady or blinking: one look at the screen with this cart in, which
-  says whether the gray was the lock or the board (`lockout.md`).
+- The lockout off the reset line: it is answered by eye, and
+  `tools/lockout-check.py` would make it a record (`lockout.md`).
 - The second board: five bridges, the capacitors, the two chips.
 - The reader's dump of the finished cart, whose body crc32 must be
   `21091B99`. It is also what proves the jumper table above.

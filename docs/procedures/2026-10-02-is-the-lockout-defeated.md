@@ -1,7 +1,9 @@
 # 2026-10-02: is the lockout defeated
 
-**Outcome:** open. The tool is built and proven against the scope with
-nothing connected; every step that needs the console is still to do.
+**Outcome:** answered by eye at step 1, 2026-10-02: the screen was a
+steady gray and did not blink, so the lock is not resetting the console.
+Steps 2 to 6 are still open and would turn "by eye" into a photograph,
+three meter readings and a record off the reset line.
 
 ## Why
 
@@ -52,4 +54,8 @@ the work was done.
 
 ## Observations
 
-None yet.
+- **2026-10-02, the owner, of the 2026-10-01 power-on:** "it was steady
+  gray, not blinking". The cartridge in the slot was the calibration
+  cart's first board, which has no lockout chip. A live lock blinks a
+  keyless cartridge at about once a second (`docs/lockout.md`), so this
+  is the lock not acting, and the gray is the cartridge's.
