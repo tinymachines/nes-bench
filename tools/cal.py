@@ -143,13 +143,18 @@ def grid_from_decoded(ppm: Path):
     return img.reshape(NES_H, NES_W, img.shape[1] // NES_W, 3).mean(axis=2)
 
 
-def grabber_rows(path: Path):
-    """A grabber frame as 240 rows of 720 samples: the 480 lines are the
-    240 picture lines doubled, so pairs are averaged."""
+def grabber_fields(path: Path):
+    """A grabber frame as its two fields, each 240 rows of 720 samples.
+    The 480 lines are not the 240 picture lines doubled: the grabber
+    weaves two fields, and the console sends a whole frame each field,
+    so the even lines are one console frame and the odd lines the next
+    (read off the part 2026-10-03: every field pair's counters differ by
+    one). Averaging line pairs mixes the two frames' strips, and the
+    frame counter's fast bits read as grey."""
     img = np.asarray(Image.open(path).convert("RGB")).astype(np.float64)
     if img.shape[:2] != (GRAB_H, GRAB_W):
         raise Unreadable(f"{path.name} is {img.shape[1]}x{img.shape[0]}, not the grabber's {GRAB_W}x{GRAB_H}")
-    return img.reshape(NES_H, 2, GRAB_W, 3).mean(axis=1)
+    return img[0::2], img[1::2]
 
 
 def resample(rows, x0):
@@ -330,25 +335,36 @@ def cmd_grab(a):
     rom = Path(a.rom).resolve()
     m = manifest_for(rom)
     bad = 0
-    for f in a.frames:
-        f = Path(f)
+    for path in a.frames:
+        path = Path(path)
         try:
-            rows = grabber_rows(f)
-            grid, geo = find_grid(rows, m["strip"])
-            s = read_strip(grid, m["strip"], dx=8 if os.environ.get("MUTATE") else 0)
+            fields = grabber_fields(path)
         except Unreadable as e:
-            print(f"{f.name}: REFUSED: {e}")
+            print(f"{path.name}: REFUSED: {e}")
             bad += 1
             continue
-        name = m["screens"][s["screen"]]["name"]
-        print(f"{f.name}: grid at x0 {geo['x0_samples']} samples, dy {geo['dy_rows']} rows, margin {geo['margin']}; strip: screen {s['screen']} ({name}) variant {s['variant']} frame {s['frame']} pad {s['pad']:02x} hold {int(s['hold'])}; white {s['white']} black {s['black']}")
-        save_grid_png(grid, m["strip"], CAPS / f"{f.stem}-cal-grid.png")
-        model = model_grid(rom, m, s["screen"], s["variant"])
-        rows_ = score_regions(m, s, grid, model)
-        if rows_:
-            print_scores(rows_)
-        (CAPS / f"{f.stem}-cal.json").write_text(json.dumps({"frame": str(f), "grid": geo, "strip": {k: v for k, v in s.items() if k != "bits"}, "regions": rows_}, indent=1))
+        for fi, rows in enumerate(fields):
+            bad += grab_field(rom, m, path, fi, rows)
     return 1 if bad else 0
+
+
+def grab_field(rom, m, path: Path, fi: int, rows):
+    f = path.with_name(f"{path.stem}-f{fi}{path.suffix}")
+    try:
+        grid, geo = find_grid(rows, m["strip"])
+        s = read_strip(grid, m["strip"], dx=8 if os.environ.get("MUTATE") else 0)
+    except Unreadable as e:
+        print(f"{f.name}: REFUSED: {e}")
+        return 1
+    name = m["screens"][s["screen"]]["name"]
+    print(f"{f.name}: grid at x0 {geo['x0_samples']} samples, dy {geo['dy_rows']} rows, margin {geo['margin']}; strip: screen {s['screen']} ({name}) variant {s['variant']} frame {s['frame']} pad {s['pad']:02x} hold {int(s['hold'])}; white {s['white']} black {s['black']}")
+    save_grid_png(grid, m["strip"], CAPS / f"{f.stem}-cal-grid.png")
+    model = model_grid(rom, m, s["screen"], s["variant"])
+    rows_ = score_regions(m, s, grid, model)
+    if rows_:
+        print_scores(rows_)
+    (CAPS / f"{f.stem}-cal.json").write_text(json.dumps({"frame": str(path), "field": fi, "grid": geo, "strip": {k: v for k, v in s.items() if k != "bits"}, "regions": rows_}, indent=1))
+    return 0
 
 
 def cmd_scope(a):
@@ -378,19 +394,20 @@ def cmd_scope(a):
     return cs.returncode
 
 
-def synth_grabber(grid, x0, dy, path: Path, quality=90):
-    """The console grid as the grabber would deliver it: 256 dots spread
-    over 643.6 of 720 samples from x0, rows shifted by dy and doubled,
-    JPEG-compressed."""
-    rows = np.zeros((NES_H, GRAB_W, 3))
+def synth_grabber(grid, other, x0, dy, path: Path, quality=90):
+    """Two console grids as the grabber would deliver them: 256 dots
+    spread over 643.6 of 720 samples from x0, rows shifted by dy, the
+    first on the even lines and the second on the odd (the grabber
+    weaves two console frames), JPEG-compressed."""
     xs = np.arange(GRAB_W)
     src = (xs - x0) / STEP
     inside = (src >= 0) & (src < NES_W)
     idx = np.clip(np.floor(src).astype(int), 0, NES_W - 1)
-    shifted = np.roll(grid, dy, axis=0)
-    rows[:, inside] = shifted[:, idx[inside]]
-    rows[:, ~inside] = 16.0
-    img = np.repeat(rows, 2, axis=0)
+    img = np.zeros((GRAB_H, GRAB_W, 3))
+    for fi, g in enumerate((grid, other)):
+        rows = np.full((NES_H, GRAB_W, 3), 16.0)
+        rows[:, inside] = np.roll(g, dy, axis=0)[:, idx[inside]]
+        img[fi::2] = rows
     Image.fromarray(np.clip(img, 0, 255).astype(np.uint8)).save(path, quality=quality)
 
 
@@ -437,25 +454,35 @@ def cmd_selftest(a):
     print(f"  the decoded picture's strip sits {shift:+d} row(s) from the manifest (the decode path's line delay); the finder follows the picture")
     synth = CAPS / "cal-model" / "synth"
     synth.mkdir(parents=True, exist_ok=True)
-    for i, (name, want) in enumerate(sorted(said.items())):
+    # each grabber frame weaves this picture with the next one, whose strip
+    # differs, so a reader that mixes the two fields reads neither
+    items = sorted(said.items())
+    for i, (name, want) in enumerate(items):
         x0, dy = 30.0 + 3.7 * i, (i % 5) - 2
+        nxt, want1 = items[(i + 1) % len(items)]
         out = synth / (Path(name).stem + ".jpg")
-        synth_grabber(grid_from_decoded(d / name), x0, dy, out)
+        synth_grabber(grid_from_decoded(d / name), grid_from_decoded(d / nxt), x0, dy, out)
         try:
-            rows = grabber_rows(out)
-            grid, geo = find_grid(rows, strip)
-            got = read_strip(grid, strip, dx=dx)
+            fields = grabber_fields(out)
         except Unreadable as e:
             print(f"  {out.name}: REFUSED: {e}")
             fails += 1
             continue
-        ok = all(got[k] == want[k] for k in want) and abs(geo["x0_samples"] - x0) <= 1.0 and geo["dy_rows"] == dy + shift
-        fails += not ok
-        print(f"  {out.name}: {'ok ' if ok else 'BAD'} found x0 {geo['x0_samples']} (made {x0}), dy {geo['dy_rows']} (made {dy}{shift:+d}); strip screen {got['screen']} frame {got['frame']}; fit {geo['fit']}")
-        if ok and want["screen"] == 1:
-            rows_ = score_regions(m, got, grid, grid_from_decoded(d / name))
-            worst = max((abs(r["dY"]) for r in rows_), default=0)
-            print(f"    palette regions through the synthetic grabber: {len(rows_)} scored, worst dY {worst:.4f}")
+        for fi, (rows, w) in enumerate(zip(fields, (want, want1))):
+            try:
+                grid, geo = find_grid(rows, strip)
+                got = read_strip(grid, strip, dx=dx)
+            except Unreadable as e:
+                print(f"  {out.name} field {fi}: REFUSED: {e}")
+                fails += 1
+                continue
+            ok = all(got[k] == w[k] for k in w) and abs(geo["x0_samples"] - x0) <= 1.0 and geo["dy_rows"] == dy + shift
+            fails += not ok
+            print(f"  {out.name} field {fi}: {'ok ' if ok else 'BAD'} found x0 {geo['x0_samples']} (made {x0}), dy {geo['dy_rows']} (made {dy}{shift:+d}); strip screen {got['screen']} frame {got['frame']}; fit {geo['fit']}")
+            if ok and fi == 0 and want["screen"] == 1:
+                rows_ = score_regions(m, got, grid, grid_from_decoded(d / name))
+                worst = max((abs(r["dY"]) for r in rows_), default=0)
+                print(f"    palette regions through the synthetic grabber: {len(rows_)} scored, worst dY {worst:.4f}")
     print("selftest:", "FAIL" if fails else "PASS", f"({fails} failures)")
     return 1 if fails else 0
 

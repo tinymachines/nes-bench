@@ -21,7 +21,7 @@ was measured.
 | The second board | a cart whose soldering is not in question | built 2026-10-03, with sockets; the reader's dump below holds it |
 | The console's lockout is defeated | a cart with no lockout chip can run at all | held 2026-10-03: a cart with no lockout chip runs (the row below); the reset line itself is still unmeasured (`lockout.md`) |
 | The reader's dump | what the console will see is `cal.nes`: body crc32 `21091B99` | held 2026-10-03: the reader showed `21091B99`, chip side to the reader's front, 5 V, mapper 0 with PRG 32 KB and CHR 8 KB set by hand (its "Not Found" is its database, which has no homebrew) |
-| The cart in the console | the strip reads off a grabbed frame (`tools/cal.py grab`) | runs, by eye 2026-10-03: the strip flickering along the top and the palette screen's colours stepping; the grabbed frame is open |
+| The cart in the console | the strip reads off a grabbed frame (`tools/cal.py grab`) | held 2026-10-03: six grabbed frames, twelve fields, every strip read (screens 2 to 7 in order, each field's counter one past the other's); the region scores are a first reading, not yet a verdict |
 
 ## The programmer is on the bench Pi, driven by minipro
 
