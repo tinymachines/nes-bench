@@ -18,9 +18,9 @@ was measured.
 | Chip 2 identifies, is blank, and carries `chr.bin` | the tile image likewise | held 2026-09-30 |
 | The first board: five bridges, three capacitors, two chips | a cart exists | built 2026-10-01; a gray screen in the console |
 | Both chips read whole after the first board | the gray screen is not the chips | held 2026-10-01 |
-| The second board | a cart whose soldering is not in question | open: the checklist is below |
+| The second board | a cart whose soldering is not in question | built 2026-10-03, with sockets; the reader's dump below holds it |
 | The console's lockout is defeated | a cart with no lockout chip can run at all | by eye 2026-10-01: the gray was steady; not yet off the reset line (`lockout.md`) |
-| The reader's dump | what the console will see is `cal.nes`: body crc32 `21091B99` | open |
+| The reader's dump | what the console will see is `cal.nes`: body crc32 `21091B99` | held 2026-10-03: the reader showed `21091B99`, chip side to the reader's front, 5 V, mapper 0 with PRG 32 KB and CHR 8 KB set by hand (its "Not Found" is its database, which has no homebrew) |
 | The cart in the console | the strip reads off a grabbed frame (`tools/cal.py grab`) | open |
 
 ## The programmer is on the bench Pi, driven by minipro
