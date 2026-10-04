@@ -18,7 +18,16 @@
 #pragma once
 #include <stdint.h>
 
+// The report ID is the BUILD'S choice, not this file's. pad-usb keeps 1
+// (TinyUSB prepends it and every host has read it). pad-ble defines 0
+// before including this: one input report needs no ID, and BlueZ 5.66
+// drops a numbered report it read from its cache faster than the Report
+// Reference descriptor (measured on the bench head 2026-10-04: the
+// kernel got "00 00 1b ..." with no ID byte and parsed nothing). With
+// no ID there is nothing for any host to get wrong.
+#ifndef PAD_HID_REPORT_ID
 #define PAD_HID_REPORT_ID 1
+#endif
 #define PAD_REPORT_LEN 8
 #define PAD_KEY_SLOTS 6
 
@@ -48,7 +57,9 @@ static const uint8_t PAD_HID_DESC[] = {
     0x05, 0x01,                    // Usage Page (Generic Desktop)
     0x09, 0x06,                    // Usage (Keyboard)
     0xA1, 0x01,                    // Collection (Application)
-    0x85, PAD_HID_REPORT_ID,       //   Report ID (1)
+#if PAD_HID_REPORT_ID
+    0x85, PAD_HID_REPORT_ID,       //   Report ID (1, the USB build)
+#endif
     0x05, 0x07,                    //   Usage Page (Keyboard/Keypad)
     0x19, 0xE0,                    //   Usage Minimum (224, Left Control)
     0x29, 0xE7,                    //   Usage Maximum (231, Right GUI)

@@ -72,6 +72,9 @@
 #include <BLEServer.h>
 #include <BLEHIDDevice.h>
 #include <BLEUtils.h>
+// No report ID on the air: see keymap.h. The library still writes a
+// Report Reference of {0, input}, which is what an unnumbered report is.
+#define PAD_HID_REPORT_ID 0
 #include "keymap.h"
 
 #if CONFIG_IDF_TARGET_ESP32

@@ -101,7 +101,9 @@ int main() {
   ok(p.ok, "the descriptor did not parse: " + p.why);
   ok(p.balanced, "the descriptor's collections are not balanced");
   ok(p.collections == 1, "the descriptor opens " + std::to_string(p.collections) + " collections, want 1");
-  ok(p.report_id == PAD_HID_REPORT_ID,
+  // An unnumbered build declares no Report ID item at all, which the
+  // parser leaves at -1; that is the same claim as ID 0.
+  ok(p.report_id == PAD_HID_REPORT_ID || (PAD_HID_REPORT_ID == 0 && p.report_id == -1),
      "the descriptor declares report ID " + std::to_string(p.report_id) + ", the code sends "
          + std::to_string(PAD_HID_REPORT_ID));
 
