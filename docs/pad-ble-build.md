@@ -546,7 +546,8 @@ measured before anything else was believed.
 
 ## What the host sees
 
-A keyboard with the boot keyboard's report layout, report ID 1 (not a
+A keyboard with the boot keyboard's report layout, report ID 1 over
+USB and no report ID over the air (since 2026-10-04, see below) (not a
 boot-protocol keyboard, corrected 2026-09-27: a boot report carries no
 ID, and a BIOS or a boot-only KVM will not see it; every full operating
 system does, see `pad-usb-protocol.md`), with the layout browser
@@ -582,7 +583,8 @@ that same header natively and exercises it: 76 checks, and `MUTATE=1`
 plants two realistic bugs and produces twelve failures. The descriptor
 is not compared against a copy of itself, it is parsed item by item the
 way a host parses it, and what the parse says the report's size is gets
-compared with what the code actually writes. Those two are worth
+compared with what the code actually writes. Since 2026-10-04 it runs
+twice, once per build: report ID 1 for USB, no Report ID item for BLE. Those two are worth
 mechanising because a bad descriptor still pairs and a bad mapping still
 types: neither announces itself.
 
@@ -663,8 +665,45 @@ pressed, which is right shift as the modifier and seven keys for six
 slots, `dropped 1`; the head held no keys, because that first report
 goes out before the host has subscribed. The board was left bonded but
 untrusted and disconnected on purpose: a floating data line must not
-type into anything until the pad is on it. **Still not tested:** a pad
-wired to `GPIO25`, `26` and `27`, and a phone pairing.
+type into anything until the pad is on it.
+
+**Tested on the bench, 2026-10-04: an original pad on the classic ESP32,
+the bench head typing, then an iPhone playing.** The pad is powered from
+the Pi's 3V3 (3.25 V measured with the pad on), its pull-up measured at
+10.10 k, data on `GPIO27`, latch on `GPIO25`, clock on `GPIO26`. The
+eight buttons read over serial one bit each, in order, `01` through
+`80`, each with a clean release, so measure-first item 4, the pad at
+3.3 V, holds on this board too. One loose wire later made every press
+read `ff` for about 200 ms; reseated, it reads chords cleanly.
+
+The head then showed a fault that was never the pad's. `btmon` saw
+every report arrive on the input report's handle (`0x0041`) with the
+right bytes, `1b` for A, `28` for Start, and the HID debug view showed
+the kernel receiving them as `00 00 1b 00 00 00 00 00`, **with no
+report ID in front**, against a descriptor that declared ID 1. The
+kernel took the first `00` as the ID, found no report 0, and parsed
+nothing, so no key ever reached `/dev/input`. The pad answered the
+Report Reference read correctly (`01 01`). The fault is BlueZ 5.66's:
+it marks a report as numbered when the kernel starts the device, and a
+report map read from its cache starts the device before the Report
+Reference reads land, so the flag is never set. The fix is at this end:
+one input report needs no ID, so the BLE build declares none
+(`PAD_HID_REPORT_ID 0` in `pad-ble.ino`; the USB build keeps ID 1,
+because `keymap.h` is shared). Reflashed and paired fresh, the head
+received A, Start and Right as `KEY_X`, `KEY_ENTER` and `KEY_RIGHT`,
+each down and up.
+
+An iPhone (the same one as the USB build's step 7) then paired, and the
+sketch now logs what a host does: `# linked`, `# host wrote the report
+CCCD: 01 00`, `# paired and encrypted, auth mode 0x09`, and report
+delivery as sent. The first two phone sessions after the fix did all
+of that and the owner saw no keys in the page; the phone closed the
+link itself both times (reason `0x13`). After the pad's bonds were
+cleared with `FORGET` (two were stored, the phone's and the head's) and
+the phone forgot the device and paired again, **the owner played a
+game on the phone with the pad.** Which of the two changes the phone
+needed, the missing report ID or the clean pairing on both ends, is
+not separated: both happened before the session that worked.
 
 ## The trap that will cost the most time (BLE build only)
 
@@ -692,12 +731,12 @@ at a time. The sketch carries that branch now.
 ## Open, and recorded in `open-items.md`
 
 - The USB adapter has met no phone; its only host so far is the Pi.
-- The BLE build has met no pad, and its one host is the bench head
-  (2026-09-30, on the ESP32-WROOM-32). On the P4 it cannot until
-  the onboard C6's firmware answers (see above); on the second C6 it
-  advertises (2026-09-28) and waits for a pad on GPIO2, 3 and 6 and a
-  phone; on the ESP32-WROOM-32 it advertises (2026-09-30) and waits for
-  a pad on GPIO25, 26 and 27 and a phone.
+- The BLE build works end to end on the ESP32-WROOM-32 (2026-10-04:
+  an original pad, the bench head typing, an iPhone playing). Open:
+  which change the iPhone needed (no report ID, or a clean pairing on
+  both ends); the C6 and P4 builds still carry report ID 0 untested;
+  on the P4 it cannot run until the onboard C6's firmware answers (see
+  above).
 - The bench eye cannot read a devkit's silkscreen, which is why the
   header order above was read by hand. It will be true of the next
   devkit too.

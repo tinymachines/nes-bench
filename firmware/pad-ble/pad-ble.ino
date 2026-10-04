@@ -179,6 +179,52 @@ class Link : public BLEServerCallbacks {
     // without the pad being power cycled.
     BLEDevice::startAdvertising();
   }
+#if CONFIG_BT_BLUEDROID_ENABLED
+  // The reason a host left is the first thing to ask of a host that
+  // pairs and then types nothing (0x13 the host closed it, 0x08 a
+  // timeout, 0x3d a MIC failure, i.e. the two ends disagree on a key).
+  void onDisconnect(BLEServer *s, esp_ble_gatts_cb_param_t *param) override {
+    Serial.printf("# host left, reason 0x%02x\n", param->disconnect.reason);
+    onDisconnect(s);
+  }
+#endif
+};
+
+// ------------------------------------------------------- what a host did
+// A keyboard host must do two things before a key can reach it: finish
+// pairing with encryption, and write 01 00 into the input report's CCCD
+// to ask for notifications. The bench head did both and typed; an iPhone
+// paired, showed nothing, and this end could not tell which step it
+// skipped. These lines say. Added 2026-10-04.
+#if CONFIG_BT_BLUEDROID_ENABLED
+class Security : public BLESecurityCallbacks {
+  bool onSecurityRequest() override { return true; }
+  void onAuthenticationComplete(esp_ble_auth_cmpl_t a) override {
+    if (a.success) {
+      Serial.printf("# paired and encrypted, auth mode 0x%02x\n", a.auth_mode);
+    } else {
+      Serial.printf("# pairing FAILED, reason 0x%02x\n", a.fail_reason);
+    }
+  }
+};
+#endif
+
+class Cccd : public BLEDescriptorCallbacks {
+  void onWrite(BLEDescriptor *d) override {
+    uint8_t *v = d->getValue();
+    Serial.printf("# host wrote the report CCCD: %02x %02x (01 00 = send me keys)\n", v[0], v[1]);
+  }
+};
+
+class Delivery : public BLECharacteristicCallbacks {
+  int last = -1;
+  void onStatus(BLECharacteristic *c, Status st, uint32_t code) override {
+    // Once per change of status: every report would flood the log.
+    if ((int)st != last) {
+      last = (int)st;
+      Serial.printf("# report delivery status %d code %lu (1 = sent, 3 = notify off, 6 = no subscriber)\n", (int)st, (unsigned long)code);
+    }
+  }
 };
 
 static void start_ble() {
@@ -205,12 +251,22 @@ static void start_ble() {
   BLESecurity::setAuthenticationMode(true, false, true);  // bonding, no MITM, secure connections
   BLESecurity::setCapability(ESP_IO_CAP_NONE);
   BLESecurity::setKeySize(16);
+#if CONFIG_BT_BLUEDROID_ENABLED
+  BLEDevice::setSecurityCallbacks(new Security());
+#endif
 
   BLEServer *server = BLEDevice::createServer();
   server->setCallbacks(new Link());
 
   hid = new BLEHIDDevice(server);
   input = hid->inputReport(PAD_HID_REPORT_ID);
+  input->setCallbacks(new Delivery());
+  BLEDescriptor *cccd = input->getDescriptorByUUID(BLEUUID((uint16_t)0x2902));
+  if (cccd) {
+    cccd->setCallbacks(new Cccd());
+  } else {
+    Serial.println("# no CCCD on the input report: no host can subscribe");
+  }
   hid->outputReport(PAD_HID_REPORT_ID);  // the LEDs the descriptor declares; writes ignored
   // manufacturer() with no argument CREATES the characteristic and
   // returns it; manufacturer(name) only writes through the pointer that

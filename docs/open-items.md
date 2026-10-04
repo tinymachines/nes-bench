@@ -57,8 +57,15 @@ entry is the one that raised it, with its date.
   unless a field is focused (the step 6 page keeps one focused; the
   emulator did not, and now does). Step 7 passes; what stays open is
   whether the phone alone powers the board, with the UART cable out.
-- **The BLE pad adapter advertises from a second C6 and has met no pad
-  or phone (2026-09-21, 2026-09-28).** On 2026-09-28 a different C6
+- ~~**The BLE pad adapter advertises from a second C6 and has met no pad
+  or phone (2026-09-21, 2026-09-28).**~~ CLOSED 2026-10-04 on the
+  classic ESP32-WROOM-32 instead: an original pad on GPIO25, 26 and 27
+  at the Pi's 3V3, the bench head receiving keys, and the owner playing
+  a game on an iPhone over BLE. The head needed the BLE build to send
+  no report ID (BlueZ 5.66 drops a numbered report whose map came from
+  its cache); the phone worked after that and a clean pairing on both
+  ends, and which of the two it needed is not separated
+  (`pad-ble-build.md`). The history below stands as written. On 2026-09-28 a different C6
   board took the firmware from the bench head over its USB-Serial-JTAG,
   and the Pi's radio heard `NES Pad` on the air; getting there found
   and fixed a fault in the sketch the P4 never reached (the
