@@ -125,3 +125,34 @@ adapter) is in `cal-cart-build.md`; the bridge's own parts are in
   `Iso_817_X1`), so this R1 is the best reading so far of that one's
   input resistor too, and of the TRNG drawing's stand-in (geiger
   TM-TRNG-001 sheet 3 assumed 1 k).
+
+## Photographed 2026-10-06: an HP-16C
+
+| item | marking read | what it is | fits |
+|---|---|---|---|
+| HP-16C | hp 16C; HEWLETT-PACKARD; USA, 2447A on the case | HP's programmer's calculator, the Voyager case | an independent oracle for the 6502's integer arithmetic |
+
+### HP-16C: the 6502's arithmetic in a pocket
+
+![the HP-16C's keyboard](lab/pile-hp16c-front.jpg)
+
+![the HP-16C's back, its reference card](lab/pile-hp16c-back.jpg)
+
+- **Read** off the bench camera: the 16C badge, the keyboard (HEX, DEC,
+  OCT, BIN; SL, SR, RL, RR, RLC, RRC, ASR; MASKL, MASKR; AND, OR, XOR,
+  NOT; WSIZE; 1's, 2's and UNSGN under SET COMPL), and the reference
+  card moulded on the back: error codes 0 to 6, which operations set
+  carry (C) and out-of-range (G), the shift and rotate diagrams, and
+  flags 0 to 5.
+- **The serial** is moulded along the top edge: USA, and a prefix that
+  reads 2447A. By HP's convention that is 1984, week 47, made in the
+  USA; the remaining digits are too faint for the overhead camera.
+- **The display was blank** in the frame: off, or its three button
+  cells (LR44 or SR44) are flat. Not yet powered on this bench.
+- **From the family's documentation:** integer word sizes from 1 to 64
+  bits, signed in 1's or 2's complement or unsigned, with carry and
+  out-of-range flags; HP's Nut processor inside.
+- **Why it is here:** at word size 8 in 2's complement it computes what
+  the 6502 computes (ADC carry and overflow, ASL, LSR, ROL, ROR), and
+  it shares nothing with the simulator. The same kind of witness the
+  published instruction table is for timing.
