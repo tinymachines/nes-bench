@@ -42,6 +42,12 @@ adapter) is in `cal-cart-build.md`; the bridge's own parts are in
   `firmware/pad-usb` swaps exactly this port (PHY 0, GPIO24/25) to the
   OTG controller, which is why the board shows no serial port: its only
   socket is the pad. Unconfirmed until the bootloader answers.
+- **Seen 2026-10-06** on the bench head: for about a second at power-up
+  it enumerates as `303a:1001`, the P4's own USB serial/JTAG, serial
+  **30:ED:A0:EA:99:6E**, before `pad-usb` takes the port and it comes
+  back as `303a:0002 tinymachines NES Pad` (full speed, 100 mA, one HID
+  interface). That is the chip's MAC; which P4 board it is still waits
+  on the bootloader.
 - **From the family's documentation, not measured:** no Wi-Fi or BLE
   on any P4; dual RISC-V high-performance cores plus a low-power core.
 
