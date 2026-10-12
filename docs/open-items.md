@@ -73,12 +73,18 @@ entry is the one that raised it, with its date.
   C6 build option that puts `Serial` on USB (`pad-ble-build.md`).
   Closes with a pad on that board's GPIO2, 3 and 6 moving a phone.
   Before that day: `firmware/pad-ble` compiled for the C6 (56% of flash) and its mapping
-  and HID descriptor pass 76 desk checks with the mutation red, but no
+  and HID descriptor pass 82 desk checks with the mutation red, but no
   pad has been wired to it and no host has paired it. The pad half is
   now proven by the USB build above; the pairing has met no phone, and
   on the P4 it cannot until the onboard C6 answers esp-hosted. Closes
-  with the module's C6 answering (new slave firmware over the C6 UART
-  header) and a phone pairing.
+  with the module's C6 answering and a phone pairing. The way there is
+  built (2026-10-12, `docs/pad-build.md`): `firmware/p4-c6-update`
+  pushes the slave image the core names over the SDIO link, and
+  header P2's pinout is read off the schematic for the UART way if the
+  factory C6 refuses the in-band update. `firmware/pad` is the merged
+  USB-and-BLE sketch (nes-bench#4), compiled for the P4 and the S3,
+  asking the C6 before it starts the radio. None of it has met the
+  board yet.
 - ~~**The pad cable's lead colours disagree (2026-09-21)**~~ CLOSED
   2026-09-22: the same five colours as the bridge, confirmed at the
   bench, so the metered table stands unchanged (pin 1 yellow, 2 blue,

@@ -252,6 +252,17 @@ a package built twice at one commit is byte-identical.
   `tools/p4_header.py` carries that board's header P6 as read from
   Waveshare's schematic, with the two counts that catch a one-row-out
   misreading, and the firmware builds for both parts.
+- `firmware/pad/`: the two above folded into one sketch (nes-bench#4):
+  USB when a host configures the device, BLE when none does, the
+  live sink following the host and every decision printed. `keymap.h`
+  now defines both descriptor shapes from one body and the desk test
+  holds them to differ by exactly the Report ID item. Compiles for the
+  P4 and the S3; has met no board. On the P4 it asks the onboard C6
+  its esp-hosted version before starting the radio and refuses on
+  silence instead of crashing, and `firmware/p4-c6-update` with
+  `tools/fetch-c6-image.py` puts the slave image the core itself names
+  onto that C6 over the SDIO link; `docs/pad-build.md` has the rule,
+  the pins, and header P2 for the UART way (2026-10-12).
 - `docs/esp32-part-choice.md`: which ESP32 does BLE, which does USB
   HID, and which does both, measured out of the vendor's own
   `soc_caps.h` for eight targets rather than recalled. The short of it:

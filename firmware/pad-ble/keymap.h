@@ -53,43 +53,62 @@
 // output report is a slightly unusual keyboard, and the goal is a host
 // accepting this with no driver and no app. Nothing drives an LED at
 // this end; the report is declared and its writes are ignored.
-static const uint8_t PAD_HID_DESC[] = {
-    0x05, 0x01,                    // Usage Page (Generic Desktop)
-    0x09, 0x06,                    // Usage (Keyboard)
-    0xA1, 0x01,                    // Collection (Application)
+// BOTH SHAPES AT ONCE, from one body. The USB build and the BLE build
+// used to pick one at compile time through PAD_HID_REPORT_ID; a pad
+// that does both (firmware/pad) serves the numbered one to a host on
+// the cable and the unnumbered one over the air, from the same binary,
+// so the body is a macro and the two arrays are both always defined.
+// PAD_HID_DESC is still the one PAD_HID_REPORT_ID selects, for the two
+// single-path builds and for tools/test-pad-keymap.cpp, which parses
+// both arrays and holds them to differ by exactly the Report ID item.
+#define PAD_HID_DESC_BODY(...) {                                            \
+    0x05, 0x01,                    /* Usage Page (Generic Desktop) */        \
+    0x09, 0x06,                    /* Usage (Keyboard) */                    \
+    0xA1, 0x01,                    /* Collection (Application) */            \
+    __VA_ARGS__                    /* Report ID (1) on USB; nothing on BLE */\
+    0x05, 0x07,                    /* Usage Page (Keyboard/Keypad) */        \
+    0x19, 0xE0,                    /* Usage Minimum (224, Left Control) */   \
+    0x29, 0xE7,                    /* Usage Maximum (231, Right GUI) */      \
+    0x15, 0x00,                    /* Logical Minimum (0) */                 \
+    0x25, 0x01,                    /* Logical Maximum (1) */                 \
+    0x75, 0x01,                    /* Report Size (1) */                     \
+    0x95, 0x08,                    /* Report Count (8) */                    \
+    0x81, 0x02,                    /* Input (Data, Var, Abs): the eight modifiers */ \
+    0x95, 0x01,                    /* Report Count (1) */                    \
+    0x75, 0x08,                    /* Report Size (8) */                     \
+    0x81, 0x03,                    /* Input (Const): the reserved byte */    \
+    0x95, 0x05,                    /* Report Count (5) */                    \
+    0x75, 0x01,                    /* Report Size (1) */                     \
+    0x05, 0x08,                    /* Usage Page (LEDs) */                   \
+    0x19, 0x01,                    /* Usage Minimum (1, Num Lock) */         \
+    0x29, 0x05,                    /* Usage Maximum (5, Kana) */             \
+    0x91, 0x02,                    /* Output (Data, Var, Abs): five LEDs */  \
+    0x95, 0x01,                    /* Report Count (1) */                    \
+    0x75, 0x03,                    /* Report Size (3) */                     \
+    0x91, 0x03,                    /* Output (Const): pad the LED byte to eight bits */ \
+    0x95, PAD_KEY_SLOTS_DECLARED,  /* Report Count (6): the key slots */     \
+    0x75, 0x08,                    /* Report Size (8) */                     \
+    0x15, 0x00,                    /* Logical Minimum (0) */                 \
+    0x25, 0x65,                    /* Logical Maximum (101) */               \
+    0x05, 0x07,                    /* Usage Page (Keyboard/Keypad) */        \
+    0x19, 0x00,                    /* Usage Minimum (0) */                   \
+    0x29, 0x65,                    /* Usage Maximum (101) */                 \
+    0x81, 0x00,                    /* Input (Data, Array): the key slots */  \
+    0xC0                           /* End Collection */                      \
+  }
+
+// The report ID each path sends with. USB is 1: TinyUSB prepends it and
+// every host has read it. BLE is 0, no ID on the air: the BlueZ 5.66
+// finding above. These two are the whole of the difference.
+#define PAD_HID_REPORT_ID_USB 1
+#define PAD_HID_REPORT_ID_BLE 0
+static const uint8_t PAD_HID_DESC_USB[] = PAD_HID_DESC_BODY(0x85, PAD_HID_REPORT_ID_USB,);
+static const uint8_t PAD_HID_DESC_BLE[] = PAD_HID_DESC_BODY();
 #if PAD_HID_REPORT_ID
-    0x85, PAD_HID_REPORT_ID,       //   Report ID (1, the USB build)
+#define PAD_HID_DESC PAD_HID_DESC_USB
+#else
+#define PAD_HID_DESC PAD_HID_DESC_BLE
 #endif
-    0x05, 0x07,                    //   Usage Page (Keyboard/Keypad)
-    0x19, 0xE0,                    //   Usage Minimum (224, Left Control)
-    0x29, 0xE7,                    //   Usage Maximum (231, Right GUI)
-    0x15, 0x00,                    //   Logical Minimum (0)
-    0x25, 0x01,                    //   Logical Maximum (1)
-    0x75, 0x01,                    //   Report Size (1)
-    0x95, 0x08,                    //   Report Count (8)
-    0x81, 0x02,                    //   Input (Data, Var, Abs): the eight modifiers
-    0x95, 0x01,                    //   Report Count (1)
-    0x75, 0x08,                    //   Report Size (8)
-    0x81, 0x03,                    //   Input (Const): the reserved byte
-    0x95, 0x05,                    //   Report Count (5)
-    0x75, 0x01,                    //   Report Size (1)
-    0x05, 0x08,                    //   Usage Page (LEDs)
-    0x19, 0x01,                    //   Usage Minimum (1, Num Lock)
-    0x29, 0x05,                    //   Usage Maximum (5, Kana)
-    0x91, 0x02,                    //   Output (Data, Var, Abs): five LEDs
-    0x95, 0x01,                    //   Report Count (1)
-    0x75, 0x03,                    //   Report Size (3)
-    0x91, 0x03,                    //   Output (Const): pad the LED byte to eight bits
-    0x95, PAD_KEY_SLOTS_DECLARED,  //   Report Count (6): the key slots
-    0x75, 0x08,                    //   Report Size (8)
-    0x15, 0x00,                    //   Logical Minimum (0)
-    0x25, 0x65,                    //   Logical Maximum (101)
-    0x05, 0x07,                    //   Usage Page (Keyboard/Keypad)
-    0x19, 0x00,                    //   Usage Minimum (0)
-    0x29, 0x65,                    //   Usage Maximum (101)
-    0x81, 0x00,                    //   Input (Data, Array): the key slots
-    0xC0                           // End Collection
-};
 
 // ------------------------------------------------------------- the eight
 // AUTHORED, not measured, and the same choice docs/pad-adapter.svg

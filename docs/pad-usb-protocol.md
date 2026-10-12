@@ -148,7 +148,7 @@ descriptor does not fail to compile and does not fail to enumerate. It
 enumerates, and then every key is the wrong key. So
 `tools/test-pad-keymap.sh` compiles `keymap.h` natively, parses the
 descriptor the way a host would, and compares the report size the parse
-implies with what `pad_report()` actually writes: 76 checks, and
+implies with what `pad_report()` actually writes: 82 checks per report ID, both shapes held to each other, and
 `MUTATE=1` plants two realistic bugs that must turn it red.
 
 Because the descriptor declares a report ID, each report goes over the

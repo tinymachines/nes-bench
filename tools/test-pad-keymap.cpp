@@ -118,6 +118,28 @@ int main() {
      "the descriptor promises " + std::to_string(p.key_slots) + " key slots, the code fills up to "
          + std::to_string(PAD_KEY_SLOTS));
 
+  // ------------------------------------------ the two shapes, together
+  // firmware/pad serves PAD_HID_DESC_USB on the cable and PAD_HID_DESC_BLE
+  // over the air from one binary. They must be the same keyboard: the
+  // USB one is the BLE one plus a two-byte Report ID item, and nothing
+  // else may differ, or the two paths type differently from one pad.
+  {
+    Parsed u = parse(PAD_HID_DESC_USB, sizeof(PAD_HID_DESC_USB));
+    Parsed b = parse(PAD_HID_DESC_BLE, sizeof(PAD_HID_DESC_BLE));
+    ok(u.ok && b.ok, "one of the two descriptors did not parse");
+    ok(u.report_id == PAD_HID_REPORT_ID_USB, "the USB descriptor declares report ID " + std::to_string(u.report_id) + ", want " + std::to_string(PAD_HID_REPORT_ID_USB));
+    ok(b.report_id == -1, "the BLE descriptor carries a Report ID item (" + std::to_string(b.report_id) + "); BlueZ 5.66 drops those");
+    ok(sizeof(PAD_HID_DESC_USB) == sizeof(PAD_HID_DESC_BLE) + 2, "the USB descriptor is not the BLE one plus a two-byte Report ID item");
+    ok(u.input_bits == b.input_bits && u.output_bits == b.output_bits && u.key_slots == b.key_slots,
+       "the USB and BLE descriptors describe different reports");
+    // Byte for byte: the first six bytes (the collection's opening) and
+    // everything after the ID item are identical.
+    bool same = memcmp(PAD_HID_DESC_USB, PAD_HID_DESC_BLE, 6) == 0
+        && memcmp(PAD_HID_DESC_USB + 8, PAD_HID_DESC_BLE + 6, sizeof(PAD_HID_DESC_BLE) - 6) == 0
+        && PAD_HID_DESC_USB[6] == 0x85 && PAD_HID_DESC_USB[7] == PAD_HID_REPORT_ID_USB;
+    ok(same, "the USB descriptor differs from the BLE one somewhere other than the Report ID item");
+  }
+
   // ------------------------------------------------------- the table
   static const char *order[8] = {"A", "B", "Select", "Start", "Up", "Down", "Left", "Right"};
   for (int i = 0; i < 8; i++) {

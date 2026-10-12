@@ -579,8 +579,8 @@ Kept apart deliberately, because the two halves are not comparable.
 **Tested on the desk, with no pad and no host in the room.** The report
 descriptor and the key mapping are plain C in
 `firmware/pad-ble/keymap.h`, and `tools/test-pad-keymap.sh` compiles
-that same header natively and exercises it: 76 checks, and `MUTATE=1`
-plants two realistic bugs and produces twelve failures. The descriptor
+that same header natively and exercises it: 82 checks per report ID, and `MUTATE=1`
+plants two realistic bugs and produces twenty-four failures over the two. The descriptor
 is not compared against a copy of itself, it is parsed item by item the
 way a host parses it, and what the parse says the report's size is gets
 compared with what the code actually writes. Since 2026-10-04 it runs
