@@ -1,0 +1,44 @@
+{
+  "org": "tinymachines",
+  "project": "nes-bench",
+  "docno": "TM-NESB-004",
+  "rev": "A",
+  "drawn": "bisenbek",
+  "page": "ansi-a",
+  "title": "pad-s3: a pad on a XIAO ESP32S3 with a cell",
+  "intro": [
+    "The small one. One original NES controller into a Seeed XIAO ESP32S3 running firmware/pad, the sketch that does both paths on the ESP32-P4 kit: a USB keyboard when a host configures it, a BLE keyboard when none does, a 2000 mAh cell on the board's own charger so it plays with nothing plugged in. This package is the record of nes-bench#6 and is where each authored row becomes a measured one.",
+    "AUTHORED 2026-10-13. No XIAO has been on this bench; two are on the order list. The pins are read from Seeed's map, the cell and the charger boards are on the desk (photographed), and the firmware compiles for the part. What is measured is the same sketch on the P4: USB typed into a laptop and BLE into an iPhone from one binary that day (docs/pad-build.md, TM-NESB-003 for that board)."
+  ],
+  "revisions": [
+    [
+      "A",
+      "2026-10-13",
+      "drawn: system, pins, progress; every row authored or measured"
+    ]
+  ],
+  "sheets": [
+    {
+      "kind": "cover",
+      "title": "Cover and sheet index"
+    },
+    {
+      "kind": "schematic",
+      "svg": "pad-s3-system.svg",
+      "page": "ansi-b",
+      "title": "pad-s3: the pad, the XIAO, the cell, the sink rule"
+    },
+    {
+      "kind": "schematic",
+      "svg": "pad-s3-pins.svg",
+      "page": "ansi-b",
+      "title": "XIAO ESP32S3: every wire, and the one socket"
+    },
+    {
+      "kind": "schematic",
+      "svg": "pad-s3-progress.svg",
+      "page": "ansi-b",
+      "title": "Progress: authored, compiles, measured, next"
+    }
+  ]
+}

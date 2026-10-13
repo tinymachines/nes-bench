@@ -1,0 +1,171 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1560 740" width="1560" height="740" role="img" aria-label="XIAO ESP32S3: where each wire goes, and the pins that must stay empty">
+
+  <style>
+    text { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; fill: #1f2328; }
+    .title { font-size: 15px; font-weight: 700; font-family: ui-sans-serif, system-ui, sans-serif; }
+    .sub { font-size: 11px; fill: #57606a; font-family: ui-sans-serif, system-ui, sans-serif; }
+    .ref { font-size: 12px; font-weight: 700; }
+    .part { font-size: 10px; fill: #57606a; }
+    .pin { font-size: 9.5px; }
+    .pinno { font-size: 9px; fill: #57606a; }
+    .linkflag { fill: #fdf3e3; stroke: #a35c00; stroke-width: 1.1; }
+    .linkno { font-size: 9px; fill: #a35c00; font-weight: 700; }
+    .net { font-size: 9.5px; fill: #0a5b9c; font-weight: 600; }
+    .rail5 { font-size: 9px; fill: #b3261e; font-weight: 700; }
+    .rail3 { font-size: 9px; fill: #b35c00; font-weight: 700; }
+    .gnd { font-size: 9px; fill: #1f2328; font-weight: 700; }
+    .note { font-size: 10px; fill: #57606a; font-family: ui-sans-serif, system-ui, sans-serif; }
+    .box { fill: #ffffff; stroke: #1f2328; stroke-width: 1.3; }
+    .offsheet { fill: #eaf3fb; stroke: #0a5b9c; stroke-width: 1.1; }
+    .conn { fill: #f3f5f7; stroke: #1f2328; stroke-width: 1.3; }
+    .zone { fill: none; stroke: #57606a; stroke-dasharray: 5 4; stroke-width: 1; }
+    .lead { stroke: #1f2328; stroke-width: 1; }
+    .wire { stroke: #0a5b9c; stroke-width: 1.2; fill: none; }
+    .w5 { stroke: #b3261e; stroke-width: 1.2; fill: none; }
+    .w3 { stroke: #b35c00; stroke-width: 1.2; fill: none; }
+    .wg { stroke: #1f2328; stroke-width: 1.2; fill: none; }
+    .lane { stroke: #1f2328; stroke-width: 1.4; fill: none; }
+    .lanelbl { font-size: 11px; font-weight: 700; }
+    .win { fill: #b3261e; fill-opacity: 0.10; stroke: none; }
+    .safe { fill: #1a7f37; fill-opacity: 0.12; stroke: none; }
+    .mark { stroke: #0a5b9c; stroke-width: 1.2; stroke-dasharray: 3 3; }
+    .auth { font-size: 9px; fill: #b3261e; font-family: ui-sans-serif, system-ui, sans-serif; font-style: italic; }
+  </style>
+
+<rect x="0" y="0" width="1560" height="740" fill="#ffffff"/>
+<g class="sheet-heading" data-height="60">
+<text class="title" x="24" y="30">XIAO ESP32S3: where each wire goes, and the pins that must stay empty</text>
+<text class="sub" x="24" y="46">Read from Seeed's XIAO ESP32S3 pin map (2026-10-13). The S3's strapping pins are GPIO0, 3, 45 and 46; D2 is GPIO3, so it stays empty. tools/check-pad-s3.py holds this table to firmware/pad's numbers.</text>
+</g>
+<rect class="zone" x="20" y="66" width="1000" height="440" rx="6"/>
+<text class="sub" x="28" y="80" text-anchor="start">THE WIRES</text>
+<text class="ref" x="40" y="96" text-anchor="start">XIAO pin</text>
+<text class="ref" x="130" y="96" text-anchor="start">GPIO</text>
+<text class="ref" x="200" y="96" text-anchor="start">net</text>
+<text class="ref" x="330" y="96" text-anchor="start">what</text>
+<text class="pin" x="40" y="116" text-anchor="start">D3</text>
+<text class="pin" x="130" y="116" text-anchor="start">4</text>
+<text class="pin" x="200" y="116" text-anchor="start">PAD_LATCH</text>
+<text class="pin" x="330" y="116" text-anchor="start">latch, driven: OUT0 on the pad</text>
+<text class="pin" x="40" y="134" text-anchor="start">D4</text>
+<text class="pin" x="130" y="134" text-anchor="start">5</text>
+<text class="pin" x="200" y="134" text-anchor="start">PAD_CLK</text>
+<text class="pin" x="330" y="134" text-anchor="start">clock, driven</text>
+<text class="pin" x="40" y="152" text-anchor="start">D5</text>
+<text class="pin" x="130" y="152" text-anchor="start">6</text>
+<text class="pin" x="200" y="152" text-anchor="start">PAD_D0</text>
+<text class="pin" x="330" y="152" text-anchor="start">data, read; R1 10k up to 3V3</text>
+<text class="pin" x="40" y="170" text-anchor="start">D8</text>
+<text class="pin" x="130" y="170" text-anchor="start">7</text>
+<text class="pin" x="200" y="170" text-anchor="start">MODE_SW</text>
+<text class="pin" x="330" y="170" text-anchor="start">mode switch to GND: low at boot forces BLE</text>
+<text class="pin" x="40" y="188" text-anchor="start">3V3</text>
+<text class="pin" x="130" y="188" text-anchor="start"></text>
+<text class="pin" x="200" y="188" text-anchor="start">3V3</text>
+<text class="pin" x="330" y="188" text-anchor="start">the pad's supply: the 4021 is rated 3 to 18 V, measured at 3.3 V on 2026-09-27</text>
+<text class="pin" x="40" y="206" text-anchor="start">GND</text>
+<text class="pin" x="130" y="206" text-anchor="start"></text>
+<text class="pin" x="200" y="206" text-anchor="start">GND</text>
+<text class="pin" x="330" y="206" text-anchor="start">the pad's ground</text>
+<text class="pin" x="40" y="224" text-anchor="start">5V</text>
+<text class="pin" x="130" y="224" text-anchor="start"></text>
+<text class="pin" x="200" y="224" text-anchor="start">VBUS</text>
+<text class="pin" x="330" y="224" text-anchor="start">the socket's VBUS; nothing wired here</text>
+<text class="pin" x="40" y="242" text-anchor="start">BAT+</text>
+<text class="pin" x="130" y="242" text-anchor="start"></text>
+<text class="pin" x="200" y="242" text-anchor="start">CELL+</text>
+<text class="pin" x="330" y="242" text-anchor="start">pad on the underside, the one AWAY from the socket</text>
+<text class="pin" x="40" y="260" text-anchor="start">BAT-</text>
+<text class="pin" x="130" y="260" text-anchor="start"></text>
+<text class="pin" x="200" y="260" text-anchor="start">CELL-</text>
+<text class="pin" x="330" y="260" text-anchor="start">pad on the underside, the one NEAREST the socket (Seeed's own note)</text>
+<text class="pin" x="40" y="278" text-anchor="start">D6/D7</text>
+<text class="pin" x="130" y="278" text-anchor="start">43/44</text>
+<text class="pin" x="200" y="278" text-anchor="start">TX/RX</text>
+<text class="pin" x="330" y="278" text-anchor="start">the log: Serial lives here once the socket is the keyboard</text>
+<text class="pin" x="40" y="296" text-anchor="start">LED</text>
+<text class="pin" x="130" y="296" text-anchor="start">21</text>
+<text class="pin" x="200" y="296" text-anchor="start"></text>
+<text class="pin" x="330" y="296" text-anchor="start">the user light, lit LOW; the sketch lights it on any button</text>
+<text class="note" x="40" y="330" text-anchor="start">Two wires from the pad's five go nowhere on this table on purpose: the pad's VCC is the XIAO's 3V3 and its GND</text>
+<text class="note" x="40" y="343" text-anchor="start">is GND, so J1 pins 5 and 1 land on the power pins, not on a GPIO. The three signals are D3, D4, D5, in a row.</text>
+<text class="note" x="40" y="356" text-anchor="start"></text>
+<text class="note" x="40" y="369" text-anchor="start">D2 (GPIO3) sits between D1 and D3 and is a strapping pin: leave it empty. D0 and D1 (GPIO1, GPIO2) are free</text>
+<text class="note" x="40" y="382" text-anchor="start">and are where a second pad would go if gamepad mode ever made two pads worth it (a keyboard report has six</text>
+<text class="note" x="40" y="395" text-anchor="start">key slots, so it does not: TM-NESB-003 rev B).</text>
+<rect class="zone" x="1040" y="66" width="500" height="440" rx="6"/>
+<text class="sub" x="1048" y="80" text-anchor="start">THE BOARD, AS SEEED DRAWS IT</text>
+<rect class="box" x="1150" y="110" width="270" height="232" rx="3"/>
+<text class="ref" x="1156" y="124" text-anchor="start">U1</text>
+<text class="part" x="1156" y="136" text-anchor="start">XIAO ESP32S3, top, socket up</text>
+<text class="part" x="1151" y="355" text-anchor="start">BAT pads on the underside; BAT- is the one nearest the socket</text>
+<line class="lead" x1="1124" y1="166" x2="1150" y2="166"/>
+<text class="pin" x="1155" y="169.5" text-anchor="start">D0 GPIO1</text>
+<line class="lead" x1="1121" y1="163" x2="1127" y2="169"/><line class="lead" x1="1121" y1="169" x2="1127" y2="163"/>
+<line class="lead" x1="1124" y1="192" x2="1150" y2="192"/>
+<text class="pin" x="1155" y="195.5" text-anchor="start">D1 GPIO2</text>
+<line class="lead" x1="1121" y1="189" x2="1127" y2="195"/><line class="lead" x1="1121" y1="195" x2="1127" y2="189"/>
+<line class="lead" x1="1124" y1="218" x2="1150" y2="218"/>
+<text class="pin" x="1155" y="221.5" text-anchor="start">D2 GPIO3 strap</text>
+<line class="lead" x1="1121" y1="215" x2="1127" y2="221"/><line class="lead" x1="1121" y1="221" x2="1127" y2="215"/>
+<line class="lead" x1="1124" y1="244" x2="1150" y2="244"/>
+<text class="pin" x="1155" y="247.5" text-anchor="start">D3 GPIO4</text>
+<path class="wire" d="M1124,244 l-6,-6 h-65.80000000000001 v12 h65.80000000000001 z"/>
+<text class="net" x="1115" y="247.5" text-anchor="end">PAD_LATCH</text>
+<line class="lead" x1="1124" y1="270" x2="1150" y2="270"/>
+<text class="pin" x="1155" y="273.5" text-anchor="start">D4 GPIO5</text>
+<path class="wire" d="M1124,270 l-6,-6 h-53.4 v12 h53.4 z"/>
+<text class="net" x="1115" y="273.5" text-anchor="end">PAD_CLK</text>
+<line class="lead" x1="1124" y1="296" x2="1150" y2="296"/>
+<text class="pin" x="1155" y="299.5" text-anchor="start">D5 GPIO6</text>
+<path class="wire" d="M1124,296 l-6,-6 h-47.2 v12 h47.2 z"/>
+<text class="net" x="1115" y="299.5" text-anchor="end">PAD_D0</text>
+<line class="lead" x1="1124" y1="322" x2="1150" y2="322"/>
+<text class="pin" x="1155" y="325.5" text-anchor="start">D6 GPIO43 TX</text>
+<path class="wire" d="M1124,322 l-6,-6 h-28.6 v12 h28.6 z"/>
+<text class="net" x="1115" y="325.5" text-anchor="end">LOG</text>
+<line class="lead" x1="1420" y1="166" x2="1446" y2="166"/>
+<text class="pin" x="1415" y="169.5" text-anchor="end">5V</text>
+<line class="lead" x1="1443" y1="163" x2="1449" y2="169"/><line class="lead" x1="1443" y1="169" x2="1449" y2="163"/>
+<line class="lead" x1="1420" y1="192" x2="1446" y2="192"/>
+<text class="pin" x="1415" y="195.5" text-anchor="end">GND</text>
+<line class="wg" x1="1446" y1="192" x2="1446" y2="200"/><line class="wg" x1="1440" y1="200" x2="1452" y2="200"/><line class="wg" x1="1443" y1="203" x2="1449" y2="203"/>
+<line class="lead" x1="1420" y1="218" x2="1446" y2="218"/>
+<text class="pin" x="1415" y="221.5" text-anchor="end">3V3</text>
+<line class="w3" x1="1446" y1="218" x2="1446" y2="209"/><line class="w3" x1="1441" y1="209" x2="1451" y2="209"/>
+<text class="rail3" x="1446" y="207" text-anchor="middle">3V3</text>
+<line class="lead" x1="1420" y1="244" x2="1446" y2="244"/>
+<text class="pin" x="1415" y="247.5" text-anchor="end">D10 GPIO9</text>
+<line class="lead" x1="1443" y1="241" x2="1449" y2="247"/><line class="lead" x1="1443" y1="247" x2="1449" y2="241"/>
+<line class="lead" x1="1420" y1="270" x2="1446" y2="270"/>
+<text class="pin" x="1415" y="273.5" text-anchor="end">D9 GPIO8</text>
+<line class="lead" x1="1443" y1="267" x2="1449" y2="273"/><line class="lead" x1="1443" y1="273" x2="1449" y2="267"/>
+<line class="lead" x1="1420" y1="296" x2="1446" y2="296"/>
+<text class="pin" x="1415" y="299.5" text-anchor="end">D8 GPIO7</text>
+<path class="wire" d="M1446,296 l6,-6 h53.4 v12 h-53.4 z"/>
+<text class="net" x="1455" y="299.5" text-anchor="start">MODE_SW</text>
+<line class="lead" x1="1420" y1="322" x2="1446" y2="322"/>
+<text class="pin" x="1415" y="325.5" text-anchor="end">D7 GPIO44 RX</text>
+<path class="wire" d="M1446,322 l6,-6 h28.6 v12 h-28.6 z"/>
+<text class="net" x="1455" y="325.5" text-anchor="start">LOG</text>
+<text class="note" x="1060" y="372" text-anchor="start">Seven pins a side, the socket at the top. The order</text>
+<text class="note" x="1060" y="385" text-anchor="start">here is Seeed's drawing, left column top to bottom</text>
+<text class="note" x="1060" y="398" text-anchor="start">D0..D6, right column top to bottom 5V, GND, 3V3,</text>
+<text class="note" x="1060" y="411" text-anchor="start">D10, D9, D8, D7. AUTHORED from the wiki page, not</text>
+<text class="note" x="1060" y="424" text-anchor="start">from a board in hand: the first thing to do with a</text>
+<text class="note" x="1060" y="437" text-anchor="start">XIAO on the desk is read its silkscreen against this.</text>
+<rect class="zone" x="20" y="522" width="1520" height="200" rx="6"/>
+<text class="sub" x="28" y="536" text-anchor="start">THE ONE SOCKET</text>
+<text class="pin" x="40" y="552" text-anchor="start">FLASH</text>
+<text class="pin" x="150" y="552" text-anchor="start">the ROM speaks USB itself (303a:1001), so flashing needs no bridge chip: hold BOOT, tap RESET, release BOOT, then</text>
+<text class="pin" x="150" y="567" text-anchor="start">esptool or arduino-cli on the port that appears. No auto-reset circuit, so every flash is a hand on two buttons.</text>
+<text class="pin" x="40" y="585" text-anchor="start">RUN</text>
+<text class="pin" x="150" y="585" text-anchor="start">TinyUSB takes the socket as the keyboard (303a:0002 on the P4 build) and the USB-Serial-JTAG is gone with it; the</text>
+<text class="pin" x="150" y="600" text-anchor="start">sketch's log is UART0 on D6 and D7 at 115200, through any 3.3 V serial lead. On the P4 kit that was the second socket.</text>
+<text class="pin" x="40" y="618" text-anchor="start">CHARGE</text>
+<text class="pin" x="150" y="618" text-anchor="start">the same socket charges the cell on the BAT pads whether or not a host is behind it; a charger is VBUS with no host,</text>
+<text class="pin" x="150" y="633" text-anchor="start">which is the case the sink rule reads as BLE, so a pad on a charger talks to the phone.</text>
+<text class="pin" x="40" y="651" text-anchor="start">BATTERY</text>
+<text class="pin" x="150" y="651" text-anchor="start">no GPIO reads the cell on the plain XIAO (Seeed: 'we do not have a GPIO configured for the battery pin'); the BLE</text>
+<text class="pin" x="150" y="666" text-anchor="start">battery service says 100 until a divider to an ADC pin is wired and measured. The Plus variant has ADC_BAT on GPIO10.</text>
+</svg>

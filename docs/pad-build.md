@@ -205,9 +205,9 @@ legacy just-works pairing (bonding on, no MITM, no SC), which has no
 ECDH in it. Measured 2026-10-13 on the first try after the change: the
 Pi paired, bonded and connected, subscribed to the input report, and
 the kernel made a keyboard of it (`Bus=0005 ... Name="NES Pad"`).
-Whether a phone accepts legacy pairing from a HID keyboard is the next
-measurement; the classic ESP32 build keeps SC and is what the iPhone
-has met.
+An iPhone accepted it the same night: linked, subscribed to the input
+report, every press delivered (status 1 on the pad's log), and the
+owner saw the keys arrive. The classic ESP32 build keeps SC.
 
 Two things worth knowing about pairing from the Pi: `bluetoothctl`'s
 yes/no prompt reads from a terminal, so piped answers are lost and the
@@ -229,13 +229,21 @@ the in-band update and answers 2.12.11; the merged sketch on the P4
 with no USB host starts the radio, advertises, and the Pi hears it;
 the Pi pairs (legacy), bonds, connects and gets a keyboard device.
 
-Not done, and needs the bench:
+Done, end to end (2026-10-13): the USB path typed into the owner's
+machine (B as z, A as x, Select held as shift) and the BLE path typed
+into an iPhone, both from one binary on the P4. The pad's log showed
+56 button changes on the BLE path, each delivered. nes-bench#4 is
+closed on that.
 
-- A button through the BLE path to the Pi's keyboard device, and the
-  USB path on the merged build (the kit's USB socket into the Pi, both
-  sockets plugged: the path should move to USB and the keys arrive on
-  the USB keyboard device as `pad-usb`'s did).
-- A phone on the P4's radio, with legacy pairing.
+Two traps met on the way, both recorded above: the Pi, bonded and
+trusted, reconnects to the pad on its own and holds it, so a phone sees
+nothing until the Pi is told `block`; and a disconnect from the Pi once
+never reached the pad over the hosted link (it kept saying linked and
+stopped advertising until power-cycled), while the next time it did.
+
+Not done:
+
 - The refusal branch (a C6 that does not answer) has not run.
-- An S3 at all.
+- A cell and a charger: the P4 kit has no battery input, so that is the
+  XIAO's job, nes-bench#6, drawing package TM-NESB-004.
 - Latency, press to key, either path (nes-bench item 11).

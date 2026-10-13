@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1560 740" width="1560" height="740" role="img" aria-label="Progress: each row moves from authored to measured, and the revision says when">
+
+  <style>
+    text { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; fill: #1f2328; }
+    .title { font-size: 15px; font-weight: 700; font-family: ui-sans-serif, system-ui, sans-serif; }
+    .sub { font-size: 11px; fill: #57606a; font-family: ui-sans-serif, system-ui, sans-serif; }
+    .ref { font-size: 12px; font-weight: 700; }
+    .part { font-size: 10px; fill: #57606a; }
+    .pin { font-size: 9.5px; }
+    .pinno { font-size: 9px; fill: #57606a; }
+    .linkflag { fill: #fdf3e3; stroke: #a35c00; stroke-width: 1.1; }
+    .linkno { font-size: 9px; fill: #a35c00; font-weight: 700; }
+    .net { font-size: 9.5px; fill: #0a5b9c; font-weight: 600; }
+    .rail5 { font-size: 9px; fill: #b3261e; font-weight: 700; }
+    .rail3 { font-size: 9px; fill: #b35c00; font-weight: 700; }
+    .gnd { font-size: 9px; fill: #1f2328; font-weight: 700; }
+    .note { font-size: 10px; fill: #57606a; font-family: ui-sans-serif, system-ui, sans-serif; }
+    .box { fill: #ffffff; stroke: #1f2328; stroke-width: 1.3; }
+    .offsheet { fill: #eaf3fb; stroke: #0a5b9c; stroke-width: 1.1; }
+    .conn { fill: #f3f5f7; stroke: #1f2328; stroke-width: 1.3; }
+    .zone { fill: none; stroke: #57606a; stroke-dasharray: 5 4; stroke-width: 1; }
+    .lead { stroke: #1f2328; stroke-width: 1; }
+    .wire { stroke: #0a5b9c; stroke-width: 1.2; fill: none; }
+    .w5 { stroke: #b3261e; stroke-width: 1.2; fill: none; }
+    .w3 { stroke: #b35c00; stroke-width: 1.2; fill: none; }
+    .wg { stroke: #1f2328; stroke-width: 1.2; fill: none; }
+    .lane { stroke: #1f2328; stroke-width: 1.4; fill: none; }
+    .lanelbl { font-size: 11px; font-weight: 700; }
+    .win { fill: #b3261e; fill-opacity: 0.10; stroke: none; }
+    .safe { fill: #1a7f37; fill-opacity: 0.12; stroke: none; }
+    .mark { stroke: #0a5b9c; stroke-width: 1.2; stroke-dasharray: 3 3; }
+    .auth { font-size: 9px; fill: #b3261e; font-family: ui-sans-serif, system-ui, sans-serif; font-style: italic; }
+  </style>
+
+<rect x="0" y="0" width="1560" height="740" fill="#ffffff"/>
+<g class="sheet-heading" data-height="60">
+<text class="title" x="24" y="30">Progress: each row moves from authored to measured, and the revision says when</text>
+<text class="sub" x="24" y="46">TM-NESB-004 is the record of nes-bench#6. A row is MEASURED when a dated log or photo says so, and not before; 'compiles' and 'authored' are what the desk can say on its own.</text>
+</g>
+<rect class="zone" x="20" y="66" width="1520" height="180" rx="6"/>
+<text class="sub" x="28" y="80" text-anchor="start">THE PAD, BOTH PATHS</text>
+<text class="pin" x="40" y="96" text-anchor="start">MEASURED</text>
+<text class="pin" x="150" y="96" text-anchor="start">2026-10-13  the sink rule, both report shapes, the pad poll at 3.3 V, USB typing and BLE typing: on the P4 kit, one binary.</text>
+<text class="pin" x="40" y="114" text-anchor="start">COMPILES</text>
+<text class="pin" x="150" y="114" text-anchor="start">2026-10-12  firmware/pad for esp32s3 (USBMode=default); the desk test holds both descriptors to each other, mutant red.</text>
+<text class="pin" x="40" y="132" text-anchor="start">NEXT</text>
+<text class="pin" x="150" y="132" text-anchor="start">a XIAO on the desk: its silkscreen against sheet 2; lsusb 303a:1001 on the native socket before any flash;</text>
+<text class="pin" x="150" y="147" text-anchor="start">flash firmware/pad; a host sees 303a:0002 and gets eight keys; no host: the radio, a phone pairs, SC not legacy.</text>
+<text class="pin" x="40" y="165" text-anchor="start">OPEN</text>
+<text class="pin" x="150" y="165" text-anchor="start">latency, press to key, either path (bench item 11); a case or a lead the XIAO lives in; the mode switch as a real part.</text>
+<rect class="zone" x="20" y="262" width="760" height="460" rx="6"/>
+<text class="sub" x="28" y="276" text-anchor="start">THE CELL AND THE CHARGER</text>
+<text class="pin" x="40" y="292" text-anchor="start">ON THE DESK</text>
+<text class="pin" x="160" y="292" text-anchor="start">2026-10-13  a LiPo 3.7 V 2000 mAh (JST lead) and a strip of</text>
+<text class="pin" x="160" y="307" text-anchor="start">USB-C TP4056 boards with the DW01 protection pair (photos).</text>
+<text class="pin" x="40" y="325" text-anchor="start">DECIDE</text>
+<text class="pin" x="160" y="325" text-anchor="start">option A, the cell on the BAT pads, or B, through a TP4056</text>
+<text class="pin" x="160" y="340" text-anchor="start">board: with a meter, by whether the cell has its own</text>
+<text class="pin" x="160" y="355" text-anchor="start">protection and whether 100 mA is a charge rate to live with.</text>
+<text class="pin" x="40" y="373" text-anchor="start">MEASURE</text>
+<text class="pin" x="160" y="373" text-anchor="start">current in at the socket while charging; current out of</text>
+<text class="pin" x="160" y="388" text-anchor="start">the cell while playing on BLE and on USB; hours per charge;</text>
+<text class="pin" x="160" y="403" text-anchor="start">what the pad does while it charges (the P4 kit cannot say).</text>
+<text class="pin" x="40" y="421" text-anchor="start">OPEN</text>
+<text class="pin" x="160" y="421" text-anchor="start">a battery level for the BLE battery service: a divider to an</text>
+<text class="pin" x="160" y="436" text-anchor="start">ADC pin, or the Plus variant's ADC_BAT on GPIO10.</text>
+<rect class="zone" x="800" y="262" width="740" height="460" rx="6"/>
+<text class="sub" x="808" y="276" text-anchor="start">THE THINGS THE P4 TAUGHT, CARRIED OVER</text>
+<text class="pin" x="820" y="292" text-anchor="start">HOSTED RADIO</text>
+<text class="pin" x="940" y="292" text-anchor="start">the P4's radio is a C6 over SDIO; SC pairing failed at the DHKey</text>
+<text class="pin" x="940" y="307" text-anchor="start">check and the P4 pairs legacy. The S3's radio is on the die, so</text>
+<text class="pin" x="940" y="322" text-anchor="start">SC is expected to work and is what the sketch asks for there.</text>
+<text class="pin" x="820" y="340" text-anchor="start">THE PI</text>
+<text class="pin" x="940" y="340" text-anchor="start">a bonded, trusted Pi reconnects to the pad on its own and holds</text>
+<text class="pin" x="940" y="355" text-anchor="start">it; a phone sees nothing until the Pi is told block. Pairing from</text>
+<text class="pin" x="940" y="370" text-anchor="start">a script needs tools/btpair.py (bluetoothctl's prompt eats pipes).</text>
+<text class="pin" x="820" y="388" text-anchor="start">NO REPORT ID</text>
+<text class="pin" x="940" y="388" text-anchor="start">on the air, ever: BlueZ 5.66 dropped the numbered report. keymap.h</text>
+<text class="pin" x="940" y="403" text-anchor="start">serves both shapes from one body; USB keeps ID 1.</text>
+<text class="pin" x="820" y="421" text-anchor="start">ONE SOCKET</text>
+<text class="pin" x="940" y="421" text-anchor="start">the keyboard takes it; the log moves to D6/D7; flash by hand.</text>
+</svg>

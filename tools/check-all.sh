@@ -66,6 +66,7 @@ run "esp32-header" python3 tools/esp32_header.py --check
 run "pulled-headings" python3 tools/check-pulled-headings.py --check
 run "check-bringup" python3 tools/check-bringup.py
 run "check-pad" python3 tools/check-pad.py
+run "check-pad-s3" python3 tools/check-pad-s3.py
 run "check-sheets" python3 tools/check-sheets.py
 
 # The desk tests: firmware logic compiled natively, where the part is

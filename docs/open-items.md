@@ -83,8 +83,11 @@ entry is the one that raised it, with its date.
   header P2's pinout is read off the schematic for the UART way if the
   factory C6 refuses the in-band update. `firmware/pad` is the merged
   USB-and-BLE sketch (nes-bench#4), compiled for the P4 and the S3,
-  asking the C6 before it starts the radio. None of it has met the
-  board yet.
+  asking the C6 before it starts the radio. CLOSED 2026-10-13: the C6
+  took the in-band update, the P4 pairs legacy (SC fails at the DHKey
+  check on the hosted radio), an iPhone typed from the pad over BLE and
+  a laptop over USB, one binary. nes-bench#4 closed; the cell and the
+  charger are nes-bench#6 on the XIAO.
 - ~~**The pad cable's lead colours disagree (2026-09-21)**~~ CLOSED
   2026-09-22: the same five colours as the bridge, confirmed at the
   bench, so the metered table stands unchanged (pin 1 yellow, 2 blue,
