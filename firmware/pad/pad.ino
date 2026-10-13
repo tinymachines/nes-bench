@@ -213,7 +213,19 @@ static bool start_ble() {
   }
 #endif
   BLEDevice::init(DEVICE_NAME);
+#if CONFIG_IDF_TARGET_ESP32P4
+  // LEGACY PAIRING ON THE P4, MEASURED 2026-10-13. With secure
+  // connections on, the Pi's radio trace (btmon) shows the whole SC
+  // exchange run, both public keys, confirm, randoms, the Pi's DHKey
+  // check sent, and then the PAD answering "Pairing Failed: DHKey
+  // check failed (0x0b)": the P4's NimBLE host and the C6's controller
+  // across the hosted link do not agree on the ECDH result. Three
+  // attempts, the same byte. Legacy just-works pairing has no ECDH in
+  // it, and is what this line asks for. Bonding stays on.
+  BLESecurity::setAuthenticationMode(true, false, false);  // bonding, no MITM, LEGACY (no SC): see above
+#else
   BLESecurity::setAuthenticationMode(true, false, true);  // bonding, no MITM, secure connections
+#endif
   BLESecurity::setCapability(ESP_IO_CAP_NONE);
   BLESecurity::setKeySize(16);
 
@@ -227,7 +239,11 @@ static bool start_ble() {
   if (cccd) {
     cccd->setCallbacks(new Cccd());
   } else {
-    Serial.println("# ble: no CCCD on the input report: no host can subscribe");
+    // NimBLE (the P4's and the C6's stack) keeps the CCCD inside the
+    // stack and hands out no descriptor object, so a host's subscribe
+    // is not logged here; it still works. MEASURED 2026-10-12 on the
+    // P4: this line printed and the pad advertised and was heard.
+    Serial.println("# ble: the stack keeps the CCCD itself: a host's subscribe will not be logged");
   }
   hid->outputReport(PAD_HID_REPORT_ID_BLE);
   hid->manufacturer()->setValue("tinymachines");  // the no-argument form creates it; see pad-ble

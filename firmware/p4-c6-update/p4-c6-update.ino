@@ -49,7 +49,7 @@
 // over the socket marked "PWR USB TO UART", which is also where this
 // prints. Afterwards flash firmware/pad (or pad-usb) back the same way.
 //
-// Serial commands: AGAIN (run the update once more), VERSION (ask the
+// Serial commands: AGAIN (write the image even when the versions match), VERSION (ask the
 // C6 again), RESET (restart the P4).
 
 #include "sdkconfig.h"
@@ -75,7 +75,7 @@ static void versions(uint32_t *sM, uint32_t *sm, uint32_t *sp) {
                 (unsigned long)*sM, (unsigned long)*sm, (unsigned long)*sp);
 }
 
-static void update() {
+static void update(bool force) {
   uint32_t sM, sm, sp;
   if (!link_up) {
     Serial.println("# bringing the SDIO link up (a C6 on the factory firmware takes about 3 s to not answer)...");
@@ -89,6 +89,16 @@ static void update() {
   versions(&sM, &sm, &sp);
   if (sM == 0 && sm == 0 && sp == 0) {
     Serial.println("# the C6 did not say its version: that is the factory firmware, as expected. Trying the OTA requests anyway.");
+  } else {
+    uint32_t hM, hm, hp;
+    hostedGetHostVersion(&hM, &hm, &hp);
+    if (sM == hM && sm == hm && sp == hp && !force) {
+      // MEASURED 2026-10-12: the first run on the kit took the image in
+      // 6 s and the restart that followed re-ran it in 8 s for nothing,
+      // because this did not exist. AGAIN still does it on purpose.
+      Serial.println("# versions match: nothing to update. AGAIN writes the image anyway.");
+      return;
+    }
   }
   Serial.printf("# image %s, %lu bytes, sha256 %s\n", c6_image_name, (unsigned long)c6_image_len, c6_image_sha256);
 
@@ -127,7 +137,7 @@ void setup() {
   Serial.begin(115200);
   delay(300);
   Serial.println("# nes-bench p4-c6-update: the esp-hosted slave image onto the onboard C6");
-  update();
+  update(false);
 }
 
 void loop() {
@@ -136,7 +146,7 @@ void loop() {
     line.trim();
     line.toUpperCase();
     if (line == "AGAIN") {
-      update();
+      update(true);
     } else if (line == "VERSION") {
       uint32_t sM, sm, sp;
       if (!link_up) {

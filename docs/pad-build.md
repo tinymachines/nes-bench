@@ -116,8 +116,10 @@ So on the P4 the merged sketch **asks the C6 first**. `hostedInitWiFi()`
 brings the link up (the name is the core's; no Wi-Fi is used) and the
 version is read back; on 0.0.0 the radio is refused with a line saying
 so, and the pad goes on working on USB. The crash lived inside the BLE
-init that this never reaches. That is the reading; it is measured the
-first time the merged build runs on the kit off the Pi.
+init that this never reaches. Measured 2026-10-12 on the kit, after the
+C6 was updated: the link came up in 2 s, the C6 answered 2.12.11, and
+the radio advertised. The refusal branch itself has not been exercised,
+because the C6 was updated before the merged build first ran.
 
 ### Updating the C6 over the link it already has
 
@@ -140,6 +142,15 @@ Every step prints its verdict. The OTA request is itself an RPC, and a
 slave old enough to miss the version request may miss it too: one
 Waveshare report says theirs did. A refusal at `begin` is the signal
 for the way below. After `activate`, power-cycle, then `VERSION`.
+
+**MEASURED 2026-10-12, on the kit, over the Pi's serial port:** the
+factory C6 that never answered the version request took the in-band
+update. `begin` accepted, 1,226,800 bytes written in about 6 s, `end`
+and `activate` accepted; after a restart the link came up in 2 s
+instead of timing out at 3, and the C6 reported 2.12.11, the host's
+own number. The UART way below was not needed on this board. (The
+first restart re-ran the update for nothing; the sketch now skips a
+matching C6 unless told `AGAIN`.)
 
 ### The C6 over its UART: header P2
 
@@ -178,19 +189,53 @@ different board (their J7); the offset is the slave's standard app
 partition and the backup is what makes a wrong guess recoverable. None
 of this has been done here yet.
 
+## Pairing on the P4: legacy, because the hosted radio fails the DHKey check
+
+With secure connections on, as `pad-ble` pairs on the classic ESP32,
+pairing from the bench Pi (BlueZ 5.66) failed three times out of three
+with `AuthenticationFailed`, and the Pi's radio trace (`btmon`) says
+where: the whole SC exchange ran, both public keys, confirm, randoms,
+the Pi's DHKey check sent, and then the **pad** answered
+
+    SMP: Pairing Failed (0x05)  Reason: DHKey check failed (0x0b)
+
+The P4's NimBLE host and the C6's controller across the hosted link do
+not agree on the ECDH result. So on the P4 the merged sketch asks for
+legacy just-works pairing (bonding on, no MITM, no SC), which has no
+ECDH in it. Measured 2026-10-13 on the first try after the change: the
+Pi paired, bonded and connected, subscribed to the input report, and
+the kernel made a keyboard of it (`Bus=0005 ... Name="NES Pad"`).
+Whether a phone accepts legacy pairing from a HID keyboard is the next
+measurement; the classic ESP32 build keeps SC and is what the iPhone
+has met.
+
+Two things worth knowing about pairing from the Pi: `bluetoothctl`'s
+yes/no prompt reads from a terminal, so piped answers are lost and the
+pairing times out with "No agent available"; `tools/btpair.py` drives
+it through a pseudo-terminal and answers the prompt. And `trust` the
+address before `pair`, or BlueZ asks the agent to authorize a just-works
+pairing it could have accepted itself.
+
 ## What is and is not done
 
 Done, on the desk: the merged sketch compiles for the P4 and the S3;
 both descriptors are held to each other by the desk test; the two
 single-path builds compile unchanged against the new header; the C6
-image is fetched, checked and built into the updater, which compiles.
+image is fetched, checked and built into the updater.
+
+Done, on the kit (2026-10-12 and 13, flashed and read over the bench
+Pi's serial port, the kit's UART socket on the Pi): the factory C6 took
+the in-band update and answers 2.12.11; the merged sketch on the P4
+with no USB host starts the radio, advertises, and the Pi hears it;
+the Pi pairs (legacy), bonds, connects and gets a keyboard device.
 
 Not done, and needs the bench:
 
-- The merged sketch on the kit, on the Pi (USB path) and off it (the
-  C6 asked, the radio refused or started).
-- The updater on the kit: whether the factory C6 takes the in-band
-  update, or P2 is the way.
-- A phone on the P4's radio once the C6 answers.
+- A button through the BLE path to the Pi's keyboard device, and the
+  USB path on the merged build (the kit's USB socket into the Pi, both
+  sockets plugged: the path should move to USB and the keys arrive on
+  the USB keyboard device as `pad-usb`'s did).
+- A phone on the P4's radio, with legacy pairing.
+- The refusal branch (a C6 that does not answer) has not run.
 - An S3 at all.
 - Latency, press to key, either path (nes-bench item 11).
