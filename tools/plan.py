@@ -2,35 +2,66 @@
 """PLAN: a schedule for Super Mario Bros. searched on the model, then
 played on the part (docs/bench-language.md, "Learning to play").
 
-  python3 tools/plan.py rom.nes --out plan.txt [--seg 30] [--look 60] [--jobs 6] [--until 2600]
+  python3 tools/plan.py rom.nes --out plan.txt [--prefix script.txt] --first N
+                        [--seg 30] [--look 60] [--jobs 6] [--until N] [--backtracks 60]
 
 The bench answers a decision in about a second and a half, ninety
 polls, so it cannot react to the game; it plays a schedule. This finds
-one. The model (nes-console's `watch` example) plays a bench script
-exactly as the head plays it on the part, and reports bytes of RAM at
-every latch. The search commits the schedule a segment at a time: for
-each segment of SEG latches it tries every move below, each followed
-by LOOK latches of running right (so a move that only dies a moment
-later loses), and keeps the one that ends furthest right with Mario
-still alive. Every candidate replays from power-on, because the model
-has no saved state; that costs about ten seconds each, run JOBS at a
-time.
+one on the model and writes it as a bench script.
 
-What it reads, each measured on the model against a known script on
-2026-10-17 before it was trusted (run 20261017-201424's schedule):
-$0770 the mode (1 playing), $006D and $0086 the position in the level
-(page and x), $000E the player's state (8 normal), $00B5 the vertical
-screen (1 on screen, more is a fall), $075A the lives, $0760 the area.
-$000E 04 and 05 are the flagpole and the walk to the castle (measured
-on the planned 1-1); any other state after play has begun, a fall off
-the screen or a lost life counts as dead (the death codes themselves
-are not yet measured).
+The model is nes-console's `branch` example: a console kept running in
+a process, saved and loaded through `Console::save_state`. The search
+commits the schedule a segment at a time. For each segment of SEG
+latches it loads the segment's saved state, tries every move below,
+each followed by LOOK latches of running right (so a move that only
+dies a moment later ranks low), and keeps the one that ends furthest on
+with Mario alive; the state after the chosen move is saved as the next
+segment's start. When every move at a segment dies, it backs up to the
+previous segment and takes that one's next best (depth first). A
+candidate costs its own latches, about 0.6 s, where a replay from
+power-on cost ten (the first version of this, 2026-10-17, which
+cleared 1-1 in about seventy-five minutes).
 
-The schedule it writes is a bench script: the start recipe, then AT
-lines. The UNO holds 600 entries; this refuses to write more.
+--prefix is a bench script played before the search (the start recipe
+and any schedule already planned, e.g. 1-1's for planning 1-2); its
+WAIT n and POWER OFF lines are ignored. --first is the latch the search
+starts at.
+
+What it reads, each measured on the model on 2026-10-17: $0770 the mode
+(1 playing), $006D and $0086 the position in the area (page and x),
+$0760 the area within the level (1-2's intro is 1, its underground 2),
+$000E the player's state, $00B5 the vertical screen, $075A the lives.
+The states, measured: 08 under control; 0B hit (Mario's first goomba,
+latch 628), then off the screen (vertical screen 2 to 4), then 06, then
+the life is gone; 07 the game walking him in (1-2's intro); 04 the
+flagpole's slide and 05 the walk to the castle (the planned 1-1). Dead
+is 0B or 06, the vertical screen past 1, or a life lost; 04 or 05 is the
+level done; anything else is the game moving him and is waited through.
+
+Moves stay inside their segment, because the console's schedule and the
+UNO's must both be in increasing latch order: a jump's release that
+would fall past the segment's end is left to the next segment's first
+byte. `hold` keeps A held across the boundary, so a jump can be longer
+than a segment.
+
+Two things the first save-state run taught (1-1, 2026-10-17): running
+right alone is too narrow a lookahead (near a gap every move "dies" in
+it), so the lookahead is the best of three continuations; and standing
+still always lives, so a branch that gains under STALL_PX in STALL
+segments of one area while he is under control (state 08: the walk
+into 1-2's exit pipe, state 02, holds him still and is not a stall) is
+a dead end and is backed out of. Rising out of 1-2's pipe, state 07,
+holds him about 96 latches, and a segment that saw any such state is
+not counted.
+
+And from 1-2 the same day: a group of enemies is passed by timing, so a
+jump can start every five latches, and a latch backed out of four times
+gives up the segment before it too (depth first alone spent eleven
+backtracks on one latch whose cause was earlier). The UNO holds 600 entries; this refuses to write more.
 """
 import argparse
 import os
+import queue
 import subprocess
 import sys
 import tempfile
@@ -51,142 +82,216 @@ AT 202 00
 AT 330 08
 AT 332 00
 """
-# The moves for one segment: a list of (offset, byte) inside it. A jump
-# is a fresh press of A (Right+B first, so A is released before it) at
-# one of three points in the segment, held for j latches.
+DEAD = (0x0B, 0x06)
+STALL, STALL_PX = 4, 16
+ESCALATE = 4
+EXTEND = 150
+DONE = (0x04, 0x05)
+
+
 def moves(seg):
-    m = {"run": [(0, 0x82)], "walk": [(0, 0x80)], "stop": [(0, 0x00)], "back": [(0, 0x42)]}
-    for at in (0, seg // 3, 2 * seg // 3):
-        for j in (6, 14, 24):
-            m[f"jump{j}@{at}"] = [(0, 0x82), (at + 2, 0x83), (at + 2 + j, 0x82)]
+    """The moves for one segment: name -> [(offset, byte)], every offset
+    inside the segment."""
+    m = {"run": [(0, 0x82)], "walk": [(0, 0x80)], "stop": [(0, 0x00)], "back": [(0, 0x42)], "hold": [(0, 0x83)]}
+    for at in range(0, seg, 5):
+        for j in (4, 10, 18):
+            e = [(0, 0x82), (at + 2, 0x83)]
+            if at + 2 + j < seg:
+                e.append((at + 2 + j, 0x82))
+            name = f"jump{j}@{at}" if at + 2 + j < seg else f"jump@{at}"
+            m.setdefault(name, e)
     return m
 
 
-class Model:
-    def __init__(self, rom, nes):
-        self.rom = rom
-        self.exe = Path(nes) / "target" / "release" / "examples" / "watch"
-        if not self.exe.exists():
-            sys.exit(f"build it first: cargo build --release -p nes-console --example watch (in {nes})")
+class Worker:
+    def __init__(self, exe, rom):
+        env = dict(os.environ, WATCH=",".join(WATCH))
+        self.p = subprocess.Popen([str(exe), rom], stdin=subprocess.PIPE, stdout=subprocess.PIPE, text=True, env=env, bufsize=1)
 
-    def play(self, schedule, end):
-        """Run the start recipe and the schedule [(latch, byte)] to latch
-        `end`; return the rows {latch: [bytes in WATCH order]}."""
-        text = START + "".join(f"AT {n} {b:02x}\n" for n, b in schedule)
-        with tempfile.NamedTemporaryFile("w", suffix=".txt", delete=False) as f:
-            f.write(text)
-            path = f.name
-        try:
-            last = max([n for n, _ in schedule] + [332])
-            env = dict(os.environ, WATCH=",".join(WATCH))
-            out = subprocess.run([str(self.exe), self.rom, path, str(max(0, end - last))],
-                                 capture_output=True, text=True, env=env, check=True).stdout
-        finally:
-            os.unlink(path)
+    def ask(self, *lines):
         rows = {}
-        for line in out.splitlines():
-            if line.startswith("W "):
-                p = line.split()
-                rows[int(p[1])] = [int(x, 16) for x in p[2:]]
+        for line in lines:
+            self.p.stdin.write(line + "\n")
+            self.p.stdin.flush()
+            while True:
+                r = self.p.stdout.readline()
+                if not r:
+                    raise RuntimeError(f"the model stopped on {line!r}")
+                if r.startswith("W "):
+                    f = r.split()
+                    rows[int(f[1])] = [int(x, 16) for x in f[2:]]
+                elif r.startswith("OK"):
+                    break
+                elif r.startswith("ERR"):
+                    raise RuntimeError(f"{line!r}: {r.strip()}")
         return rows
 
+    def close(self):
+        self.p.stdin.write("QUIT\n")
+        self.p.stdin.flush()
+        self.p.wait(timeout=10)
 
-def judge(rows, since, lives0):
-    """(alive, x, latch of death or None, area) over the rows from `since`."""
+
+def judge(rows, lives0):
+    """(alive, done, area, x, latch of death or None, held): held is the
+    first state that was not 08 while the game ran, or 08 if Mario was
+    his own throughout (the stall rule counts only those)."""
     x = area = 0
-    playing = False   # the intro's "WORLD 1-1" screen holds $000E at 0 first
-    for k in sorted(r for r in rows if r >= since):
+    held = 0x08
+    for k in sorted(rows):
         mode, state, vscreen, page, px, lives, ar, _air = rows[k]
         x, area = page * 256 + px, ar
         if mode != 1:
             continue
-        if state == 0x08:
-            playing = True
-        if not playing:
-            continue
-        if lives < lives0 or vscreen > 1:
-            return False, x, k, area
-        if state in (0x04, 0x05):
-            # MEASURED 2026-10-17 on the model, the planned 1-1: 04 is the
-            # flagpole's slide (x 3161), 05 the walk to the castle, and the
-            # area turns to 1-2 about 600 latches later. The level's end.
-            return True, x, None, area + 1
-        if state != 0x08:
-            return False, x, k, area
-    return True, x, None, area
-
-
-def collapse(schedule):
-    """Drop entries that repeat the byte already held."""
-    out, held = [], None
-    for n, b in sorted(schedule):
-        if b != held:
-            out.append((n, b))
-            held = b
-    return out
+        if state in DEAD or vscreen > 1 or lives < lives0:
+            return False, False, area, x, k, state
+        if state in DONE:
+            return True, True, area, x, None, state
+        if state != 0x08 and held == 0x08:
+            held = state
+    return True, False, area, x, None, held
 
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("rom")
     ap.add_argument("--out", required=True)
+    ap.add_argument("--prefix", help="a bench script played first (WAIT n and POWER OFF ignored)")
+    ap.add_argument("--first", type=int, required=True, help="the latch the search starts at")
     ap.add_argument("--nes", default=str(ROOT.parent / "nes"))
     ap.add_argument("--seg", type=int, default=30)
     ap.add_argument("--look", type=int, default=60)
     ap.add_argument("--jobs", type=int, default=6)
-    ap.add_argument("--first", type=int, default=480, help="the latch play begins from")
-    ap.add_argument("--until", type=int, default=3000)
-    ap.add_argument("--backtracks", type=int, default=40)
+    ap.add_argument("--until", type=int, default=99999)
+    ap.add_argument("--backtracks", type=int, default=60)
     a = ap.parse_args()
-    model = Model(a.rom, a.nes)
+    exe = Path(a.nes) / "target" / "release" / "examples" / "branch"
+    if not exe.exists():
+        sys.exit(f"build it first: cargo build --release -p nes-console --example branch (in {a.nes})")
 
-    base = model.play([(a.first, 0x82)], a.first + 1)
-    lives0 = base[max(base)][5]
-    area0 = base[max(base)][6]
+    tmp = Path(tempfile.mkdtemp(prefix="plan-"))
+    prefix_lines = []
+    if a.prefix:
+        for line in Path(a.prefix).read_text().splitlines():
+            w = line.split("#")[0].split()
+            if w and not (w[0] == "WAIT" and len(w) == 2) and w[:2] != ["POWER", "OFF"]:
+                prefix_lines.append(line)
+    else:
+        prefix_lines = START.splitlines()
+    pre_ats = [(int(l.split()[1]), int(l.split()[2], 16)) for l in prefix_lines if l.startswith("AT ")]
+    (tmp / "prefix.txt").write_text("\n".join(prefix_lines) + "\n")
+
+    workers = [Worker(exe, a.rom) for _ in range(a.jobs)]
+    pool = queue.Queue()
+    for w in workers:
+        pool.put(w)
+
+    def on_worker(fn):
+        w = pool.get()
+        try:
+            return fn(w)
+        finally:
+            pool.put(w)
+
+    s0 = tmp / f"s{a.first}.state"
+    on_worker(lambda w: w.ask(f"SCRIPT {tmp / 'prefix.txt'} {a.first - 1}", f"SAVE {s0}"))
+    lives0 = on_worker(lambda w: w.ask(f"LOAD {s0}", f"RUN {a.first}"))[a.first][5]
     mv = moves(a.seg)
 
-    def ranked(schedule, t):
-        """The moves at segment t, best first, dropping any that die inside
-        the segment itself; one that dies only in the lookahead ranks
-        below every one that lives through it."""
-        cands = {n: schedule + [(t + o, b) for o, b in m] for n, m in mv.items()}
-        tail = t + a.seg
-        for n in cands:
-            cands[n] = cands[n] + [(tail, 0x82)] if all(k < tail for k, _ in cands[n][len(schedule):]) else cands[n]
+    # The lookahead: after a move, the best of three ways on (running,
+    # a jump at once, a jump a little later), so a move is called deadly
+    # only when none of them lives.
+    def continuations(t0):
+        return [[(t0, 0x82)], [(t0, 0x82), (t0 + 2, 0x83), (t0 + 26, 0x82)], [(t0, 0x82), (t0 + 20, 0x83), (t0 + 44, 0x82)]]
+
+    def better(r):
+        return (r[1], r[2], r[0], r[3] if r[0] else r[4] or 0, r[3])
+
+    def evaluate(state, t, entries):
+        end = t + a.seg + a.look
+        outs = []
+        for cont in continuations(t + a.seg):
+            cmds = [f"LOAD {state}"] + [f"AT {n} {b:02x}" for n, b in entries + cont] + [f"RUN {end}"]
+            # a lookahead that ends with the game holding Mario (a pipe,
+            # a cut scene) is run on until he is his own again, so what
+            # lies past it counts: 1-2's exit pipe holds him about 75
+            # latches, longer than LOOK (measured 2026-10-17)
+            cmds += [f"RUN {end + k}" for k in range(30, EXTEND + 1, 30)]
+            def run(w):
+                rows = w.ask(*cmds[:-(EXTEND // 30)])
+                for c in cmds[-(EXTEND // 30):]:
+                    last = rows[max(rows)]
+                    if last[1] in (0x08,) + DEAD or last[1] in DONE:
+                        break
+                    rows.update(w.ask(c))
+                return rows
+            outs.append(judge(on_worker(run), lives0))
+        return max(outs, key=better)
+
+    def ranked(state, t):
+        cands = {n: [(t + o, b) for o, b in m] for n, m in mv.items()}
         with ThreadPoolExecutor(a.jobs) as ex:
-            res = dict(zip(cands, ex.map(lambda s: judge(model.play(collapse(s), tail + a.look), a.first, lives0), cands.values())))
-        keep = [n for n, r in res.items() if r[0] or r[2] > tail]
-        keep.sort(key=lambda n: (res[n][3], res[n][0], res[n][1], n == "run"), reverse=True)
+            res = dict(zip(cands, ex.map(lambda e: evaluate(state, t, e), cands.values())))
+        # a stall is a dead end: standing still always lives, so a branch
+        # that has not gained STALL_PX in STALL segments is given up
+        # (only while Mario is his own: in a pipe or a cut scene the game
+        # holds him still, and that is not a stall)
+        recent = path_x[-STALL:]
+        if len(recent) == STALL and recent[-1][0] == recent[0][0] and recent[-1][1] - recent[0][1] < STALL_PX and all(p[2] == 0x08 for p in recent):
+            return [], res
+        # dropped: a move that dies inside its own segment
+        keep = [n for n, r in res.items() if r[0] or r[4] >= t + a.seg]
+        keep.sort(key=lambda n: (res[n][1], res[n][2], res[n][0], res[n][3], n == "run"), reverse=True)
         return keep, res
 
-    # depth-first: frames of (t, schedule before it, the moves still to try)
     stack = []
-    schedule, t, backs, done = [], a.first, 0, False
+    chosen = []
+    path_x = []   # (area, x) after each committed segment, on the current branch
+    fails = {}    # latch -> backtracks out of it
+    t, state, backs, done = a.first, s0, 0, False
     while t < a.until and not done:
-        keep, res = ranked(schedule, t)
-        line = ", ".join(f"{n} {r[1]}" + ("" if r[0] else f" dead@{r[2]}") for n, r in sorted(res.items(), key=lambda kv: -kv[1][1])[:6])
+        keep, res = ranked(state, t)
+        top = ", ".join(f"{n} {r[3]}" + ("" if r[0] else f" dead@{r[4]}") for n, r in sorted(res.items(), key=lambda kv: -kv[1][3])[:5])
         while not keep:
             if not stack or backs >= a.backtracks:
                 sys.exit(f"latch {t}: no move lives and nothing left to back up to ({backs} backtracks)")
             backs += 1
-            t, schedule, keep, res = stack.pop()
-            print(f"  back to latch {t} (backtrack {backs}), trying {keep[0] if keep else 'nothing'}", flush=True)
+            fails[t] = fails.get(t, 0) + 1
+            t, state, keep, res, chosen, path_x = stack.pop()
+            # four failures at one latch: the cause is further back, so
+            # give up the segment before as well
+            if fails.get(t + a.seg, 0) >= ESCALATE and stack:
+                fails[t + a.seg] = 0
+                t, state, keep, res, chosen, path_x = stack.pop()
+            print(f"  back to latch {t} (backtrack {backs}), next {keep[0] if keep else 'nothing'}", flush=True)
         best = keep[0]
-        stack.append((t, schedule, keep[1:], res))
-        r = res.get(best)
-        print(f"latch {t}: {best} -> x {r[1]}" + ("" if r[0] else f" (dies at {r[2]} in the lookahead)") + f"   [{line}]", flush=True)
-        schedule = schedule + [(t + o, b) for o, b in mv[best]]
-        if r[3] != area0:
-            print(f"the level is done at about latch {t}")
+        stack.append((t, state, keep[1:], res, chosen, path_x))
+        r = res[best]
+        entries = [(t + o, b) for o, b in mv[best]]
+        chosen = chosen + entries
+        path_x = path_x + [(r[2], r[3], r[5])]
+        print(f"latch {t}: {best} -> area {r[2]} x {r[3]}" + (" DONE" if r[1] else "") + ("" if r[0] else f" (dies at {r[4]} in the lookahead)") + f"   [{top}]", flush=True)
+        if r[1]:
             done = True
+            break
+        nxt = tmp / f"s{t + a.seg}-{backs}.state"
+        on_worker(lambda w: w.ask(f"LOAD {state}", *[f"AT {n} {b:02x}" for n, b in entries], f"RUN {t + a.seg - 1}", f"SAVE {nxt}"))
+        state = nxt
         t += a.seg
-    sched = collapse(schedule + [(t + a.seg, 0x00)])
+
+    for w in workers:
+        w.close()
+    sched, held = [], None
+    for n, b in sorted(pre_ats + chosen + [(t + a.seg + 40, 0x00)]):
+        if b != held:
+            sched.append((n, b))
+            held = b
     if len(sched) > 600:
         sys.exit(f"{len(sched)} entries: the UNO holds 600")
     last = max(n for n, _ in sched)
-    body = START + "".join(f"AT {n} {b:02x}\n" for n, b in sched) + f"WAIT {last + 60}\nPOWER OFF\n"
-    Path(a.out).write_text(f"# planned on the model by tools/plan.py, segments of {a.seg}, lookahead {a.look}\n" + body)
-    print(f"wrote {a.out}: {len(sched)} entries, to latch {last}")
+    body = START + "".join(f"AT {n} {b:02x}\n" for n, b in sched if n > 332) + f"WAIT {last + 60}\nPOWER OFF\n"
+    Path(a.out).write_text(f"# planned on the model by tools/plan.py, segments of {a.seg}, lookahead {a.look}, {backs} backtracks\n" + body)
+    print(f"wrote {a.out}: {len(sched)} entries, to latch {last}" + ("" if done else " (NOT done)"))
 
 
 if __name__ == "__main__":

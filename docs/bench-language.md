@@ -244,8 +244,17 @@ and backs up a segment when every move dies. It cleared 1-1 on the model
 with four backtracks: a 71-entry schedule, the flagpole at latch 2190.
 Played on the part through the head (run 20261017-224132), the grabber's
 frames at 700, 1300, 1900 and 2200 show the same run reaching the
-flagpole. A candidate costs about ten seconds, because the model has no
-saved state and every one replays from power-on.
+flagpole. The same day the planner moved onto the model's saved states
+(`nes-console`'s `branch` example, a load proven byte-identical to the
+run that never stopped): a candidate costs its own latches, about 0.6 s
+against ten, 1-1 replans in under six minutes, and 1-2 planned in eight
+from the end of 1-1's schedule. 1-2 taught four rules now in the tool:
+jumps every five latches, a latch backed out of four times gives up the
+segment before it, a lookahead that ends with the game holding Mario (a
+pipe) runs on until he is free, and a segment that saw him held is no
+stall. Played on the part (run 20261017-235518), one schedule of 132
+entries took the console through both flagpoles to "WORLD 1-3" with no
+life lost.
 
 ## Proposed words
 
