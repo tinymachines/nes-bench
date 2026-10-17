@@ -104,16 +104,17 @@ own count. `MUTATE=1` (a track onto a pad of another net), `MUTATE_OPEN=1`
 (a track deleted) and `MUTATE_SILK=1` all go red on v1c. Silkscreen: no
 fault.
 
-## For the owner to look at before an order
+## Looked at before the order
 
 - **K1's NO and NC.** The pin numbers are KiCad's SANYOU SRD symbol
-  (1 COM, 3 NO, 4 NC). Meter a relay from the drawer before trusting
-  them; get them swapped and the console sits on while the Pi is off.
+  (1 COM, 3 NO, 4 NC). MEASURED 2026-10-17 by the owner on a relay
+  from the drawer: NC is pin 4, as drawn.
 - **R3's 470 ohms.** The module's own input resistor was never read, and
   it worked; 4.5 mA is more drive than it gave, against a PC817's 50
   percent minimum transfer ratio.
 - **The headers' height.** Stacking or long male headers, chosen so the
   shield clears the USB jack.
 
-Still open, and the owner's to decide: an enclosure or none, and the
-fab house and quantity.
+Ordered 2026-10-17: five boards from JLCPCB, two layers, 1.6 mm, no
+enclosure, no assembly (every part is through-hole). What to buy and
+solder onto one is `docs/bench-v1c-parts.md`.
