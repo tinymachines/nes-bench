@@ -3,6 +3,7 @@
 
   python3 tools/route-pcb.py               # -> docs/routing/bench-v2b.ses
   python3 tools/route-pcb.py --passes 60
+  python3 tools/route-pcb.py --sheet bench-v1c   # -> docs/routing/bench-v1c.ses
 
 Routing is the one step here that is expensive and not deterministic, so
 it is not on the path of a build. This tool runs it and **records the
@@ -71,6 +72,42 @@ def check_rules(dsn, mk):
     return got, bad
 
 
+def widen(dsn, widths, clearance_um):
+    """Give the nets in `widths` their own router class, at their own
+    track width. KiCad 6's bindings cannot reach a netclass, so the board
+    cannot carry the width into the export; the exported design is
+    edited instead, the nets taken out of the default class and put in
+    one of their own, and the router then lays them at that width. The
+    session file records each wire's width, so the board gets it too."""
+    if not widths:
+        return
+    text = Path(dsn).read_text()
+    m = re.search(r'\(class kicad_default(?: "")?([^()]*)', text)
+    if not m:
+        raise RuntimeError("the exported design has no kicad_default class")
+    # KiCad 6 lists no nets in its default class (every net not named
+    # elsewhere falls into it); if a later version lists them, the wide
+    # ones come out, so no net is in two classes.
+    names = m.group(1).split()
+    if names:
+        kept = " ".join(n for n in names if n not in widths)
+        text = text[:m.start(1)] + " " + kept + "\n" + text[m.end(1):]
+    for net in widths:
+        if f"(net {net}" not in text and f'(net "{net}"' not in text:
+            raise RuntimeError(f"{net} is not a net in the exported design")
+    groups = {}
+    for net, w in widths.items():
+        groups.setdefault(w, []).append(net)
+    via = re.search(r'\(use_via ([^)]+)\)', text).group(1)
+    extra = "".join(f'    (class wide_{w:.0f} {" ".join(sorted(nets))}\n'
+                    f'      (circuit (use_via {via}))\n'
+                    f'      (rule (width {w:.0f}) (clearance {clearance_um:.0f}))\n    )\n'
+                    for w, nets in sorted(groups.items()))
+    i = text.index("(class kicad_default")
+    text = text[:i] + extra.lstrip() + "    " + text[i:]
+    Path(dsn).write_text(text)
+
+
 def run(jarfile, dsn, ses, passes, workdir):
     (workdir / "freerouting.json").write_text(json.dumps({
         "gui": {"enabled": False},
@@ -94,6 +131,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--passes", type=int, default=40)
     ap.add_argument("--jar", help="the freerouting jar; else $FREEROUTING_JAR, else ~/.cache")
+    ap.add_argument("--sheet", default="bench-v2b", choices=["bench-v2b", "bench-v1c"])
     a = ap.parse_args()
 
     jarfile = Path(a.jar) if a.jar else jar()
@@ -110,6 +148,7 @@ def main():
         return 1
 
     mk = load(ROOT / "tools" / "make-pcb.py", "makepcb")
+    mk.select(a.sheet)
     board, placed, keep, applied, unset = mk.build()
     if unset:
         for m in unset:
@@ -123,16 +162,22 @@ def main():
     # three pads with no copper path to their net and the ground plane
     # in four pieces. Routed as ordinary nets they are traces, and the
     # pours go back on afterwards over the top of them.
+    # The keepouts are zones too and must stay: they are what tells the
+    # router where the UNO's jacks stand.
     for z in list(board.Zones()):
-        board.Remove(z)
+        if not z.GetIsRuleArea():
+            board.Remove(z)
 
     with tempfile.TemporaryDirectory() as tmp:
         tmp = Path(tmp)
-        dsn, ses = tmp / "bench-v2b.dsn", tmp / "bench-v2b.ses"
+        dsn, ses = tmp / f"{a.sheet}.dsn", tmp / f"{a.sheet}.ses"
         if not pcbnew.ExportSpecctraDSN(board, str(dsn)):
             print("  the Specctra export failed")
             return 1
         rules, bad = check_rules(dsn, mk)
+        widen(dsn, mk.NET_WIDTHS, mk.CLEARANCE_UM)
+        if mk.NET_WIDTHS:
+            rules["wide"] = dict(mk.NET_WIDTHS)
         for m in bad:
             print(f"  {m}")
         if bad:
@@ -156,12 +201,12 @@ def main():
             print(f"  REFUSED: {left} connection(s) unrouted. More passes, or move something in ROWS.")
             return 1
         OUT.mkdir(parents=True, exist_ok=True)
-        shutil.copyfile(ses, OUT / "bench-v2b.ses")
-        (OUT / "bench-v2b.json").write_text(json.dumps(
+        shutil.copyfile(ses, OUT / f"{a.sheet}.ses")
+        (OUT / f"{a.sheet}.json").write_text(json.dumps(
             {"router": jarfile.name, "passes": a.passes, "rules": rules, "stats": stats},
             indent=2) + "\n")
-    print(f"  wrote {(OUT / 'bench-v2b.ses').relative_to(ROOT)}")
-    print("  now run: python3 tools/make-pcb.py --plot")
+    print(f"  wrote {(OUT / f'{a.sheet}.ses').relative_to(ROOT)}")
+    print(f"  now run: python3 tools/make-pcb.py --sheet {a.sheet} --plot")
     return 0
 
 

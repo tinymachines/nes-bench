@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""The v2b board: footprints placed, nets applied, outline drawn.
+"""The boards: footprints placed, nets applied, outline drawn.
 
-  python3 tools/make-pcb.py            # -> docs/fab/bench-v2b/
-  python3 tools/make-pcb.py --plot     # ...and the Gerbers, drill and position
+  python3 tools/make-pcb.py                       # v2b -> docs/fab/bench-v2b/
+  python3 tools/make-pcb.py --plot                # ...and the Gerbers, drill and position
+  python3 tools/make-pcb.py --sheet bench-v1c     # v1c, the shield -> docs/fab/bench-v1c/
 
 Built with KiCad's own `pcbnew` module rather than by writing board files
 by hand, so the format is whatever the installed KiCad says it is.
@@ -59,6 +60,116 @@ ROWS = [
     ["J2", "C5", "C6", "R1", ("A1", 90)],
 ]
 MARGIN, GAP, ROW_GAP = 6.0, 5.0, 5.0
+
+# What a board other than v2b changes. v2b is the default and every one
+# of these is empty or None for it, so its board is the file it always
+# was (held to that on 2026-10-17: rebuilt, it differed from the
+# committed one in its date stamps only).
+FIXED = {}          # ref -> (x, y, rotation): a part placed where something else decides
+PAD_ONLY = set()    # refs whose footprint is a whole board under this one: only their pads count
+KEEPOUTS = []       # (x0, y0, x1, y1, why): no part, track, via or pour
+PLACE = None        # the v1c placer; None packs ROWS as v2b always has
+README = None       # the README writer; None writes v2b's
+NET_WIDTHS = {}     # net -> track width in um, for route-pcb.py's router classes
+
+
+def select(sheet):
+    """Point every module global at one board. route-pcb.py calls this
+    too, so the router and the build cannot be told different boards."""
+    g = globals()
+    g["SHEET"] = sheet
+    g["OUT"] = ROOT / "docs" / "fab" / sheet
+    g["SESSION"] = ROOT / "docs" / "routing" / f"{sheet}.ses"
+    if sheet == "bench-v2b":
+        return
+    if sheet != "bench-v1c":
+        raise SystemExit(f"make-pcb: no board is authored for {sheet}")
+    g.update(BOARD_W=V1C_W, BOARD_H=V1C_H, ROWS=[row for _x, _y, row, _gap in V1C_ROWS], LABELS=V1C_LABELS,
+             FIXED=V1C_FIXED, PAD_ONLY={"A1"}, KEEPOUTS=V1C_KEEPOUTS, PLACE=place_v1c,
+             README=readme_v1c, NET_WIDTHS=V1C_NET_WIDTHS)
+
+
+# ------------------------------------------------------------------ v1c
+# v1c is an UNO shield. DECIDED 2026-10-17 by the owner: a shield, not
+# a ribbon, because the bridge failed on 2026-10-16 with a resistor one
+# breadboard row off its lead and a shield has no lead to be off by.
+#
+# The board is the UNO's own 68.58 by 53.34 mm outline, carried on to
+# 100 mm along the long side: the cheap fabs' tier is 100 mm square, and
+# the hands and their cables need the room. A1 is the UNO itself, placed
+# so its outline's corner is the board's: its pads are the shield's
+# headers, and nothing else of it is on this board.
+V1C_W, V1C_H = 100.0, 53.34
+V1C_FIXED = {"A1": (27.94, 2.54, 0)}   # pad 1 (the power header's first) from the UNO's corner
+
+# AUTHORED: where the UNO has something taller than its header sockets
+# under the shield, nothing goes, in copper or in parts. The barrel jack
+# and the USB jack stand about 11 mm off the UNO against 8.5 mm of
+# socket, so the shield rests on them (as most UNO shields do); the USB
+# corner also carries the 16U2's ICSP header and the reset button, and
+# the 328P's ICSP pins stand at socket height under the middle. The
+# boxes are generous because the jacks are metal.
+V1C_KEEPOUTS = [
+    (0.0, 0.0, 13.94, 13.5, "the barrel jack"),
+    (0.0, 28.5, 19.94, V1C_H, "the USB jack, the 16U2's ICSP and the reset button"),
+    (58.5, 18.0, 68.58, 33.0, "the 328P's ICSP header"),
+]
+
+# AUTHORED: the arrangement, as v2b's is, in rows; the packer measures
+# the footprints. Each row starts at a point because the UNO's headers
+# and jacks cut the board into regions a single stack of rows cannot
+# follow. The registers stand in the UNO's middle in SPI order with
+# their decoupling under them; the probes in a row the hooks can reach;
+# the hands, the relay and every cable on the 31 mm past the UNO's end,
+# the cables at the board's edges.
+V1C_ROWS = [
+    (21.0, 7.0, ["U1", "U2", "U3"], 2.6),
+    (21.0, 30.5, ["C1", "C2", "C3"], 5.2),
+    (21.0, 35.5, ["R2", "C4", "R1"], 2.5),
+    (21.0, 40.5, ["TP2", "TP3", "TP4", "TP1", "TP5", "TP6"], 3.0),
+    (70.0, 1.0, ["K1"], 2.0),
+    (92.5, 1.0, [("J3", 90)], 2.0),
+    (92.5, 18.0, [("J4", 90)], 2.0),
+    (70.0, 20.0, ["OK1", "Q1"], 3.0),
+    (70.0, 28.0, ["R3"], 2.0),
+    (70.0, 33.5, ["D1"], 2.0),
+    (70.0, 38.5, ["R4", "R5"], 2.0),
+    (70.0, 46.0, ["J1", "J2"], 2.0),
+]
+
+# The power hand's contact carries the console's supply current, which
+# a 250 um track would carry warm. 800 um is about 2 A on 35 um copper
+# at a 10 degree rise (IPC-2221), against the NES-001's under 1 A.
+V1C_NET_WIDTHS = {"PWR_BROWN": 800.0, "PWR_RED": 800.0}
+
+# AUTHORED: what the silkscreen says beside a part, below it unless the
+# part sits on the board's bottom edge. A probe's hook goes on a signal
+# by name, and a cable's plug by what it is for: the reason this board
+# exists is that a lead went one row off.
+V1C_LABELS = {"TP1": "TRIG", "TP2": "OUT0", "TP3": "D0", "TP4": "CLK", "TP5": "GND", "TP6": "GND",
+              "J1": "CONSOLE", "J2": "PAD", "J3": "PANEL", "J4": "PI"}
+LABELS = {}
+
+
+def place_v1c(loaded):
+    """V1C_ROWS to positions, each row from its own corner."""
+    IU = pcbnew.IU_PER_MM
+    at = dict(V1C_FIXED)
+    for ref, (x, y, rot) in V1C_FIXED.items():
+        loaded[ref].SetOrientationDegrees(rot)
+    for x0, y0, row, gap in V1C_ROWS:
+        x = x0
+        for entry in row:
+            ref, rot = entry if isinstance(entry, tuple) else (entry, 0)
+            fp = loaded[ref]
+            fp.SetOrientationDegrees(rot)
+            bb = fp.GetBoundingBox(False, False)
+            w = bb.GetWidth() / IU
+            ox = fp.GetPosition().x / IU - bb.GetX() / IU
+            oy = fp.GetPosition().y / IU - bb.GetY() / IU
+            at[ref] = (x + ox, y0 + oy, rot)
+            x += w + gap
+    return at
 
 
 def pack(loaded):
@@ -117,20 +228,45 @@ def build():
         fp.SetValue(ex.value_of(part))
         placed[ref] = fp
 
-    listed = {r if isinstance(r, str) else r[0] for row in ROWS for r in row}
+    listed = {r if isinstance(r, str) else r[0] for row in ROWS for r in row} | set(FIXED)
     if listed != set(placed):
         raise RuntimeError(f"ROWS and the schematic disagree: only in ROWS {listed - set(placed)}, "
                            f"only on the sheet {set(placed) - listed}")
-    at, used_h = pack(placed)
+    at = pack(placed)[0] if PLACE is None else PLACE(placed)
     for ref, fp in placed.items():
         x, y, _rot = at[ref]
         fp.SetPosition(pcbnew.wxPointMM(x, y))
         board.Add(fp)
+    for ref in PAD_ONLY:
+        # The UNO's outline, jacks and labels are the UNO's, not this
+        # board's: on a shield they would be silkscreen over its own
+        # parts. Only the pads (the headers) and the holes stay.
+        fp = placed[ref]
+        for item in list(fp.GraphicalItems()):
+            if item.GetLayer() in (pcbnew.F_SilkS, pcbnew.B_SilkS):
+                fp.Remove(item)
+        fp.Reference().SetVisible(False)
+        fp.Value().SetVisible(False)
+    IU = pcbnew.IU_PER_MM
+    for ref, text in LABELS.items():
+        bb = placed[ref].GetBoundingBox(False, False)
+        t = pcbnew.PCB_TEXT(board)
+        t.SetText(text)
+        t.SetLayer(pcbnew.F_SilkS)
+        t.SetTextSize(pcbnew.wxSizeMM(1.0, 1.0))
+        t.SetTextThickness(int(0.15 * IU))
+        bottom = bb.GetBottom() / IU + 1.2
+        if bottom > BOARD_H - 0.6:
+            # On the bottom edge: the name goes inside the housing's outline
+            # side instead, above the reference.
+            bottom = bb.GetY() / IU - 2.6
+        t.SetPosition(pcbnew.wxPointMM(bb.GetCenter().x / IU, bottom))
+        board.Add(t)
 
     # Nets onto pads, straight out of the schematic.
     applied, unset = 0, []
     for net, ns in keep.items():
-        for ref, pad_no, _fn in ex.net_pads(ns):
+        for ref, pad_no, _fn in ex.net_pads(ns, SHEET):
             fp = placed[ref]
             pad = fp.FindPadByNumber(str(pad_no))
             if pad is None:
@@ -150,6 +286,27 @@ def build():
         seg.SetWidth(int(EDGE * pcbnew.IU_PER_MM))
         board.Add(seg)
 
+    # The keepouts: rule areas on both copper layers, so the router and
+    # anybody editing the board in KiCad see them too.
+    for x0, y0, x1, y1, why in KEEPOUTS:
+        ka = pcbnew.ZONE(board)
+        ka.SetIsRuleArea(True)
+        ka.SetDoNotAllowTracks(True)
+        ka.SetDoNotAllowVias(True)
+        ka.SetDoNotAllowCopperPour(True)
+        ka.SetDoNotAllowPads(False)
+        ka.SetDoNotAllowFootprints(False)
+        ka.SetZoneName(why)
+        ls = pcbnew.LSET()
+        ls.AddLayer(pcbnew.F_Cu)
+        ls.AddLayer(pcbnew.B_Cu)
+        ka.SetLayerSet(ls)
+        pts = pcbnew.wxPoint_Vector()
+        for x, y in ((x0, y0), (x1, y0), (x1, y1), (x0, y1)):
+            pts.append(pcbnew.wxPointMM(x, y))
+        ka.AddPolygon(pts)
+        board.Add(ka)
+
     # Ground on the back, supply on the front: the two nets with the most
     # nodes by far, and the two a router would spend the longest on.
     for netname, layer in (("GND", pcbnew.B_Cu), ("+5V", pcbnew.F_Cu)):
@@ -168,7 +325,7 @@ def build():
     return board, placed, keep, applied, unset
 
 
-MUTATIONS = ("MUTATE", "MUTATE_OPEN", "MUTATE_SILK")
+MUTATIONS = ("MUTATE", "MUTATE_OPEN", "MUTATE_SILK", "MUTATE_SHIELD")
 
 
 def mutating():
@@ -263,6 +420,21 @@ def apply_routing(path):
     return tracks, unrouted, viol
 
 
+def boxes(ref, fp):
+    """What of a part occupies the board. A part's bounding box, except
+    for a PAD_ONLY part, which is a whole board under this one (the
+    UNO): its pads, with 2 mm round each for the header that stands in
+    them, are what nothing may sit on."""
+    if ref not in PAD_ONLY:
+        return [fp.GetBoundingBox(False, False)]
+    out = []
+    for pad in fp.Pads():
+        b = pad.GetBoundingBox()
+        b.Inflate(int(2.0 * pcbnew.IU_PER_MM))
+        out.append(b)
+    return out
+
+
 def overlaps(placed):
     """Two parts in the same holes. A fabrication error, and the reason
     the packer measures footprints instead of trusting arithmetic done
@@ -270,10 +442,24 @@ def overlaps(placed):
     bad = []
     items = sorted(placed.items())
     for i, (r1, f1) in enumerate(items):
-        b1 = f1.GetBoundingBox(False, False)
         for r2, f2 in items[i + 1:]:
-            if b1.Intersects(f2.GetBoundingBox(False, False)):
+            if any(b1.Intersects(b2) for b1 in boxes(r1, f1) for b2 in boxes(r2, f2)):
                 bad.append(f"{r1} and {r2}")
+    return bad
+
+
+def in_keepouts(placed):
+    """A part standing where KEEPOUTS says the UNO has something tall."""
+    IU = pcbnew.IU_PER_MM
+    bad = []
+    for ref, fp in sorted(placed.items()):
+        if ref in PAD_ONLY:
+            continue
+        b = fp.GetBoundingBox(False, False)
+        for x0, y0, x1, y1, why in KEEPOUTS:
+            k = pcbnew.EDA_RECT(pcbnew.wxPointMM(x0, y0), pcbnew.wxSizeMM(x1 - x0, y1 - y0))
+            if b.Intersects(k):
+                bad.append(f"{ref} stands over {why} ({b.GetX() / IU:.1f}, {b.GetY() / IU:.1f} mm)")
     return bad
 
 
@@ -319,34 +505,50 @@ def silkscreen_faults(board):
     fps = sorted(board.GetFootprints(), key=lambda f: f.GetReference())
     silk = {f.GetReference(): silk_items(f) for f in fps}
     if os.environ.get("MUTATE_SILK"):
-        a, b = fps[0], fps[1]
+        # The first two labels that are printed: a hidden one (v1c's A1,
+        # the UNO) moved onto another is no fault, and the mutation would
+        # prove nothing.
+        a, b = [f for f in fps if f.Reference().IsVisible()][:2]
         a.Reference().SetPosition(b.Reference().GetPosition())
         silk[a.GetReference()] = silk_items(a)
         print(f"  MUTATE_SILK: {a.GetReference()}'s label moved onto {b.GetReference()}'s")
+    # The board's own silkscreen text (v1c's signal names) is held to the
+    # same two rules as a footprint's, as an owner of its own.
+    owners = [(f.GetReference(), f) for f in fps]
+    for d in board.GetDrawings():
+        if d.Type() == pcbnew.PCB_TEXT_T and d.GetLayer() in SILK_TO_CU:
+            at = d.GetPosition()
+            key = f'text "{d.GetText()}" at ({at.x / pcbnew.IU_PER_MM:.1f}, {at.y / pcbnew.IU_PER_MM:.1f})'
+            silk[key] = [(d.GetLayer(), d.GetBoundingBox(), "label")]
+            owners.append((key, None))
     faults = []
-    for i, f1 in enumerate(fps):
-        for f2 in fps[i + 1:]:
-            for l1, b1, w1 in silk[f1.GetReference()]:
-                for l2, b2, w2 in silk[f2.GetReference()]:
+    for i, (k1, f1) in enumerate(owners):
+        for k2, f2 in owners[i + 1:]:
+            for l1, b1, w1 in silk[k1]:
+                for l2, b2, w2 in silk[k2]:
                     if l1 == l2 and b1.Intersects(b2):
-                        faults.append(f"{f1.GetReference()} {w1} touches {f2.GetReference()} {w2}")
-    for f1 in fps:
-        for layer, box, what in silk[f1.GetReference()]:
+                        faults.append(f"{k1} {w1} touches {k2} {w2}")
+    for k1, f1 in owners:
+        for layer, box, what in silk[k1]:
             cu = SILK_TO_CU[layer]
             for f2 in fps:
                 for pad in f2.Pads():
                     if not pad.IsOnLayer(cu) or (f1 is f2 and what == "an outline"):
                         continue
                     if box.Intersects(pad.GetBoundingBox()):
-                        faults.append(f"{f1.GetReference()} {what} sits over "
+                        faults.append(f"{k1} {what} sits over "
                                       f"{f2.GetReference()}-{pad.GetNumber()}")
     return faults
 
 
 def outside(placed):
     lim = pcbnew.EDA_RECT(pcbnew.wxPointMM(0, 0), pcbnew.wxSizeMM(BOARD_W, BOARD_H))
-    return [r for r, f in sorted(placed.items())
-            if not lim.Contains(f.GetBoundingBox(False, False))]
+    bad = []
+    for r, f in sorted(placed.items()):
+        bs = [p.GetBoundingBox() for p in f.Pads()] if r in PAD_ONLY else [f.GetBoundingBox(False, False)]
+        if not all(lim.Contains(b) for b in bs):
+            bad.append(r)
+    return bad
 
 
 GERBERS = [
@@ -424,18 +626,114 @@ def plot(path, outdir):
             fp.GetReference(), fp.GetValue(), fp.GetFPID().GetLibItemName(),
             f"{pos.x / IU:.3f}", f"{-pos.y / IU:.3f}",
             f"{fp.GetOrientationDegrees():.1f}", side)))
-    (outdir / "bench-v2b-positions.csv").write_text("\n".join(rows) + "\n")
+    (outdir / f"{SHEET}-positions.csv").write_text("\n".join(rows) + "\n")
     return filled, written
+
+
+def shield_pins(fp, pads):
+    """A1_SHIELD held to the footprint it names pads on. A pin table typed
+    from memory and a footprint drawn by someone else agree only if
+    something checks; this checks the three facts a wrong table could
+    not survive: the eighteen digital pads on one edge and the power
+    and analog fourteen on the other, D0 straight across from A5, and
+    the UNO's odd 160 mil gap between D7 and D8 where every other gap
+    is 100 mil."""
+    IU = pcbnew.IU_PER_MM
+    where = {}
+    for pad in fp.Pads():
+        if pad.GetNumber().isdigit():
+            where[int(pad.GetNumber())] = (pad.GetPosition().x / IU, pad.GetPosition().y / IU)
+    by = {sig: n for n, sig in pads.items() if sig not in ("GND", "NC")}
+    bad = []
+    digital = [by[f"D{i}"] for i in range(14)]
+    other = [by[k] for k in ("IOREF", "RESET", "3V3", "5V", "VIN", "A0", "A1", "A2", "A3", "A4", "A5")]
+    if len({round(where[n][1], 2) for n in digital}) != 1:
+        bad.append("A1_SHIELD's D0 to D13 are not all on one edge of the footprint")
+    if len({round(where[n][1], 2) for n in other}) != 1 or where[other[0]][1] == where[digital[0]][1]:
+        bad.append("A1_SHIELD's power and analog pins are not on the other edge")
+    if abs(where[by["D0"]][0] - where[by["A5"]][0]) > 0.01:
+        bad.append("A1_SHIELD's D0 is not straight across from A5")
+    if abs(abs(where[by["D7"]][0] - where[by["D8"]][0]) - 4.064) > 0.05:
+        bad.append("A1_SHIELD's D7 and D8 are not 160 mil apart")
+    for i in range(7):
+        if abs(abs(where[by[f"D{i}"]][0] - where[by[f"D{i + 1}"]][0]) - 2.54) > 0.05:
+            bad.append(f"A1_SHIELD's D{i} and D{i + 1} are not 100 mil apart")
+    return bad
+
+
+def readme_v1c(stats):
+    keep = "\n".join(f"  - {why}: x {x0:.1f} to {x1:.1f} mm, y {y0:.1f} to {y1:.1f} mm"
+                     for x0, y0, x1, y1, why in KEEPOUTS)
+    wide = ", ".join(f"{n} {w:.0f} um" for n, w in sorted(NET_WIDTHS.items()))
+    return f"""# bench-v1c, the board
+
+Generated by `tools/make-pcb.py --sheet bench-v1c` with KiCad {pcbnew.GetBuildVersion()}.
+
+{stats}
+
+**Not ordered, not built.** v1c is v1b, the bridge that passed
+bench-check on 2026-10-17, net for net (`tools/check-sheets.py` holds
+every node v1b draws to the same net here), as an UNO shield with the
+head's two hands on it and every cable on a keyed housing. The
+schematic is `docs/bench-v1c-1.svg` to `-5.svg`; the account is
+`docs/bench-v1c.md`.
+
+What is here:
+
+- `bench-v1c.kicad_pcb`, the board, and the fabrication set plotted
+  from exactly that file: Gerbers, drill, positions, and the two copper
+  layers and the top silk as SVG.
+
+Decisions, and where they are written down:
+
+- **A shield** (the owner, 2026-10-17). A1 is the UNO: its pads are the
+  shield's headers, per `A1_SHIELD` in `tools/export-netlist.py`, and
+  nothing else of it reaches this board. Fit stacking headers, or long
+  male headers, into the UNO's sockets.
+- **{BOARD_W:.0f} by {BOARD_H:.2f} mm**, two layers: the UNO's own outline
+  carried on past its far end, inside the cheap fabs' 100 mm tier.
+- **Keyed cables** (the owner, 2026-10-17: a header on the cut cable).
+  Molex KK-254: the housing's ramp lets a plug in one way only, at the
+  0.1 inch pitch every lead on the bench already has.
+- **Keepouts**, rule areas on both copper layers and no part over them,
+  where the UNO has something taller than its sockets:
+{keep}
+- **The power contact's two nets are wide**: {wide}, for the console's
+  supply current.
+- **PI_GND is not GND.** The Pi's ground reaches the console only through
+  the UNO's USB lead, as on v1b; nothing on this board joins the two.
+- {TRACK_UM:.0f} um track and {CLEARANCE_UM:.0f} um clearance, as v2b.
+"""
 
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--plot", action="store_true", help="also write the fabrication outputs")
+    ap.add_argument("--sheet", default="bench-v2b", choices=["bench-v2b", "bench-v1c"],
+                    help="the board to build (default v2b)")
     a = ap.parse_args()
+    select(a.sheet)
 
     board, placed, keep, applied, unset = build()
     bad = [f"{a} overlap in copper" for a in overlaps(placed)]
     bad += [f"{r} is not fully inside the board outline" for r in outside(placed)]
+    bad += in_keepouts(placed)
+    if "A1" in PAD_ONLY:
+        ex = load(ROOT / "tools" / "export-netlist.py", "ex")
+        pins = dict(ex.a1_map(SHEET))
+        if os.environ.get("MUTATE_SHIELD"):
+            # D7 and D8 swapped: the table still names every pin once,
+            # so only the geometry can see it.
+            d7, d8 = (next(n for n, sig in pins.items() if sig == k) for k in ("D7", "D8"))
+            pins[d7], pins[d8] = pins[d8], pins[d7]
+            print("  MUTATE_SHIELD: D7 and D8 swapped in A1_SHIELD")
+        wrong = shield_pins(placed["A1"], pins)
+        if os.environ.get("MUTATE_SHIELD"):
+            if not wrong:
+                raise AssertionError("MUTATE_SHIELD left the pin table clean: the check cannot see what it claims to")
+            print(f"  MUTATE proof: MUTATE_SHIELD was caught ({wrong[0]})")
+            return 0
+        bad += wrong
     for m in unset + bad:
         print(f"  {m}")
     if unset or bad:
@@ -485,7 +783,7 @@ def main():
              "**Not routed.** The parts are placed and every net is applied, and there are no "
              "signal traces. A board made from these files would be a bag of unconnected "
              "footprints with two copper pours.")
-    readme = f"""# bench-v2b, the board
+    readme = README(stats) if README else f"""# bench-v2b, the board
 
 Generated by `tools/make-pcb.py` with KiCad {pcbnew.GetBuildVersion()}.
 
