@@ -378,7 +378,7 @@ class Sheet:
 
 
 # --------------------------------------------------------------- shared parts
-def console_port(sh, x, y, ref, nets, supply="+5V"):
+def console_port(sh, x, y, ref, nets, supply="+5V", part="console controller port"):
     """The NES-001 controller port, numbered as the pin numbers moulded
     into THIS console's housing.
 
@@ -398,9 +398,13 @@ def console_port(sh, x, y, ref, nets, supply="+5V"):
     UNO's own 5 V and shares only ground with the console, so the RED
     lead stays off the board (bench-v1b-uno.md, build step 3.1). The
     sheet used to draw it on +5V regardless, which put two regulators
-    in parallel on the wiring list; check-sheets.py now refuses that."""
+    in parallel on the wiring list; check-sheets.py now refuses that.
+
+    `part` names the connector the cable lands on, which is what
+    export-netlist.py picks a footprint by. It defaults to the bare
+    header every sheet before v1c drew; v1c's is a keyed housing."""
     used = supply != "NC"
-    return sh.chip(x, y, 130, ref, "console controller port", [], [
+    return sh.chip(x, y, 130, ref, part, [], [
         (1, "GND", "GND"), (2, "CLK", nets["clk"]), (3, "OUT0", nets["out0"]),
         (4, "D0", nets["d0"]), (5, "+5V", supply), (6, "n/c", "NC"), (7, "n/c", "NC")], conn=True,
         extra="MEASURED 2026-09-09: supply on 5, 6 and 7 not carried"
@@ -646,6 +650,163 @@ def sheet_v1b_head():
          "reset and power from the Pi's header through two modules; the Pi's ground reaches the console through the UNO's USB lead only. Added 2026-09-15.",
          _v1b_body_3, LETTER)
 
+
+
+# ------------------------------------------------------------------ sheet v1c
+# v1c is v1b made into a printed board: the same bridge, net for net, as
+# an UNO shield, with the head's two hands on it as bare parts and every
+# cable on a keyed housing. Nothing in the bridge's circuit changes; what
+# changes is that nothing can be one row off. check-sheets.py holds every
+# node v1b draws to the same net here, so the two cannot drift.
+V1C_TITLE = "nes-bench bridge v1c: v1b as a printed shield, the hands on board"
+V1C_SUB = ("the circuit that passed bench-check on 2026-10-17, net for net, on an UNO shield; keyed cables, "
+           "the reset opto and the power relay as bare parts. 2026-10-17. Not built.")
+KEYED = "keyed KK-254"
+
+
+def _v1c_body_1(sh):
+    band = "THE CONSOLE PORT, THE INVERTER AND THE REGISTER, ALL AT +5V (AS v1b)"
+    console_port(sh, *sh.slot(0, 0, label=band), "J1",
+                 {"clk": "CON_CLK", "out0": "CON_OUT0", "d0": "CON_D0"}, supply="NC",
+                 part=f"console controller port, {KEYED}")
+    x, y = sh.slot(0, 1)
+    sh.chip(x, y, 130, "U1", "74HCT04  at +5V",
+            [(1, "1A", "CON_OUT0"), (3, "2A", "GND"), (5, "3A", "GND"), (9, "4A", "GND"),
+             (11, "5A", "GND"), (13, "6A", "GND"), (14, "VCC", "+5V"), (7, "GND", "GND")],
+            [(2, "1Y", "/PL"), (4, "2Y", "NC"), (6, "3Y", "NC"), (8, "4Y", "NC"), (10, "5Y", "NC"),
+             (12, "6Y", "NC")], extra="five spare inputs tied to GND")
+    hct165(sh, *sh.slot(0, 2), "U2", "/PL", "CP", "CON_D0",
+           part="74HC165  at +5V", inputs=Q_NETS)
+    band2 = "DECOUPLING"
+    sh.bank(*sh.slot(1, 0, label=band2), ["C1", "C2", "C3"], "100nF", "+5V", "GND")
+    sh.note(*sh.slot(1, 1), ["one 100nF across each of U1, U2 and U3,", "at the chip's own supply pins"])
+    band3 = "THE CLOCK PIN'S FILTER, ON THE BOARD"
+    sh.twopin(*sh.slot(2, 0, label=band3), "R2", "1k", "CON_CLK", "CP")
+    sh.twopin(*sh.slot(2, 1), "C4", "100pF", "CP", "GND")
+    sh.note(*sh.slot(2, 2), [
+        "v1b's filter (MEASURED 2026-09-15: D0's own edge re-clocked the 165). The UNO's",
+        "D2 still counts CON_CLK ahead of R2, exactly as on the breadboard. On 2026-10-16",
+        "R2 sat one breadboard row off the clock lead, the walk read bit 0 in all eight",
+        "slots, and only a probe on U2 pin 2 could have shown it: TP4 (sheet 3) is that probe."])
+
+
+def _v1c_body_2(sh):
+    band = "THE UNO AS A SHIELD, THE OUTPUT REGISTER AND THE BRIDGE'S OWN PAD (AS v1b)"
+    pad_socket(sh, *sh.slot(0, 0, label=band), "J2", "PAD_LATCH", "PAD_CLK", "PAD_D0", vcc="+5V",
+               part=f"original pad, {KEYED}")
+    x, y = sh.slot(0, 1)
+    sh.chip(x, y, 190, "A1", "Arduino UNO R3, as a shield", [
+        (None, "D13 SCK", "SCK"), (None, "D11 MOSI", "MOSI"), (None, "D10", "RCLK"),
+        (None, "D5 (T1)", "CON_OUT0"), (None, "D2 (INT0)", "CON_CLK"), (None, "D3", "TRIG"),
+        (None, "5V", "+5V"), (None, "GND", "GND"), (None, "USB-B", "PI_USB")],
+        [(None, "D6", "PAD_LATCH"), (None, "D7", "PAD_CLK"), (None, "D8", "PAD_D0"),
+         (None, "D0, D1", "serial")], extra="the shield plugs into its headers")
+    x, y = sh.slot(0, 2)
+    sh.chip(x, y, 140, "U3", "74HC595  at +5V", [
+        (14, "SER", "MOSI"), (11, "SRCLK", "SCK"), (12, "RCLK", "RCLK"), (13, "/OE", "GND"),
+        (10, "/SRCLR", "+5V"), (16, "VCC", "+5V"), (8, "GND", "GND")],
+        [(15, "QA", "Q_A"), (1, "QB", "Q_B"), (2, "QC", "Q_SEL"), (3, "QD", "Q_START"),
+         (4, "QE", "Q_UP"), (5, "QF", "Q_DOWN"), (6, "QG", "Q_LEFT"), (7, "QH", "Q_RIGHT"),
+         (9, "QH'", "NC")], extra="one RCLK edge = one byte")
+    band2 = "THE TRIGGER, AND WHY THESE PINS"
+    sh.twopin(*sh.slot(1, 0, label=band2), "R1", "100R", "TRIG", "EXT_TRIG")
+    sh.note(*sh.slot(1, 1), [
+        "The pins are v1b's (bench-v1b-uno.md, UNO pins): D5 is Timer1's T1,",
+        "D2 is INT0, D3 the trigger, D10 RCLK, D11 and D13 the SPI to U3, D6 to",
+        "D8 the bridge's own pad. The serial to the Pi stays on the UNO's USB;",
+        "the shield touches no D0 or D1. R1's far end goes to TP1 (sheet 3)."])
+
+
+def _v1c_probes(sh):
+    band = "A TEST POINT FOR EVERY SCOPE PROBE"
+    tp = [("TP1", "5000 (red)", "TRIG", "EXT_TRIG", "after R1: CH1"),
+          ("TP2", "5000 (red)", "OUT0", "CON_OUT0", "the latch: CH2"),
+          ("TP3", "5000 (red)", "D0", "CON_D0", "U2 pin 9: CH4"),
+          ("TP4", "5000 (red)", "CP", "CP", "U2 pin 2, after R2"),
+          ("TP5", "5001 (black)", "GND", "GND", "probe ground"),
+          ("TP6", "5001 (black)", "GND", "GND", "probe ground")]
+    for k, (ref, kind, pin, net, what) in enumerate(tp):
+        sh.chip(*sh.slot(0, k % 3, k // 3, label=band if k == 0 else None), 150, ref,
+                f"test point, Keystone {kind}", [(1, pin, net)], [], conn=True, extra=what)
+    band2 = "WHERE EACH PROBE SITS TODAY, AND THE ONE THAT WAS MISSING"
+    sh.note(*sh.slot(1, 0, label=band2), [
+        "TP1 is where the red lead to CH1 lands on the breadboard (R1's far end), and TP2 and TP3",
+        "where CH2 and CH4 sit (U1 pin 1 and U2 pin 9, cheat-sheet.md). TP4 is new: the clock as",
+        "the 165 sees it, after the filter. A Keystone 5000 takes a probe's hook; the two blacks",
+        "are the probes' grounds, on the console's ground like the breadboard's GND rail."])
+
+
+def _v1c_body_3(sh):
+    """The head's reset hand, as a bare part on the shield. The hands
+    keep their own ground: PI_GND is the Pi's, and nothing on the board
+    joins it to GND, so the Pi still reaches the console's ground only
+    through the UNO's USB lead, as on v1b's sheet 3."""
+    band = "THE PI'S CABLE, THE FRONT PANEL'S, AND THE OPTOCOUPLER ACROSS THE RESET BUTTON"
+    x, y = sh.slot(0, 0, label=band)
+    sh.chip(x, y, 190, "J4", f"Pi header cable, {KEYED}", [], [
+        (1, "GND (Pi position 6)", "PI_GND"), (2, "5V (Pi position 2)", "PI_5V"),
+        (3, "GPIO17 (Pi position 11)", "RST_DRIVE"), (4, "GPIO27 (Pi position 13)", "PWR_DRIVE")],
+        conn=True, extra="Dupont at the Pi, KK here")
+    sh.twopin(*sh.slot(0, 1, 0), "R3", "470R", "RST_DRIVE", "OK1_A")
+    x, y = sh.slot(0, 1, 1)
+    sh.chip(x, y, 150, "OK1", "PC817 (DIP-4)", [(1, "A", "OK1_A"), (2, "K", "PI_GND")],
+            [(4, "C", "RST_HI"), (3, "E", "RST_LO")], extra="open collector, no pull-up")
+    x, y = sh.slot(0, 2)
+    sh.chip(x, y, 190, "J3", f"front panel harness, {KEYED}", [
+        (1, "1 brown, power", "PWR_BROWN"), (2, "2 red, power", "PWR_RED"),
+        (3, "3 orange, reset +", "RST_HI"), (4, "4 yellow, reset -", "RST_LO"),
+        (5, "5 white, LED", "NC")], [],
+        conn=True, extra="in parallel with the front panel")
+    band2 = "WHAT OK1 IS SIZED FOR, AND WHAT THE BOARD DOES NOT JOIN"
+    sh.note(*sh.slot(1, 0, label=band2), [
+        "GPIO17 at 3.3 V through R3 lights OK1's LED at about 4.5 mA ((3.3 - 1.2) / 470).",
+        "Its transistor sits across the reset button with no pull-up of its own, as v1b's",
+        "module did with VCC open: C on orange (4.40 V above yellow, MEASURED 2026-09-17),",
+        "E on yellow. GPIO17 high closes it: the reset button, pressed by the head."])
+    sh.note(*sh.slot(1, 1), [
+        "PI_GND is the Pi's ground and is joined to GND nowhere on this board: the Pi",
+        "reaches the console's ground through the UNO's USB lead only, as on v1b. The",
+        "opto's two sides share nothing but light. PWR_DRIVE and PI_5V go to sheet 5."])
+
+
+def _v1c_body_4(sh):
+    """The power hand: a bare relay where v1b had a module."""
+    band = "THE RELAY ACROSS THE POWER SWITCH, AND ITS DRIVER"
+    sh.twopin(*sh.slot(0, 0, 0, label=band), "R4", "470R", "PWR_DRIVE", "Q1_B")
+    sh.twopin(*sh.slot(0, 0, 1), "R5", "10k", "Q1_B", "PI_GND")
+    x, y = sh.slot(0, 1)
+    sh.chip(x, y, 130, "Q1", "2N3904 (TO-92)", [(2, "B", "Q1_B"), (1, "E", "PI_GND")],
+            [(3, "C", "COIL_LO")], extra="the coil's low side")
+    sh.twopin(*sh.slot(0, 2, 0), "D1", "1N4007", "PI_5V", "COIL_LO")
+    x, y = sh.slot(0, 2, 1)
+    sh.chip(x, y, 150, "K1", "SRD-05VDC-SL-C (form C)", [(2, "coil", "PI_5V"), (5, "coil", "COIL_LO")],
+            [(1, "COM", "PWR_BROWN"), (3, "NO", "PWR_RED"), (4, "NC", "NC")],
+            extra="GPIO27 high: COM to NO")
+    band2 = "WHAT EACH PART IS SIZED FOR"
+    sh.note(*sh.slot(1, 0, label=band2), [
+        "K1 is the 5 V coil part the module carried (SRD-05VDC, about 70 ohms, 71 mA), on the",
+        "Pi's 5 V pin as before. Q1 switches its low side; R4 gives it about 5.5 mA of base, R5",
+        "holds it off while the Pi boots and GPIO27 floats, and D1 (cathode on PI_5V) takes the",
+        "coil's kick. GPIO27 high closes COM to NO: the module's measured sense, kept."])
+    sh.note(*sh.slot(1, 1), [
+        "K1's contact is in parallel with the front panel's power switch: COM on brown, NO on",
+        "red (sheet 4). The adapter's low voltage and the console's current, never mains; the",
+        "front switch stays OFF while the head runs the power. K1 shares nothing with its coil.",
+        "MAINS SAFETY: nothing on this sheet is ever on the mains side."])
+
+
+def sheet_v1c():
+    """One schematic, one board, on five landscape letter sheets."""
+    laid(OUT / "bench-v1c-1.svg", V1C_TITLE + "  (sheet 1 of 5: the console side)", V1C_SUB,
+         _v1c_body_1, LETTER, links={"CON_OUT0": "2,3", "CON_CLK": "2", "CON_D0": "3", "CP": "3", **{q: "2" for q in Q_NETS}})
+    laid(OUT / "bench-v1c-2.svg", V1C_TITLE + "  (sheet 2 of 5: the bridge side)", V1C_SUB,
+         _v1c_body_2, LETTER, links={"CON_OUT0": "1,3", "CON_CLK": "1", "EXT_TRIG": "3", **{q: "1" for q in Q_NETS}})
+    laid(OUT / "bench-v1c-3.svg", V1C_TITLE + "  (sheet 3 of 5: the probes)", V1C_SUB,
+         _v1c_probes, LETTER, links={"EXT_TRIG": "2", "CON_OUT0": "1,2", "CON_D0": "1", "CP": "1"})
+    laid(OUT / "bench-v1c-4.svg", V1C_TITLE + "  (sheet 4 of 5: the reset hand and the cables)", V1C_SUB,
+         _v1c_body_3, LETTER, links={"PWR_DRIVE": "5", "PI_5V": "5", "PI_GND": "5", "PWR_BROWN": "5", "PWR_RED": "5"})
+    laid(OUT / "bench-v1c-5.svg", V1C_TITLE + "  (sheet 5 of 5: the power hand)", V1C_SUB,
+         _v1c_body_4, LETTER, links={"PWR_DRIVE": "4", "PI_5V": "4", "PI_GND": "4", "PWR_BROWN": "4", "PWR_RED": "4"})
 
 # ------------------------------------------------------------------- sheet v2
 def sheet_v2():
@@ -1696,6 +1857,7 @@ if __name__ == "__main__":
     sheet_v1()
     sheet_v1b()
     sheet_v1b_head()
+    sheet_v1c()
     sheet_v2()
     sheet_v2b()
     sheet_logic()

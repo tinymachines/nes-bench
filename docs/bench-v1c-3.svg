@@ -1,0 +1,104 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1087.3999999999999 461.0" width="1087.3999999999999" height="461.0" role="img" aria-label="nes-bench bridge v1c: v1b as a printed shield, the hands on board  (sheet 3 of 5: the probes)">
+
+  <style>
+    text { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; fill: #1f2328; }
+    .title { font-size: 15px; font-weight: 700; font-family: ui-sans-serif, system-ui, sans-serif; }
+    .sub { font-size: 11px; fill: #57606a; font-family: ui-sans-serif, system-ui, sans-serif; }
+    .ref { font-size: 12px; font-weight: 700; }
+    .part { font-size: 10px; fill: #57606a; }
+    .pin { font-size: 9.5px; }
+    .pinno { font-size: 9px; fill: #57606a; }
+    .linkflag { fill: #fdf3e3; stroke: #a35c00; stroke-width: 1.1; }
+    .linkno { font-size: 9px; fill: #a35c00; font-weight: 700; }
+    .net { font-size: 9.5px; fill: #0a5b9c; font-weight: 600; }
+    .rail5 { font-size: 9px; fill: #b3261e; font-weight: 700; }
+    .rail3 { font-size: 9px; fill: #b35c00; font-weight: 700; }
+    .gnd { font-size: 9px; fill: #1f2328; font-weight: 700; }
+    .note { font-size: 10px; fill: #57606a; font-family: ui-sans-serif, system-ui, sans-serif; }
+    .box { fill: #ffffff; stroke: #1f2328; stroke-width: 1.3; }
+    .offsheet { fill: #eaf3fb; stroke: #0a5b9c; stroke-width: 1.1; }
+    .conn { fill: #f3f5f7; stroke: #1f2328; stroke-width: 1.3; }
+    .zone { fill: none; stroke: #57606a; stroke-dasharray: 5 4; stroke-width: 1; }
+    .lead { stroke: #1f2328; stroke-width: 1; }
+    .wire { stroke: #0a5b9c; stroke-width: 1.2; fill: none; }
+    .w5 { stroke: #b3261e; stroke-width: 1.2; fill: none; }
+    .w3 { stroke: #b35c00; stroke-width: 1.2; fill: none; }
+    .wg { stroke: #1f2328; stroke-width: 1.2; fill: none; }
+    .lane { stroke: #1f2328; stroke-width: 1.4; fill: none; }
+    .lanelbl { font-size: 11px; font-weight: 700; }
+    .win { fill: #b3261e; fill-opacity: 0.10; stroke: none; }
+    .safe { fill: #1a7f37; fill-opacity: 0.12; stroke: none; }
+    .mark { stroke: #0a5b9c; stroke-width: 1.2; stroke-dasharray: 3 3; }
+    .auth { font-size: 9px; fill: #b3261e; font-family: ui-sans-serif, system-ui, sans-serif; font-style: italic; }
+  </style>
+
+<rect x="0" y="0" width="1087.3999999999999" height="461.0" fill="#ffffff"/>
+<g class="sheet-heading" data-height="60">
+<text class="title" x="24" y="30">nes-bench bridge v1c: v1b as a printed shield, the hands on board  (sheet 3 of 5: the probes)</text>
+<text class="sub" x="24" y="46">the circuit that passed bench-check on 2026-10-17, net for net, on an UNO shield; keyed cables, the reset opto and the power relay as bare parts. 2026-10-17. Not built.</text>
+</g>
+<rect class="zone" x="22" y="66" width="1043.3999999999999" height="252.0" rx="6"/>
+<text class="sub" x="30" y="80" text-anchor="start">A TEST POINT FOR EVERY SCOPE PROBE</text>
+<rect class="zone" x="22" y="342.0" width="1043.3999999999999" height="97.0" rx="6"/>
+<text class="sub" x="30" y="356.0" text-anchor="start">WHERE EACH PROBE SITS TODAY, AND THE ONE THAT WAS MISSING</text>
+<rect class="conn" x="150.2" y="92.0" width="200.0" height="76" rx="3"/>
+<text class="ref" x="156.2" y="106.0" text-anchor="start">TP1</text>
+<text class="part" x="156.2" y="118.0" text-anchor="start">test point, Keystone 5000 (red)</text>
+<text class="part" x="151.2" y="181.0" text-anchor="start">after R1: CH1</text>
+<line class="lead" x1="124.19999999999999" y1="148.0" x2="150.2" y2="148.0"/>
+<text class="pin" x="155.2" y="151.5" text-anchor="start">TRIG</text>
+<text class="pinno" x="146.2" y="146.0" text-anchor="end">1</text>
+<path class="linkflag" d="M48.0 148.0 L58.0 139.0 L124.19999999999999 139.0 L124.19999999999999 157.0 L58.0 157.0 Z"/>
+<text class="net" x="62.0" y="151.5" text-anchor="start">EXT_TRIG</text>
+<text class="linkno" x="118.19999999999999" y="151.5" text-anchor="end">2</text>
+<rect class="conn" x="495.59999999999997" y="92.0" width="200.0" height="76" rx="3"/>
+<text class="ref" x="501.59999999999997" y="106.0" text-anchor="start">TP2</text>
+<text class="part" x="501.59999999999997" y="118.0" text-anchor="start">test point, Keystone 5000 (red)</text>
+<text class="part" x="496.59999999999997" y="181.0" text-anchor="start">the latch: CH2</text>
+<line class="lead" x1="469.59999999999997" y1="148.0" x2="495.59999999999997" y2="148.0"/>
+<text class="pin" x="500.59999999999997" y="151.5" text-anchor="start">OUT0</text>
+<text class="pinno" x="491.59999999999997" y="146.0" text-anchor="end">1</text>
+<path class="linkflag" d="M380.2 148.0 L390.2 139.0 L469.59999999999997 139.0 L469.59999999999997 157.0 L390.2 157.0 Z"/>
+<text class="net" x="394.2" y="151.5" text-anchor="start">CON_OUT0</text>
+<text class="linkno" x="463.59999999999997" y="151.5" text-anchor="end">1,2</text>
+<rect class="conn" x="827.3999999999999" y="92.0" width="200.0" height="76" rx="3"/>
+<text class="ref" x="833.3999999999999" y="106.0" text-anchor="start">TP3</text>
+<text class="part" x="833.3999999999999" y="118.0" text-anchor="start">test point, Keystone 5000 (red)</text>
+<text class="part" x="828.3999999999999" y="181.0" text-anchor="start">U2 pin 9: CH4</text>
+<line class="lead" x1="801.3999999999999" y1="148.0" x2="827.3999999999999" y2="148.0"/>
+<text class="pin" x="832.3999999999999" y="151.5" text-anchor="start">D0</text>
+<text class="pinno" x="823.3999999999999" y="146.0" text-anchor="end">1</text>
+<path class="linkflag" d="M737.5999999999999 148.0 L747.5999999999999 139.0 L801.3999999999999 139.0 L801.3999999999999 157.0 L747.5999999999999 157.0 Z"/>
+<text class="net" x="751.5999999999999" y="151.5" text-anchor="start">CON_D0</text>
+<text class="linkno" x="795.3999999999999" y="151.5" text-anchor="end">1</text>
+<rect class="conn" x="150.2" y="209.0" width="200.0" height="76" rx="3"/>
+<text class="ref" x="156.2" y="223.0" text-anchor="start">TP4</text>
+<text class="part" x="156.2" y="235.0" text-anchor="start">test point, Keystone 5000 (red)</text>
+<text class="part" x="151.2" y="298.0" text-anchor="start">U2 pin 2, after R2</text>
+<line class="lead" x1="124.19999999999999" y1="265.0" x2="150.2" y2="265.0"/>
+<text class="pin" x="155.2" y="268.5" text-anchor="start">CP</text>
+<text class="pinno" x="146.2" y="263.0" text-anchor="end">1</text>
+<path class="linkflag" d="M85.19999999999999 265.0 L95.19999999999999 256.0 L124.19999999999999 256.0 L124.19999999999999 274.0 L95.19999999999999 274.0 Z"/>
+<text class="net" x="99.19999999999999" y="268.5" text-anchor="start">CP</text>
+<text class="linkno" x="118.19999999999999" y="268.5" text-anchor="end">1</text>
+<rect class="conn" x="495.59999999999997" y="209.0" width="212.0" height="76" rx="3"/>
+<text class="ref" x="501.59999999999997" y="223.0" text-anchor="start">TP5</text>
+<text class="part" x="501.59999999999997" y="235.0" text-anchor="start">test point, Keystone 5001 (black)</text>
+<text class="part" x="496.59999999999997" y="298.0" text-anchor="start">probe ground</text>
+<line class="lead" x1="469.59999999999997" y1="265.0" x2="495.59999999999997" y2="265.0"/>
+<text class="pin" x="500.59999999999997" y="268.5" text-anchor="start">GND</text>
+<text class="pinno" x="491.59999999999997" y="263.0" text-anchor="end">1</text>
+<line class="wg" x1="469.59999999999997" y1="265.0" x2="469.59999999999997" y2="273.0"/><line class="wg" x1="463.59999999999997" y1="273.0" x2="475.59999999999997" y2="273.0"/><line class="wg" x1="466.59999999999997" y1="276.0" x2="472.59999999999997" y2="276.0"/>
+<rect class="conn" x="827.3999999999999" y="209.0" width="212.0" height="76" rx="3"/>
+<text class="ref" x="833.3999999999999" y="223.0" text-anchor="start">TP6</text>
+<text class="part" x="833.3999999999999" y="235.0" text-anchor="start">test point, Keystone 5001 (black)</text>
+<text class="part" x="828.3999999999999" y="298.0" text-anchor="start">probe ground</text>
+<line class="lead" x1="801.3999999999999" y1="265.0" x2="827.3999999999999" y2="265.0"/>
+<text class="pin" x="832.3999999999999" y="268.5" text-anchor="start">GND</text>
+<text class="pinno" x="823.3999999999999" y="263.0" text-anchor="end">1</text>
+<line class="wg" x1="801.3999999999999" y1="265.0" x2="801.3999999999999" y2="273.0"/><line class="wg" x1="795.3999999999999" y1="273.0" x2="807.3999999999999" y2="273.0"/><line class="wg" x1="798.3999999999999" y1="276.0" x2="804.3999999999999" y2="276.0"/>
+<text class="note" x="48.0" y="379.0" text-anchor="start">TP1 is where the red lead to CH1 lands on the breadboard (R1's far end), and TP2 and TP3</text>
+<text class="note" x="48.0" y="392.0" text-anchor="start">where CH2 and CH4 sit (U1 pin 1 and U2 pin 9, cheat-sheet.md). TP4 is new: the clock as</text>
+<text class="note" x="48.0" y="405.0" text-anchor="start">the 165 sees it, after the filter. A Keystone 5000 takes a probe's hook; the two blacks</text>
+<text class="note" x="48.0" y="418.0" text-anchor="start">are the probes' grounds, on the console's ground like the breadboard's GND rail.</text>
+</svg>

@@ -124,9 +124,9 @@ def check_v1b():
     # derived column is what showed it.
     nl = __import__("loadmod").load(ROOT / "tools" / "netlist.py", "netlist")
     sheets, _off = nl.collect()
-    for name, ports in (("bench-v1b", 1), ("bench-v2b", 2)):
+    for name, ports in (("bench-v1b", 1), ("bench-v1c", 1), ("bench-v2b", 2)):
         supply = [n for n in sheets[name]
-                  if n["part"] == "console controller port" and n["pinname"] == "+5V"]
+                  if n["part"].startswith("console controller port") and n["pinname"] == "+5V"]
         if len(supply) != ports:
             print(f"  the {name} sheet's console ports have {len(supply)} supply pins; expected {ports}")
             bad += 1
@@ -138,6 +138,90 @@ def check_v1b():
             bad += 1
         else:
             print(f"check-sheets: {name} leaves the console's supply ({ports} port(s)) off the bridge's +5V net")
+    return bad
+
+
+def check_v1c():
+    """v1c is v1b as a printed shield, and the claim is "net for net".
+    So every node the v1b sheets draw (a part's pin and the net it is
+    on) must be on v1c, on the same net. Parts are matched by reference
+    and pins by number, or by name where the sheet names them (A1, the
+    UNO). A no-connect is not a node. What v1c adds (the probes, the
+    hands, the cables' housings) is v1c's own; what it may not do is
+    change one wire of the bridge that passed bench-check.
+
+    Then the hands. The Pi's cable names each Pi pin by header position,
+    and those are held to the cheat sheet's jumper table as the v1b head
+    sheet's are. And the Pi's ground stays its own: no part on the board
+    touches both PI_GND and GND, because on v1b the Pi reaches the
+    console's ground through the UNO's USB lead only."""
+    nl = __import__("loadmod").load(ROOT / "tools" / "netlist.py", "netlist")
+    sheets, _off = nl.collect()
+
+    def nodes(name):
+        out = {}
+        for n in sheets[name]:
+            if n["net"] in nl.NC:
+                continue
+            key = (n["ref"], n["pin"] if n["pin"] is not None else n["pinname"])
+            out[key] = n["net"]
+        return out
+
+    v1b, v1c = nodes("bench-v1b"), nodes("bench-v1c")
+    bad = 0
+    for key, net in sorted(v1b.items(), key=lambda kv: (kv[0][0], str(kv[0][1]))):
+        if v1c.get(key) != net:
+            print(f"  {key[0]} pin {key[1]}: v1b has it on {net}, v1c on {v1c.get(key)}")
+            bad += 1
+    if len(v1b) < 60:
+        print(f"  only {len(v1b)} v1b nodes to compare; the sheet has moved out from under this check")
+        bad += 1
+
+    cs = __import__("cheatsheet")
+    want = {name: pos for name, pos, _to, _role in cs.PI_HEADER}
+    got = {}
+    for n in sheets["bench-v1c"]:
+        if n["ref"] == "J4":
+            m = re.match(r"(\S+) \(Pi position (\d+)\)", n["pinname"] or "")
+            if m:
+                got[m.group(1)] = int(m.group(2))
+    for name in sorted(set(want) | set(got)):
+        if want.get(name) != got.get(name):
+            print(f"  Pi {name}: cheatsheet.py says position {want.get(name)}, v1c's J4 says {got.get(name)}")
+            bad += 1
+
+    touch = {}
+    for n in sheets["bench-v1c"]:
+        touch.setdefault(n["ref"], set()).add(n["net"])
+    both = sorted(r for r, nets in touch.items() if {"PI_GND", "GND"} <= nets)
+    pi_side = sorted(r for r, nets in touch.items() if "PI_GND" in nets)
+    if both:
+        print(f"  v1c joins the Pi's ground to the console's through {', '.join(both)}")
+        bad += 1
+    # And the Pi's own end: its cable's ground pin is PI_GND, and no pin
+    # of that cable is on GND, or the board itself has joined the two.
+    j4 = {n["pinname"]: n["net"] for n in sheets["bench-v1c"] if n["ref"] == "J4"}
+    gnd_pin = [net for name, net in j4.items() if name.startswith("GND ")]
+    if gnd_pin != ["PI_GND"]:
+        print(f"  v1c's Pi cable carries its ground on {gnd_pin}, not PI_GND")
+        bad += 1
+    if "GND" in j4.values():
+        print("  v1c's Pi cable has a pin on GND: the board joins the Pi's ground to the console's")
+        bad += 1
+    # Every part on PI_GND has to be a part of the hands, wired back to
+    # the cable: an emitter moved to GND leaves its neighbours on an
+    # island nobody notices on a drawing.
+    hands = {"J4", "OK1", "Q1", "R5"}
+    if set(pi_side) != hands:
+        print(f"  PI_GND reaches {pi_side}, where the hands are {sorted(hands)}")
+        bad += 1
+    if len(pi_side) < 3:
+        print(f"  only {len(pi_side)} part(s) on PI_GND; the hands have moved out from under this check")
+        bad += 1
+    if not bad:
+        print(f"check-sheets: v1c carries all {len(v1b)} of v1b's nodes on the same nets, its Pi cable's "
+              f"{len(got)} positions agree with the cheat sheet, and PI_GND ({len(pi_side)} parts) "
+              "never meets GND")
     return bad
 
 
@@ -498,6 +582,7 @@ def main():
         return 1
     print(f"check-sheets: {len(want)} C6 pins on the v1 sheet agree with docs/wiring.md" if not bad else f"check-sheets: {bad} disagreement(s)")
     bad += check_v1b()
+    bad += check_v1c()
     bad += check_port_pinout()
     bad += check_head()
     bad += check_padble()

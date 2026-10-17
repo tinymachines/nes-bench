@@ -1,0 +1,266 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1209.0 683.0" width="1209.0" height="683.0" role="img" aria-label="nes-bench bridge v1c: v1b as a printed shield, the hands on board  (sheet 1 of 5: the console side)">
+
+  <style>
+    text { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; fill: #1f2328; }
+    .title { font-size: 15px; font-weight: 700; font-family: ui-sans-serif, system-ui, sans-serif; }
+    .sub { font-size: 11px; fill: #57606a; font-family: ui-sans-serif, system-ui, sans-serif; }
+    .ref { font-size: 12px; font-weight: 700; }
+    .part { font-size: 10px; fill: #57606a; }
+    .pin { font-size: 9.5px; }
+    .pinno { font-size: 9px; fill: #57606a; }
+    .linkflag { fill: #fdf3e3; stroke: #a35c00; stroke-width: 1.1; }
+    .linkno { font-size: 9px; fill: #a35c00; font-weight: 700; }
+    .net { font-size: 9.5px; fill: #0a5b9c; font-weight: 600; }
+    .rail5 { font-size: 9px; fill: #b3261e; font-weight: 700; }
+    .rail3 { font-size: 9px; fill: #b35c00; font-weight: 700; }
+    .gnd { font-size: 9px; fill: #1f2328; font-weight: 700; }
+    .note { font-size: 10px; fill: #57606a; font-family: ui-sans-serif, system-ui, sans-serif; }
+    .box { fill: #ffffff; stroke: #1f2328; stroke-width: 1.3; }
+    .offsheet { fill: #eaf3fb; stroke: #0a5b9c; stroke-width: 1.1; }
+    .conn { fill: #f3f5f7; stroke: #1f2328; stroke-width: 1.3; }
+    .zone { fill: none; stroke: #57606a; stroke-dasharray: 5 4; stroke-width: 1; }
+    .lead { stroke: #1f2328; stroke-width: 1; }
+    .wire { stroke: #0a5b9c; stroke-width: 1.2; fill: none; }
+    .w5 { stroke: #b3261e; stroke-width: 1.2; fill: none; }
+    .w3 { stroke: #b35c00; stroke-width: 1.2; fill: none; }
+    .wg { stroke: #1f2328; stroke-width: 1.2; fill: none; }
+    .lane { stroke: #1f2328; stroke-width: 1.4; fill: none; }
+    .lanelbl { font-size: 11px; font-weight: 700; }
+    .win { fill: #b3261e; fill-opacity: 0.10; stroke: none; }
+    .safe { fill: #1a7f37; fill-opacity: 0.12; stroke: none; }
+    .mark { stroke: #0a5b9c; stroke-width: 1.2; stroke-dasharray: 3 3; }
+    .auth { font-size: 9px; fill: #b3261e; font-family: ui-sans-serif, system-ui, sans-serif; font-style: italic; }
+  </style>
+
+<rect x="0" y="0" width="1209.0" height="683.0" fill="#ffffff"/>
+<g class="sheet-heading" data-height="60">
+<text class="title" x="24" y="30">nes-bench bridge v1c: v1b as a printed shield, the hands on board  (sheet 1 of 5: the console side)</text>
+<text class="sub" x="24" y="46">the circuit that passed bench-check on 2026-10-17, net for net, on an UNO shield; keyed cables, the reset opto and the power relay as bare parts. 2026-10-17. Not built.</text>
+</g>
+<rect class="zone" x="22" y="66" width="1165.0" height="369.0" rx="6"/>
+<text class="sub" x="30" y="80" text-anchor="start">THE CONSOLE PORT, THE INVERTER AND THE REGISTER, ALL AT +5V (AS v1b)</text>
+<rect class="zone" x="22" y="459.0" width="1165.0" height="76.0" rx="6"/>
+<text class="sub" x="30" y="473.0" text-anchor="start">DECOUPLING</text>
+<rect class="zone" x="22" y="559.0" width="1165.0" height="102.0" rx="6"/>
+<text class="sub" x="30" y="573.0" text-anchor="start">THE CLOCK PIN'S FILTER, ON THE BOARD</text>
+<rect class="conn" x="48.0" y="92.0" width="236.0" height="232" rx="3"/>
+<text class="ref" x="54.0" y="106.0" text-anchor="start">J1</text>
+<text class="part" x="54.0" y="118.0" text-anchor="start">console controller port, keyed KK-254</text>
+<text class="part" x="49.0" y="337.0" text-anchor="start">MEASURED 2026-09-09: supply on 5, 6 and 7 not carried; pin 5 not used here</text>
+<line class="lead" x1="284.0" y1="148.0" x2="310.0" y2="148.0"/>
+<text class="pin" x="279.0" y="151.5" text-anchor="end">GND</text>
+<text class="pinno" x="288.0" y="146.0" text-anchor="start">1</text>
+<line class="wg" x1="310.0" y1="148.0" x2="310.0" y2="156.0"/><line class="wg" x1="304.0" y1="156.0" x2="316.0" y2="156.0"/><line class="wg" x1="307.0" y1="159.0" x2="313.0" y2="159.0"/>
+<line class="lead" x1="284.0" y1="174.0" x2="310.0" y2="174.0"/>
+<text class="pin" x="279.0" y="177.5" text-anchor="end">CLK</text>
+<text class="pinno" x="288.0" y="172.0" text-anchor="start">2</text>
+<path class="linkflag" d="M380.0 174.0 L370.0 165.0 L310.0 165.0 L310.0 183.0 L370.0 183.0 Z"/>
+<text class="net" x="316.0" y="177.5" text-anchor="start">CON_CLK</text>
+<text class="linkno" x="367.0" y="177.5" text-anchor="end">2</text>
+<line class="lead" x1="284.0" y1="200.0" x2="310.0" y2="200.0"/>
+<text class="pin" x="279.0" y="203.5" text-anchor="end">OUT0</text>
+<text class="pinno" x="288.0" y="198.0" text-anchor="start">3</text>
+<path class="linkflag" d="M399.4 200.0 L389.4 191.0 L310.0 191.0 L310.0 209.0 L389.4 209.0 Z"/>
+<text class="net" x="316.0" y="203.5" text-anchor="start">CON_OUT0</text>
+<text class="linkno" x="386.4" y="203.5" text-anchor="end">2,3</text>
+<line class="lead" x1="284.0" y1="226.0" x2="310.0" y2="226.0"/>
+<text class="pin" x="279.0" y="229.5" text-anchor="end">D0</text>
+<text class="pinno" x="288.0" y="224.0" text-anchor="start">4</text>
+<path class="linkflag" d="M373.8 226.0 L363.8 217.0 L310.0 217.0 L310.0 235.0 L363.8 235.0 Z"/>
+<text class="net" x="316.0" y="229.5" text-anchor="start">CON_D0</text>
+<text class="linkno" x="360.8" y="229.5" text-anchor="end">3</text>
+<line class="lead" x1="284.0" y1="252.0" x2="310.0" y2="252.0"/>
+<text class="pin" x="279.0" y="255.5" text-anchor="end">+5V</text>
+<text class="pinno" x="288.0" y="250.0" text-anchor="start">5</text>
+<line class="lead" x1="307.0" y1="249.0" x2="313.0" y2="255.0"/><line class="lead" x1="307.0" y1="255.0" x2="313.0" y2="249.0"/>
+<line class="lead" x1="284.0" y1="278.0" x2="310.0" y2="278.0"/>
+<text class="pin" x="279.0" y="281.5" text-anchor="end">n/c</text>
+<text class="pinno" x="288.0" y="276.0" text-anchor="start">6</text>
+<line class="lead" x1="307.0" y1="275.0" x2="313.0" y2="281.0"/><line class="lead" x1="307.0" y1="281.0" x2="313.0" y2="275.0"/>
+<line class="lead" x1="284.0" y1="304.0" x2="310.0" y2="304.0"/>
+<text class="pin" x="279.0" y="307.5" text-anchor="end">n/c</text>
+<text class="pinno" x="288.0" y="302.0" text-anchor="start">7</text>
+<line class="lead" x1="307.0" y1="301.0" x2="313.0" y2="307.0"/><line class="lead" x1="307.0" y1="307.0" x2="313.0" y2="301.0"/>
+<rect class="box" x="637.4" y="92.0" width="130" height="258" rx="3"/>
+<text class="ref" x="643.4" y="106.0" text-anchor="start">U1</text>
+<text class="part" x="643.4" y="118.0" text-anchor="start">74HCT04  at +5V</text>
+<text class="part" x="638.4" y="363.0" text-anchor="start">five spare inputs tied to GND</text>
+<line class="lead" x1="611.4" y1="148.0" x2="637.4" y2="148.0"/>
+<text class="pin" x="642.4" y="151.5" text-anchor="start">1A</text>
+<text class="pinno" x="633.4" y="146.0" text-anchor="end">1</text>
+<path class="linkflag" d="M522.0 148.0 L532.0 139.0 L611.4 139.0 L611.4 157.0 L532.0 157.0 Z"/>
+<text class="net" x="536.0" y="151.5" text-anchor="start">CON_OUT0</text>
+<text class="linkno" x="605.4" y="151.5" text-anchor="end">2,3</text>
+<line class="lead" x1="611.4" y1="174.0" x2="637.4" y2="174.0"/>
+<text class="pin" x="642.4" y="177.5" text-anchor="start">2A</text>
+<text class="pinno" x="633.4" y="172.0" text-anchor="end">3</text>
+<line class="wg" x1="611.4" y1="174.0" x2="611.4" y2="182.0"/><line class="wg" x1="605.4" y1="182.0" x2="617.4" y2="182.0"/><line class="wg" x1="608.4" y1="185.0" x2="614.4" y2="185.0"/>
+<line class="lead" x1="611.4" y1="200.0" x2="637.4" y2="200.0"/>
+<text class="pin" x="642.4" y="203.5" text-anchor="start">3A</text>
+<text class="pinno" x="633.4" y="198.0" text-anchor="end">5</text>
+<line class="wg" x1="611.4" y1="200.0" x2="611.4" y2="208.0"/><line class="wg" x1="605.4" y1="208.0" x2="617.4" y2="208.0"/><line class="wg" x1="608.4" y1="211.0" x2="614.4" y2="211.0"/>
+<line class="lead" x1="611.4" y1="226.0" x2="637.4" y2="226.0"/>
+<text class="pin" x="642.4" y="229.5" text-anchor="start">4A</text>
+<text class="pinno" x="633.4" y="224.0" text-anchor="end">9</text>
+<line class="wg" x1="611.4" y1="226.0" x2="611.4" y2="234.0"/><line class="wg" x1="605.4" y1="234.0" x2="617.4" y2="234.0"/><line class="wg" x1="608.4" y1="237.0" x2="614.4" y2="237.0"/>
+<line class="lead" x1="611.4" y1="252.0" x2="637.4" y2="252.0"/>
+<text class="pin" x="642.4" y="255.5" text-anchor="start">5A</text>
+<text class="pinno" x="633.4" y="250.0" text-anchor="end">11</text>
+<line class="wg" x1="611.4" y1="252.0" x2="611.4" y2="260.0"/><line class="wg" x1="605.4" y1="260.0" x2="617.4" y2="260.0"/><line class="wg" x1="608.4" y1="263.0" x2="614.4" y2="263.0"/>
+<line class="lead" x1="611.4" y1="278.0" x2="637.4" y2="278.0"/>
+<text class="pin" x="642.4" y="281.5" text-anchor="start">6A</text>
+<text class="pinno" x="633.4" y="276.0" text-anchor="end">13</text>
+<line class="wg" x1="611.4" y1="278.0" x2="611.4" y2="286.0"/><line class="wg" x1="605.4" y1="286.0" x2="617.4" y2="286.0"/><line class="wg" x1="608.4" y1="289.0" x2="614.4" y2="289.0"/>
+<line class="lead" x1="611.4" y1="304.0" x2="637.4" y2="304.0"/>
+<text class="pin" x="642.4" y="307.5" text-anchor="start">VCC</text>
+<text class="pinno" x="633.4" y="302.0" text-anchor="end">14</text>
+<line class="w5" x1="611.4" y1="304.0" x2="611.4" y2="295.0"/><line class="w5" x1="606.4" y1="295.0" x2="616.4" y2="295.0"/>
+<text class="rail5" x="611.4" y="293.0" text-anchor="middle">+5V</text>
+<line class="lead" x1="611.4" y1="330.0" x2="637.4" y2="330.0"/>
+<text class="pin" x="642.4" y="333.5" text-anchor="start">GND</text>
+<text class="pinno" x="633.4" y="328.0" text-anchor="end">7</text>
+<line class="wg" x1="611.4" y1="330.0" x2="611.4" y2="338.0"/><line class="wg" x1="605.4" y1="338.0" x2="617.4" y2="338.0"/><line class="wg" x1="608.4" y1="341.0" x2="614.4" y2="341.0"/>
+<line class="lead" x1="767.4" y1="148.0" x2="793.4" y2="148.0"/>
+<text class="pin" x="762.4" y="151.5" text-anchor="end">1Y</text>
+<text class="pinno" x="771.4" y="146.0" text-anchor="start">2</text>
+<path class="wire" d="M793.4,148.0 l6,-6 h28.6 v12 h-28.6 z"/>
+<text class="net" x="802.4" y="151.5" text-anchor="start">/PL</text>
+<line class="lead" x1="767.4" y1="174.0" x2="793.4" y2="174.0"/>
+<text class="pin" x="762.4" y="177.5" text-anchor="end">2Y</text>
+<text class="pinno" x="771.4" y="172.0" text-anchor="start">4</text>
+<line class="lead" x1="790.4" y1="171.0" x2="796.4" y2="177.0"/><line class="lead" x1="790.4" y1="177.0" x2="796.4" y2="171.0"/>
+<line class="lead" x1="767.4" y1="200.0" x2="793.4" y2="200.0"/>
+<text class="pin" x="762.4" y="203.5" text-anchor="end">3Y</text>
+<text class="pinno" x="771.4" y="198.0" text-anchor="start">6</text>
+<line class="lead" x1="790.4" y1="197.0" x2="796.4" y2="203.0"/><line class="lead" x1="790.4" y1="203.0" x2="796.4" y2="197.0"/>
+<line class="lead" x1="767.4" y1="226.0" x2="793.4" y2="226.0"/>
+<text class="pin" x="762.4" y="229.5" text-anchor="end">4Y</text>
+<text class="pinno" x="771.4" y="224.0" text-anchor="start">8</text>
+<line class="lead" x1="790.4" y1="223.0" x2="796.4" y2="229.0"/><line class="lead" x1="790.4" y1="229.0" x2="796.4" y2="223.0"/>
+<line class="lead" x1="767.4" y1="252.0" x2="793.4" y2="252.0"/>
+<text class="pin" x="762.4" y="255.5" text-anchor="end">5Y</text>
+<text class="pinno" x="771.4" y="250.0" text-anchor="start">10</text>
+<line class="lead" x1="790.4" y1="249.0" x2="796.4" y2="255.0"/><line class="lead" x1="790.4" y1="255.0" x2="796.4" y2="249.0"/>
+<line class="lead" x1="767.4" y1="278.0" x2="793.4" y2="278.0"/>
+<text class="pin" x="762.4" y="281.5" text-anchor="end">6Y</text>
+<text class="pinno" x="771.4" y="276.0" text-anchor="start">12</text>
+<line class="lead" x1="790.4" y1="275.0" x2="796.4" y2="281.0"/><line class="lead" x1="790.4" y1="281.0" x2="796.4" y2="275.0"/>
+<rect class="box" x="925.0" y="92.0" width="140" height="310" rx="3"/>
+<text class="ref" x="931.0" y="106.0" text-anchor="start">U2</text>
+<text class="part" x="931.0" y="118.0" text-anchor="start">74HC165  at +5V</text>
+<text class="part" x="926.0" y="415.0" text-anchor="start">H shifts out first</text>
+<line class="lead" x1="899.0" y1="148.0" x2="925.0" y2="148.0"/>
+<text class="pin" x="930.0" y="151.5" text-anchor="start">/PL</text>
+<text class="pinno" x="921.0" y="146.0" text-anchor="end">1</text>
+<path class="wire" d="M899.0,148.0 l-6,-6 h-28.6 v12 h28.6 z"/>
+<text class="net" x="890.0" y="151.5" text-anchor="end">/PL</text>
+<line class="lead" x1="899.0" y1="174.0" x2="925.0" y2="174.0"/>
+<text class="pin" x="930.0" y="177.5" text-anchor="start">CP</text>
+<text class="pinno" x="921.0" y="172.0" text-anchor="end">2</text>
+<path class="linkflag" d="M860.0 174.0 L870.0 165.0 L899.0 165.0 L899.0 183.0 L870.0 183.0 Z"/>
+<text class="net" x="874.0" y="177.5" text-anchor="start">CP</text>
+<text class="linkno" x="893.0" y="177.5" text-anchor="end">3</text>
+<line class="lead" x1="899.0" y1="200.0" x2="925.0" y2="200.0"/>
+<text class="pin" x="930.0" y="203.5" text-anchor="start">/CE</text>
+<text class="pinno" x="921.0" y="198.0" text-anchor="end">15</text>
+<line class="wg" x1="899.0" y1="200.0" x2="899.0" y2="208.0"/><line class="wg" x1="893.0" y1="208.0" x2="905.0" y2="208.0"/><line class="wg" x1="896.0" y1="211.0" x2="902.0" y2="211.0"/>
+<line class="lead" x1="899.0" y1="226.0" x2="925.0" y2="226.0"/>
+<text class="pin" x="930.0" y="229.5" text-anchor="start">DS</text>
+<text class="pinno" x="921.0" y="224.0" text-anchor="end">10</text>
+<line class="wg" x1="899.0" y1="226.0" x2="899.0" y2="234.0"/><line class="wg" x1="893.0" y1="234.0" x2="905.0" y2="234.0"/><line class="wg" x1="896.0" y1="237.0" x2="902.0" y2="237.0"/>
+<line class="lead" x1="899.0" y1="252.0" x2="925.0" y2="252.0"/>
+<text class="pin" x="930.0" y="255.5" text-anchor="start">VCC</text>
+<text class="pinno" x="921.0" y="250.0" text-anchor="end">16</text>
+<line class="w5" x1="899.0" y1="252.0" x2="899.0" y2="243.0"/><line class="w5" x1="894.0" y1="243.0" x2="904.0" y2="243.0"/>
+<text class="rail5" x="899.0" y="241.0" text-anchor="middle">+5V</text>
+<line class="lead" x1="899.0" y1="278.0" x2="925.0" y2="278.0"/>
+<text class="pin" x="930.0" y="281.5" text-anchor="start">GND</text>
+<text class="pinno" x="921.0" y="276.0" text-anchor="end">8</text>
+<line class="wg" x1="899.0" y1="278.0" x2="899.0" y2="286.0"/><line class="wg" x1="893.0" y1="286.0" x2="905.0" y2="286.0"/><line class="wg" x1="896.0" y1="289.0" x2="902.0" y2="289.0"/>
+<line class="lead" x1="1065.0" y1="148.0" x2="1091.0" y2="148.0"/>
+<text class="pin" x="1060.0" y="151.5" text-anchor="end">QH</text>
+<text class="pinno" x="1069.0" y="146.0" text-anchor="start">9</text>
+<path class="linkflag" d="M1154.8 148.0 L1144.8 139.0 L1091.0 139.0 L1091.0 157.0 L1144.8 157.0 Z"/>
+<text class="net" x="1097.0" y="151.5" text-anchor="start">CON_D0</text>
+<text class="linkno" x="1141.8" y="151.5" text-anchor="end">3</text>
+<line class="lead" x1="1065.0" y1="174.0" x2="1091.0" y2="174.0"/>
+<text class="pin" x="1060.0" y="177.5" text-anchor="end">/QH</text>
+<text class="pinno" x="1069.0" y="172.0" text-anchor="start">7</text>
+<line class="lead" x1="1088.0" y1="171.0" x2="1094.0" y2="177.0"/><line class="lead" x1="1088.0" y1="177.0" x2="1094.0" y2="171.0"/>
+<line class="lead" x1="1065.0" y1="200.0" x2="1091.0" y2="200.0"/>
+<text class="pin" x="1060.0" y="203.5" text-anchor="end">H</text>
+<text class="pinno" x="1069.0" y="198.0" text-anchor="start">6</text>
+<path class="linkflag" d="M1136.2 200.0 L1126.2 191.0 L1091.0 191.0 L1091.0 209.0 L1126.2 209.0 Z"/>
+<text class="net" x="1097.0" y="203.5" text-anchor="start">Q_A</text>
+<text class="linkno" x="1123.2" y="203.5" text-anchor="end">2</text>
+<line class="lead" x1="1065.0" y1="226.0" x2="1091.0" y2="226.0"/>
+<text class="pin" x="1060.0" y="229.5" text-anchor="end">G</text>
+<text class="pinno" x="1069.0" y="224.0" text-anchor="start">5</text>
+<path class="linkflag" d="M1136.2 226.0 L1126.2 217.0 L1091.0 217.0 L1091.0 235.0 L1126.2 235.0 Z"/>
+<text class="net" x="1097.0" y="229.5" text-anchor="start">Q_B</text>
+<text class="linkno" x="1123.2" y="229.5" text-anchor="end">2</text>
+<line class="lead" x1="1065.0" y1="252.0" x2="1091.0" y2="252.0"/>
+<text class="pin" x="1060.0" y="255.5" text-anchor="end">F</text>
+<text class="pinno" x="1069.0" y="250.0" text-anchor="start">4</text>
+<path class="linkflag" d="M1148.6 252.0 L1138.6 243.0 L1091.0 243.0 L1091.0 261.0 L1138.6 261.0 Z"/>
+<text class="net" x="1097.0" y="255.5" text-anchor="start">Q_SEL</text>
+<text class="linkno" x="1135.6" y="255.5" text-anchor="end">2</text>
+<line class="lead" x1="1065.0" y1="278.0" x2="1091.0" y2="278.0"/>
+<text class="pin" x="1060.0" y="281.5" text-anchor="end">E</text>
+<text class="pinno" x="1069.0" y="276.0" text-anchor="start">3</text>
+<path class="linkflag" d="M1161.0 278.0 L1151.0 269.0 L1091.0 269.0 L1091.0 287.0 L1151.0 287.0 Z"/>
+<text class="net" x="1097.0" y="281.5" text-anchor="start">Q_START</text>
+<text class="linkno" x="1148.0" y="281.5" text-anchor="end">2</text>
+<line class="lead" x1="1065.0" y1="304.0" x2="1091.0" y2="304.0"/>
+<text class="pin" x="1060.0" y="307.5" text-anchor="end">D</text>
+<text class="pinno" x="1069.0" y="302.0" text-anchor="start">14</text>
+<path class="linkflag" d="M1142.4 304.0 L1132.4 295.0 L1091.0 295.0 L1091.0 313.0 L1132.4 313.0 Z"/>
+<text class="net" x="1097.0" y="307.5" text-anchor="start">Q_UP</text>
+<text class="linkno" x="1129.4" y="307.5" text-anchor="end">2</text>
+<line class="lead" x1="1065.0" y1="330.0" x2="1091.0" y2="330.0"/>
+<text class="pin" x="1060.0" y="333.5" text-anchor="end">C</text>
+<text class="pinno" x="1069.0" y="328.0" text-anchor="start">13</text>
+<path class="linkflag" d="M1154.8 330.0 L1144.8 321.0 L1091.0 321.0 L1091.0 339.0 L1144.8 339.0 Z"/>
+<text class="net" x="1097.0" y="333.5" text-anchor="start">Q_DOWN</text>
+<text class="linkno" x="1141.8" y="333.5" text-anchor="end">2</text>
+<line class="lead" x1="1065.0" y1="356.0" x2="1091.0" y2="356.0"/>
+<text class="pin" x="1060.0" y="359.5" text-anchor="end">B</text>
+<text class="pinno" x="1069.0" y="354.0" text-anchor="start">12</text>
+<path class="linkflag" d="M1154.8 356.0 L1144.8 347.0 L1091.0 347.0 L1091.0 365.0 L1144.8 365.0 Z"/>
+<text class="net" x="1097.0" y="359.5" text-anchor="start">Q_LEFT</text>
+<text class="linkno" x="1141.8" y="359.5" text-anchor="end">2</text>
+<line class="lead" x1="1065.0" y1="382.0" x2="1091.0" y2="382.0"/>
+<text class="pin" x="1060.0" y="385.5" text-anchor="end">A</text>
+<text class="pinno" x="1069.0" y="380.0" text-anchor="start">11</text>
+<path class="linkflag" d="M1161.0 382.0 L1151.0 373.0 L1091.0 373.0 L1091.0 391.0 L1151.0 391.0 Z"/>
+<text class="net" x="1097.0" y="385.5" text-anchor="start">Q_RIGHT</text>
+<text class="linkno" x="1148.0" y="385.5" text-anchor="end">2</text>
+<line class="w5" x1="64.0" y1="501.0" x2="64.0" y2="492.0"/><line class="w5" x1="59.0" y1="492.0" x2="69.0" y2="492.0"/>
+<text class="rail5" x="64.0" y="490.0" text-anchor="middle">+5V</text>
+<line class="lead" x1="64.0" y1="501.0" x2="82.0" y2="501.0"/><rect class="box" x="82.0" y="494.0" width="44" height="14"/><line class="lead" x1="126.0" y1="501.0" x2="144.0" y2="501.0"/>
+<text class="pinno" x="104.0" y="491.0" text-anchor="middle">C1..C3</text>
+<text class="pin" x="104.0" y="505.0" text-anchor="middle">100nF</text>
+<line class="wg" x1="144.0" y1="501.0" x2="144.0" y2="509.0"/><line class="wg" x1="138.0" y1="509.0" x2="150.0" y2="509.0"/><line class="wg" x1="141.0" y1="512.0" x2="147.0" y2="512.0"/>
+<text class="note" x="190.0" y="501.0" text-anchor="start">one 100nF across each of U1, U2 and U3,</text>
+<text class="note" x="190.0" y="514.0" text-anchor="start">at the chip's own supply pins</text>
+<path class="linkflag" d="M48.0 601.0 L58.0 592.0 L118.0 592.0 L118.0 610.0 L58.0 610.0 Z"/>
+<text class="net" x="62.0" y="604.5" text-anchor="start">CON_CLK</text>
+<text class="linkno" x="112.0" y="604.5" text-anchor="end">2</text>
+<line class="lead" x1="118.0" y1="601.0" x2="136.0" y2="601.0"/><rect class="box" x="136.0" y="594.0" width="44" height="14"/><line class="lead" x1="180.0" y1="601.0" x2="198.0" y2="601.0"/>
+<text class="pinno" x="158.0" y="591.0" text-anchor="middle">R2</text>
+<text class="pin" x="158.0" y="605.0" text-anchor="middle">1k</text>
+<path class="linkflag" d="M237.0 601.0 L227.0 592.0 L198.0 592.0 L198.0 610.0 L227.0 610.0 Z"/>
+<text class="net" x="204.0" y="604.5" text-anchor="start">CP</text>
+<text class="linkno" x="224.0" y="604.5" text-anchor="end">3</text>
+<path class="linkflag" d="M267.0 601.0 L277.0 592.0 L306.0 592.0 L306.0 610.0 L277.0 610.0 Z"/>
+<text class="net" x="281.0" y="604.5" text-anchor="start">CP</text>
+<text class="linkno" x="300.0" y="604.5" text-anchor="end">3</text>
+<line class="lead" x1="306.0" y1="601.0" x2="324.0" y2="601.0"/><rect class="box" x="324.0" y="594.0" width="44" height="14"/><line class="lead" x1="368.0" y1="601.0" x2="386.0" y2="601.0"/>
+<text class="pinno" x="346.0" y="591.0" text-anchor="middle">C4</text>
+<text class="pin" x="346.0" y="605.0" text-anchor="middle">100pF</text>
+<line class="wg" x1="386.0" y1="601.0" x2="386.0" y2="609.0"/><line class="wg" x1="380.0" y1="609.0" x2="392.0" y2="609.0"/><line class="wg" x1="383.0" y1="612.0" x2="389.0" y2="612.0"/>
+<text class="note" x="432.0" y="601.0" text-anchor="start">v1b's filter (MEASURED 2026-09-15: D0's own edge re-clocked the 165). The UNO's</text>
+<text class="note" x="432.0" y="614.0" text-anchor="start">D2 still counts CON_CLK ahead of R2, exactly as on the breadboard. On 2026-10-16</text>
+<text class="note" x="432.0" y="627.0" text-anchor="start">R2 sat one breadboard row off the clock lead, the walk read bit 0 in all eight</text>
+<text class="note" x="432.0" y="640.0" text-anchor="start">slots, and only a probe on U2 pin 2 could have shown it: TP4 (sheet 3) is that probe.</text>
+</svg>
