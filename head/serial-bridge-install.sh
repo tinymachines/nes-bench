@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 # The UNO's serial port on the LAN, as a systemd unit from this checkout.
-# Run on the Pi:  bash head/serial-bridge-install.sh [--port /dev/ttyACM0] [--listen 0.0.0.0:6545]
+# Run on the Pi:  bash head/serial-bridge-install.sh [--port /dev/nes-bridge] [--listen 0.0.0.0:6545]
 set -euo pipefail
-PORT=/dev/ttyACM0; LISTEN=0.0.0.0:6545
+# /dev/nes-bridge is the udev name for the UNO; ttyACMn moves on a replug (2026-10-16: ttyACM0 became ttyACM1 and the unit lost the board).
+PORT=/dev/nes-bridge; LISTEN=0.0.0.0:6545
 while [ $# -gt 0 ]; do case "$1" in
   --port) PORT="$2"; shift 2 ;; --listen) LISTEN="$2"; shift 2 ;;
   *) echo "unknown argument $1" >&2; exit 2 ;; esac; done
