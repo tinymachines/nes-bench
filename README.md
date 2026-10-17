@@ -25,7 +25,9 @@ and the console read every byte back; the Pi's hands on reset and
 power held on 2026-09-17, `tools/bench-check.py` green twice from the
 workstation (`docs/milestone-2026-09-15-rig-and-bridge.md`). The v1
 ESP32-C6 design in `docs/wiring.md` and `docs/bench.svg` was never
-built; v2 and v2b are drawings. The pad adapter, a separate board, is
+built; v2 and v2b are drawings. v1c (`docs/bench-v1c.md`, drawn
+2026-10-17) is v1b as a printed UNO shield with the hands on board,
+routed and not yet ordered. The pad adapter, a separate board, is
 built as USB on an ESP32-P4 and reached a host on 2026-09-27
 (`docs/pad-usb-protocol.md`).
 
