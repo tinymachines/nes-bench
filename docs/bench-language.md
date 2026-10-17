@@ -235,6 +235,18 @@ Bros. does not wait that long. So the bench is an **open-loop** player:
 The limit to plan around: the UNO holds **600 schedule entries** per
 run; a minute of a human's play was 289.
 
+**Built 2026-10-17, for Super Mario Bros.:** `tools/plan.py` searches in
+segments of 30 latches, thirteen moves each (run, walk, stop, back, and
+a running jump at three points with three heights), every candidate on
+the model through `nes-console`'s `watch` example (the script played as
+the head plays it, with chosen RAM bytes at every latch), six at a time,
+and backs up a segment when every move dies. It cleared 1-1 on the model
+with four backtracks: a 71-entry schedule, the flagpole at latch 2190.
+Played on the part through the head (run 20261017-224132), the grabber's
+frames at 700, 1300, 1900 and 2200 show the same run reaching the
+flagpole. A candidate costs about ten seconds, because the model has no
+saved state and every one replays from power-on.
+
 ## Proposed words
 
 Names for what the bench cannot do yet, so a script can be written
@@ -245,7 +257,6 @@ against them when they are built. None of these exist.
 | `GRAB name n` | a grabber frame at latch n, filed in the run | a head word around `grab.sh`, timed off the `L` stream |
 | `EARS name s` | s seconds of the console's audio, filed in the run | an attenuator into the C-Media input, then the head word |
 | `TAP btn n` / `HOLD btn n m` | the idioms above by button name | a preprocessor in `bench.py`; the bridge's words stay bytes |
-| `PLAN` | a schedule searched on the model and handed to the head | the model loop above, written as a tool |
 
 ## Glossary
 
