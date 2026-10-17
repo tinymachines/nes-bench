@@ -38,7 +38,14 @@ OUT = ROOT / "docs" / "fab"
 sys.path.insert(0, str(ROOT / "tools"))
 from loadmod import load  # noqa: E402
 
-SHEETS = ["bench-v1b", "bench-v2b"]
+SHEETS = ["bench-v1b", "bench-v1c", "bench-v2b"]
+
+# The sheets whose A1 is a shield rather than a cable: the board plugs
+# straight into the UNO's headers, so A1's pads are the UNO's own
+# (A1_SHIELD below) and not a ribbon's (A1_HEADER). DECIDED 2026-10-17
+# for v1c by the owner: a shield, because a shield has no jumper to land
+# one row off, which is how the bridge failed on 2026-10-16.
+SHIELD_SHEETS = {"bench-v1c"}
 
 # AUTHORED. Matched on a prefix of the part string, longest first. The
 # comment on each is why that package and not another.
@@ -59,6 +66,33 @@ FOOTPRINTS = [
     ("Arduino UNO", "Connector_IDC:IDC-Header_2x10_P2.54mm_Vertical",
      "DECIDED 2026-09-09: cable, not shield. A 20 way IDC box header and a ribbon "
      "to the UNO, wired per A1_HEADER below"),
+    # v1c (2026-10-17). Every cable lands on a keyed housing: a Molex
+    # KK-254 header has a friction ramp on one side, so its plug goes in
+    # one way only, and it keeps the 0.1 inch pitch every lead on this
+    # bench already has. JST-XH is the other common keyed family, but
+    # its 2.5 mm pitch takes no 0.1 inch lead at all, even for a test.
+    ("Arduino UNO R3, as a shield", "Module:Arduino_UNO_R3_WithMountingHoles",
+     "DECIDED 2026-10-17: a shield. Stacking or long male headers into the UNO's own, "
+     "pads per A1_SHIELD below"),
+    ("console controller port, keyed KK-254", "Connector_Molex:Molex_KK-254_AE-6410-05A_1x05_P2.54mm_Vertical",
+     "Molex KK-254 5 way, keyed: the cut cable gets a KK housing"),
+    ("original pad, keyed KK-254", "Connector_Molex:Molex_KK-254_AE-6410-05A_1x05_P2.54mm_Vertical",
+     "Molex KK-254 5 way, keyed: the pad half of the cut cable"),
+    ("front panel harness, keyed KK-254", "Connector_Molex:Molex_KK-254_AE-6410-05A_1x05_P2.54mm_Vertical",
+     "Molex KK-254 5 way, keyed: brown, red, orange, yellow, white"),
+    ("Pi header cable, keyed KK-254", "Connector_Molex:Molex_KK-254_AE-6410-04A_1x04_P2.54mm_Vertical",
+     "Molex KK-254 4 way, keyed: four Dupont sockets at the Pi's header"),
+    ("PC817", "Package_DIP:DIP-4_W7.62mm", "DIP-4, soldered (or half a DIP-8 socket)"),
+    ("2N3904", "Package_TO_SOT_THT:TO-92_Inline", "TO-92, E B C"),
+    ("1N4007", "Diode_THT:D_DO-41_SOD81_P10.16mm_Horizontal", "DO-41 lying down, cathode band on pad 1"),
+    ("SRD-05VDC", "Relay_THT:Relay_SPDT_SANYOU_SRD_Series_Form_C",
+     "Songle SRD-05VDC-SL-C, the relay the module carried; pin compatible with SANYOU SRD"),
+    ("470R", "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal", "quarter watt axial, lying down"),
+    ("10k", "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal", "quarter watt axial, lying down"),
+    ("test point, Keystone 5000", "TestPoint:TestPoint_Keystone_5000-5004_Miniature",
+     "Keystone 5000, red: a loop a probe's hook takes"),
+    ("test point, Keystone 5001", "TestPoint:TestPoint_Keystone_5000-5004_Miniature",
+     "Keystone 5001, black: a probe's ground"),
 ]
 
 # AUTHORED, and the decision that makes the cable form buildable.
@@ -88,6 +122,24 @@ A1_HEADER = {
     19: "D8", 20: "A2",          # the two pads' data lines
 }
 UNRESOLVED = "Arduino UNO"
+
+# AUTHORED, from the footprint and checked against it: the UNO R3's pads
+# as KiCad's Module:Arduino_UNO_R3 numbers them. Pads 1 to 8 are the
+# power header (Vin, pad 8, beside A0), 9 to 14 the analog header, 15
+# to 22 D0 to D7 (D0 at the corner opposite A5) and 23 to 32 D8 to D13,
+# GND, AREF, SDA and SCL across the wider gap. tools/make-pcb.py holds
+# the geometry to it: the eighteen digital pads on one edge, D7 and D8
+# 160 mil apart, which is the UNO's famous odd spacing. GND has three
+# pads and the shield takes all three: the UNO joins them anyway, and
+# three returns beside the fast edges cost nothing.
+A1_SHIELD = {1: "NC", 2: "IOREF", 3: "RESET", 4: "3V3", 5: "5V", 6: "GND", 7: "GND", 8: "VIN",
+             9: "A0", 10: "A1", 11: "A2", 12: "A3", 13: "A4", 14: "A5",
+             **{15 + i: f"D{i}" for i in range(8)}, **{23 + i: f"D{8 + i}" for i in range(6)},
+             29: "GND", 30: "AREF", 31: "SDA", 32: "SCL"}
+
+
+def a1_map(sheet):
+    return A1_SHIELD if sheet in SHIELD_SHEETS else A1_HEADER
 
 
 # Where KiCad keeps its footprints, if it is installed. A footprint name
@@ -119,7 +171,7 @@ def footprint(part):
     return None, None
 
 
-def net_pads(ns):
+def net_pads(ns, sheet=None):
     """Every (ref, pad, function) a net lands on.
 
     Usually one pad per node. A1 is the exception and it has to be: the
@@ -130,26 +182,27 @@ def net_pads(ns):
     out = []
     for n in ns:
         if n["ref"] == "A1" and (n["pinname"] or "").split(" ")[0] == "GND":
-            for pad, sig in sorted(A1_HEADER.items()):
+            for pad, sig in sorted(a1_map(sheet).items()):
                 if sig == "GND":
                     out.append(("A1", str(pad), "GND"))
             continue
-        pad, _warn = pad_name(n["ref"], n["pin"], n["pinname"])
+        pad, _warn = pad_name(n["ref"], n["pin"], n["pinname"], sheet)
         if pad is not None:
             out.append((n["ref"], pad, n["pinname"]))
     return out
 
 
-def header_pad(pinname):
-    """A1's pad number for a signal, from the authored ribbon pinout."""
+def header_pad(pinname, sheet=None):
+    """A1's pad number for a signal, from the authored ribbon pinout, or
+    the UNO's own pads on a shield sheet."""
     want = (pinname or "").split(" ")[0]
-    for pad, sig in A1_HEADER.items():
+    for pad, sig in a1_map(sheet).items():
         if sig == want:
             return pad
     return None
 
 
-def pad_name(ref, pin, pinname):
+def pad_name(ref, pin, pinname, sheet=None):
     """The pad a node lands on. A schematic pin is a label for a human;
     a netlist node has to name a pad on a footprint.
 
@@ -164,10 +217,10 @@ def pad_name(ref, pin, pinname):
         return str(pin), None
     name = (pinname or "").strip()
     if ref == "A1":
-        pad = header_pad(name)
+        pad = header_pad(name, sheet)
         if pad is None:
-            return None, (f"A1 pin {name!r} has no pad in A1_HEADER. The ribbon's pinout has to "
-                          "name every signal the schematic uses.")
+            return None, (f"A1 pin {name!r} has no pad in {'A1_SHIELD' if sheet in SHIELD_SHEETS else 'A1_HEADER'}. "
+                          "The pinout has to name every signal the schematic uses.")
         return str(pad), None
     if "," in name:
         return None, (f"{ref} draws {name!r} as one pin, which is {len(name.split(','))} pads. "
@@ -223,7 +276,7 @@ def kicad_net(sheet, nodes, nets):
     L.append("  (nets")
     for i, (net, ns) in enumerate(sorted(nets.items()), 1):
         L.append(f'    (net (code "{i}") (name "{net}")')
-        for ref, pad, fn in net_pads(ns):
+        for ref, pad, fn in net_pads(ns, sheet):
             L.append(f'      (node (ref "{ref}") (pin "{pad}")'
                      f' (pinfunction "{fn}") (pintype "passive"))')
         L.append("    )")
@@ -239,7 +292,7 @@ def protel_net(sheet, nodes, nets):
         L += ["[", ref, fp or "UNRESOLVED", value_of(part), "]"]
     for net, ns in sorted(nets.items()):
         L += ["(", net]
-        for ref, pad, _fn in net_pads(ns):
+        for ref, pad, _fn in net_pads(ns, sheet):
             L.append(f"{ref}-{pad}")
         L.append(")")
     return "\n".join(L) + "\n"
@@ -283,7 +336,7 @@ def parse_protel(text):
 
 def verify(sheet, keep):
     """What was written back against what was meant, node for node."""
-    want = {net: {f"{r}-{p}" for r, p, _f in net_pads(ns)} for net, ns in keep.items()}
+    want = {net: {f"{r}-{p}" for r, p, _f in net_pads(ns, sheet)} for net, ns in keep.items()}
     got = parse_protel((OUT / f"{sheet}.protel.net").read_text())
     bad = []
     for net in sorted(set(want) | set(got)):
@@ -296,6 +349,8 @@ def verify(sheet, keep):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--check", action="store_true", help="exit 1 if a part has no footprint")
+    ap.add_argument("--sheet", choices=SHEETS, action="append",
+                    help="write only this sheet (repeatable); every sheet is still checked for footprints")
     a = ap.parse_args()
 
     nl = load(ROOT / "tools" / "netlist.py", "nl")
@@ -326,7 +381,8 @@ def main():
 
     OUT.mkdir(parents=True, exist_ok=True)
     problems = []
-    for sheet in SHEETS:
+    writing = a.sheet or SHEETS
+    for sheet in writing:
         nodes = sheets[sheet]
         nets = nl.nets_of(nodes)
         errors, _notes = nl.erc(sheet, nodes, offsheet)
@@ -337,7 +393,7 @@ def main():
         warns = []
         for ns in keep.values():
             for n in ns:
-                _pad, warn = pad_name(n["ref"], n["pin"], n["pinname"])
+                _pad, warn = pad_name(n["ref"], n["pin"], n["pinname"], sheet)
                 if warn and warn not in warns:
                     warns.append(warn)
         (OUT / f"{sheet}.net").write_text(kicad_net(sheet, nodes, keep))
@@ -359,11 +415,18 @@ def main():
             return 1
         n_nodes = sum(len(v) for v in keep.values())
         print(f"    read back: {len(keep)} nets and {n_nodes} nodes match the schematic")
-    print(f"\nwrote {OUT.relative_to(ROOT)}/  ({len(SHEETS)} sheets)")
-    n_gnd = sum(1 for v in A1_HEADER.values() if v == "GND")
-    print(f"NOTE: A1 is a cable, not a shield: {dict((k, v) for k, v, _ in FOOTPRINTS)[UNRESOLVED]}, "
-          f"wired per A1_HEADER, with {n_gnd} of its pads on GND so the ribbon's fast edges have a "
-          "return path near them.")
+    print(f"\nwrote {OUT.relative_to(ROOT)}/  ({len(writing)} sheets)")
+    for sheet in writing:
+        if sheet in SHIELD_SHEETS:
+            n_gnd = sum(1 for v in A1_SHIELD.values() if v == "GND")
+            print(f"NOTE: {sheet}'s A1 is a shield: the UNO's own pads, per A1_SHIELD, all {n_gnd} of its "
+                  "GND pads joined.")
+        else:
+            n_gnd = sum(1 for v in A1_HEADER.values() if v == "GND")
+            print(f"NOTE: {sheet}'s A1 is a cable, not a shield: "
+                  f"{dict((k, v) for k, v, _ in FOOTPRINTS)[UNRESOLVED]}, "
+                  f"wired per A1_HEADER, with {n_gnd} of its pads on GND so the ribbon's fast edges have a "
+                  "return path near them.")
     if problems:
         print(f"\n{len(problems)} thing(s) above must be settled on the schematic before a board. "
               "The netlists are written and are correct about everything else.")
