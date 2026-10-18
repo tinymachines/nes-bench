@@ -278,7 +278,9 @@ Mario near the surface, none sink him), ties broken toward fewer
 entries, and one more scoring rule: a pipe taken counts above x, since
 past 2-2's exit pipe Mario lands at a smaller x in the same area and
 every pipe move had scored as going backwards. Run 20261018-031731:
-power-on to "WORLD 2-3", 370 entries.
+power-on to "WORLD 2-3", 370 entries. 2-3, the long bridge, needed nothing new:
+planned in under ten minutes, run 20261018-034339 to "WORLD 2-4", 404
+entries.
 
 ## Proposed words
 
