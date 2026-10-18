@@ -225,7 +225,7 @@ def main():
                         break
                     rows.update(w.ask(c))
                 return rows
-            outs.append(judge(on_worker(run), lives0))
+            outs.append(judge(on_worker(run), lives0) + (cont,))
         return max(outs, key=better)
 
     def ranked(state, t):
@@ -239,8 +239,11 @@ def main():
         recent = path_x[-STALL:]
         if len(recent) == STALL and recent[-1][0] == recent[0][0] and recent[-1][1] - recent[0][1] < STALL_PX and all(p[2] == 0x08 for p in recent):
             return [], res
-        # dropped: a move that dies inside its own segment
-        keep = [n for n, r in res.items() if r[0] or r[4] >= t + a.seg]
+        # kept: a move one of whose continuations lives. (Before the
+        # lookahead had three continuations, a move that died only in it
+        # was kept too; on 1-3 that committed Mario to a gap he was
+        # already falling into, 2026-10-17.)
+        keep = [n for n, r in res.items() if r[0]]
         keep.sort(key=lambda n: (res[n][1], res[n][2], res[n][0], res[n][3], n == "run"), reverse=True)
         return keep, res
 
@@ -272,6 +275,10 @@ def main():
         path_x = path_x + [(r[2], r[3], r[5])]
         print(f"latch {t}: {best} -> area {r[2]} x {r[3]}" + (" DONE" if r[1] else "") + ("" if r[0] else f" (dies at {r[4]} in the lookahead)") + f"   [{top}]", flush=True)
         if r[1]:
+            # the flagpole was reached in the lookahead, so the way there
+            # is the continuation that found it: without it the schedule
+            # stops short (1-3, 2026-10-17: Mario stood at the end alive)
+            chosen = chosen + r[6]
             done = True
             break
         nxt = tmp / f"s{t + a.seg}-{backs}.state"
@@ -282,7 +289,8 @@ def main():
     for w in workers:
         w.close()
     sched, held = [], None
-    for n, b in sorted(pre_ats + chosen + [(t + a.seg + 40, 0x00)]):
+    release = t + a.seg + a.look + (EXTEND if done else 40)
+    for n, b in sorted(pre_ats + chosen + [(release, 0x00)]):
         if b != held:
             sched.append((n, b))
             held = b

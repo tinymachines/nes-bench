@@ -254,7 +254,12 @@ segment before it, a lookahead that ends with the game holding Mario (a
 pipe) runs on until he is free, and a segment that saw him held is no
 stall. Played on the part (run 20261017-235518), one schedule of 132
 entries took the console through both flagpoles to "WORLD 1-3" with no
-life lost.
+life lost. 1-3, the treetops, added two more: a move is kept only if one
+of its continuations lives (a gentler rule committed Mario to a gap he
+was already falling into), and a level found done in the lookahead keeps
+the continuation that found the flagpole (without it the schedule
+stopped short and Mario stood at the end, alive). Run 20261018-012133:
+power-on to "WORLD 1-4" on the part, 172 entries, no life lost.
 
 ## Proposed words
 
