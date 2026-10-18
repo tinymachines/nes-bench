@@ -220,6 +220,24 @@
    },
    "planner": "saved states",
    "lesson": "The model has to stop on the poll, not at the end of the frame: a frame that held two polls let the second fall before the planner gave its byte, so the model played that jump a poll late and the first plan failed its straight replay."
+  },
+  {
+   "level": "4-1",
+   "measured": {
+    "first": 27733,
+    "done": 29240,
+    "entries": 662,
+    "plan_s": 1293,
+    "segments": 51,
+    "backtracks": 0,
+    "run": "20261018-162219",
+    "polls": 30072,
+    "wrong": 0,
+    "gaps": 0,
+    "streamed": true
+   },
+   "planner": "saved states",
+   "lesson": "Nothing new. The first bench run played every poll right, but its intro frame was grabbed after the console was switched off (the script ended ten polls after the grab) and it was run again rather than counted (run 20261018-161233)."
   }
  ],
  "stream_from": 19990

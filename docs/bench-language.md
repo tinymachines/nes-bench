@@ -294,8 +294,10 @@ held two polls let the second fall before the planner gave its byte, so
 the first plan failed its straight replay. `RUN` now stops on the poll
 and a late `AT` is refused, as the bridge refuses one; replanned, run
 20261018-145621 to "WORLD 4-1", 618 entries, 27,683 polls, none wrong.
-One schedule now plays from power-on through twelve levels, three
-castles and the water, with no life lost. The level by level account,
+4-1, Lakitu's, needed nothing new: 662 entries, run 20261018-162219 to
+"WORLD 4-2", 30,072 polls, none wrong. One schedule now plays from
+power-on through thirteen levels, three castles and the water, with no
+life lost. The level by level account,
 with a drawing of each, is `docs/plan-log.md`.
 
 ## Proposed words

@@ -82,6 +82,7 @@ the level and the world.
 | 3-2 | 21730 to 23280 | 548 | 12.0 min | 0 | `20261018-044744` (streamed) | 24093 | 0 | Nothing new. |
 | 3-3 | 24142 to 25190 | 587 | 27.7 min | 0 | `20261018-061315` (streamed) | 25851 | 0 | Beam search: the way on is up, not right, and depth first could not keep that route alive. The first bench try failed on the part, not the plan: the console restarted itself mid-run with a clean poll log (run 20261018-060411). |
 | 3-4 | 25906 to 26840 | 618 | 10.3 min | 0 | `20261018-145621` (streamed) | 27683 | 0 | The model has to stop on the poll, not at the end of the frame: a frame that held two polls let the second fall before the planner gave its byte, so the model played that jump a poll late and the first plan failed its straight replay. |
+| 4-1 | 27733 to 29240 | 662 | 21.6 min | 0 | `20261018-162219` (streamed) | 30072 | 0 | Nothing new. The first bench run played every poll right, but its intro frame was grabbed after the console was switched off (the script ended ten polls after the grab) and it was run again rather than counted (run 20261018-161233). |
 <!-- /plan-log:table -->
 
 Each drawing below is one level: Mario's path from the side, the level's
@@ -216,3 +217,14 @@ him pass. `RUN` now stops on the poll itself, and an `AT` for a poll
 already gone is refused, as the bridge refuses one.
 Planned again from the same start, the level went through without a
 backtrack and cleared on the part first time.
+
+### 4-1
+
+![World 4-1: Mario's path and the buttons](plan-log-4-1.svg)
+
+Lakitu's level, the longest yet: 51 segments without a backtrack, about
+twenty minutes. Nothing new for the planner. The first bench run played
+every poll right and reached the flagpole, but its last frame was the
+capture card's empty screen: the script switched the console off ten
+polls after the grab was asked for, and the grab landed after it. It was
+run again with the usual margin rather than counted.
