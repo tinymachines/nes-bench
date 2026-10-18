@@ -281,7 +281,10 @@ every pipe move had scored as going backwards. Run 20261018-031731:
 power-on to "WORLD 2-3", 370 entries. 2-3, the long bridge, needed nothing new:
 planned in under ten minutes, run 20261018-034339 to "WORLD 2-4", 404
 entries. 2-4, the second castle, needed nothing new either:
-seven minutes, run 20261018-040301 to "WORLD 3-1", 435 entries.
+seven minutes, run 20261018-040301 to "WORLD 3-1", 435 entries. 3-1
+was the first plan past the head's room: 492 entries, the last dozen
+streamed from latch 19990 while the game played, run 20261018-042415 to
+"WORLD 3-2", every one of its 21,693 polls in the log and none wrong.
 
 ## Proposed words
 
