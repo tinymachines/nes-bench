@@ -161,6 +161,8 @@ def judge(rows, lives0):
     his own throughout (the stall rule counts only those)."""
     x = area = 0
     held = 0x08
+    piped = 0   # a pipe taken counts above x: past 2-2's exit pipe Mario
+                # lands at a smaller x in the same area (measured 2026-10-18)
     level0 = tuple(rows[min(rows)][8:10]) if rows else None
     for k in sorted(rows):
         mode, state, vscreen, page, px, lives, ar, _air, level, world = rows[k]
@@ -181,7 +183,9 @@ def judge(rows, lives0):
             return True, True, area, x, None, state
         if state != 0x08 and held == 0x08:
             held = state
-    return True, False, area, x, None, held
+        if state in (0x02, 0x03):
+            piped = 0.5
+    return True, False, area + piped, x, None, held
 
 
 def main():

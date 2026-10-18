@@ -272,7 +272,13 @@ console polled once and no more, with the bridge healthy; the retry
 with the same reset timing ran clean. That is the second failed console
 start in two days, open in `open-items.md`'s terms: not yet understood. 2-1 needed nothing new: planned in under
 fourteen minutes, run 20261018-023103 took the part to "WORLD 2-2",
-258 entries.
+258 entries. 2-2, the water, needed swimming
+(A tapped every 10 or 16 latches, measured first: steady taps hold
+Mario near the surface, none sink him), ties broken toward fewer
+entries, and one more scoring rule: a pipe taken counts above x, since
+past 2-2's exit pipe Mario lands at a smaller x in the same area and
+every pipe move had scored as going backwards. Run 20261018-031731:
+power-on to "WORLD 2-3", 370 entries.
 
 ## Proposed words
 
