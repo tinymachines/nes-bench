@@ -286,8 +286,17 @@ was the first plan past the head's room: 492 entries, the last dozen
 streamed from latch 19990 while the game played, run 20261018-042415 to
 "WORLD 3-2", every one of its 21,693 polls in the log and none wrong. 3-2:
 548 entries, run 20261018-044744 to "WORLD 3-3", 24,093 polls, none
-wrong. One schedule now plays from power-on through ten levels, two
-castles and the water, with no life lost.
+wrong. 3-3, the mushroom tops, needed a beam (`--beam 4`: the way on
+was up, and depth first had dropped that route); run 20261018-061315 to
+"WORLD 3-4", 587 entries. 3-4, the third castle, found a fault in the
+model: `branch`'s `RUN` stopped at the end of a frame, and a frame that
+held two polls let the second fall before the planner gave its byte, so
+the first plan failed its straight replay. `RUN` now stops on the poll
+and a late `AT` is refused, as the bridge refuses one; replanned, run
+20261018-145621 to "WORLD 4-1", 618 entries, 27,683 polls, none wrong.
+One schedule now plays from power-on through twelve levels, three
+castles and the water, with no life lost. The level by level account,
+with a drawing of each, is `docs/plan-log.md`.
 
 ## Proposed words
 

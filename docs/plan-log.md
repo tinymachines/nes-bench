@@ -81,6 +81,7 @@ the level and the world.
 | 3-1 | 19300 to 20930 | 492 | 11.1 min | 0 | `20261018-042415` (streamed) | 21693 | 0 | The first schedule past the head's room: streamed from latch 19990. |
 | 3-2 | 21730 to 23280 | 548 | 12.0 min | 0 | `20261018-044744` (streamed) | 24093 | 0 | Nothing new. |
 | 3-3 | 24142 to 25190 | 587 | 27.7 min | 0 | `20261018-061315` (streamed) | 25851 | 0 | Beam search: the way on is up, not right, and depth first could not keep that route alive. The first bench try failed on the part, not the plan: the console restarted itself mid-run with a clean poll log (run 20261018-060411). |
+| 3-4 | 25906 to 26840 | 618 | 10.3 min | 0 | `20261018-145621` (streamed) | 27683 | 0 | The model has to stop on the poll, not at the end of the frame: a frame that held two polls let the second fall before the planner gave its byte, so the model played that jump a poll late and the first plan failed its straight replay. |
 <!-- /plan-log:table -->
 
 Each drawing below is one level: Mario's path from the side, the level's
@@ -197,3 +198,21 @@ having restarted itself partway. It is the third time the console has
 misbehaved on its own (two failed starts before), and the cartridge
 connector, which makes the lockout chip reset the console when a contact
 is poor, is the suspect. The next run, unchanged, cleared the level.
+
+### 3-4
+
+![World 3-4: Mario's path and the buttons](plan-log-3-4.svg)
+
+The third castle, and the first plan the straight replay refused for a
+fault in the model rather than the search. The planner stops the console
+at the end of the poll before each segment, saves it, and hands the
+segment's buttons over from there; but the model's `RUN` stopped at the
+end of the frame that poll fell in, and around poll 26030 one frame held
+two polls. The second had fallen before its byte was given, so the model
+played that jump a poll late while the straight replay, and the part,
+play it on time: a few pixels of difference, and in the replay Mario
+was hit at poll 26101, among the firebars, where the planner had seen
+him pass. `RUN` now stops on the poll itself, and an `AT` for a poll
+already gone is refused, as the bridge refuses one.
+Planned again from the same start, the level went through without a
+backtrack and cleared on the part first time.

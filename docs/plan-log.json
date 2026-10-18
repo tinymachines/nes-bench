@@ -202,6 +202,24 @@
    "failed_runs": [
     "20261018-060411"
    ]
+  },
+  {
+   "level": "3-4",
+   "measured": {
+    "first": 25906,
+    "done": 26840,
+    "entries": 618,
+    "plan_s": 618,
+    "segments": 32,
+    "backtracks": 0,
+    "run": "20261018-145621",
+    "polls": 27683,
+    "wrong": 0,
+    "gaps": 0,
+    "streamed": true
+   },
+   "planner": "saved states",
+   "lesson": "The model has to stop on the poll, not at the end of the frame: a frame that held two polls let the second fall before the planner gave its byte, so the model played that jump a poll late and the first plan failed its straight replay."
   }
  ],
  "stream_from": 19990
