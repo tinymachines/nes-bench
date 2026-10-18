@@ -80,6 +80,7 @@ the level and the world.
 | 2-4 | 17422 to 18430 | 435 | 7.0 min | 1 | `20261018-040301` | 19241 | 0 | Nothing new: the axe rule held. |
 | 3-1 | 19300 to 20930 | 492 | 11.1 min | 0 | `20261018-042415` (streamed) | 21693 | 0 | The first schedule past the head's room: streamed from latch 19990. |
 | 3-2 | 21730 to 23280 | 548 | 12.0 min | 0 | `20261018-044744` (streamed) | 24093 | 0 | Nothing new. |
+| 3-3 | 24142 to 25190 | 587 | 27.7 min | 0 | `20261018-061315` (streamed) | 25851 | 0 | Beam search: the way on is up, not right, and depth first could not keep that route alive. The first bench try failed on the part, not the plan: the console restarted itself mid-run with a clean poll log (run 20261018-060411). |
 <!-- /plan-log:table -->
 
 Each drawing below is one level: Mario's path from the side, the level's
@@ -171,3 +172,28 @@ run was in the log and right.
 ![World 3-2: Mario's path and the buttons](plan-log-3-2.svg)
 
 Nothing new, streamed.
+
+### 3-3
+
+![World 3-3: Mario's path and the buttons](plan-log-3-3.svg)
+
+The mushroom tops, and the first level depth first could not do. At
+about x 950 Mario stood on a low mushroom with a Koopa walking at him and
+a tall column ahead whose top no running jump from there could reach:
+every move fell or was hit. The way on was up, onto the middle platform
+and across from there, which gains no x, so it never ranked first and
+had been abandoned segments before the dead end showed. Two smaller
+changes did not reach it (a fourth continuation that waits and then
+jumps, a longer stall window). What did is a beam: `--beam 4` keeps the
+four best positions every segment, distinct by area, x and height, and
+expands them all, so the high route survives beside the low one. It cost
+about four times as much a segment and planned the level in under half
+an hour; the path above climbs where the earlier levels ran.
+
+The first bench run of it failed, and the plan was not why: its poll log
+was perfect (every byte as scripted, none missing) while the picture
+showed the attract mode's World 1-1 and then the title, the console
+having restarted itself partway. It is the third time the console has
+misbehaved on its own (two failed starts before), and the cartridge
+connector, which makes the lockout chip reset the console when a contact
+is poor, is the suspect. The next run, unchanged, cleared the level.

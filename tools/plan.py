@@ -72,7 +72,7 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-WATCH = ["0770", "000e", "00b5", "006d", "0086", "075a", "0760", "001d", "075c", "075f"]
+WATCH = ["0770", "000e", "00b5", "006d", "0086", "075a", "0760", "001d", "075c", "075f", "00ce"]
 START = """POWER ON
 WAIT 5 S
 MODE INJECT
@@ -86,7 +86,7 @@ AT 330 08
 AT 332 00
 """
 DEAD = (0x0B, 0x06)
-STALL, STALL_PX = 4, 16
+STALL, STALL_PX = 8, 16   # 8 segments: room to wait for a lift (3-3)
 ESCALATE = 4
 EXTEND = 150
 DONE = (0x04, 0x05)
@@ -165,7 +165,7 @@ def judge(rows, lives0):
                 # lands at a smaller x in the same area (measured 2026-10-18)
     level0 = tuple(rows[min(rows)][8:10]) if rows else None
     for k in sorted(rows):
-        mode, state, vscreen, page, px, lives, ar, _air, level, world = rows[k]
+        mode, state, vscreen, page, px, lives, ar, _air, level, world = rows[k][:10]
         if (level, world) != level0:
             # the level or the world moved on: a castle ends with no
             # flagpole (the axe, then the next world), so this is done too
@@ -201,6 +201,7 @@ def main():
     ap.add_argument("--until", type=int, default=99999)
     ap.add_argument("--backtracks", type=int, default=60)
     ap.add_argument("--swim", action="store_true", help="add the water's moves (2-2)")
+    ap.add_argument("--beam", type=int, default=0, help="keep this many distinct positions a segment instead of searching depth first (3-3)")
     a = ap.parse_args()
     exe = Path(a.nes) / "target" / "release" / "examples" / "branch"
     if not exe.exists():
@@ -235,11 +236,14 @@ def main():
     lives0 = on_worker(lambda w: w.ask(f"LOAD {s0}", f"RUN {a.first}"))[a.first][5]
     mv = moves(a.seg, a.swim)
 
-    # The lookahead: after a move, the best of three ways on (running,
-    # a jump at once, a jump a little later), so a move is called deadly
-    # only when none of them lives.
+    # The lookahead: after a move, the best of four ways on (running, a
+    # jump at once, a jump a little later, and waiting then jumping), so a
+    # move is called deadly only when none of them lives.
     def continuations(t0):
-        return [[(t0, 0x82)], [(t0, 0x82), (t0 + 2, 0x83), (t0 + 26, 0x82)], [(t0, 0x82), (t0 + 20, 0x83), (t0 + 44, 0x82)]]
+        return [[(t0, 0x82)], [(t0, 0x82), (t0 + 2, 0x83), (t0 + 26, 0x82)], [(t0, 0x82), (t0 + 20, 0x83), (t0 + 44, 0x82)],
+                # wait, then go: a lift has to come before the jump to it
+                # lives (3-3's mushroom lifts, 2026-10-18)
+                [(t0, 0x00), (t0 + 40, 0x82), (t0 + 42, 0x83), (t0 + 66, 0x82)]]
 
     def better(r):
         return (r[1], r[2], r[0], r[3] if r[0] else r[4] or 0, r[3])
@@ -286,44 +290,86 @@ def main():
         keep.sort(key=lambda n: (res[n][1], res[n][2], res[n][0], res[n][3], -len(mv[n]), n == "run"), reverse=True)
         return keep, res
 
-    stack = []
-    chosen = []
-    path_x = []   # (area, x) after each committed segment, on the current branch
-    fails = {}    # latch -> backtracks out of it
-    t, state, backs, done = a.first, s0, 0, False
-    while t < a.until and not done:
-        keep, res = ranked(state, t)
-        top = ", ".join(f"{n} {r[3]}" + ("" if r[0] else f" dead@{r[4]}") for n, r in sorted(res.items(), key=lambda kv: -kv[1][3])[:5])
-        while not keep:
-            if not stack or backs >= a.backtracks:
-                sys.exit(f"latch {t}: no move lives and nothing left to back up to ({backs} backtracks)")
-            backs += 1
-            fails[t] = fails.get(t, 0) + 1
-            t, state, keep, res, chosen, path_x = stack.pop()
-            # four failures at one latch: the cause is further back, so
-            # give up the segment before as well
-            if fails.get(t + a.seg, 0) >= ESCALATE and stack:
-                fails[t + a.seg] = 0
+    if a.beam > 1:
+        # BEAM (3-3, 2026-10-18). Depth first commits to one route a
+        # segment at a time, and on 3-3 the low mushroom is a dead end
+        # whose way out (up to the middle platform, then the tall column)
+        # gains no x, so it never ranked first and was gone by the time
+        # every forward move died. Here the BEAM best positions, distinct
+        # by area, x and height, are all kept and all expanded.
+        beam = [dict(state=s0, chosen=[])]
+        t, backs, done, chosen = a.first, 0, False, []
+        while t < a.until and not done:
+            jobs = [(i, n) for i in range(len(beam)) for n in mv]
+            with ThreadPoolExecutor(a.jobs) as ex:
+                results = list(ex.map(lambda j: evaluate(beam[j[0]]["state"], t, [(t + o, b) for o, b in mv[j[1]]]), jobs))
+            scored = [(j, r) for j, r in zip(jobs, results) if r[0]]
+            if not scored:
+                sys.exit(f"latch {t}: the beam of {len(beam)} has no move that lives")
+            won = [(j, r) for j, r in scored if r[1]]
+            if won:
+                (i, n), r = max(won, key=lambda jr: -len(mv[jr[0][1]]))
+                chosen = beam[i]["chosen"] + [(t + o, b) for o, b in mv[n]] + r[6]
+                print(f"latch {t}: {n} (beam {i}) -> area {r[2]} x {r[3]} DONE", flush=True)
+                done = True
+                break
+            scored.sort(key=lambda jr: (jr[1][2], jr[1][3], -len(mv[jr[0][1]])), reverse=True)
+            new, seen = [], set()
+            for (i, n), r in scored[:a.beam * 6]:
+                entries = [(t + o, b) for o, b in mv[n]]
+                nxt = tmp / f"b{t + a.seg}-{len(new)}.state"
+                rows = on_worker(lambda w: w.ask(f"LOAD {beam[i]['state']}", *[f"AT {k} {b:02x}" for k, b in entries], f"RUN {t + a.seg - 1}", f"SAVE {nxt}"))
+                last = rows[max(rows)]
+                key = (last[6], (last[3] * 256 + last[4]) // 8, last[10] // 16)
+                if key in seen:
+                    continue
+                seen.add(key)
+                new.append(dict(state=nxt, chosen=beam[i]["chosen"] + entries))
+                if len(new) == a.beam:
+                    break
+            (i0, n0), r0 = scored[0]
+            print(f"latch {t}: beam {len(new)} kept of {len(scored)} alive; best {n0} -> area {r0[2]} x {r0[3]}", flush=True)
+            beam = new
+            t += a.seg
+    else:
+        stack = []
+        chosen = []
+        path_x = []   # (area, x) after each committed segment, on the current branch
+        fails = {}    # latch -> backtracks out of it
+        t, state, backs, done = a.first, s0, 0, False
+        while t < a.until and not done:
+            keep, res = ranked(state, t)
+            top = ", ".join(f"{n} {r[3]}" + ("" if r[0] else f" dead@{r[4]}") for n, r in sorted(res.items(), key=lambda kv: -kv[1][3])[:5])
+            while not keep:
+                if not stack or backs >= a.backtracks:
+                    sys.exit(f"latch {t}: no move lives and nothing left to back up to ({backs} backtracks)")
+                backs += 1
+                fails[t] = fails.get(t, 0) + 1
                 t, state, keep, res, chosen, path_x = stack.pop()
-            print(f"  back to latch {t} (backtrack {backs}), next {keep[0] if keep else 'nothing'}", flush=True)
-        best = keep[0]
-        stack.append((t, state, keep[1:], res, chosen, path_x))
-        r = res[best]
-        entries = [(t + o, b) for o, b in mv[best]]
-        chosen = chosen + entries
-        path_x = path_x + [(r[2], r[3], r[5])]
-        print(f"latch {t}: {best} -> area {r[2]} x {r[3]}" + (" DONE" if r[1] else "") + ("" if r[0] else f" (dies at {r[4]} in the lookahead)") + f"   [{top}]", flush=True)
-        if r[1]:
-            # the flagpole was reached in the lookahead, so the way there
-            # is the continuation that found it: without it the schedule
-            # stops short (1-3, 2026-10-17: Mario stood at the end alive)
-            chosen = chosen + r[6]
-            done = True
-            break
-        nxt = tmp / f"s{t + a.seg}-{backs}.state"
-        on_worker(lambda w: w.ask(f"LOAD {state}", *[f"AT {n} {b:02x}" for n, b in entries], f"RUN {t + a.seg - 1}", f"SAVE {nxt}"))
-        state = nxt
-        t += a.seg
+                # four failures at one latch: the cause is further back, so
+                # give up the segment before as well
+                if fails.get(t + a.seg, 0) >= ESCALATE and stack:
+                    fails[t + a.seg] = 0
+                    t, state, keep, res, chosen, path_x = stack.pop()
+                print(f"  back to latch {t} (backtrack {backs}), next {keep[0] if keep else 'nothing'}", flush=True)
+            best = keep[0]
+            stack.append((t, state, keep[1:], res, chosen, path_x))
+            r = res[best]
+            entries = [(t + o, b) for o, b in mv[best]]
+            chosen = chosen + entries
+            path_x = path_x + [(r[2], r[3], r[5])]
+            print(f"latch {t}: {best} -> area {r[2]} x {r[3]}" + (" DONE" if r[1] else "") + ("" if r[0] else f" (dies at {r[4]} in the lookahead)") + f"   [{top}]", flush=True)
+            if r[1]:
+                # the flagpole was reached in the lookahead, so the way there
+                # is the continuation that found it: without it the schedule
+                # stops short (1-3, 2026-10-17: Mario stood at the end alive)
+                chosen = chosen + r[6]
+                done = True
+                break
+            nxt = tmp / f"s{t + a.seg}-{backs}.state"
+            on_worker(lambda w: w.ask(f"LOAD {state}", *[f"AT {n} {b:02x}" for n, b in entries], f"RUN {t + a.seg - 1}", f"SAVE {nxt}"))
+            state = nxt
+            t += a.seg
 
     for w in workers:
         w.close()

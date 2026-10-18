@@ -209,8 +209,6 @@ def draw_overview(levels, rows, schedule, stream_from):
     s.text(L, 26, "One schedule from power-on", "title")
     s.text(L, 44, f"{len(levels)} levels, {levels[-1]['measured']['entries']} entries, {end} latches; every band a level, "
            "the blue line Mario's way through it, the black line the schedule's entries so far", "sub")
-    if stream_from is not None and stream_from < end:
-        s.add(f'<rect class="stream" x="{sx(stream_from):.1f}" y="{T}" width="{R - sx(stream_from):.1f}" height="{PH}"/>')
     for i, lv in enumerate(levels):
         m = lv["measured"]
         a, b = sx(m["first"]), sx(m["done"])
@@ -233,6 +231,8 @@ def draw_overview(levels, rows, schedule, stream_from):
         mark = "axe" if lv["level"] in CASTLE else "flag"
         s.add(f'<circle class="done" cx="{b:.1f}" cy="{T + PH + 10}" r="3.5"/>')
         s.text(b, T + PH + 26, mark, "lane", "middle")
+    if stream_from is not None and stream_from < end:   # over the bands
+        s.add(f'<rect class="stream" x="{sx(stream_from):.1f}" y="{T}" width="{R - sx(stream_from):.1f}" height="{PH}"/>')
     # the schedule's entries as they accumulate
     total = len(schedule)
     pts, n = [], 0

@@ -181,6 +181,27 @@
    },
    "planner": "saved states",
    "lesson": "Nothing new."
+  },
+  {
+   "level": "3-3",
+   "measured": {
+    "first": 24142,
+    "done": 25190,
+    "entries": 587,
+    "plan_s": 1661,
+    "segments": 33,
+    "backtracks": 0,
+    "run": "20261018-061315",
+    "polls": 25851,
+    "wrong": 0,
+    "gaps": 0,
+    "streamed": true
+   },
+   "planner": "saved states, --beam 4",
+   "lesson": "Beam search: the way on is up, not right, and depth first could not keep that route alive. The first bench try failed on the part, not the plan: the console restarted itself mid-run with a clean poll log (run 20261018-060411).",
+   "failed_runs": [
+    "20261018-060411"
+   ]
   }
  ],
  "stream_from": 19990
