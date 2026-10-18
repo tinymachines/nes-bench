@@ -75,11 +75,12 @@ tools need nothing beyond the serial speed.
   reported 2161 bytes of globals, 105 percent, and refused to link; at
   128 it reported 1521 and left 527 for the stack (the 2026-09-08
   build; 1533 and 515 by 2026-09-18, the table below). Since 2026-09-19
-  it holds 600, packed (the section below, "How the bridge works").
-  `tools/b3.py record` refuses a longer record before the run,
-  `tools/fake-bridge.py` is bounded the same way so the failure can be
-  rehearsed, and the head stops any run in which the bridge answers
-  `# schedule full`.
+  it holds 600, packed (the section below, "How the bridge works"),
+  and since 2026-10-18 the 600 are a ring the head refills during the
+  run, so a record is no longer bounded by them (nes-bench 8f35ed6).
+  `tools/fake-bridge.py` mirrors the ring so a run can be rehearsed,
+  and the head stops any run in which the bridge answers
+  `# schedule full` or `# late`.
 - There is no `Serial.printf` on the AVR core and avr-libc's printf
   carries no 64-bit conversion, so the C6's `uint64_t` counters and
   `%llu` would have compiled to nothing useful. Every counter here is
@@ -274,6 +275,19 @@ latch index grows, adding up the gaps, and applies every entry whose
 latch has come; it copes with the index jumping by more than one,
 which happens when the loop was busy.
 
+Since 2026-10-18 the 600 slots are a ring. An applied entry frees its
+slot, so the head can append behind the cursor while the console
+plays: it loads 480 entries before the console leaves reset and feeds
+the rest as the `L` lines show the latches going by, a few dozen at a
+time. An `AT` for a latch that has already fallen is refused
+(`# late AT n at latch L`) rather than applied a poll late, and the
+head fails the run on it, as it does on `# schedule full` and on a run
+that ends with lines still unsent. A streamed run takes no scope
+`CAPTURE` partway, because the head is busy feeding the bridge. It was
+proven on the part with Super Mario Bros.: one schedule of 618 entries
+from power-on through 3-4 (run 20261018-145621), every one of its
+27,683 polls in the log and none wrong.
+
 What paid for the room:
 
 | build | entry | entries | globals | left for the stack |
@@ -303,16 +317,20 @@ builds `schedule.h` natively and plays 400 random schedules (gaps from
 0 to 2000, entries past latch 254 so fillers come first, latch indices
 that jump) and any real record against the protocol's absolute
 meaning, latch by latch, plus the capacity edge; `MUTATE=1` makes a
-filler set the byte to zero and must fail (it fails 384 of 402).
-`tools/b3.py record` counts a record in packed entries by the same rule
-(`entries_for`), and `tools/fake-bridge.py` refuses the same records the
-UNO does.
+filler set the byte to zero and must fail (it fails 384 of 402). The
+same schedules are also streamed through a 64-slot ring, fed as the
+latches go by (601 cases in all); `MUTATE_RING=1` makes the cursor
+wrap a slot short and must fail. `tools/b3.py record` counts a record
+in packed entries by the same rule (`entries_for`) and names a record
+longer than the ring, which the head will stream, instead of refusing
+it; `tools/fake-bridge.py` keeps the same ring and refuses what the
+UNO refuses.
 
 ### What the bridge still cannot do
 
-It holds 600 entries, about two minutes of lively play; longer needs
-the C6 bridge's 2048 or a schedule streamed from the head during the
-run. It does not watch the console's data line (D0 is not wired back),
+It holds 600 entries at a time, and longer runs are streamed, so the
+schedule's length is bounded by the run, not the RAM; what is still
+bounded is how far ahead the head can be, 600 entries. It does not watch the console's data line (D0 is not wired back),
 so what the console actually shifted out is inferred from the register
 and the clock count, not read. And it serves one port: the second
 controller is not bridged.
@@ -432,7 +450,8 @@ the bullets above now say what was built rather than what was planned.
   the latch line does it in software.
 - The C6's 2048-entry schedule did not fit and never could; 128 was
   measured, not chosen, and three places now refuse rather than
-  truncate. (Packed to 600 on 2026-09-19: "The schedule, packed".)
+  truncate. (Packed to 600 on 2026-09-19: "The schedule, packed"; a
+  ring streamed by the head since 2026-10-18.)
 - The 64-bit counters do not exist on this part.
 - The relay modules on hand are 5 V coil parts with opto inputs, so the
   v1 sheet's 3.3 V rail was wrong for them too; both sheets now show
