@@ -266,7 +266,9 @@ so either now counts as done. Run 20261018-021108: power-on to "WORLD
 it (20261018-020509) stopped at the start: after the second reset the
 console polled once and no more, with the bridge healthy; the retry
 with the same reset timing ran clean. That is the second failed console
-start in two days, open in `open-items.md`'s terms: not yet understood.
+start in two days, open in `open-items.md`'s terms: not yet understood. 2-1 needed nothing new: planned in under
+fourteen minutes, run 20261018-023103 took the part to "WORLD 2-2",
+258 entries.
 
 ## Proposed words
 
