@@ -83,6 +83,7 @@ the level and the world.
 | 3-3 | 24142 to 25190 | 587 | 27.7 min | 0 | `20261018-061315` (streamed) | 25851 | 0 | Beam search: the way on is up, not right, and depth first could not keep that route alive. The first bench try failed on the part, not the plan: the console restarted itself mid-run with a clean poll log (run 20261018-060411). |
 | 3-4 | 25906 to 26840 | 618 | 10.3 min | 0 | `20261018-145621` (streamed) | 27683 | 0 | The model has to stop on the poll, not at the end of the frame: a frame that held two polls let the second fall before the planner gave its byte, so the model played that jump a poll late and the first plan failed its straight replay. |
 | 4-1 | 27733 to 29240 | 662 | 21.6 min | 0 | `20261018-162219` (streamed) | 30072 | 0 | Nothing new. The first bench run played every poll right, but its intro frame was grabbed after the console was switched off (the script ended ten polls after the grab) and it was run again rather than counted (run 20261018-161233). |
+| 4-2 | 30502 to 32660 | 730 | not timed | 0 | `20261018-234630` (streamed) | 33502 | 0 | Five plans and a hand search: the ceiling leads to a warp zone, the beam needs room for height, a jump has to be able to keep A held across a segment, and a warp is a level change to anywhere but the next level. The last tall pipe was crossed by a route searched by hand on the model and spliced onto the beam's stair-top state. |
 <!-- /plan-log:table -->
 
 Each drawing below is one level: Mario's path from the side, the level's
@@ -228,3 +229,39 @@ every poll right and reached the flagpole, but its last frame was the
 capture card's empty screen: the script switched the console off ten
 polls after the grab was asked for, and the grab landed after it. It was
 run again with the usual margin rather than counted.
+
+### 4-2
+
+![World 4-2: Mario's path and the buttons](plan-log-4-2.svg)
+
+The hardest level so far, and the first the planner did not finish on
+its own. Five plans failed, each teaching it something:
+
+1. Depth first stalled under the first piranha pipe: the way on was up
+   onto a brick ledge, which gains no x.
+2. The beam found the way over the ceiling and ran along it into the
+   warp zone, whose pipe would have skipped World 4. Standing on the
+   top row now counts as a death (`--no-ceiling`), and so does a warp,
+   which is the level changing to anywhere but the next one. (A first
+   version of the warp rule read the game's warp flag, `$06D6`, and
+   was wrong: it reads 1 on the real route too, beside the last pipe.)
+3. The beam stalled at the last tall pipe, pressed against its side:
+   ranked by x alone it had dropped the stair tops, the only place the
+   jump onto it starts. Some of the beam's room now goes to the highest
+   positions Mario reached standing (`--beam-high`).
+4. Still stalled, and searching by hand on the model showed why: from
+   the stair top, a run of 12 polls and A held for 30 lands on the
+   pipe, but only while its piranha is down (a wait of about 36 to 138
+   polls), and the jump crosses a segment's end. Every way on in the
+   lookahead let go of A at that boundary, so the planner judged it a
+   short hop. A fifth way on now keeps A held.
+5. The beam then reached the top of the pipe and lost it again.
+
+So that one stretch was searched by hand on the model: from the beam's
+own saved state on the stair top, the route above (wait, run, jump,
+then a second jump into the exit pipe) was tried over every wait and
+two run lengths, and one that lives was spliced on. The planner then
+went on from outside the exit pipe to the flagpole in under three
+minutes (`--resume` now starts from a saved beam state with the
+schedule that reached it). The straight replay from power-on took the
+whole schedule to "WORLD 4-3", and so did the part, first time.

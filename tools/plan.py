@@ -74,7 +74,7 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-WATCH = ["0770", "000e", "00b5", "006d", "0086", "075a", "0760", "001d", "075c", "075f", "00ce", "06d6"]
+WATCH = ["0770", "000e", "00b5", "006d", "0086", "075a", "0760", "001d", "075c", "075f", "00ce"]
 START = """POWER ON
 WAIT 5 S
 MODE INJECT
@@ -171,7 +171,12 @@ def judge(rows, lives0):
         mode, state, vscreen, page, px, lives, ar, _air, level, world = rows[k][:10]
         if (level, world) != level0:
             # the level or the world moved on: a castle ends with no
-            # flagpole (the axe, then the next world), so this is done too
+            # flagpole (the axe, then the next world), so this is done too.
+            # Anywhere but the next level is a warp, which skips levels the
+            # schedule is meant to play: a death
+            lv, wd = level0
+            if (level, world) != ((lv + 1, wd) if lv < 3 else (0, wd + 1)):
+                return False, False, area, x, k, state
             return True, True, area, x, None, state
         x, area = page * 256 + px, ar
         if mode == 2:
@@ -181,11 +186,6 @@ def judge(rows, lives0):
         if mode != 1:
             continue
         if state in DEAD or vscreen > 1 or lives < lives0:
-            return False, False, area, x, k, state
-        # a warp zone skips levels the schedule is meant to play: $06D6
-        # reads 0 on the way and 5 in 4-2's zone (measured 2026-10-18,
-        # where the beam ran over the ceiling into it)
-        if rows[k][11]:
             return False, False, area, x, k, state
         # --no-ceiling: standing on the top row is the way to a warp
         # zone over an underground level's ceiling; on 4-2's Mario stood

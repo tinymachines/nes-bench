@@ -295,9 +295,31 @@ the first plan failed its straight replay. `RUN` now stops on the poll
 and a late `AT` is refused, as the bridge refuses one; replanned, run
 20261018-145621 to "WORLD 4-1", 618 entries, 27,683 polls, none wrong.
 4-1, Lakitu's, needed nothing new: 662 entries, run 20261018-162219 to
-"WORLD 4-2", 30,072 polls, none wrong. One schedule now plays from
-power-on through thirteen levels, three castles and the water, with no
-life lost. The level by level account,
+"WORLD 4-2", 30,072 polls, none wrong. 4-2 defeated five plans and
+gave the planner most of its present words (below); its last tall pipe
+was crossed by a route searched by hand on the model and spliced onto
+the beam's own stair-top state, and the planner went on from there.
+730 entries, run 20261018-234630 to "WORLD 4-3", 33,502 polls, none
+wrong. One schedule now plays from power-on through fourteen levels,
+three castles and the water, with no life lost.
+
+The planner's words, as `tools/plan.py` takes them:
+
+| option | does | from |
+|---|---|---|
+| `--prefix S --first n` | plays the bench script S on the model to latch n and searches on from there | 1-2 |
+| `--swim` | adds the water's moves, A tapped at steady rates | 2-2 |
+| `--beam B` | keeps B distinct positions a segment instead of searching depth first | 3-3 |
+| `--beam-high H` | gives H of the beam's B to the highest positions reached standing | 4-2 |
+| `--no-ceiling` | standing on the top row counts as a death (the way over a ceiling to a warp zone) | 4-2 |
+| `--resume STATE` | goes on from a saved beam state; the `.json` beside each holds its latch and the schedule that reached it | 4-2 |
+
+And its rules, always on: a level is done at the flagpole (`$000E` 04
+or 05), at the axe (`$0770` 2) or when the level changes to the next
+one; a change to any other level is a warp and counts as a death; a
+move is kept only if one of five ways on lives (run, jump at once,
+jump a little later, wait then jump, and keep A held, which carries a
+jump across the segment's end). The level by level account,
 with a drawing of each, is `docs/plan-log.md`.
 
 ## Proposed words

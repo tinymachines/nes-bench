@@ -238,6 +238,24 @@
    },
    "planner": "saved states",
    "lesson": "Nothing new. The first bench run played every poll right, but its intro frame was grabbed after the console was switched off (the script ended ten polls after the grab) and it was run again rather than counted (run 20261018-161233)."
+  },
+  {
+   "level": "4-2",
+   "measured": {
+    "first": 30502,
+    "done": 32660,
+    "entries": 730,
+    "plan_s": null,
+    "segments": null,
+    "backtracks": 0,
+    "run": "20261018-234630",
+    "polls": 33502,
+    "wrong": 0,
+    "gaps": 0,
+    "streamed": true
+   },
+   "planner": "saved states, --beam 4 --beam-high 1 --no-ceiling, one stretch searched by hand on the model",
+   "lesson": "Five plans and a hand search: the ceiling leads to a warp zone, the beam needs room for height, a jump has to be able to keep A held across a segment, and a warp is a level change to anywhere but the next level. The last tall pipe was crossed by a route searched by hand on the model and spliced onto the beam's stair-top state."
   }
  ],
  "stream_from": 19990

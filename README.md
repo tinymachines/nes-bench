@@ -71,6 +71,17 @@ built as USB on an ESP32-P4 and reached a host on 2026-09-27
   x-ray behind an encyclopedia of code patterns). E2 played 2026-09-18,
   twice, its script in `exercise/`: the first failing region named, the
   hue miss repeatable, the luma miss one scope level wide.
+- `docs/bench-language.md`: the bench's language as a handoff: every
+  word the head, the bridge and the tools take (pads, power, reset,
+  screen, sound, scope, waits), and PLAN, the loop that learns to play.
+- `docs/plan-log.md` with `plan-log-*.svg`: PLAN's Super Mario Bros.
+  level sequence as a visual log. One schedule of button bytes is
+  searched on the model (`tools/plan.py` driving `nes-console`'s
+  `branch` example, the console saved and loaded mid-run) and played on
+  the part from power-on, a level more each time; each level is checked
+  poll by poll against the bridge's log before the next is planned. The
+  drawings are made from numbers only by `tools/plan-log.py` (no picture
+  of the game), from `docs/plan-log.json` and `exercise/smb-plan.txt`.
 - `docs/encyclopedia.md`: the NES code patterns the x-rays add up to,
   each with its signature as `tools/xray.py` measured it, a window on
   the Halfshot page and the mechanism; code only from ROMs whose source
