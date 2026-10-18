@@ -92,9 +92,21 @@ EXTEND = 150
 DONE = (0x04, 0x05)
 
 
-def moves(seg):
+def taps(seg, every, held, press):
+    """A pressed every `every` latches for two, `held` between: a swim."""
+    e = []
+    for o in range(0, seg, every):
+        e += [(o, press), (o + 2, held)] if o + 2 < seg else [(o, press)]
+    return e
+
+
+def moves(seg, swim=False):
     """The moves for one segment: name -> [(offset, byte)], every offset
-    inside the segment."""
+    inside the segment. With swim, the water's moves too (2-2, measured
+    2026-10-18: steady taps hold Mario near the surface, every 6 latches
+    level and every 16 sinking slowly, Right moving him about 45 dots in
+    30 latches at any rate, no taps sinking him to the floor). Each tap is
+    two schedule entries, so the rates are the economical ones."""
     m = {"run": [(0, 0x82)], "walk": [(0, 0x80)], "stop": [(0, 0x00)], "back": [(0, 0x42)], "hold": [(0, 0x83)]}
     for at in range(0, seg, 5):
         for j in (4, 10, 18):
@@ -103,6 +115,14 @@ def moves(seg):
                 e.append((at + 2 + j, 0x82))
             name = f"jump{j}@{at}" if at + 2 + j < seg else f"jump@{at}"
             m.setdefault(name, e)
+    if swim:
+        m.update({
+            "swim10": taps(seg, 10, 0x80, 0x81),
+            "swim16": taps(seg, 16, 0x80, 0x81),
+            "float10": taps(seg, 10, 0x00, 0x01),
+            "swimback": taps(seg, 16, 0x40, 0x41),
+            "drift": [(0, 0x80)],
+        })
     return m
 
 
@@ -176,6 +196,7 @@ def main():
     ap.add_argument("--jobs", type=int, default=6)
     ap.add_argument("--until", type=int, default=99999)
     ap.add_argument("--backtracks", type=int, default=60)
+    ap.add_argument("--swim", action="store_true", help="add the water's moves (2-2)")
     a = ap.parse_args()
     exe = Path(a.nes) / "target" / "release" / "examples" / "branch"
     if not exe.exists():
@@ -208,7 +229,7 @@ def main():
     s0 = tmp / f"s{a.first}.state"
     on_worker(lambda w: w.ask(f"SCRIPT {tmp / 'prefix.txt'} {a.first - 1}", f"SAVE {s0}"))
     lives0 = on_worker(lambda w: w.ask(f"LOAD {s0}", f"RUN {a.first}"))[a.first][5]
-    mv = moves(a.seg)
+    mv = moves(a.seg, a.swim)
 
     # The lookahead: after a move, the best of three ways on (running,
     # a jump at once, a jump a little later), so a move is called deadly
@@ -256,7 +277,9 @@ def main():
         # was kept too; on 1-3 that committed Mario to a gap he was
         # already falling into, 2026-10-17.)
         keep = [n for n, r in res.items() if r[0]]
-        keep.sort(key=lambda n: (res[n][1], res[n][2], res[n][0], res[n][3], n == "run"), reverse=True)
+        # ties go to the move with the fewest schedule entries (the UNO
+        # holds 600), then to running
+        keep.sort(key=lambda n: (res[n][1], res[n][2], res[n][0], res[n][3], -len(mv[n]), n == "run"), reverse=True)
         return keep, res
 
     stack = []
@@ -307,7 +330,8 @@ def main():
             sched.append((n, b))
             held = b
     if len(sched) > 600:
-        sys.exit(f"{len(sched)} entries: the UNO holds 600")
+        # the UNO holds 600 at once; the head streams the rest (2026-10-18)
+        print(f"note: {len(sched)} entries, more than the UNO's 600: the head streams the rest during the run")
     last = max(n for n, _ in sched)
     body = START + "".join(f"AT {n} {b:02x}\n" for n, b in sched if n > 332) + f"WAIT {last + 60}\nPOWER OFF\n"
     Path(a.out).write_text(f"# planned on the model by tools/plan.py, segments of {a.seg}, lookahead {a.look}, {backs} backtracks\n" + body)
