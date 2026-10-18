@@ -259,7 +259,14 @@ of its continuations lives (a gentler rule committed Mario to a gap he
 was already falling into), and a level found done in the lookahead keeps
 the continuation that found the flagpole (without it the schedule
 stopped short and Mario stood at the end, alive). Run 20261018-012133:
-power-on to "WORLD 1-4" on the part, 172 entries, no life lost.
+power-on to "WORLD 1-4" on the part, 172 entries, no life lost. 1-4, the first castle, ends at an axe
+and not a flagpole: the axe turns $0770 to 2 and the next world follows,
+so either now counts as done. Run 20261018-021108: power-on to "WORLD
+2-1" on the part, Bowser into the lava, 197 entries. The attempt before
+it (20261018-020509) stopped at the start: after the second reset the
+console polled once and no more, with the bridge healthy; the retry
+with the same reset timing ran clean. That is the second failed console
+start in two days, open in `open-items.md`'s terms: not yet understood.
 
 ## Proposed words
 

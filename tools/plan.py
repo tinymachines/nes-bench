@@ -36,7 +36,10 @@ latch 628), then off the screen (vertical screen 2 to 4), then 06, then
 the life is gone; 07 the game walking him in (1-2's intro); 04 the
 flagpole's slide and 05 the walk to the castle (the planned 1-1). Dead
 is 0B or 06, the vertical screen past 1, or a life lost; 04 or 05 is the
-level done; anything else is the game moving him and is waited through.
+level done, and so is $075C or $075F (the level, the world) changing,
+which is how a castle ends ($0770 turning 2 at the axe, measured on 1-4,
+is the first sign of it); anything else is the game moving him and is
+waited through.
 
 Moves stay inside their segment, because the console's schedule and the
 UNO's must both be in increasing latch order: a jump's release that
@@ -69,7 +72,7 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-WATCH = ["0770", "000e", "00b5", "006d", "0086", "075a", "0760", "001d"]
+WATCH = ["0770", "000e", "00b5", "006d", "0086", "075a", "0760", "001d", "075c", "075f"]
 START = """POWER ON
 WAIT 5 S
 MODE INJECT
@@ -138,9 +141,18 @@ def judge(rows, lives0):
     his own throughout (the stall rule counts only those)."""
     x = area = 0
     held = 0x08
+    level0 = tuple(rows[min(rows)][8:10]) if rows else None
     for k in sorted(rows):
-        mode, state, vscreen, page, px, lives, ar, _air = rows[k]
+        mode, state, vscreen, page, px, lives, ar, _air, level, world = rows[k]
+        if (level, world) != level0:
+            # the level or the world moved on: a castle ends with no
+            # flagpole (the axe, then the next world), so this is done too
+            return True, True, area, x, None, state
         x, area = page * 256 + px, ar
+        if mode == 2:
+            # MEASURED 2026-10-18 on 1-4: the axe turns $0770 to 2 (the
+            # bridge falls, Toad), and back to 1 at the next world
+            return True, True, area, x, None, state
         if mode != 1:
             continue
         if state in DEAD or vscreen > 1 or lives < lives0:
