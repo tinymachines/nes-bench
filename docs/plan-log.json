@@ -1,0 +1,187 @@
+{
+ "about": "PLAN's level sequence, Super Mario Bros. on the multicart, one schedule from power-on (docs/plan-log.md). Every field under 'measured' is copied from a log: the planner's (scratch, not committed), the head's run directory on the bench Pi, and tools/check of each run's bridge.log against its own script after the final reset. 'lesson' is authored: what the level made the planner learn.",
+ "schedule": "exercise/smb-plan.txt",
+ "levels": [
+  {
+   "level": "1-1",
+   "measured": {
+    "first": 480,
+    "done": 2190,
+    "entries": 71,
+    "plan_s": null,
+    "segments": 59,
+    "backtracks": 4,
+    "run": "20261017-224132",
+    "polls": 2862,
+    "wrong": 0,
+    "gaps": 0,
+    "streamed": false
+   },
+   "planner": "replay from power-on per candidate (about ten seconds each); about seventy-five minutes, not timed",
+   "lesson": "A greedy search walks into the first goomba and cannot take it back: backtracking by segment."
+  },
+  {
+   "level": "1-2",
+   "measured": {
+    "first": 3349,
+    "done": 4870,
+    "entries": 132,
+    "plan_s": 485,
+    "segments": 50,
+    "backtracks": 1,
+    "run": "20261017-235518",
+    "polls": 5601,
+    "wrong": 0,
+    "gaps": 0,
+    "streamed": false
+   },
+   "planner": "saved states (nes branch): a candidate costs its own latches",
+   "lesson": "Enemy groups need timing (a jump every five latches); a pipe holds Mario longer than the lookahead, and a held segment is no stall."
+  },
+  {
+   "level": "1-3",
+   "measured": {
+    "first": 5683,
+    "done": 6740,
+    "entries": 172,
+    "plan_s": null,
+    "segments": 35,
+    "backtracks": 1,
+    "run": "20261018-012133",
+    "polls": 7423,
+    "wrong": 0,
+    "gaps": 0,
+    "streamed": false
+   },
+   "planner": "saved states",
+   "lesson": "Keep a move only when a continuation lives (a gentler rule committed Mario to a gap); keep the continuation that found the flagpole."
+  },
+  {
+   "level": "1-4",
+   "measured": {
+    "first": 7470,
+    "done": 8430,
+    "entries": 197,
+    "plan_s": 445,
+    "segments": 33,
+    "backtracks": 2,
+    "run": "20261018-021108",
+    "polls": 9231,
+    "wrong": 0,
+    "gaps": 0,
+    "streamed": false
+   },
+   "planner": "saved states",
+   "lesson": "A castle ends at the axe, not a flagpole: $0770 turns 2, then the next world."
+  },
+  {
+   "level": "2-1",
+   "measured": {
+    "first": 9300,
+    "done": 10890,
+    "entries": 258,
+    "plan_s": 809,
+    "segments": 52,
+    "backtracks": 0,
+    "run": "20261018-023103",
+    "polls": 11622,
+    "wrong": 0,
+    "gaps": 0,
+    "streamed": false
+   },
+   "planner": "saved states",
+   "lesson": "Nothing new."
+  },
+  {
+   "level": "2-2",
+   "measured": {
+    "first": 12081,
+    "done": 14470,
+    "entries": 370,
+    "plan_s": 1043,
+    "segments": 78,
+    "backtracks": 0,
+    "run": "20261018-031731",
+    "polls": 15173,
+    "wrong": 0,
+    "gaps": 0,
+    "streamed": false
+   },
+   "planner": "saved states, --swim",
+   "lesson": "Swimming (A taps, measured first) and a pipe taken counts above x: past 2-2's exit Mario lands at a smaller x."
+  },
+  {
+   "level": "2-3",
+   "measured": {
+    "first": 15238,
+    "done": 16730,
+    "entries": 404,
+    "plan_s": 584,
+    "segments": 48,
+    "backtracks": 0,
+    "run": "20261018-034339",
+    "polls": 17421,
+    "wrong": 0,
+    "gaps": 0,
+    "streamed": false
+   },
+   "planner": "saved states",
+   "lesson": "Nothing new (the first bench try missed its intro frame: the grabber timed out)."
+  },
+  {
+   "level": "2-4",
+   "measured": {
+    "first": 17422,
+    "done": 18430,
+    "entries": 435,
+    "plan_s": 422,
+    "segments": 33,
+    "backtracks": 1,
+    "run": "20261018-040301",
+    "polls": 19241,
+    "wrong": 0,
+    "gaps": 0,
+    "streamed": false
+   },
+   "planner": "saved states",
+   "lesson": "Nothing new: the axe rule held."
+  },
+  {
+   "level": "3-1",
+   "measured": {
+    "first": 19300,
+    "done": 20930,
+    "entries": 492,
+    "plan_s": 665,
+    "segments": 53,
+    "backtracks": 0,
+    "run": "20261018-042415",
+    "polls": 21693,
+    "wrong": 0,
+    "gaps": 0,
+    "streamed": true
+   },
+   "planner": "saved states",
+   "lesson": "The first schedule past the head's room: streamed from latch 19990."
+  },
+  {
+   "level": "3-2",
+   "measured": {
+    "first": 21730,
+    "done": 23280,
+    "entries": 548,
+    "plan_s": 722,
+    "segments": 50,
+    "backtracks": 0,
+    "run": "20261018-044744",
+    "polls": 24093,
+    "wrong": 0,
+    "gaps": 0,
+    "streamed": true
+   },
+   "planner": "saved states",
+   "lesson": "Nothing new."
+  }
+ ],
+ "stream_from": 19990
+}
