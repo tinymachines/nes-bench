@@ -284,7 +284,10 @@ entries. 2-4, the second castle, needed nothing new either:
 seven minutes, run 20261018-040301 to "WORLD 3-1", 435 entries. 3-1
 was the first plan past the head's room: 492 entries, the last dozen
 streamed from latch 19990 while the game played, run 20261018-042415 to
-"WORLD 3-2", every one of its 21,693 polls in the log and none wrong.
+"WORLD 3-2", every one of its 21,693 polls in the log and none wrong. 3-2:
+548 entries, run 20261018-044744 to "WORLD 3-3", 24,093 polls, none
+wrong. One schedule now plays from power-on through ten levels, two
+castles and the water, with no life lost.
 
 ## Proposed words
 
