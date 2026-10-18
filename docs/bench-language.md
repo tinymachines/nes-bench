@@ -280,7 +280,8 @@ past 2-2's exit pipe Mario lands at a smaller x in the same area and
 every pipe move had scored as going backwards. Run 20261018-031731:
 power-on to "WORLD 2-3", 370 entries. 2-3, the long bridge, needed nothing new:
 planned in under ten minutes, run 20261018-034339 to "WORLD 2-4", 404
-entries.
+entries. 2-4, the second castle, needed nothing new either:
+seven minutes, run 20261018-040301 to "WORLD 3-1", 435 entries.
 
 ## Proposed words
 
