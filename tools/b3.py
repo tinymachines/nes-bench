@@ -235,11 +235,13 @@ def cmd_record(a):
     # a factor of sixteen. A record that does not fit is replayed with
     # its tail missing, which looks like a finding about the part, so it
     # is named here rather than discovered later.
+    # Since 2026-10-18 the UNO's schedule is a ring and the head streams
+    # what does not fit (head/headd.py, SCHEDULE_ROOM), so a long record is
+    # no longer refused here; it is named, because a streamed run cannot
+    # take a scope capture mid-run (the read blocks the feed).
     if entries > a.schedule_max:
-        print(f"  REFUSED: {changes} changes are {entries} entries, which will not fit the {a.bridge} bridge's {a.schedule_max}-entry schedule.")
-        print(f"  Record a shorter run, cut it (--until), or use the C6 build (--bridge c6, {SCHEDULE_MAX['c6']} entries).")
-        return 1
-    if entries > a.schedule_max * 0.8:
+        print(f"  note: {changes} changes are {entries} entries, more than the {a.bridge} bridge's {a.schedule_max}: the head streams the rest during the run")
+    elif entries > a.schedule_max * 0.8:
         print(f"  note: {entries} of the {a.bridge} bridge's {a.schedule_max} schedule entries used")
     return 0
 

@@ -14,7 +14,11 @@
 //   MODE PASS        the original pad's state goes to the register (default)
 //   MODE INJECT      the register holds SET's byte, or the AT schedule's
 //   SET hh           the byte to hold now (bit 0 = A, set = pressed)
-//   AT n hh          from latch n on, hold hh (in increasing n; see below)
+//   AT n hh          from latch n on, hold hh (in increasing n; see below).
+//                    The schedule is a ring: an applied entry frees its
+//                    slot, so the head can stream a run longer than it
+//                    (schedule.h). An AT for a latch already gone is
+//                    refused with "# late AT n at latch L"
 //   TRIG n           raise the trigger pin at latch n for a millisecond
 //   RESET            zero the latch index, clear the schedule and the trigger
 //   STATUS           one line: mode, latch index, byte, pad byte, schedule size
@@ -234,6 +238,13 @@ static void handle(char *s) {
     char *end;
     unsigned long n = strtoul(s + 3, &end, 10);
     unsigned long b = strtoul(end, NULL, 16);
+    // An entry for a latch already gone would play at once, at the wrong
+    // latch, and the run would go on looking healthy: refused by name, so
+    // a head that streams too slowly stops the run instead (2026-10-18).
+    if (n < latches) {
+      snprintf_P(out, sizeof out, PSTR("# late AT %lu at latch %lu"), n, latches); say(out);
+      return;
+    }
     int r = schedule.append((uint32_t)n, (uint8_t)b);
     if (r == 0) { snprintf_P(out, sizeof out, PSTR("# at %lu %02lx"), n, b); say(out); }
     else if (r == 1) sayF(F("# schedule full"));

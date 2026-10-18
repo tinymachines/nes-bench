@@ -108,7 +108,7 @@ Lines of text, 115200 baud. All **built** (`firmware/bridge-uno`).
 | `MODE PASS` | the original pad on the bridge's own port drives the console (the default at boot) |
 | `MODE INJECT` | the bridge drives the console with the byte it is given |
 | `SET hh` | hold `hh` now |
-| `AT n hh` | from latch n on, hold `hh`; in increasing n; 600 entries at most |
+| `AT n hh` | from latch n on, hold `hh`; in increasing n; 600 held at once, an applied one freeing its slot (`# late AT n at latch L` if n has passed) |
 | `TRIG n` | raise the trigger line at latch n, for a millisecond |
 | `RESET` | zero the latch count, clear the schedule and the trigger (not the console: that is the head's) |
 | `STATUS` | mode, counts, the byte held, deferred and torn writes, spare stack |
@@ -232,8 +232,12 @@ Bros. does not wait that long. So the bench is an **open-loop** player:
   `compare-logs.py` (the part did what the model did).
 - **When they part**, `b3.py bisect` finds the first latch that differs.
 
-The limit to plan around: the UNO holds **600 schedule entries** per
-run; a minute of a human's play was 289.
+The UNO holds **600 schedule entries** at once, a ring since 2026-10-18:
+the head loads what fits before the console leaves reset and streams
+the rest as the latches go by, so a run is no longer bounded by it (a
+minute of a human's play was 289; a planned run from power-on to 2-2,
+258). A streamed run takes no scope capture mid-run: reading the record
+blocks the feed for about a minute.
 
 **Built 2026-10-17, for Super Mario Bros.:** `tools/plan.py` searches in
 segments of 30 latches, thirteen moves each (run, walk, stop, back, and

@@ -63,8 +63,11 @@ def main():
     mode = "pass"
     pad = int(a.pad, 16)
     set_byte = 0
-    schedule = []
-    used = 0     # packed entries, as the UNO counts them
+    schedule = []   # (latch, byte, packed cost) not yet applied
+    used = 0        # packed entries held, as the UNO counts them
+    last_at = 0     # the latch of the last AT taken
+    appended = False
+    held_now = None  # the scheduled byte in force, once one has applied
     latches = 0
     clocks = 0
     trig_at = -1
@@ -101,29 +104,39 @@ def main():
                     # The UNO's packed entries: a one-byte gap and the byte,
                     # a filler per 255 latches of a longer gap
                     # (firmware/bridge-uno/schedule.h, Schedule::cost).
-                    prev = schedule[-1][0] if schedule else 0
-                    cost = (int(n) - prev) // 255 + 1
-                    if schedule and int(n) < prev:
+                    # A ring, as the UNO's is since 2026-10-18: an applied
+                    # entry frees its slots (applied below, as latches pass),
+                    # and an entry for a latch already gone is refused.
+                    cost = (int(n) - last_at) // 255 + 1
+                    if int(n) < latches:
+                        out(f"# late AT {int(n)} at latch {latches}")
+                    elif appended and int(n) < last_at:
                         out(f"# ? AT {int(n)} before the schedule's last latch")
                     elif used + cost <= schedule_max:
                         used += cost
-                        schedule.append((int(n), int(b, 16))); out(f"# at {int(n)} {int(b, 16):02x}")
+                        last_at = int(n); appended = True
+                        schedule.append((int(n), int(b, 16), cost)); out(f"# at {int(n)} {int(b, 16):02x}")
                     else:
                         out("# schedule full")
                 elif line.startswith("TRIG "):
                     trig_at = int(line[5:]); out(f"# trig at {trig_at}")
                 elif line == "RESET":
-                    latches = 0; clocks = 0; schedule = []; used = 0; trig_at = -1; have_latch = False; out("# reset")
+                    latches = 0; clocks = 0; schedule = []; used = 0; last_at = 0; appended = False; held_now = None
+                    trig_at = -1; have_latch = False; out("# reset")
                 elif line in ("MUTATE ON", "MUTATE OFF"):
                     mutated = line == "MUTATE ON"; out(f"# mutate {'on' if mutated else 'off'}")
                 elif line == "STATUS":
-                    out(f"# mode {mode} latch {latches} clocks {clocks} held {held(mode, pad, set_byte, schedule, latches):02x} pad {pad:02x} schedule {len(schedule)}/{schedule_max} data -1")
+                    out(f"# mode {mode} latch {latches} clocks {clocks} held {pad if mode == 'pass' else (set_byte if held_now is None else held_now):02x} pad {pad:02x} schedule {used}/{schedule_max} data -1")
                 elif line:
                     out("# ? " + line)
         now = time.monotonic()
         if now >= next_latch:
             next_latch += period
-            h = held(mode, pad, set_byte, schedule, latches)
+            # apply what is due and free its slots, as the UNO's ring does
+            while schedule and schedule[0][0] <= latches:
+                _, held_now, c = schedule.pop(0)
+                used -= c
+            h = pad if mode == "pass" else (set_byte if held_now is None else held_now)
             if have_latch:
                 # Swapped counters count the clock line as latches and the
                 # latch line as clocks: one "clock" per poll, many "latches".
@@ -139,16 +152,6 @@ def main():
                     with open(a.trigger_file, "w") as f:
                         f.write(f"{latches - 1}\n")
                 trig_at = -1
-
-
-def held(mode, pad, set_byte, schedule, latches):
-    if mode == "pass":
-        return pad
-    b = set_byte
-    for n, v in schedule:
-        if n <= latches:
-            b = v
-    return b
 
 
 if __name__ == "__main__":

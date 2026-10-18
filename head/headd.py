@@ -45,6 +45,7 @@ import socketserver
 import sys
 import threading
 import time
+from collections import deque
 from pathlib import Path
 
 # The gamepad hand lives beside this file. Named explicitly rather than
@@ -377,6 +378,11 @@ class Run(threading.Thread):
         self.captures = []  # the names read so far
         head.bridge.drain()  # the log is this run's lines, not the idle backlog
         self.held_since = None  # when RESET began holding the console
+        # Streaming (2026-10-18): the AT lines the bridge's ring has no room
+        # for yet, and the ones it holds, as (latch, packed cost).
+        self.pending = deque()
+        self.sent = deque()
+        self.last_at = 0
 
     def say(self, s):
         self.log.write(f"{time.time():.3f} {s}\n")
@@ -388,7 +394,57 @@ class Run(threading.Thread):
     # 128 AT entries against the C6's 2048, and a truncated schedule
     # replays a DIFFERENT input history while every other line looks
     # healthy. Refusing the run is the only way that failure is visible.
-    REFUSALS = ("# schedule full",)
+    REFUSALS = ("# schedule full", "# late")
+
+    # STREAMING (2026-10-18). The UNO's schedule is a ring of 600 packed
+    # entries (firmware/bridge-uno/schedule.h): an applied entry frees its
+    # slot. So a script's AT lines are sent while the bridge has room, the
+    # rest held here and sent as the latches go by, and a run is no longer
+    # bounded by the schedule (a planned Super Mario Bros. from power-on
+    # was 258 changes by World 2-2, and 2-2's swimming costs two a stroke).
+    # SCHEDULE_ROOM is the packed entries the head lets the bridge hold,
+    # below the UNO's 600 so a gap's fillers always fit; the cost of an AT
+    # is the firmware's own (Schedule::cost). A slot counts as free once
+    # the bridge has logged its latch, which is late by a loop and so on
+    # the safe side. Two ways this can fail, both loud: an AT not sent by
+    # its latch is refused by the head before sending ("would be late")
+    # and by the bridge if it gets there ("# late AT n at latch L"). A
+    # scope CAPTURE read mid-run blocks the feed for about a minute, longer
+    # than SCHEDULE_ROOM of a dense schedule lasts, so a long streamed run
+    # takes its captures at its end or not at all.
+    SCHEDULE_ROOM = 480
+
+    def _cost(self, n):
+        return (n - self.last_at) // 255 + 1
+
+    def _held(self):
+        done = self.head.bridge.latest_latch
+        while self.sent and self.sent[0][0] <= done:
+            self.sent.popleft()
+        return sum(c for _, c in self.sent)
+
+    def send_at(self, n, b):
+        self.send_checked(f"AT {n} {b:02x}")
+        self.sent.append((n, self._cost(n)))
+        self.last_at = n
+
+    def feed(self, most=40):
+        """Send held AT lines while the bridge has room; at most `most` a
+        call, so a WAIT loop stays responsive."""
+        if self.error:      # a failed run feeds nothing more
+            return
+        sent = 0
+        room = self.head.schedule_room
+        while self.pending and sent < most:
+            n, b = self.pending[0]
+            if self._held() + self._cost(n) > room:
+                return
+            if self.held_since is None and n <= self.head.bridge.latest_latch + 1:
+                raise RuntimeError(f"AT {n} would be late (the console is at latch {self.head.bridge.latest_latch}): "
+                                   "the stream fell behind, so the run is stopped")
+            self.pending.popleft()
+            self.send_at(n, b)
+            sent += 1
 
     def send_checked(self, line, timeout=2.0):
         """One line to the bridge, then its echo before the next.
@@ -405,8 +461,16 @@ class Run(threading.Thread):
         self.head.bridge.send(line)
         deadline = time.time() + timeout
         while time.time() < deadline:
-            for got in self.head.bridge.drain():
+            # Every line of the batch is logged before any is judged: the
+            # loop returns at the echo, and the lines after it in the same
+            # batch were dropped. Harmless while every AT was sent with the
+            # console held in reset; streaming sends them while it polls,
+            # and the first streamed run lost an L line beside nearly every
+            # echo (2026-10-18, fake bridge at 300 Hz: 261 gaps).
+            batch = self.head.bridge.drain()
+            for got in batch:
                 self.blog.write(got + "\n")
+            for got in batch:
                 if got.startswith("# ?"):
                     raise RuntimeError(f"the bridge did not understand {line!r} ({got}): the input history would be wrong, so the run is stopped")
                 if any(got.startswith(r) for r in self.REFUSALS):
@@ -431,6 +495,7 @@ class Run(threading.Thread):
         if bad:
             raise RuntimeError(f"the bridge refused part of the script ({bad.lstrip('# ')}): "
                                "the input history would be wrong, so the run is stopped")
+        self.feed()
 
     def run(self):
         try:
@@ -445,6 +510,9 @@ class Run(threading.Thread):
                 self.play(line)
                 self.pump_bridge()
             self.release()
+            if self.pending:
+                raise RuntimeError(f"the script ended with {len(self.pending)} AT lines never sent: "
+                                   "its last WAIT must reach past its last AT when the schedule streams")
             if self.armed:
                 self.wait_capture()
             self.say("done")
@@ -477,7 +545,16 @@ class Run(threading.Thread):
         op = w[0].upper()
         if op not in ("MODE", "SET", "AT", "TRIG", "ARM"):
             self.release()
-        if op in ("MODE", "SET", "AT", "TRIG"):
+        if op == "AT":
+            n, b = int(w[1]), int(w[2], 16)
+            if self.pending or self._held() + self._cost(n) > h.schedule_room:
+                self.pending.append((n, b))
+                if len(self.pending) == 1:
+                    self.say(f"the bridge's schedule is full to the head's room: AT {n} on is streamed during the run")
+            else:
+                self.send_at(n, b)
+                self.say(f"bridge <- {line}")
+        elif op in ("MODE", "SET", "TRIG"):
             self.send_checked(line.upper() if op == "MODE" else line)
             self.say(f"bridge <- {line}")
             # A trigger whose latch has passed fires at the next one, and
@@ -485,6 +562,10 @@ class Run(threading.Thread):
             if op == "TRIG" and h.bridge.latest_latch >= int(w[1]):
                 raise RuntimeError(f"TRIG {w[1]} arrived at latch {h.bridge.latest_latch}: the capture would be late, so the run is stopped")
         elif op == "RESET":
+            if self.pending:
+                raise RuntimeError(f"RESET with {len(self.pending)} AT lines still to stream: they belong to the session before it")
+            self.sent.clear()
+            self.last_at = 0
             # The console is held in reset from here through the bridge
             # lines that follow (SET, AT, TRIG) and the scope's ARM, and
             # released at the first other word, after RESET_HOLD_S at least: latch 0 is still the
@@ -688,6 +769,7 @@ class Hand(threading.Thread):
 # -------------------------------------------------------------------- head
 class Head:
     def __init__(self, a):
+        self.schedule_room = getattr(a, "schedule_room", Run.SCHEDULE_ROOM)
         self.runs = Path(a.runs)
         self.runs.mkdir(exist_ok=True)
         self.bridge = Bridge(a.bridge, a.baud)
@@ -785,6 +867,8 @@ def main():
     ap.add_argument("--power-pin", type=int, default=27)
     ap.add_argument("--port", type=int, default=6530, help="UDP for requests; HTTP for the runs on port+1")
     ap.add_argument("--runs", default="runs")
+    ap.add_argument("--schedule-room", type=int, default=Run.SCHEDULE_ROOM,
+                    help="packed AT entries the head lets the bridge hold before streaming the rest (the UNO holds 600)")
     a = ap.parse_args()
     if not a.no_scope and not a.scope:
         ap.error("--scope <ip> or --no-scope")

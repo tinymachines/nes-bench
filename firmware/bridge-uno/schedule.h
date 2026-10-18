@@ -15,9 +15,19 @@
 // times (nes-bench run 20260919-012524). Two-byte entries hold 320 in the
 // same 640 bytes; with the sketch's strings moved to flash it holds 600.
 //
+// A RING since 2026-10-18 (streaming): an applied entry frees its slot,
+// so a run longer than the schedule is fed while it plays. The head
+// loads what fits before the console leaves reset and sends the rest as
+// the latches go by; `len` is the entries held now, not the entries
+// appended since RESET. A planned Super Mario Bros. run from power-on to
+// World 2-2 is 258 changes of byte, and 2-2's swimming costs two a
+// stroke, which is what made 600 a wall.
+//
 // Plain C++ with no Arduino header, so tools/test-uno-schedule.sh builds
-// it natively and checks it against absolute latches, and its MUTATE
-// build (a filler that sets the byte to zero) must go red.
+// it natively and checks it against absolute latches, fed whole and fed
+// as a stream through a small ring; its MUTATE builds (a filler that sets
+// the byte to zero; SCHEDULE_MUTATE_RING, a cursor that wraps a slot
+// short) must go red.
 
 #ifndef NESBENCH_SCHEDULE_H
 #define NESBENCH_SCHEDULE_H
@@ -34,12 +44,14 @@ struct Packed {
 template <int N>
 struct Schedule {
   Packed e[N];
-  uint16_t len = 0;
+  uint16_t len = 0;        // entries held now (appended, not yet applied)
+  uint16_t cursor = 0;     // the slot of the next entry to apply
+  uint16_t tail = 0;       // the slot the next append writes
   uint32_t last = 0;       // the absolute latch of the last entry appended
-  uint16_t cursor = 0;     // the next entry to apply
   uint32_t cursor_at = 0;  // the absolute latch the cursor counts from
+  bool any = false;        // something appended since clear()
 
-  void clear() { len = 0; last = 0; cursor = 0; cursor_at = 0; }
+  void clear() { len = 0; cursor = 0; tail = 0; last = 0; cursor_at = 0; any = false; }
 
   // The entries an AT at latch n costs: its fillers and itself.
   uint16_t cost(uint32_t n) const {
@@ -49,28 +61,31 @@ struct Schedule {
 
   // 0: taken. 1: full (nothing appended). 2: n before the last entry.
   int append(uint32_t n, uint8_t b) {
-    if (len > 0 && n < last) return 2;
+    if (any && n < last) return 2;
     uint32_t gap = n - last;
     uint32_t need = gap / 255 + 1;
     if (len + need > (uint32_t)N) return 1;
     while (gap >= 255) {
-      e[len].gap = SCHEDULE_FILLER;
-      e[len].byte = 0;
+      e[tail].gap = SCHEDULE_FILLER;
+      e[tail].byte = 0;
+      tail = (uint16_t)((tail + 1) % N);
       len++;
       gap -= 255;
     }
-    e[len].gap = (uint8_t)gap;
-    e[len].byte = b;
+    e[tail].gap = (uint8_t)gap;
+    e[tail].byte = b;
+    tail = (uint16_t)((tail + 1) % N);
     len++;
     last = n;
+    any = true;
     return 0;
   }
 
   // Apply every entry due at or before `latches` to `held`; called with
   // the latch index as it grows (by one, or by several when the loop
-  // looked late).
+  // looked late). Each applied entry's slot is free again.
   void due(uint32_t latches, uint8_t &held) {
-    while (cursor < len) {
+    while (len > 0) {
       uint32_t at = cursor_at + e[cursor].gap;
       if (at > latches) break;
       cursor_at = at;
@@ -79,7 +94,12 @@ struct Schedule {
 #else
       if (e[cursor].gap != SCHEDULE_FILLER) held = e[cursor].byte;
 #endif
-      cursor++;
+#ifdef SCHEDULE_MUTATE_RING
+      cursor = (uint16_t)((cursor + 1) % (N - 1));   // the mutation: wraps a slot short
+#else
+      cursor = (uint16_t)((cursor + 1) % N);
+#endif
+      len--;
     }
   }
 };
