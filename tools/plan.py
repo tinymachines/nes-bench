@@ -63,8 +63,10 @@ gives up the segment before it too (depth first alone spent eleven
 backtracks on one latch whose cause was earlier). The UNO holds 600 entries; this refuses to write more.
 """
 import argparse
+import json
 import os
 import queue
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -72,7 +74,7 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-WATCH = ["0770", "000e", "00b5", "006d", "0086", "075a", "0760", "001d", "075c", "075f", "00ce"]
+WATCH = ["0770", "000e", "00b5", "006d", "0086", "075a", "0760", "001d", "075c", "075f", "00ce", "06d6"]
 START = """POWER ON
 WAIT 5 S
 MODE INJECT
@@ -86,6 +88,7 @@ AT 330 08
 AT 332 00
 """
 DEAD = (0x0B, 0x06)
+NO_CEILING = False
 STALL, STALL_PX = 8, 16   # 8 segments: room to wait for a lift (3-3)
 ESCALATE = 4
 EXTEND = 150
@@ -179,6 +182,16 @@ def judge(rows, lives0):
             continue
         if state in DEAD or vscreen > 1 or lives < lives0:
             return False, False, area, x, k, state
+        # a warp zone skips levels the schedule is meant to play: $06D6
+        # reads 0 on the way and 5 in 4-2's zone (measured 2026-10-18,
+        # where the beam ran over the ceiling into it)
+        if rows[k][11]:
+            return False, False, area, x, k, state
+        # --no-ceiling: standing on the top row is the way to a warp
+        # zone over an underground level's ceiling; on 4-2's Mario stood
+        # at y 00 with $001D 0, where its floor is b0 (measured)
+        if NO_CEILING and state == 0x08 and not _air and rows[k][10] < 0x10:
+            return False, False, area, x, k, state
         if state in DONE:
             return True, True, area, x, None, state
         if state != 0x08 and held == 0x08:
@@ -193,7 +206,9 @@ def main():
     ap.add_argument("rom")
     ap.add_argument("--out", required=True)
     ap.add_argument("--prefix", help="a bench script played first (WAIT n and POWER OFF ignored)")
-    ap.add_argument("--first", type=int, required=True, help="the latch the search starts at")
+    ap.add_argument("--first", type=int, help="the latch the search starts at")
+    ap.add_argument("--resume", help="a beam state to go on from (its .json beside it holds the latch and the schedule that reached it)")
+    ap.add_argument("--no-ceiling", action="store_true", help="standing on the top row counts as a death (4-2's warp zone route)")
     ap.add_argument("--nes", default=str(ROOT.parent / "nes"))
     ap.add_argument("--seg", type=int, default=30)
     ap.add_argument("--look", type=int, default=60)
@@ -201,8 +216,13 @@ def main():
     ap.add_argument("--until", type=int, default=99999)
     ap.add_argument("--backtracks", type=int, default=60)
     ap.add_argument("--swim", action="store_true", help="add the water's moves (2-2)")
+    ap.add_argument("--beam-high", type=int, default=0, help="of the beam, this many slots kept for the highest positions (4-2)")
     ap.add_argument("--beam", type=int, default=0, help="keep this many distinct positions a segment instead of searching depth first (3-3)")
     a = ap.parse_args()
+    if a.first is None and not a.resume:
+        ap.error("--first or --resume")
+    global NO_CEILING
+    NO_CEILING = a.no_ceiling
     exe = Path(a.nes) / "target" / "release" / "examples" / "branch"
     if not exe.exists():
         sys.exit(f"build it first: cargo build --release -p nes-console --example branch (in {a.nes})")
@@ -231,19 +251,34 @@ def main():
         finally:
             pool.put(w)
 
-    s0 = tmp / f"s{a.first}.state"
-    on_worker(lambda w: w.ask(f"SCRIPT {tmp / 'prefix.txt'} {a.first - 1}", f"SAVE {s0}"))
-    lives0 = on_worker(lambda w: w.ask(f"LOAD {s0}", f"RUN {a.first}"))[a.first][5]
+    resumed = []
+    if a.resume:
+        # a beam state and the schedule that reached it (the .json beside
+        # it): the search goes on from there, with no replay from power-on
+        side = json.loads(Path(a.resume + ".json").read_text())
+        a.first, lives0, resumed = side["t"], side["lives0"], [tuple(e) for e in side["chosen"]]
+        s0 = tmp / f"s{a.first}.state"
+        shutil.copy(a.resume, s0)
+    else:
+        s0 = tmp / f"s{a.first}.state"
+        on_worker(lambda w: w.ask(f"SCRIPT {tmp / 'prefix.txt'} {a.first - 1}", f"SAVE {s0}"))
+        lives0 = on_worker(lambda w: w.ask(f"LOAD {s0}", f"RUN {a.first}"))[a.first][5]
     mv = moves(a.seg, a.swim)
 
-    # The lookahead: after a move, the best of four ways on (running, a
-    # jump at once, a jump a little later, and waiting then jumping), so a
-    # move is called deadly only when none of them lives.
+    # The lookahead: after a move, the best of five ways on (running, a
+    # jump at once, a jump a little later, waiting then jumping, and A
+    # kept held), so a move is called deadly only when none of them lives.
     def continuations(t0):
         return [[(t0, 0x82)], [(t0, 0x82), (t0 + 2, 0x83), (t0 + 26, 0x82)], [(t0, 0x82), (t0 + 20, 0x83), (t0 + 44, 0x82)],
                 # wait, then go: a lift has to come before the jump to it
                 # lives (3-3's mushroom lifts, 2026-10-18)
-                [(t0, 0x00), (t0 + 40, 0x82), (t0 + 42, 0x83), (t0 + 66, 0x82)]]
+                [(t0, 0x00), (t0 + 40, 0x82), (t0 + 42, 0x83), (t0 + 66, 0x82)],
+                # keep holding A: a jump begun late in a segment carried on
+                # to full height. Every other way on lets go of A at the
+                # boundary, so 4-2's jump from the stair top onto the last
+                # tall pipe (run 12 latches, A for 30) was always judged a
+                # short hop against its side (measured 2026-10-18)
+                [(t0, 0x83), (t0 + 20, 0x82)]]
 
     def better(r):
         return (r[1], r[2], r[0], r[3] if r[0] else r[4] or 0, r[3])
@@ -297,7 +332,7 @@ def main():
         # gains no x, so it never ranked first and was gone by the time
         # every forward move died. Here the BEAM best positions, distinct
         # by area, x and height, are all kept and all expanded.
-        beam = [dict(state=s0, chosen=[])]
+        beam = [dict(state=s0, chosen=resumed)]
         t, backs, done, chosen = a.first, 0, False, []
         while t < a.until and not done:
             jobs = [(i, n) for i in range(len(beam)) for n in mv]
@@ -315,18 +350,46 @@ def main():
                 break
             scored.sort(key=lambda jr: (jr[1][2], jr[1][3], -len(mv[jr[0][1]])), reverse=True)
             new, seen = [], set()
-            for (i, n), r in scored[:a.beam * 6]:
+
+            def settle(c, name):
+                (i, n), r = c
                 entries = [(t + o, b) for o, b in mv[n]]
-                nxt = tmp / f"b{t + a.seg}-{len(new)}.state"
+                nxt = tmp / f"b{t + a.seg}-{name}.state"
                 rows = on_worker(lambda w: w.ask(f"LOAD {beam[i]['state']}", *[f"AT {k} {b:02x}" for k, b in entries], f"RUN {t + a.seg - 1}", f"SAVE {nxt}"))
-                last = rows[max(rows)]
+                return nxt, rows[max(rows)], beam[i]["chosen"] + entries
+
+            def take(nxt, last, chosen):
                 key = (last[6], (last[3] * 256 + last[4]) // 8, last[10] // 16)
                 if key in seen:
-                    continue
+                    return False
                 seen.add(key)
-                new.append(dict(state=nxt, chosen=beam[i]["chosen"] + entries))
-                if len(new) == a.beam:
+                new.append(dict(state=nxt, chosen=chosen))
+                Path(str(nxt) + ".json").write_text(json.dumps(dict(t=t + a.seg, lives0=lives0, chosen=chosen)))
+                return True
+
+            for c in scored[:a.beam * 6]:
+                if len(new) == a.beam - a.beam_high:
                     break
+                take(*settle(c, len(new)))
+            if a.beam_high:
+                # the slots kept for height: the highest positions any
+                # move reached standing ($001D 0), then the furthest
+                # right. Ranked by x alone, 4-2's beam filled with Mario
+                # pressed against a tall pipe on the ground and dropped
+                # the stair tops, the only place a jump onto it starts;
+                # ranked by height in the air, it kept Mario jumping at
+                # the pipe's side instead (2026-10-18)
+                with ThreadPoolExecutor(a.jobs) as ex:
+                    rest = list(ex.map(lambda ic: settle(ic[1], f"h{ic[0]}"), enumerate(scored)))
+                rest.sort(key=lambda s: (-s[1][6], s[1][7] != 0, s[1][10], -(s[1][3] * 256 + s[1][4])))
+                for nxt, last, chosen in rest:
+                    if len(new) == a.beam:
+                        break
+                    take(nxt, last, chosen)
+                keep_files = {str(b["state"]) for b in new}
+                for nxt, _, _ in rest:
+                    if str(nxt) not in keep_files:
+                        nxt.unlink(missing_ok=True)
             (i0, n0), r0 = scored[0]
             print(f"latch {t}: beam {len(new)} kept of {len(scored)} alive; best {n0} -> area {r0[2]} x {r0[3]}", flush=True)
             beam = new
