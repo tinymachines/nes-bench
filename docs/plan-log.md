@@ -84,6 +84,7 @@ the level and the world.
 | 3-4 | 25906 to 26840 | 618 | 10.3 min | 0 | `20261018-145621` (streamed) | 27683 | 0 | The model has to stop on the poll, not at the end of the frame: a frame that held two polls let the second fall before the planner gave its byte, so the model played that jump a poll late and the first plan failed its straight replay. |
 | 4-1 | 27733 to 29240 | 662 | 21.6 min | 0 | `20261018-162219` (streamed) | 30072 | 0 | Nothing new. The first bench run played every poll right, but its intro frame was grabbed after the console was switched off (the script ended ten polls after the grab) and it was run again rather than counted (run 20261018-161233). |
 | 4-2 | 30502 to 32660 | 730 | not timed | 0 | `20261018-234630` (streamed) | 33502 | 0 | Five plans and a hand search: the ceiling leads to a warp zone, the beam needs room for height, a jump has to be able to keep A held across a segment, and a warp is a level change to anywhere but the next level. The last tall pipe was crossed by a route searched by hand on the model and spliced onto the beam's stair-top state. |
+| 4-3 | 33560 to 34760 | 767 | 53.0 min | 0 | `20261019-015500` (streamed) | 35501 | 0 | Nothing new. The beam crossed the mushroom tops and the lifts on its own: once only six positions were alive, and the best of them had gone back, but it went on. |
 <!-- /plan-log:table -->
 
 Each drawing below is one level: Mario's path from the side, the level's
@@ -265,3 +266,15 @@ went on from outside the exit pipe to the flagpole in under three
 minutes (`--resume` now starts from a saved beam state with the
 schedule that reached it). The straight replay from power-on took the
 whole schedule to "WORLD 4-3", and so did the part, first time.
+
+### 4-3
+
+![World 4-3: Mario's path and the buttons](plan-log-4-3.svg)
+
+The mushroom tops and the lifts that fall when Mario stands on them.
+The beam from 4-2 (four positions, one kept for height) crossed it on
+its own: 41 segments, about 53 minutes, nothing searched by hand. Near
+the start only six positions were alive and the best of them had gone
+back, but the beam went on from there. The straight replay from
+power-on took the schedule to "WORLD 4-4", and so did the part, first
+time.

@@ -300,8 +300,10 @@ gave the planner most of its present words (below); its last tall pipe
 was crossed by a route searched by hand on the model and spliced onto
 the beam's own stair-top state, and the planner went on from there.
 730 entries, run 20261018-234630 to "WORLD 4-3", 33,502 polls, none
-wrong. One schedule now plays from power-on through fourteen levels,
-three castles and the water, with no life lost.
+wrong. 4-3, the mushroom tops and falling lifts, the beam crossed on
+its own: 767 entries, run 20261019-015500 to "WORLD 4-4", 35,501
+polls, none wrong. One schedule now plays from power-on through fifteen
+levels, three castles and the water, with no life lost.
 
 The planner's words, as `tools/plan.py` takes them:
 
