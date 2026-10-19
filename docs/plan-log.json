@@ -328,6 +328,24 @@
    },
    "planner": "saved states, --beam 4 --beam-high 1 --swim",
    "lesson": "Nothing new: the beam stayed above ground past the Hammer Bros and never took the pipe to the water."
+  },
+  {
+   "level": "5-3",
+   "measured": {
+    "first": 42150,
+    "done": 43200,
+    "entries": 944,
+    "plan_s": 2766,
+    "segments": 36,
+    "backtracks": 0,
+    "run": "20261019-104805",
+    "polls": 44023,
+    "wrong": 0,
+    "gaps": 0,
+    "streamed": true
+   },
+   "planner": "saved states, --beam 4 --beam-high 1",
+   "lesson": "Nothing new: the beam crossed the treetops, the lifts and the Bullet Bills on its own."
   }
  ],
  "stream_from": 19990

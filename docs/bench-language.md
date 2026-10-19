@@ -311,9 +311,10 @@ model and spliced on: 796 entries, run 20261019-065615 to "WORLD
 5-1", 37,793 polls, none wrong. 5-1 the beam crossed on its own: 845
 entries, run 20261019-081032 to "WORLD 5-2", 39,951 polls, none wrong.
 5-2 too, above ground the whole way: 902 entries, run 20261019-094241
-to "WORLD 5-3", 42,112 polls, none wrong. One schedule now plays from
-power-on through eighteen levels, four castles and the water, with no
-life lost.
+to "WORLD 5-3", 42,112 polls, none wrong. 5-3 the same: 944 entries,
+run 20261019-104805 to "WORLD 5-4", 44,023 polls, none wrong. One
+schedule now plays from power-on through nineteen levels, four castles
+and the water, with no life lost.
 
 The planner's words, as `tools/plan.py` takes them:
 
