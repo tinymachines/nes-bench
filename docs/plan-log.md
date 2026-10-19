@@ -95,6 +95,7 @@ the level and the world.
 | 6-3 | 50420 to 51410 | 1138 | 49.7 min | 0 | `20261019-160009` (streamed) | 52202 | 0 | Nothing new: the beam crossed the balance lifts and Bullet Bills on its own, down once to eight positions alive. |
 | 6-4 | 52230 to 53130 | 1169 | 43.2 min | 0 | `20261019-172628` (streamed) | 54022 | 0 | Nothing new for the planner. The first bench run played every poll right (run 20261019-170655, 54,021 polls, none wrong) but took no frames: the grabber gave up 900 s after it started, and this run's first grab was due later than that. It was run again with the limit raised rather than counted. |
 | 7-1 | 54060 to 55200 | 1214 | 54.0 min | 0 | `20261019-191128` (streamed) | 56061 | 0 | Nothing new: the beam crossed the Hammer Bros and Bullet Bill cannons on its own. |
+| 7-2 | 56110 to 59320 | 1353 | not timed | 0 | `20261019-224836` (streamed) | 60302 | 0 | A pipe passed stays passed. The water's exit pipe keeps the area number and sets Mario back, so a position through it ranked below one in front of it whose lookahead went in, and the beam stood at the pipe's mouth for twenty segments. Each position now carries the pipes its own path entered. |
 <!-- /plan-log:table -->
 
 Each drawing below is one level: Mario's path from the side, the level's
@@ -416,4 +417,24 @@ reached "WORLD 7-1".
 Hammer Bros on the ledges and Bullet Bill cannons. The beam crossed it
 on its own: 39 segments, about 54 minutes, nothing searched by hand.
 The straight replay from power-on took the schedule to "WORLD 7-2",
+and so did the part, first time.
+
+### 7-2
+
+![World 7-2: Mario's path and the buttons](plan-log-7-2.svg)
+
+The water again, as in 2-2, with Bloopers and Cheep Cheeps. The beam
+swam it on its own, about 45 dots a segment, and then stood at the
+exit pipe's mouth for twenty segments without going in.
+
+The pipe is why. Going through it keeps the area number (2-2's exit
+did not) and sets Mario back 138 dots, and the planner counted a pipe
+above x only while it was inside a lookahead. So a position already
+through the pipe ranked below any position in front of it whose
+lookahead went in, and the beam kept choosing the mouth. Each position
+now carries the pipes its own path has entered, and that count ranks
+with its area: a pipe passed stays passed. Resumed with that rule from
+the beam's own saved state in front of the pipe, it was through in
+four segments and at the flag in eight; nothing was searched by hand.
+The straight replay from power-on took the schedule to "WORLD 7-3",
 and so did the part, first time.

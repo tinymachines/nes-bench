@@ -454,6 +454,24 @@
    },
    "planner": "saved states, --beam 4 --beam-high 1",
    "lesson": "Nothing new: the beam crossed the Hammer Bros and Bullet Bill cannons on its own."
+  },
+  {
+   "level": "7-2",
+   "measured": {
+    "first": 56110,
+    "done": 59320,
+    "entries": 1353,
+    "plan_s": null,
+    "segments": null,
+    "backtracks": 0,
+    "run": "20261019-224836",
+    "polls": 60302,
+    "wrong": 0,
+    "gaps": 0,
+    "streamed": true
+   },
+   "planner": "saved states, --beam 4 --beam-high 1 --swim; resumed with the pipe rule from the beam's own state before the exit pipe",
+   "lesson": "A pipe passed stays passed. The water's exit pipe keeps the area number and sets Mario back, so a position through it ranked below one in front of it whose lookahead went in, and the beam stood at the pipe's mouth for twenty segments. Each position now carries the pipes its own path entered."
   }
  ],
  "stream_from": 19990

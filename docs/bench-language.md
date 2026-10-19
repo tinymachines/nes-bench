@@ -322,8 +322,11 @@ above ground the whole way: 1,102 entries, run 20261019-144503 to
 wrong. 6-4, World 6's castle: 1,169 entries, run 20261019-172628 to
 "WORLD 7-1", 54,022 polls, none wrong. 7-1, Hammer Bros and cannons:
 1,214 entries, run 20261019-191128 to "WORLD 7-2", 56,061 polls, none
-wrong. One schedule now plays from power-on through twenty-five levels,
-six castles and the water, with no life lost.
+wrong. 7-2, the water again: the beam stood at the exit pipe's mouth
+until a pipe passed counted as passed (below); 1,353 entries, run
+20261019-224836 to "WORLD 7-3", 60,302 polls, none wrong. One schedule
+now plays from power-on through twenty-six levels, six castles and the
+water twice, with no life lost.
 
 The planner's words, as `tools/plan.py` takes them:
 
@@ -341,7 +344,8 @@ And its rules, always on: a level is done at the flagpole (`$000E` 04
 or 05), at the axe (`$0770` 2) or when the level changes to the next
 one; a change to any other level is a warp and counts as a death, and
 so is x jumping more than a page while Mario is his own (a maze sending
-him back); a move is kept only if one of five ways on lives (run, jump at once,
+him back); a pipe a position's own path entered counts with its area,
+so a pipe passed stays passed (7-2); a move is kept only if one of five ways on lives (run, jump at once,
 jump a little later, wait then jump, and keep A held, which carries a
 jump across the segment's end). The level by level account,
 with a drawing of each, is `docs/plan-log.md`.
