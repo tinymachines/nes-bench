@@ -89,6 +89,7 @@ the level and the world.
 | 5-1 | 37820 to 39110 | 845 | 56.3 min | 0 | `20261019-081032` (streamed) | 39951 | 0 | Nothing new: the beam crossed the Bullet Bills and the piranha pipes on its own. |
 | 5-2 | 39980 to 41240 | 902 | 74.0 min | 0 | `20261019-094241` (streamed) | 42112 | 0 | Nothing new: the beam stayed above ground past the Hammer Bros and never took the pipe to the water. |
 | 5-3 | 42150 to 43200 | 944 | 46.1 min | 0 | `20261019-104805` (streamed) | 44023 | 0 | Nothing new: the beam crossed the treetops, the lifts and the Bullet Bills on its own. |
+| 5-4 | 44060 to 45020 | 975 | 42.9 min | 0 | `20261019-115112` (streamed) | 45892 | 0 | Nothing new: the beam crossed World 5's castle, its firebars and Podoboos, on its own. |
 <!-- /plan-log:table -->
 
 Each drawing below is one level: Mario's path from the side, the level's
@@ -348,3 +349,13 @@ The treetops again, as in 1-3, with Bullet Bills and Paratroopas
 added. The beam crossed it on its own: 36 segments, about 46 minutes,
 nothing searched by hand. The straight replay from power-on took the
 schedule to "WORLD 5-4", and so did the part, first time.
+
+### 5-4
+
+![World 5-4: Mario's path and the buttons](plan-log-5-4.svg)
+
+World 5's castle: firebars, Podoboos leaping from the lava, and Bowser
+at the bridge. Not a maze, so the game's loop checks play no part. The
+beam crossed it on its own: 33 segments, about 43 minutes, nothing
+searched by hand. The straight replay from power-on took the schedule
+to "WORLD 6-1", and so did the part, first time.

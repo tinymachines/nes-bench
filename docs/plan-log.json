@@ -346,6 +346,24 @@
    },
    "planner": "saved states, --beam 4 --beam-high 1",
    "lesson": "Nothing new: the beam crossed the treetops, the lifts and the Bullet Bills on its own."
+  },
+  {
+   "level": "5-4",
+   "measured": {
+    "first": 44060,
+    "done": 45020,
+    "entries": 975,
+    "plan_s": 2572,
+    "segments": 33,
+    "backtracks": 0,
+    "run": "20261019-115112",
+    "polls": 45892,
+    "wrong": 0,
+    "gaps": 0,
+    "streamed": true
+   },
+   "planner": "saved states, --beam 4 --beam-high 1",
+   "lesson": "Nothing new: the beam crossed World 5's castle, its firebars and Podoboos, on its own."
   }
  ],
  "stream_from": 19990
