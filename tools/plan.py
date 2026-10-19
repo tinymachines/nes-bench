@@ -164,6 +164,7 @@ def judge(rows, lives0):
     his own throughout (the stall rule counts only those)."""
     x = area = 0
     held = 0x08
+    prev = None
     piped = 0   # a pipe taken counts above x: past 2-2's exit pipe Mario
                 # lands at a smaller x in the same area (measured 2026-10-18)
     level0 = tuple(rows[min(rows)][8:10]) if rows else None
@@ -178,6 +179,13 @@ def judge(rows, lives0):
             if (level, world) != ((lv + 1, wd) if lv < 3 else (0, wd + 1)):
                 return False, False, area, x, k, state
             return True, True, area, x, None, state
+        # a castle's maze: on the wrong path the game sends Mario back
+        # to the start of the loop, x jumping from page 4 to $FF and then
+        # 0 under his own control (4-4, measured 2026-10-19). Ranked by x,
+        # the beam took $FF as the furthest yet. The wrong path is a death
+        if state == 0x08 and prev == 0x08 and abs(page * 256 + px - x) > 256:
+            return False, False, area, x, k, state
+        prev = state if mode == 1 else None
         x, area = page * 256 + px, ar
         if mode == 2:
             # MEASURED 2026-10-18 on 1-4: the axe turns $0770 to 2 (the
