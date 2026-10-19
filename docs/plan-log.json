@@ -364,6 +364,24 @@
    },
    "planner": "saved states, --beam 4 --beam-high 1",
    "lesson": "Nothing new: the beam crossed World 5's castle, its firebars and Podoboos, on its own."
+  },
+  {
+   "level": "6-1",
+   "measured": {
+    "first": 45930,
+    "done": 47070,
+    "entries": 1015,
+    "plan_s": 3066,
+    "segments": 39,
+    "backtracks": 0,
+    "run": "20261019-130306",
+    "polls": 47971,
+    "wrong": 0,
+    "gaps": 0,
+    "streamed": true
+   },
+   "planner": "saved states, --beam 4 --beam-high 1",
+   "lesson": "Nothing new for the planner: the beam crossed Lakitu's night level on its own. On the part the head saw the first two polls after the final reset in one look and logged only the second, so the count starts at 1; the schedule holds 00 there, and every poll from 1 on matches."
   }
  ],
  "stream_from": 19990
