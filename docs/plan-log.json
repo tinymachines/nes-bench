@@ -418,6 +418,24 @@
    },
    "planner": "saved states, --beam 4 --beam-high 1",
    "lesson": "Nothing new: the beam crossed the balance lifts and Bullet Bills on its own, down once to eight positions alive."
+  },
+  {
+   "level": "6-4",
+   "measured": {
+    "first": 52230,
+    "done": 53130,
+    "entries": 1169,
+    "plan_s": 2590,
+    "segments": 31,
+    "backtracks": 0,
+    "run": "20261019-172628",
+    "polls": 54022,
+    "wrong": 0,
+    "gaps": 0,
+    "streamed": true
+   },
+   "planner": "saved states, --beam 4 --beam-high 1",
+   "lesson": "Nothing new for the planner. The first bench run played every poll right (run 20261019-170655, 54,021 polls, none wrong) but took no frames: the grabber gave up 900 s after it started, and this run's first grab was due later than that. It was run again with the limit raised rather than counted."
   }
  ],
  "stream_from": 19990

@@ -93,6 +93,7 @@ the level and the world.
 | 6-1 | 45930 to 47070 | 1015 | 51.1 min | 0 | `20261019-130306` (streamed) | 47971 | 0 | Nothing new for the planner: the beam crossed Lakitu's night level on its own. On the part the head saw the first two polls after the final reset in one look and logged only the second, so the count starts at 1; the schedule holds 00 there, and every poll from 1 on matches. |
 | 6-2 | 48010 to 49510 | 1102 | 78.7 min | 0 | `20261019-144503` (streamed) | 50393 | 0 | Nothing new: the beam stayed above ground past the piranha pipes and never took a pipe down. |
 | 6-3 | 50420 to 51410 | 1138 | 49.7 min | 0 | `20261019-160009` (streamed) | 52202 | 0 | Nothing new: the beam crossed the balance lifts and Bullet Bills on its own, down once to eight positions alive. |
+| 6-4 | 52230 to 53130 | 1169 | 43.2 min | 0 | `20261019-172628` (streamed) | 54022 | 0 | Nothing new for the planner. The first bench run played every poll right (run 20261019-170655, 54,021 polls, none wrong) but took no frames: the grabber gave up 900 s after it started, and this run's first grab was due later than that. It was run again with the limit raised rather than counted. |
 <!-- /plan-log:table -->
 
 Each drawing below is one level: Mario's path from the side, the level's
@@ -395,3 +396,14 @@ eight positions were alive at a segment's end, but the beam went on
 from there and crossed it on its own: 34 segments, about 50 minutes,
 nothing searched by hand. The straight replay from power-on took the
 schedule to "WORLD 6-4", and so did the part, first time.
+
+### 6-4
+
+![World 6-4: Mario's path and the buttons](plan-log-6-4.svg)
+
+World 6's castle, not a maze. The beam crossed it on its own: 31
+segments, about 43 minutes, nothing searched by hand. The first bench
+run played every poll right but took no frames: the grabber gives up a
+set time after it starts, and with the schedule this long the first
+grab was due after that. It was run again with the limit raised, and
+reached "WORLD 7-1".
