@@ -292,6 +292,24 @@
    },
    "planner": "saved states, --beam 4 --beam-high 1, the maze's checks read out of the game; one stretch searched by hand on the model",
    "lesson": "A castle maze sends Mario back unless he stands at the height the game's own table wants as the screen reaches a page. The planner now reads that table out of the game's code, calls the loop-back a death, and gives its height slot to the move whose lookahead stands at the wanted height. That crossed the first check on its own; the second is entered only through a one-tile gap that running right crosses, so that stretch was searched by hand and spliced on."
+  },
+  {
+   "level": "5-1",
+   "measured": {
+    "first": 37820,
+    "done": 39110,
+    "entries": 845,
+    "plan_s": 3380,
+    "segments": 44,
+    "backtracks": 0,
+    "run": "20261019-081032",
+    "polls": 39951,
+    "wrong": 0,
+    "gaps": 0,
+    "streamed": true
+   },
+   "planner": "saved states, --beam 4 --beam-high 1",
+   "lesson": "Nothing new: the beam crossed the Bullet Bills and the piranha pipes on its own."
   }
  ],
  "stream_from": 19990
