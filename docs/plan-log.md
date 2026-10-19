@@ -96,6 +96,7 @@ the level and the world.
 | 6-4 | 52230 to 53130 | 1169 | 43.2 min | 0 | `20261019-172628` (streamed) | 54022 | 0 | Nothing new for the planner. The first bench run played every poll right (run 20261019-170655, 54,021 polls, none wrong) but took no frames: the grabber gave up 900 s after it started, and this run's first grab was due later than that. It was run again with the limit raised rather than counted. |
 | 7-1 | 54060 to 55200 | 1214 | 54.0 min | 0 | `20261019-191128` (streamed) | 56061 | 0 | Nothing new: the beam crossed the Hammer Bros and Bullet Bill cannons on its own. |
 | 7-2 | 56110 to 59320 | 1353 | not timed | 0 | `20261019-224836` (streamed) | 60302 | 0 | A pipe passed stays passed. The water's exit pipe keeps the area number and sets Mario back, so a position through it ranked below one in front of it whose lookahead went in, and the beam stood at the pipe's mouth for twenty segments. Each position now carries the pipes its own path entered. |
+| 7-3 | 60330 to 61740 | 1393 | 72.3 min | 0 | `20261020-002836` (streamed) | 62502 | 0 | Nothing new: the beam crossed the bridges under the flying Cheep Cheeps on its own. |
 <!-- /plan-log:table -->
 
 Each drawing below is one level: Mario's path from the side, the level's
@@ -438,3 +439,13 @@ the beam's own saved state in front of the pipe, it was through in
 four segments and at the flag in eight; nothing was searched by hand.
 The straight replay from power-on took the schedule to "WORLD 7-3",
 and so did the part, first time.
+
+### 7-3
+
+![World 7-3: Mario's path and the buttons](plan-log-7-3.svg)
+
+The bridges of 2-3 again, under flying Cheep Cheeps, with Koopa
+Paratroopas between them. The beam crossed it on its own: 48 segments,
+about 72 minutes, nothing searched by hand. The straight replay from
+power-on took the schedule to "WORLD 7-4", and so did the part, first
+time.

@@ -324,9 +324,11 @@ wrong. 6-4, World 6's castle: 1,169 entries, run 20261019-172628 to
 1,214 entries, run 20261019-191128 to "WORLD 7-2", 56,061 polls, none
 wrong. 7-2, the water again: the beam stood at the exit pipe's mouth
 until a pipe passed counted as passed (below); 1,353 entries, run
-20261019-224836 to "WORLD 7-3", 60,302 polls, none wrong. One schedule
-now plays from power-on through twenty-six levels, six castles and the
-water twice, with no life lost.
+20261019-224836 to "WORLD 7-3", 60,302 polls, none wrong. 7-3, the
+bridges under flying fish: 1,393 entries, run 20261020-002836 to
+"WORLD 7-4", 62,502 polls, none wrong. One schedule now plays from
+power-on through twenty-seven levels, six castles and the water twice,
+with no life lost.
 
 The planner's words, as `tools/plan.py` takes them:
 

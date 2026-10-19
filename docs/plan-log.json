@@ -472,6 +472,24 @@
    },
    "planner": "saved states, --beam 4 --beam-high 1 --swim; resumed with the pipe rule from the beam's own state before the exit pipe",
    "lesson": "A pipe passed stays passed. The water's exit pipe keeps the area number and sets Mario back, so a position through it ranked below one in front of it whose lookahead went in, and the beam stood at the pipe's mouth for twenty segments. Each position now carries the pipes its own path entered."
+  },
+  {
+   "level": "7-3",
+   "measured": {
+    "first": 60330,
+    "done": 61740,
+    "entries": 1393,
+    "plan_s": 4340,
+    "segments": 48,
+    "backtracks": 0,
+    "run": "20261020-002836",
+    "polls": 62502,
+    "wrong": 0,
+    "gaps": 0,
+    "streamed": true
+   },
+   "planner": "saved states, --beam 4 --beam-high 1",
+   "lesson": "Nothing new: the beam crossed the bridges under the flying Cheep Cheeps on its own."
   }
  ],
  "stream_from": 19990
