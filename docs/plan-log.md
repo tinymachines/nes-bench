@@ -87,6 +87,7 @@ the level and the world.
 | 4-3 | 33560 to 34760 | 767 | 53.0 min | 0 | `20261019-015500` (streamed) | 35501 | 0 | Nothing new. The beam crossed the mushroom tops and the lifts on its own: once only six positions were alive, and the best of them had gone back, but it went on. |
 | 4-4 | 35530 to 36850 | 796 | not timed | 0 | `20261019-065615` (streamed) | 37793 | 0 | A castle maze sends Mario back unless he stands at the height the game's own table wants as the screen reaches a page. The planner now reads that table out of the game's code, calls the loop-back a death, and gives its height slot to the move whose lookahead stands at the wanted height. That crossed the first check on its own; the second is entered only through a one-tile gap that running right crosses, so that stretch was searched by hand and spliced on. |
 | 5-1 | 37820 to 39110 | 845 | 56.3 min | 0 | `20261019-081032` (streamed) | 39951 | 0 | Nothing new: the beam crossed the Bullet Bills and the piranha pipes on its own. |
+| 5-2 | 39980 to 41240 | 902 | 74.0 min | 0 | `20261019-094241` (streamed) | 42112 | 0 | Nothing new: the beam stayed above ground past the Hammer Bros and never took the pipe to the water. |
 <!-- /plan-log:table -->
 
 Each drawing below is one level: Mario's path from the side, the level's
@@ -326,3 +327,14 @@ World 5 begins in the open again, with Bullet Bills and piranha pipes.
 The beam crossed it on its own: 44 segments, about 56 minutes, nothing
 searched by hand. The straight replay from power-on took the schedule
 to "WORLD 5-2", and so did the part, first time.
+
+### 5-2
+
+![World 5-2: Mario's path and the buttons](plan-log-5-2.svg)
+
+Hammer Bros and Paratroopas above ground, and a pipe down to water
+below. The water's moves were offered (`--swim`), but the beam stayed
+above ground the whole way and crossed it on its own: 43 segments,
+about 74 minutes, nothing searched by hand. The straight replay from
+power-on took the schedule to "WORLD 5-3", and so did the part, first
+time.

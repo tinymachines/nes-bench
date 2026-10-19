@@ -310,6 +310,24 @@
    },
    "planner": "saved states, --beam 4 --beam-high 1",
    "lesson": "Nothing new: the beam crossed the Bullet Bills and the piranha pipes on its own."
+  },
+  {
+   "level": "5-2",
+   "measured": {
+    "first": 39980,
+    "done": 41240,
+    "entries": 902,
+    "plan_s": 4440,
+    "segments": 43,
+    "backtracks": 0,
+    "run": "20261019-094241",
+    "polls": 42112,
+    "wrong": 0,
+    "gaps": 0,
+    "streamed": true
+   },
+   "planner": "saved states, --beam 4 --beam-high 1 --swim",
+   "lesson": "Nothing new: the beam stayed above ground past the Hammer Bros and never took the pipe to the water."
   }
  ],
  "stream_from": 19990
