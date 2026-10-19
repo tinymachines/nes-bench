@@ -298,12 +298,13 @@ def main():
         finally:
             pool.put(w)
 
-    resumed = []
+    resumed, pipes0 = [], 0
     if a.resume:
         # a beam state and the schedule that reached it (the .json beside
         # it): the search goes on from there, with no replay from power-on
         side = json.loads(Path(a.resume + ".json").read_text())
         a.first, lives0, resumed = side["t"], side["lives0"], [tuple(e) for e in side["chosen"]]
+        pipes0 = side.get("pipes", 0)
         s0 = tmp / f"s{a.first}.state"
         shutil.copy(a.resume, s0)
     else:
@@ -387,7 +388,15 @@ def main():
         # gains no x, so it never ranked first and was gone by the time
         # every forward move died. Here the BEAM best positions, distinct
         # by area, x and height, are all kept and all expanded.
-        beam = [dict(state=s0, chosen=resumed)]
+        # pipes: how many pipes the position's own committed path went
+        # through. A pipe counts above x only while it is in a lookahead
+        # (judge's half area); 7-2's exit pipe keeps the area number and
+        # sets Mario back 138 dots, so a position already through it
+        # ranked below any position still in front of it whose lookahead
+        # went in, and the beam stood at the pipe's mouth for twenty
+        # segments (2026-10-19). Counted on the path, a pipe passed stays
+        # passed.
+        beam = [dict(state=s0, chosen=resumed, pipes=pipes0, st=0x08)]
         t, backs, done, chosen = a.first, 0, False, []
         while t < a.until and not done:
             jobs = [(i, n) for i in range(len(beam)) for n in mv]
@@ -403,7 +412,7 @@ def main():
                 print(f"latch {t}: {n} (beam {i}) -> area {r[2]} x {r[3]} DONE", flush=True)
                 done = True
                 break
-            scored.sort(key=lambda jr: (jr[1][2], jr[1][3], -len(mv[jr[0][1]])), reverse=True)
+            scored.sort(key=lambda jr: (jr[1][2] + beam[jr[0][0]]["pipes"], jr[1][3], -len(mv[jr[0][1]])), reverse=True)
             new, seen = [], set()
 
             def settle(c, name):
@@ -411,15 +420,22 @@ def main():
                 entries = [(t + o, b) for o, b in mv[n]]
                 nxt = tmp / f"b{t + a.seg}-{name}.state"
                 rows = on_worker(lambda w: w.ask(f"LOAD {beam[i]['state']}", *[f"AT {k} {b:02x}" for k, b in entries], f"RUN {t + a.seg - 1}", f"SAVE {nxt}"))
-                return nxt, rows[max(rows)], beam[i]["chosen"] + entries
+                # entries into a pipe: Mario his own one latch, in a pipe
+                # the next (the last state carried over, so an entry on a
+                # segment's first latch counts too)
+                prev, entered = beam[i]["st"], 0
+                for k in sorted(rows):
+                    entered += prev == 0x08 and rows[k][1] in (0x02, 0x03)
+                    prev = rows[k][1]
+                return nxt, rows[max(rows)], beam[i]["chosen"] + entries, beam[i]["pipes"] + entered
 
-            def take(nxt, last, chosen):
-                key = (last[6], (last[3] * 256 + last[4]) // 8, last[10] // 16)
+            def take(nxt, last, chosen, pipes):
+                key = (pipes, last[6], (last[3] * 256 + last[4]) // 8, last[10] // 16)
                 if key in seen:
                     return False
                 seen.add(key)
-                new.append(dict(state=nxt, chosen=chosen))
-                Path(str(nxt) + ".json").write_text(json.dumps(dict(t=t + a.seg, lives0=lives0, chosen=chosen)))
+                new.append(dict(state=nxt, chosen=chosen, pipes=pipes, st=last[1]))
+                Path(str(nxt) + ".json").write_text(json.dumps(dict(t=t + a.seg, lives0=lives0, chosen=chosen, pipes=pipes)))
                 return True
 
             for c in scored[:a.beam * 6]:
@@ -443,19 +459,19 @@ def main():
                 # opening ledge (2026-10-19)
                 def high(s):
                     if loop_target(checks, s[1]) is not None:
-                        return (-s[1][6], s[3] < 0, -s[3], -(s[1][3] * 256 + s[1][4]))
-                    return (-s[1][6], s[1][7] != 0, s[1][10], -(s[1][3] * 256 + s[1][4]))
+                        return (-s[3] - s[1][6], s[4] < 0, -s[4], -(s[1][3] * 256 + s[1][4]))
+                    return (-s[3] - s[1][6], s[1][7] != 0, s[1][10], -(s[1][3] * 256 + s[1][4]))
                 rest.sort(key=high)
-                for nxt, last, chosen, _ in rest:
+                for nxt, last, chosen, pipes, _ in rest:
                     if len(new) == a.beam:
                         break
-                    take(nxt, last, chosen)
+                    take(nxt, last, chosen, pipes)
                 keep_files = {str(b["state"]) for b in new}
                 for nxt, *_ in rest:
                     if str(nxt) not in keep_files:
                         nxt.unlink(missing_ok=True)
             (i0, n0), r0 = scored[0]
-            print(f"latch {t}: beam {len(new)} kept of {len(scored)} alive; best {n0} -> area {r0[2]} x {r0[3]}", flush=True)
+            print(f"latch {t}: beam {len(new)} kept of {len(scored)} alive; best {n0} -> area {r0[2]} x {r0[3]}, pipes {beam[i0]['pipes']}", flush=True)
             beam = new
             t += a.seg
     else:
