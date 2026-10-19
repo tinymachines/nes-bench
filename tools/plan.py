@@ -95,6 +95,44 @@ EXTEND = 150
 DONE = (0x04, 0x05)
 
 
+def loop_checks(rom):
+    """The castle mazes' checks, read out of the game's own code: when
+    the screen draws page P of world W, Mario must stand at y Y or be
+    sent back (4-4, 7-4, 8-4). The code compares $075F, $0725 and $00CE
+    against three tables indexed by Y from the count it loads, so the
+    tables are found through those compares, not at an address typed
+    here. Returns {world: [(page, y), ...]} in page order."""
+    prg = rom[16:16 + 0x8000]
+    i = prg.find(bytes([0xA5, 0xCE, 0xD9]))          # lda $ce / cmp tbl,y
+    if i < 0:
+        return {}
+    j = prg.rfind(bytes([0xA0]), 0, i)               # ldy #count
+    n = prg[j + 1]
+
+    def table(at):
+        a = prg[at + 1] | prg[at + 2] << 8
+        return prg[a - 0x8000:a - 0x8000 + n]
+    worlds = table(prg.rfind(bytes([0xAD, 0x5F, 0x07, 0xD9]), 0, i) + 3)
+    pages = table(prg.rfind(bytes([0xAD, 0x25, 0x07, 0xD9]), 0, i) + 3)
+    ys = table(i + 2)
+    out = {}
+    for w, p, y in zip(worlds, pages, ys):
+        out.setdefault(w, []).append((p, y))
+    return {w: sorted(c) for w, c in out.items()}
+
+
+def loop_target(checks, last):
+    """The y the next maze check wants, or None outside a castle maze."""
+    if last[8] != 3:
+        return None
+    for p, y in checks.get(last[9], []):
+        # the screen draws page p about a page ahead of Mario: 4-4 sent
+        # him back at x $0400 for its page 5 check (measured 2026-10-19)
+        if last[3] + 1 < p:
+            return y
+    return None
+
+
 def taps(seg, every, held, press):
     """A pressed every `every` latches for two, `held` between: a swim."""
     e = []
@@ -231,6 +269,7 @@ def main():
         ap.error("--first or --resume")
     global NO_CEILING
     NO_CEILING = a.no_ceiling
+    checks = loop_checks(Path(a.rom).read_bytes())
     exe = Path(a.nes) / "target" / "release" / "examples" / "branch"
     if not exe.exists():
         sys.exit(f"build it first: cargo build --release -p nes-console --example branch (in {a.nes})")
@@ -293,7 +332,7 @@ def main():
 
     def evaluate(state, t, entries):
         end = t + a.seg + a.look
-        outs = []
+        outs, hit = [], -1
         for cont in continuations(t + a.seg):
             cmds = [f"LOAD {state}"] + [f"AT {n} {b:02x}" for n, b in entries + cont] + [f"RUN {end}"]
             # a lookahead that ends with the game holding Mario (a pipe,
@@ -309,8 +348,16 @@ def main():
                         break
                     rows.update(w.ask(c))
                 return rows
-            outs.append(judge(on_worker(run), lives0) + (cont,))
-        return max(outs, key=better)
+            rows = on_worker(run)
+            # in a castle maze: the furthest x the lookahead stood at the
+            # y the game's next check wants (a jump onto 4-4's upper band
+            # is still in the air when its segment ends)
+            want = loop_target(checks, rows[min(rows)])
+            for r in rows.values():
+                if want is not None and r[1] == 0x08 and r[7] == 0 and r[10] == want and r[8:10] == rows[min(rows)][8:10]:
+                    hit = max(hit, r[3] * 256 + r[4])
+            outs.append(judge(rows, lives0) + (cont,))
+        return max(outs, key=better) + (hit,)
 
     def ranked(state, t):
         cands = {n: [(t + o, b) for o, b in m] for n, m in mv.items()}
@@ -388,14 +435,23 @@ def main():
                 # ranked by height in the air, it kept Mario jumping at
                 # the pipe's side instead (2026-10-18)
                 with ThreadPoolExecutor(a.jobs) as ex:
-                    rest = list(ex.map(lambda ic: settle(ic[1], f"h{ic[0]}"), enumerate(scored)))
-                rest.sort(key=lambda s: (-s[1][6], s[1][7] != 0, s[1][10], -(s[1][3] * 256 + s[1][4])))
-                for nxt, last, chosen in rest:
+                    rest = list(ex.map(lambda ic: settle(ic[1], f"h{ic[0]}") + (ic[1][1][7],), enumerate(scored)))
+                # in a castle maze the slots go instead to the move whose
+                # lookahead stood furthest on at the y the game's next
+                # check wants: 4-4's beam ran the lower corridor to the
+                # page 5 check and stalled, the height slot sitting on the
+                # opening ledge (2026-10-19)
+                def high(s):
+                    if loop_target(checks, s[1]) is not None:
+                        return (-s[1][6], s[3] < 0, -s[3], -(s[1][3] * 256 + s[1][4]))
+                    return (-s[1][6], s[1][7] != 0, s[1][10], -(s[1][3] * 256 + s[1][4]))
+                rest.sort(key=high)
+                for nxt, last, chosen, _ in rest:
                     if len(new) == a.beam:
                         break
                     take(nxt, last, chosen)
                 keep_files = {str(b["state"]) for b in new}
-                for nxt, _, _ in rest:
+                for nxt, *_ in rest:
                     if str(nxt) not in keep_files:
                         nxt.unlink(missing_ok=True)
             (i0, n0), r0 = scored[0]

@@ -302,8 +302,14 @@ the beam's own stair-top state, and the planner went on from there.
 730 entries, run 20261018-234630 to "WORLD 4-3", 33,502 polls, none
 wrong. 4-3, the mushroom tops and falling lifts, the beam crossed on
 its own: 767 entries, run 20261019-015500 to "WORLD 4-4", 35,501
-polls, none wrong. One schedule now plays from power-on through fifteen
-levels, three castles and the water, with no life lost.
+polls, none wrong. 4-4, the first maze, sends Mario back unless he
+stands at the heights the game's own table wants at two pages; the
+planner now reads that table out of the game, and crossed the first
+check on its own. The second is entered through a one-tile gap that
+running right goes over, and that stretch was searched by hand on the
+model and spliced on: 796 entries, run 20261019-065615 to "WORLD
+5-1", 37,793 polls, none wrong. One schedule now plays from power-on
+through sixteen levels, four castles and the water, with no life lost.
 
 The planner's words, as `tools/plan.py` takes them:
 
@@ -315,11 +321,13 @@ The planner's words, as `tools/plan.py` takes them:
 | `--beam-high H` | gives H of the beam's B to the highest positions reached standing | 4-2 |
 | `--no-ceiling` | standing on the top row counts as a death (the way over a ceiling to a warp zone) | 4-2 |
 | `--resume STATE` | goes on from a saved beam state; the `.json` beside each holds its latch and the schedule that reached it | 4-2 |
+| (always, in a castle maze) | the game's maze checks read out of its code; the `--beam-high` slots go to the move whose lookahead stands furthest on at the height the next check wants | 4-4 |
 
 And its rules, always on: a level is done at the flagpole (`$000E` 04
 or 05), at the axe (`$0770` 2) or when the level changes to the next
-one; a change to any other level is a warp and counts as a death; a
-move is kept only if one of five ways on lives (run, jump at once,
+one; a change to any other level is a warp and counts as a death, and
+so is x jumping more than a page while Mario is his own (a maze sending
+him back); a move is kept only if one of five ways on lives (run, jump at once,
 jump a little later, wait then jump, and keep A held, which carries a
 jump across the segment's end). The level by level account,
 with a drawing of each, is `docs/plan-log.md`.
