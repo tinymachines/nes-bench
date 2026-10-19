@@ -436,6 +436,24 @@
    },
    "planner": "saved states, --beam 4 --beam-high 1",
    "lesson": "Nothing new for the planner. The first bench run played every poll right (run 20261019-170655, 54,021 polls, none wrong) but took no frames: the grabber gave up 900 s after it started, and this run's first grab was due later than that. It was run again with the limit raised rather than counted."
+  },
+  {
+   "level": "7-1",
+   "measured": {
+    "first": 54060,
+    "done": 55200,
+    "entries": 1214,
+    "plan_s": 3240,
+    "segments": 39,
+    "backtracks": 0,
+    "run": "20261019-191128",
+    "polls": 56061,
+    "wrong": 0,
+    "gaps": 0,
+    "streamed": true
+   },
+   "planner": "saved states, --beam 4 --beam-high 1",
+   "lesson": "Nothing new: the beam crossed the Hammer Bros and Bullet Bill cannons on its own."
   }
  ],
  "stream_from": 19990

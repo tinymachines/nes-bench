@@ -320,9 +320,10 @@ above ground the whole way: 1,102 entries, run 20261019-144503 to
 "WORLD 6-3", 50,393 polls, none wrong. 6-3, lifts and Bullet Bills:
 1,138 entries, run 20261019-160009 to "WORLD 6-4", 52,202 polls, none
 wrong. 6-4, World 6's castle: 1,169 entries, run 20261019-172628 to
-"WORLD 7-1", 54,022 polls, none wrong. One schedule now plays from
-power-on through twenty-four levels, six castles and the water, with no
-life lost.
+"WORLD 7-1", 54,022 polls, none wrong. 7-1, Hammer Bros and cannons:
+1,214 entries, run 20261019-191128 to "WORLD 7-2", 56,061 polls, none
+wrong. One schedule now plays from power-on through twenty-five levels,
+six castles and the water, with no life lost.
 
 The planner's words, as `tools/plan.py` takes them:
 
