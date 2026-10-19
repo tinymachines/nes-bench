@@ -400,6 +400,24 @@
    },
    "planner": "saved states, --beam 4 --beam-high 1 --swim",
    "lesson": "Nothing new: the beam stayed above ground past the piranha pipes and never took a pipe down."
+  },
+  {
+   "level": "6-3",
+   "measured": {
+    "first": 50420,
+    "done": 51410,
+    "entries": 1138,
+    "plan_s": 2980,
+    "segments": 34,
+    "backtracks": 0,
+    "run": "20261019-160009",
+    "polls": 52202,
+    "wrong": 0,
+    "gaps": 0,
+    "streamed": true
+   },
+   "planner": "saved states, --beam 4 --beam-high 1",
+   "lesson": "Nothing new: the beam crossed the balance lifts and Bullet Bills on its own, down once to eight positions alive."
   }
  ],
  "stream_from": 19990

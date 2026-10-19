@@ -92,6 +92,7 @@ the level and the world.
 | 5-4 | 44060 to 45020 | 975 | 42.9 min | 0 | `20261019-115112` (streamed) | 45892 | 0 | Nothing new: the beam crossed World 5's castle, its firebars and Podoboos, on its own. |
 | 6-1 | 45930 to 47070 | 1015 | 51.1 min | 0 | `20261019-130306` (streamed) | 47971 | 0 | Nothing new for the planner: the beam crossed Lakitu's night level on its own. On the part the head saw the first two polls after the final reset in one look and logged only the second, so the count starts at 1; the schedule holds 00 there, and every poll from 1 on matches. |
 | 6-2 | 48010 to 49510 | 1102 | 78.7 min | 0 | `20261019-144503` (streamed) | 50393 | 0 | Nothing new: the beam stayed above ground past the piranha pipes and never took a pipe down. |
+| 6-3 | 50420 to 51410 | 1138 | 49.7 min | 0 | `20261019-160009` (streamed) | 52202 | 0 | Nothing new: the beam crossed the balance lifts and Bullet Bills on its own, down once to eight positions alive. |
 <!-- /plan-log:table -->
 
 Each drawing below is one level: Mario's path from the side, the level's
@@ -384,3 +385,13 @@ bonus room below some of them. The water's moves were offered
 own: 51 segments, about 79 minutes, nothing searched by hand. The
 straight replay from power-on took the schedule to "WORLD 6-3", and so
 did the part, first time.
+
+### 6-3
+
+![World 6-3: Mario's path and the buttons](plan-log-6-3.svg)
+
+Grey treetops at night, balance lifts and Bullet Bills. Once only
+eight positions were alive at a segment's end, but the beam went on
+from there and crossed it on its own: 34 segments, about 50 minutes,
+nothing searched by hand. The straight replay from power-on took the
+schedule to "WORLD 6-4", and so did the part, first time.
