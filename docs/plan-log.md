@@ -97,6 +97,7 @@ the level and the world.
 | 7-1 | 54060 to 55200 | 1214 | 54.0 min | 0 | `20261019-191128` (streamed) | 56061 | 0 | Nothing new: the beam crossed the Hammer Bros and Bullet Bill cannons on its own. |
 | 7-2 | 56110 to 59320 | 1353 | not timed | 0 | `20261019-224836` (streamed) | 60302 | 0 | A pipe passed stays passed. The water's exit pipe keeps the area number and sets Mario back, so a position through it ranked below one in front of it whose lookahead went in, and the beam stood at the pipe's mouth for twenty segments. Each position now carries the pipes its own path entered. |
 | 7-3 | 60330 to 61740 | 1393 | 72.3 min | 0 | `20261020-002836` (streamed) | 62502 | 0 | Nothing new: the beam crossed the bridges under the flying Cheep Cheeps on its own. |
+| 7-4 | 62540 to 63800 | 1423 | 59.3 min | 0 | `20261020-015615` (streamed) | 64722 | 0 | Nothing new: the maze checks read from the game in 4-4 carried World 7's six, and the beam passed every one on its own, never sent back. |
 <!-- /plan-log:table -->
 
 Each drawing below is one level: Mario's path from the side, the level's
@@ -448,4 +449,16 @@ The bridges of 2-3 again, under flying Cheep Cheeps, with Koopa
 Paratroopas between them. The beam crossed it on its own: 48 segments,
 about 72 minutes, nothing searched by hand. The straight replay from
 power-on took the schedule to "WORLD 7-4", and so did the part, first
+time.
+
+### 7-4
+
+![World 7-4: Mario's path and the buttons](plan-log-7-4.svg)
+
+World 7's castle, the second maze, and the longer one: six places
+where the wrong path sends Mario back, against 4-4's two. The planner
+read all six out of the game the way it read 4-4's, and the beam
+passed every one on its own: never sent back, 43 segments, about an
+hour, nothing searched by hand. The straight replay from power-on took
+the schedule past the axe to "WORLD 8-1", and so did the part, first
 time.
