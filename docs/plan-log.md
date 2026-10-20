@@ -541,8 +541,9 @@ A held across a segment, call a warp a death (4-2); read the castle
 mazes' checks out of the game's code (4-4); a pipe passed stays passed
 (7-2); and in World 8's castle a loop-back is a page shift, once per
 check, a pipe that sends Mario back is a trap, and a climb is searched
-by height and spliced on (8-4). Everything from 4-4 to 8-3 the beam
-crossed on its own. Two stretches in thirty-two levels were searched
-by hand on the model and spliced in: 4-4's one-tile gap and 8-4's two
-climbs; the drawings mark neither apart, because the part played them
-the same way, open loop, from one script.
+by height and spliced on (8-4). Everything from 5-1 to 8-3 the beam
+crossed on its own. Three stretches in thirty-two levels were searched
+by hand on the model and spliced in: 4-2's last tall pipe, 4-4's
+one-tile gap and 8-4's two climbs; the drawings mark none of them
+apart, because the part played them the same way, open loop, from one
+script.

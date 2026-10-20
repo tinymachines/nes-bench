@@ -1,0 +1,175 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1180 1780" width="1180" height="1780" role="img" aria-label="The flow of discovery behind PLAN: each level that broke something, what it broke and the rule that came of it">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#888"/></marker></defs>
+<rect width="1180" height="1780" fill="#fbfaf7"/>
+<text x="24" y="40" font-size="20" font-family="system-ui, sans-serif" font-weight="600" fill="#111" text-anchor="start">PLAN: the flow of discovery, Super Mario Bros. on the bench, 2026-10-17 to 2026-10-20</text>
+<text x="24" y="64" font-size="13" font-family="system-ui, sans-serif" font-weight="normal" fill="#444" text-anchor="start">Each row is a level that broke something. Left: what broke. Right: the rule or tool that came out of it, kept from then on.</text>
+<text x="560" y="92" font-size="11" font-family="system-ui, sans-serif" font-weight="600" fill="#666" text-anchor="start">WHAT BROKE</text>
+<text x="618" y="92" font-size="11" font-family="system-ui, sans-serif" font-weight="600" fill="#666" text-anchor="start">WHAT IT TAUGHT</text>
+<text x="24" y="92" font-size="11" font-family="system-ui, sans-serif" font-weight="600" fill="#666" text-anchor="start">LEVEL</text>
+<line x1="70" y1="108" x2="70" y2="1630" stroke="#bbb" stroke-width="2"/>
+<circle cx="70" cy="155.0" r="7" fill="#2563eb"/>
+<text x="24" y="149.0" font-size="15" font-family="system-ui, sans-serif" font-weight="700" fill="#111" text-anchor="start">1-1</text>
+<text x="24" y="167.0" font-size="11" font-family="system-ui, sans-serif" font-weight="normal" fill="#777" text-anchor="start">10-17</text>
+<text x="84" y="159.0" font-size="10" font-family="system-ui, sans-serif" font-weight="600" fill="#2563eb" text-anchor="start">planner</text>
+<rect x="170" y="118" width="410" height="74" rx="8" fill="#fff" stroke="#ddd"/>
+<text x="182" y="142" font-size="13" font-family="system-ui, sans-serif" font-weight="normal" fill="#222" text-anchor="start">A greedy walk hits the first goomba and cannot take</text><text x="182" y="159" font-size="13" font-family="system-ui, sans-serif" font-weight="normal" fill="#222" text-anchor="start">it back</text>
+<path d="M588 155.0 l 18 0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<rect x="618" y="118" width="560" height="74" rx="8" fill="#2563eb" fill-opacity="0.07" stroke="#2563eb" stroke-opacity="0.5"/>
+<text x="630" y="142" font-size="13" font-family="system-ui, sans-serif" font-weight="normal" fill="#111" text-anchor="start">Back up by segment: a move that dies is undone and the next best taken</text>
+<circle cx="70" cy="239.0" r="7" fill="#2563eb"/>
+<text x="24" y="233.0" font-size="15" font-family="system-ui, sans-serif" font-weight="700" fill="#111" text-anchor="start">1-2</text>
+<text x="24" y="251.0" font-size="11" font-family="system-ui, sans-serif" font-weight="normal" fill="#777" text-anchor="start">10-17</text>
+<text x="84" y="243.0" font-size="10" font-family="system-ui, sans-serif" font-weight="600" fill="#2563eb" text-anchor="start">planner</text>
+<rect x="170" y="202" width="410" height="74" rx="8" fill="#fff" stroke="#ddd"/>
+<text x="182" y="226" font-size="13" font-family="system-ui, sans-serif" font-weight="normal" fill="#222" text-anchor="start">Enemy groups need timing; a pipe holds Mario past</text><text x="182" y="243" font-size="13" font-family="system-ui, sans-serif" font-weight="normal" fill="#222" text-anchor="start">the lookahead</text>
+<path d="M588 239.0 l 18 0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<rect x="618" y="202" width="560" height="74" rx="8" fill="#2563eb" fill-opacity="0.07" stroke="#2563eb" stroke-opacity="0.5"/>
+<text x="630" y="226" font-size="13" font-family="system-ui, sans-serif" font-weight="normal" fill="#111" text-anchor="start">Saved states (nes branch), a lookahead per move, a held segment is no</text><text x="630" y="243" font-size="13" font-family="system-ui, sans-serif" font-weight="normal" fill="#111" text-anchor="start">stall</text>
+<circle cx="70" cy="323.0" r="7" fill="#2563eb"/>
+<text x="24" y="317.0" font-size="15" font-family="system-ui, sans-serif" font-weight="700" fill="#111" text-anchor="start">1-3</text>
+<text x="24" y="335.0" font-size="11" font-family="system-ui, sans-serif" font-weight="normal" fill="#777" text-anchor="start">10-18</text>
+<text x="84" y="327.0" font-size="10" font-family="system-ui, sans-serif" font-weight="600" fill="#2563eb" text-anchor="start">planner</text>
+<rect x="170" y="286" width="410" height="74" rx="8" fill="#fff" stroke="#ddd"/>
+<text x="182" y="310" font-size="13" font-family="system-ui, sans-serif" font-weight="normal" fill="#222" text-anchor="start">A gentler rule committed Mario to a gap</text>
+<path d="M588 323.0 l 18 0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<rect x="618" y="286" width="560" height="74" rx="8" fill="#2563eb" fill-opacity="0.07" stroke="#2563eb" stroke-opacity="0.5"/>
+<text x="630" y="310" font-size="13" font-family="system-ui, sans-serif" font-weight="normal" fill="#111" text-anchor="start">Keep a move only when a way on lives; keep the way on that found the</text><text x="630" y="327" font-size="13" font-family="system-ui, sans-serif" font-weight="normal" fill="#111" text-anchor="start">flag</text>
+<circle cx="70" cy="407.0" r="7" fill="#2563eb"/>
+<text x="24" y="401.0" font-size="15" font-family="system-ui, sans-serif" font-weight="700" fill="#111" text-anchor="start">1-4</text>
+<text x="24" y="419.0" font-size="11" font-family="system-ui, sans-serif" font-weight="normal" fill="#777" text-anchor="start">10-18</text>
+<text x="84" y="411.0" font-size="10" font-family="system-ui, sans-serif" font-weight="600" fill="#2563eb" text-anchor="start">planner</text>
+<rect x="170" y="370" width="410" height="74" rx="8" fill="#fff" stroke="#ddd"/>
+<text x="182" y="394" font-size="13" font-family="system-ui, sans-serif" font-weight="normal" fill="#222" text-anchor="start">A castle has no flagpole</text>
+<path d="M588 407.0 l 18 0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<rect x="618" y="370" width="560" height="74" rx="8" fill="#2563eb" fill-opacity="0.07" stroke="#2563eb" stroke-opacity="0.5"/>
+<text x="630" y="394" font-size="13" font-family="system-ui, sans-serif" font-weight="normal" fill="#111" text-anchor="start">Done at the axe: $0770 turns 2, then the next world</text>
+<circle cx="70" cy="491.0" r="7" fill="#2563eb"/>
+<text x="24" y="485.0" font-size="15" font-family="system-ui, sans-serif" font-weight="700" fill="#111" text-anchor="start">2-2</text>
+<text x="24" y="503.0" font-size="11" font-family="system-ui, sans-serif" font-weight="normal" fill="#777" text-anchor="start">10-18</text>
+<text x="84" y="495.0" font-size="10" font-family="system-ui, sans-serif" font-weight="600" fill="#2563eb" text-anchor="start">planner</text>
+<rect x="170" y="454" width="410" height="74" rx="8" fill="#fff" stroke="#ddd"/>
+<text x="182" y="478" font-size="13" font-family="system-ui, sans-serif" font-weight="normal" fill="#222" text-anchor="start">Water, and an exit pipe that puts Mario back</text>
+<path d="M588 491.0 l 18 0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<rect x="618" y="454" width="560" height="74" rx="8" fill="#2563eb" fill-opacity="0.07" stroke="#2563eb" stroke-opacity="0.5"/>
+<text x="630" y="478" font-size="13" font-family="system-ui, sans-serif" font-weight="normal" fill="#111" text-anchor="start">--swim (A tapped at measured rates); a pipe taken counts above x</text>
+<circle cx="70" cy="575.0" r="7" fill="#b45309"/>
+<text x="24" y="569.0" font-size="15" font-family="system-ui, sans-serif" font-weight="700" fill="#111" text-anchor="start">2-3</text>
+<text x="24" y="587.0" font-size="11" font-family="system-ui, sans-serif" font-weight="normal" fill="#777" text-anchor="start">10-18</text>
+<text x="84" y="579.0" font-size="10" font-family="system-ui, sans-serif" font-weight="600" fill="#b45309" text-anchor="start">bench</text>
+<rect x="170" y="538" width="410" height="74" rx="8" fill="#fff" stroke="#ddd"/>
+<text x="182" y="562" font-size="13" font-family="system-ui, sans-serif" font-weight="normal" fill="#222" text-anchor="start">The grabber timed out before the intro frame</text>
+<path d="M588 575.0 l 18 0" stroke="#b45309" stroke-width="2" marker-end="url(#a)"/>
+<rect x="618" y="538" width="560" height="74" rx="8" fill="#b45309" fill-opacity="0.07" stroke="#b45309" stroke-opacity="0.5"/>
+<text x="630" y="562" font-size="13" font-family="system-ui, sans-serif" font-weight="normal" fill="#111" text-anchor="start">Grab at latches read off the bridge log, not on a clock</text>
+<circle cx="70" cy="659.0" r="7" fill="#b45309"/>
+<text x="24" y="653.0" font-size="15" font-family="system-ui, sans-serif" font-weight="700" fill="#111" text-anchor="start">3-1</text>
+<text x="24" y="671.0" font-size="11" font-family="system-ui, sans-serif" font-weight="normal" fill="#777" text-anchor="start">10-18</text>
+<text x="84" y="663.0" font-size="10" font-family="system-ui, sans-serif" font-weight="600" fill="#b45309" text-anchor="start">bench</text>
+<rect x="170" y="622" width="410" height="74" rx="8" fill="#fff" stroke="#ddd"/>
+<text x="182" y="646" font-size="13" font-family="system-ui, sans-serif" font-weight="normal" fill="#222" text-anchor="start">A schedule larger than the head's room</text>
+<path d="M588 659.0 l 18 0" stroke="#b45309" stroke-width="2" marker-end="url(#a)"/>
+<rect x="618" y="622" width="560" height="74" rx="8" fill="#b45309" fill-opacity="0.07" stroke="#b45309" stroke-opacity="0.5"/>
+<text x="630" y="646" font-size="13" font-family="system-ui, sans-serif" font-weight="normal" fill="#111" text-anchor="start">The UNO's schedule became a ring: the head streams the rest during the</text><text x="630" y="663" font-size="13" font-family="system-ui, sans-serif" font-weight="normal" fill="#111" text-anchor="start">run</text>
+<circle cx="70" cy="743.0" r="7" fill="#2563eb"/>
+<text x="24" y="737.0" font-size="15" font-family="system-ui, sans-serif" font-weight="700" fill="#111" text-anchor="start">3-3</text>
+<text x="24" y="755.0" font-size="11" font-family="system-ui, sans-serif" font-weight="normal" fill="#777" text-anchor="start">10-18</text>
+<text x="84" y="747.0" font-size="10" font-family="system-ui, sans-serif" font-weight="600" fill="#2563eb" text-anchor="start">planner</text>
+<rect x="170" y="706" width="410" height="74" rx="8" fill="#fff" stroke="#ddd"/>
+<text x="182" y="730" font-size="13" font-family="system-ui, sans-serif" font-weight="normal" fill="#222" text-anchor="start">The way on is up, and depth first cannot keep that</text><text x="182" y="747" font-size="13" font-family="system-ui, sans-serif" font-weight="normal" fill="#222" text-anchor="start">route alive</text>
+<path d="M588 743.0 l 18 0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<rect x="618" y="706" width="560" height="74" rx="8" fill="#2563eb" fill-opacity="0.07" stroke="#2563eb" stroke-opacity="0.5"/>
+<text x="630" y="730" font-size="13" font-family="system-ui, sans-serif" font-weight="normal" fill="#111" text-anchor="start">--beam: keep several positions a segment</text>
+<circle cx="70" cy="827.0" r="7" fill="#b45309"/>
+<text x="24" y="821.0" font-size="15" font-family="system-ui, sans-serif" font-weight="700" fill="#111" text-anchor="start">3-3</text>
+<text x="24" y="839.0" font-size="11" font-family="system-ui, sans-serif" font-weight="normal" fill="#777" text-anchor="start">10-18</text>
+<text x="84" y="831.0" font-size="10" font-family="system-ui, sans-serif" font-weight="600" fill="#b45309" text-anchor="start">bench</text>
+<rect x="170" y="790" width="410" height="74" rx="8" fill="#fff" stroke="#ddd"/>
+<text x="182" y="814" font-size="13" font-family="system-ui, sans-serif" font-weight="normal" fill="#222" text-anchor="start">The console restarted itself mid-run with a clean</text><text x="182" y="831" font-size="13" font-family="system-ui, sans-serif" font-weight="normal" fill="#222" text-anchor="start">poll log</text>
+<path d="M588 827.0 l 18 0" stroke="#b45309" stroke-width="2" marker-end="url(#a)"/>
+<rect x="618" y="790" width="560" height="74" rx="8" fill="#b45309" fill-opacity="0.07" stroke="#b45309" stroke-opacity="0.5"/>
+<text x="630" y="814" font-size="13" font-family="system-ui, sans-serif" font-weight="normal" fill="#111" text-anchor="start">A part failure is not a plan failure: run it again, count only a clean</text><text x="630" y="831" font-size="13" font-family="system-ui, sans-serif" font-weight="normal" fill="#111" text-anchor="start">run</text>
+<circle cx="70" cy="911.0" r="7" fill="#2563eb"/>
+<text x="24" y="905.0" font-size="15" font-family="system-ui, sans-serif" font-weight="700" fill="#111" text-anchor="start">3-4</text>
+<text x="24" y="923.0" font-size="11" font-family="system-ui, sans-serif" font-weight="normal" fill="#777" text-anchor="start">10-18</text>
+<text x="84" y="915.0" font-size="10" font-family="system-ui, sans-serif" font-weight="600" fill="#2563eb" text-anchor="start">planner</text>
+<rect x="170" y="874" width="410" height="74" rx="8" fill="#fff" stroke="#ddd"/>
+<text x="182" y="898" font-size="13" font-family="system-ui, sans-serif" font-weight="normal" fill="#222" text-anchor="start">A frame holding two polls played a jump one poll</text><text x="182" y="915" font-size="13" font-family="system-ui, sans-serif" font-weight="normal" fill="#222" text-anchor="start">late</text>
+<path d="M588 911.0 l 18 0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<rect x="618" y="874" width="560" height="74" rx="8" fill="#2563eb" fill-opacity="0.07" stroke="#2563eb" stroke-opacity="0.5"/>
+<text x="630" y="898" font-size="13" font-family="system-ui, sans-serif" font-weight="normal" fill="#111" text-anchor="start">The model stops on the poll, not at the frame's end</text>
+<circle cx="70" cy="995.0" r="7" fill="#2563eb"/>
+<text x="24" y="989.0" font-size="15" font-family="system-ui, sans-serif" font-weight="700" fill="#111" text-anchor="start">4-2</text>
+<text x="24" y="1007.0" font-size="11" font-family="system-ui, sans-serif" font-weight="normal" fill="#777" text-anchor="start">10-18</text>
+<text x="84" y="999.0" font-size="10" font-family="system-ui, sans-serif" font-weight="600" fill="#2563eb" text-anchor="start">planner</text>
+<rect x="170" y="958" width="410" height="74" rx="8" fill="#fff" stroke="#ddd"/>
+<text x="182" y="982" font-size="13" font-family="system-ui, sans-serif" font-weight="normal" fill="#222" text-anchor="start">The ceiling leads to a warp zone; the beam has no</text><text x="182" y="999" font-size="13" font-family="system-ui, sans-serif" font-weight="normal" fill="#222" text-anchor="start">room for height; a jump cannot keep A across a</text><text x="182" y="1016" font-size="13" font-family="system-ui, sans-serif" font-weight="normal" fill="#222" text-anchor="start">segment</text>
+<path d="M588 995.0 l 18 0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<rect x="618" y="958" width="560" height="74" rx="8" fill="#2563eb" fill-opacity="0.07" stroke="#2563eb" stroke-opacity="0.5"/>
+<text x="630" y="982" font-size="13" font-family="system-ui, sans-serif" font-weight="normal" fill="#111" text-anchor="start">--beam-high, --no-ceiling, a warp is a death, A held as a way on,</text><text x="630" y="999" font-size="13" font-family="system-ui, sans-serif" font-weight="normal" fill="#111" text-anchor="start">--resume with .json sidecars; one stretch by hand</text>
+<circle cx="70" cy="1079.0" r="7" fill="#2563eb"/>
+<text x="24" y="1073.0" font-size="15" font-family="system-ui, sans-serif" font-weight="700" fill="#111" text-anchor="start">4-4</text>
+<text x="24" y="1091.0" font-size="11" font-family="system-ui, sans-serif" font-weight="normal" fill="#777" text-anchor="start">10-19</text>
+<text x="84" y="1083.0" font-size="10" font-family="system-ui, sans-serif" font-weight="600" fill="#2563eb" text-anchor="start">planner</text>
+<rect x="170" y="1042" width="410" height="74" rx="8" fill="#fff" stroke="#ddd"/>
+<text x="182" y="1066" font-size="13" font-family="system-ui, sans-serif" font-weight="normal" fill="#222" text-anchor="start">A castle maze sends Mario back unless he stands at a</text><text x="182" y="1083" font-size="13" font-family="system-ui, sans-serif" font-weight="normal" fill="#222" text-anchor="start">height as the screen reaches a page</text>
+<path d="M588 1079.0 l 18 0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<rect x="618" y="1042" width="560" height="74" rx="8" fill="#2563eb" fill-opacity="0.07" stroke="#2563eb" stroke-opacity="0.5"/>
+<text x="630" y="1066" font-size="13" font-family="system-ui, sans-serif" font-weight="normal" fill="#111" text-anchor="start">The checks read out of the game's code; the loop-back a death; the</text><text x="630" y="1083" font-size="13" font-family="system-ui, sans-serif" font-weight="normal" fill="#111" text-anchor="start">height slot aimed at the next check; one gap by hand</text>
+<circle cx="70" cy="1163.0" r="7" fill="#b45309"/>
+<text x="24" y="1157.0" font-size="15" font-family="system-ui, sans-serif" font-weight="700" fill="#111" text-anchor="start">6-1</text>
+<text x="24" y="1175.0" font-size="11" font-family="system-ui, sans-serif" font-weight="normal" fill="#777" text-anchor="start">10-19</text>
+<text x="84" y="1167.0" font-size="10" font-family="system-ui, sans-serif" font-weight="600" fill="#b45309" text-anchor="start">bench</text>
+<rect x="170" y="1126" width="410" height="74" rx="8" fill="#fff" stroke="#ddd"/>
+<text x="182" y="1150" font-size="13" font-family="system-ui, sans-serif" font-weight="normal" fill="#222" text-anchor="start">Two polls seen in one look, the count starting at 1</text>
+<path d="M588 1163.0 l 18 0" stroke="#b45309" stroke-width="2" marker-end="url(#a)"/>
+<rect x="618" y="1126" width="560" height="74" rx="8" fill="#b45309" fill-opacity="0.07" stroke="#b45309" stroke-opacity="0.5"/>
+<text x="630" y="1150" font-size="13" font-family="system-ui, sans-serif" font-weight="normal" fill="#111" text-anchor="start">Compare from the last reset line of the bridge log, not the last L 0</text>
+<circle cx="70" cy="1247.0" r="7" fill="#b45309"/>
+<text x="24" y="1241.0" font-size="15" font-family="system-ui, sans-serif" font-weight="700" fill="#111" text-anchor="start">6-4</text>
+<text x="24" y="1259.0" font-size="11" font-family="system-ui, sans-serif" font-weight="normal" fill="#777" text-anchor="start">10-19</text>
+<text x="84" y="1251.0" font-size="10" font-family="system-ui, sans-serif" font-weight="600" fill="#b45309" text-anchor="start">bench</text>
+<rect x="170" y="1210" width="410" height="74" rx="8" fill="#fff" stroke="#ddd"/>
+<text x="182" y="1234" font-size="13" font-family="system-ui, sans-serif" font-weight="normal" fill="#222" text-anchor="start">A clean run with no frames: the grabber's limit was</text><text x="182" y="1251" font-size="13" font-family="system-ui, sans-serif" font-weight="normal" fill="#222" text-anchor="start">shorter than the run</text>
+<path d="M588 1247.0 l 18 0" stroke="#b45309" stroke-width="2" marker-end="url(#a)"/>
+<rect x="618" y="1210" width="560" height="74" rx="8" fill="#b45309" fill-opacity="0.07" stroke="#b45309" stroke-opacity="0.5"/>
+<text x="630" y="1234" font-size="13" font-family="system-ui, sans-serif" font-weight="normal" fill="#111" text-anchor="start">A limit set from the schedule's length</text>
+<circle cx="70" cy="1331.0" r="7" fill="#2563eb"/>
+<text x="24" y="1325.0" font-size="15" font-family="system-ui, sans-serif" font-weight="700" fill="#111" text-anchor="start">7-2</text>
+<text x="24" y="1343.0" font-size="11" font-family="system-ui, sans-serif" font-weight="normal" fill="#777" text-anchor="start">10-19</text>
+<text x="84" y="1335.0" font-size="10" font-family="system-ui, sans-serif" font-weight="600" fill="#2563eb" text-anchor="start">planner</text>
+<rect x="170" y="1294" width="410" height="74" rx="8" fill="#fff" stroke="#ddd"/>
+<text x="182" y="1318" font-size="13" font-family="system-ui, sans-serif" font-weight="normal" fill="#222" text-anchor="start">The beam stood at the water's exit pipe for twenty</text><text x="182" y="1335" font-size="13" font-family="system-ui, sans-serif" font-weight="normal" fill="#222" text-anchor="start">segments</text>
+<path d="M588 1331.0 l 18 0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<rect x="618" y="1294" width="560" height="74" rx="8" fill="#2563eb" fill-opacity="0.07" stroke="#2563eb" stroke-opacity="0.5"/>
+<text x="630" y="1318" font-size="13" font-family="system-ui, sans-serif" font-weight="normal" fill="#111" text-anchor="start">A pipe passed stays passed: each position carries the pipes its own</text><text x="630" y="1335" font-size="13" font-family="system-ui, sans-serif" font-weight="normal" fill="#111" text-anchor="start">path entered</text>
+<circle cx="70" cy="1415.0" r="7" fill="#2563eb"/>
+<text x="24" y="1409.0" font-size="15" font-family="system-ui, sans-serif" font-weight="700" fill="#111" text-anchor="start">8-4</text>
+<text x="24" y="1427.0" font-size="11" font-family="system-ui, sans-serif" font-weight="normal" fill="#777" text-anchor="start">10-20</text>
+<text x="84" y="1419.0" font-size="10" font-family="system-ui, sans-serif" font-weight="600" fill="#2563eb" text-anchor="start">planner</text>
+<rect x="170" y="1378" width="410" height="74" rx="8" fill="#fff" stroke="#ddd"/>
+<text x="182" y="1402" font-size="13" font-family="system-ui, sans-serif" font-weight="normal" fill="#222" text-anchor="start">Checks that fire whatever Mario does, and the beam</text><text x="182" y="1419" font-size="13" font-family="system-ui, sans-serif" font-weight="normal" fill="#222" text-anchor="start">stalled at x 1266 twice</text>
+<path d="M588 1415.0 l 18 0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<rect x="618" y="1378" width="560" height="74" rx="8" fill="#2563eb" fill-opacity="0.07" stroke="#2563eb" stroke-opacity="0.5"/>
+<text x="630" y="1402" font-size="13" font-family="system-ui, sans-serif" font-weight="normal" fill="#111" text-anchor="start">Read in the code: the loop-back is a page shift under his feet,</text><text x="630" y="1419" font-size="13" font-family="system-ui, sans-serif" font-weight="normal" fill="#111" text-anchor="start">progress once per check</text>
+<circle cx="70" cy="1499.0" r="7" fill="#2563eb"/>
+<text x="24" y="1493.0" font-size="15" font-family="system-ui, sans-serif" font-weight="700" fill="#111" text-anchor="start">8-4</text>
+<text x="24" y="1511.0" font-size="11" font-family="system-ui, sans-serif" font-weight="normal" fill="#777" text-anchor="start">10-20</text>
+<text x="84" y="1503.0" font-size="10" font-family="system-ui, sans-serif" font-weight="600" fill="#2563eb" text-anchor="start">planner</text>
+<rect x="170" y="1462" width="410" height="74" rx="8" fill="#fff" stroke="#ddd"/>
+<text x="182" y="1486" font-size="13" font-family="system-ui, sans-serif" font-weight="normal" fill="#222" text-anchor="start">Counted every time, the beam circled a section four</text><text x="182" y="1503" font-size="13" font-family="system-ui, sans-serif" font-weight="normal" fill="#222" text-anchor="start">times; a wrong pipe took it to page 1</text>
+<path d="M588 1499.0 l 18 0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<rect x="618" y="1462" width="560" height="74" rx="8" fill="#2563eb" fill-opacity="0.07" stroke="#2563eb" stroke-opacity="0.5"/>
+<text x="630" y="1486" font-size="13" font-family="system-ui, sans-serif" font-weight="normal" fill="#111" text-anchor="start">A repeat of the same check is a death; a pipe that sets Mario back a</text><text x="630" y="1503" font-size="13" font-family="system-ui, sans-serif" font-weight="normal" fill="#111" text-anchor="start">page in the loaded area is a trap</text>
+<circle cx="70" cy="1583.0" r="7" fill="#2563eb"/>
+<text x="24" y="1577.0" font-size="15" font-family="system-ui, sans-serif" font-weight="700" fill="#111" text-anchor="start">8-4</text>
+<text x="24" y="1595.0" font-size="11" font-family="system-ui, sans-serif" font-weight="normal" fill="#777" text-anchor="start">10-20</text>
+<text x="84" y="1587.0" font-size="10" font-family="system-ui, sans-serif" font-weight="600" fill="#2563eb" text-anchor="start">planner</text>
+<rect x="170" y="1546" width="410" height="74" rx="8" fill="#fff" stroke="#ddd"/>
+<text x="182" y="1570" font-size="13" font-family="system-ui, sans-serif" font-weight="normal" fill="#222" text-anchor="start">A climb gains nothing to the right, so the beam</text><text x="182" y="1587" font-size="13" font-family="system-ui, sans-serif" font-weight="normal" fill="#222" text-anchor="start">never strings it together</text>
+<path d="M588 1583.0 l 18 0" stroke="#2563eb" stroke-width="2" marker-end="url(#a)"/>
+<rect x="618" y="1546" width="560" height="74" rx="8" fill="#2563eb" fill-opacity="0.07" stroke="#2563eb" stroke-opacity="0.5"/>
+<text x="630" y="1570" font-size="13" font-family="system-ui, sans-serif" font-weight="normal" fill="#111" text-anchor="start">tools/plan-climb.py: a six-poll beam ranked by height, spliced on; the</text><text x="630" y="1587" font-size="13" font-family="system-ui, sans-serif" font-weight="normal" fill="#111" text-anchor="start">water pipe's entry judged alive by $074F, not $0750</text>
+<rect x="24" y="1646" width="1132" height="96" rx="10" fill="#e8f5e9" stroke="#2e7d32"/>
+<text x="40" y="1674" font-size="13" font-family="system-ui, sans-serif" font-weight="normal" fill="#1b4d20" text-anchor="start">The end: one schedule of 1,752 button bytes, searched on the model level by level and played on the part from</text><text x="40" y="1691" font-size="13" font-family="system-ui, sans-serif" font-weight="normal" fill="#1b4d20" text-anchor="start">power-on, run 20261020-192022: thirty-two levels, 77,402 polls checked against the script, none wrong, none</text><text x="40" y="1708" font-size="13" font-family="system-ui, sans-serif" font-weight="normal" fill="#1b4d20" text-anchor="start">missing, no life lost. Twenty of the thirty-two levels taught nothing: the beam crossed them on its own.</text>
+<text x="40" y="1730" font-size="11" font-family="system-ui, sans-serif" font-weight="normal" fill="#4a6b4d" text-anchor="start">Authored by tools/plan-discovery.py; the measured record is docs/plan-log.json and docs/plan-log.md.</text>
+</svg>
