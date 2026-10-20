@@ -526,6 +526,24 @@
    },
    "planner": "saved states, --beam 4 --beam-high 1",
    "lesson": "Nothing new: the longest level in the game, and the beam crossed it on its own in 89 segments, about two hours."
+  },
+  {
+   "level": "8-2",
+   "measured": {
+    "first": 68140,
+    "done": 69550,
+    "entries": 1573,
+    "plan_s": 4120,
+    "segments": 48,
+    "backtracks": 0,
+    "run": "20261020-060340",
+    "polls": 70413,
+    "wrong": 0,
+    "gaps": 0,
+    "streamed": true
+   },
+   "planner": "saved states, --beam 4 --beam-high 1",
+   "lesson": "Nothing new: Lakitu, Buzzy Beetles and the stair gaps, and the beam crossed it on its own."
   }
  ],
  "stream_from": 19990
