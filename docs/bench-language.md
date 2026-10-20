@@ -331,8 +331,10 @@ never sent back: 1,423 entries, run 20261020-015615 to "WORLD 8-1",
 64,722 polls, none wrong. 8-1, the longest level: 1,519 entries, run
 20261020-042403 to "WORLD 8-2", 68,102 polls, none wrong. 8-2, Lakitu
 over the stairs: 1,573 entries, run 20261020-060340 to "WORLD 8-3",
-70,413 polls, none wrong. One schedule now plays from power-on through
-thirty levels, seven castles and the water twice, with no life lost.
+70,413 polls, none wrong. 8-3, the Hammer Bros on the walls: 1,622
+entries, run 20261020-074156 to "WORLD 8-4", 72,573 polls, none wrong.
+One schedule now plays from power-on through thirty-one levels, seven
+castles and the water twice, with no life lost.
 
 The planner's words, as `tools/plan.py` takes them:
 

@@ -100,6 +100,7 @@ the level and the world.
 | 7-4 | 62540 to 63800 | 1423 | 59.3 min | 0 | `20261020-015615` (streamed) | 64722 | 0 | Nothing new: the maze checks read from the game in 4-4 carried World 7's six, and the beam passed every one on its own, never sent back. |
 | 8-1 | 64740 to 67380 | 1519 | 118.7 min | 0 | `20261020-042403` (streamed) | 68102 | 0 | Nothing new: the longest level in the game, and the beam crossed it on its own in 89 segments, about two hours. |
 | 8-2 | 68140 to 69550 | 1573 | 68.7 min | 0 | `20261020-060340` (streamed) | 70413 | 0 | Nothing new: Lakitu, Buzzy Beetles and the stair gaps, and the beam crossed it on its own. |
+| 8-3 | 70450 to 71800 | 1622 | 66.7 min | 0 | `20261020-074156` (streamed) | 72573 | 0 | Nothing new: the Hammer Bros on the castle walls, and the beam crossed it on its own. |
 <!-- /plan-log:table -->
 
 Each drawing below is one level: Mario's path from the side, the level's
@@ -484,3 +485,13 @@ gaps between the stair blocks. The beam crossed it on its own: 48
 segments, about 69 minutes, nothing searched by hand. The straight
 replay from power-on took the schedule to "WORLD 8-3", and so did the
 part, first time.
+
+### 8-3
+
+![World 8-3: Mario's path and the buttons](plan-log-8-3.svg)
+
+Castle walls across the level, each with Hammer Bros on it, and
+Bullet Bills between. The beam crossed it on its own: 46 segments,
+about 67 minutes, nothing searched by hand. The straight replay from
+power-on took the schedule to "WORLD 8-4", and so did the part, first
+time.

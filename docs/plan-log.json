@@ -544,6 +544,24 @@
    },
    "planner": "saved states, --beam 4 --beam-high 1",
    "lesson": "Nothing new: Lakitu, Buzzy Beetles and the stair gaps, and the beam crossed it on its own."
+  },
+  {
+   "level": "8-3",
+   "measured": {
+    "first": 70450,
+    "done": 71800,
+    "entries": 1622,
+    "plan_s": 4000,
+    "segments": 46,
+    "backtracks": 0,
+    "run": "20261020-074156",
+    "polls": 72573,
+    "wrong": 0,
+    "gaps": 0,
+    "streamed": true
+   },
+   "planner": "saved states, --beam 4 --beam-high 1",
+   "lesson": "Nothing new: the Hammer Bros on the castle walls, and the beam crossed it on its own."
   }
  ],
  "stream_from": 19990
