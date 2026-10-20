@@ -508,6 +508,24 @@
    },
    "planner": "saved states, --beam 4 --beam-high 1",
    "lesson": "Nothing new: the maze checks read from the game in 4-4 carried World 7's six, and the beam passed every one on its own, never sent back."
+  },
+  {
+   "level": "8-1",
+   "measured": {
+    "first": 64740,
+    "done": 67380,
+    "entries": 1519,
+    "plan_s": 7120,
+    "segments": 89,
+    "backtracks": 0,
+    "run": "20261020-042403",
+    "polls": 68102,
+    "wrong": 0,
+    "gaps": 0,
+    "streamed": true
+   },
+   "planner": "saved states, --beam 4 --beam-high 1",
+   "lesson": "Nothing new: the longest level in the game, and the beam crossed it on its own in 89 segments, about two hours."
   }
  ],
  "stream_from": 19990
