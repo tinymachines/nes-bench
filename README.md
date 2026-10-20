@@ -75,13 +75,18 @@ built as USB on an ESP32-P4 and reached a host on 2026-09-27
   word the head, the bridge and the tools take (pads, power, reset,
   screen, sound, scope, waits), and PLAN, the loop that learns to play.
 - `docs/plan-log.md` with `plan-log-*.svg`: PLAN's Super Mario Bros.
-  level sequence as a visual log. One schedule of button bytes is
-  searched on the model (`tools/plan.py` driving `nes-console`'s
-  `branch` example, the console saved and loaded mid-run) and played on
-  the part from power-on, a level more each time; each level is checked
-  poll by poll against the bridge's log before the next is planned. The
-  drawings are made from numbers only by `tools/plan-log.py` (no picture
-  of the game), from `docs/plan-log.json` and `exercise/smb-plan.txt`.
+  level sequence as a visual log, the whole game now. One schedule of
+  button bytes is searched on the model (`tools/plan.py` driving
+  `nes-console`'s `branch` example, the console saved and loaded
+  mid-run; `tools/plan-climb.py` for a climb the beam cannot find) and
+  played on the part from power-on, a level more each time; each level
+  is checked poll by poll against the bridge's log before the next is
+  planned. Thirty-two levels were cleared that way between 2026-10-17
+  and 2026-10-20, the last run `20261020-192022` playing 1,752 entries
+  from the title screen to the princess with no life lost, 77,402 polls
+  checked, none wrong. The drawings are made from numbers only by
+  `tools/plan-log.py` (no picture of the game), from `docs/plan-log.json`
+  and `exercise/smb-plan.txt`.
 - `docs/encyclopedia.md`: the NES code patterns the x-rays add up to,
   each with its signature as `tools/xray.py` measured it, a window on
   the Halfshot page and the mechanism; code only from ROMs whose source

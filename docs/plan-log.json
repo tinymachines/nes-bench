@@ -562,6 +562,24 @@
    },
    "planner": "saved states, --beam 4 --beam-high 1",
    "lesson": "Nothing new: the Hammer Bros on the castle walls, and the beam crossed it on its own."
+  },
+  {
+   "level": "8-4",
+   "measured": {
+    "first": 72620,
+    "done": 75896,
+    "entries": 1752,
+    "plan_s": 29800,
+    "segments": 97,
+    "backtracks": 0,
+    "run": "20261020-192022",
+    "polls": 77402,
+    "wrong": 0,
+    "gaps": 0,
+    "streamed": true
+   },
+   "planner": "saved states, --beam 4 --beam-high 1 --swim, two climbs by tools/plan-climb.py spliced on",
+   "lesson": "World 8's maze checks fire whatever Mario does and leave the world under his feet: a loop-back there is a page shift, progress once per check and a death the second time. A pipe whose exit is more than a page behind its entry in the same loaded area is a trap. The climb onto a raised pipe (a hidden block hit, stood on, jumped from) gains nothing to the right, so it was searched by height, six polls at a time, and spliced on."
   }
  ],
  "stream_from": 19990

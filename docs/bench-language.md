@@ -333,8 +333,11 @@ never sent back: 1,423 entries, run 20261020-015615 to "WORLD 8-1",
 over the stairs: 1,573 entries, run 20261020-060340 to "WORLD 8-3",
 70,413 polls, none wrong. 8-3, the Hammer Bros on the walls: 1,622
 entries, run 20261020-074156 to "WORLD 8-4", 72,573 polls, none wrong.
-One schedule now plays from power-on through thirty-one levels, seven
-castles and the water twice, with no life lost.
+8-4, the last castle, its three checks that fire whatever Mario does
+and its wrong pipes: 1,752 entries, run 20261020-192022 to the axe,
+Bowser and "THANK YOU MARIO!", 77,402 polls, none wrong. One schedule
+now plays the whole game from power-on, thirty-two levels, eight
+castles and the water three times, with no life lost.
 
 The planner's words, as `tools/plan.py` takes them:
 
@@ -347,16 +350,30 @@ The planner's words, as `tools/plan.py` takes them:
 | `--no-ceiling` | standing on the top row counts as a death (the way over a ceiling to a warp zone) | 4-2 |
 | `--resume STATE` | goes on from a saved beam state; the `.json` beside each holds its latch and the schedule that reached it | 4-2 |
 | (always, in a castle maze) | the game's maze checks read out of its code; the `--beam-high` slots go to the move whose lookahead stands furthest on at the height the next check wants | 4-4 |
+| (always, where a check wants a height Mario never has) | the loop-back is a page shift under his feet, not a death: progress, once per check; the same check firing again is a death, the section's exit missed | 8-4 |
+| (always) | `down@N`: run, then Down held from poll N, the way into a pipe from its top | 8-4 |
+| `tools/plan-climb.py` | a six-poll beam ranked by height from a saved state, for a climb the thirty-poll beam never strings together; its path is spliced into the state's `.json` and `--resume` goes on | 8-4 |
 
 And its rules, always on: a level is done at the flagpole (`$000E` 04
 or 05), at the axe (`$0770` 2) or when the level changes to the next
 one; a change to any other level is a warp and counts as a death, and
 so is x jumping more than a page while Mario is his own (a maze sending
 him back); a pipe a position's own path entered counts with its area,
-so a pipe passed stays passed (7-2); a move is kept only if one of five ways on lives (run, jump at once,
+so a pipe passed stays passed (7-2); a pipe whose exit is more than a
+page behind its entry in the same loaded area (`$074F`, not the pointer
+at `$0750`, which a pipe already carries before Mario is in it) is a
+trap and a death (8-4); a move is kept only if one of five ways on lives (run, jump at once,
 jump a little later, wait then jump, and keep A held, which carries a
 jump across the segment's end). The level by level account,
 with a drawing of each, is `docs/plan-log.md`.
+
+That is the whole of PLAN as it stands: a planner of a few hundred
+lines and eight words, a replay, a bench and a check, and one script
+that takes the part from power-on to the end of Super Mario Bros. with
+no life lost. Nothing in it reacts to the game. What it has is a
+model exact enough that a schedule searched on it plays the same on
+the part, poll for poll, through thirty-two levels; the bench's part is
+to prove that, every level, before the next is planned.
 
 ## Proposed words
 

@@ -3,7 +3,9 @@
 A visual log of the bench learning to play. One schedule of button bytes,
 searched on the model and played on the console from power-on, clears a
 level more each time it grows; every level here was cleared on the part
-with no life lost before the next was planned. The drawings are measured
+with no life lost before the next was planned. On 2026-10-20 the
+schedule reached the end of the game: thirty-two levels from power-on
+to the princess, one run, no life lost. The drawings are measured
 (Mario's path from the model's RAM, the buttons from the schedule the
 part played) and the table's verdicts come from the bench's own logs.
 No picture of the game is shown: the grabber's frames of a commercial
@@ -101,6 +103,7 @@ the level and the world.
 | 8-1 | 64740 to 67380 | 1519 | 118.7 min | 0 | `20261020-042403` (streamed) | 68102 | 0 | Nothing new: the longest level in the game, and the beam crossed it on its own in 89 segments, about two hours. |
 | 8-2 | 68140 to 69550 | 1573 | 68.7 min | 0 | `20261020-060340` (streamed) | 70413 | 0 | Nothing new: Lakitu, Buzzy Beetles and the stair gaps, and the beam crossed it on its own. |
 | 8-3 | 70450 to 71800 | 1622 | 66.7 min | 0 | `20261020-074156` (streamed) | 72573 | 0 | Nothing new: the Hammer Bros on the castle walls, and the beam crossed it on its own. |
+| 8-4 | 72620 to 75896 | 1752 | 496.7 min | 0 | `20261020-192022` (streamed) | 77402 | 0 | World 8's maze checks fire whatever Mario does and leave the world under his feet: a loop-back there is a page shift, progress once per check and a death the second time. A pipe whose exit is more than a page behind its entry in the same loaded area is a trap. The climb onto a raised pipe (a hidden block hit, stood on, jumped from) gains nothing to the right, so it was searched by height, six polls at a time, and spliced on. |
 <!-- /plan-log:table -->
 
 Each drawing below is one level: Mario's path from the side, the level's
@@ -495,3 +498,51 @@ Bullet Bills between. The beam crossed it on its own: 46 segments,
 about 67 minutes, nothing searched by hand. The straight replay from
 power-on took the schedule to "WORLD 8-4", and so did the part, first
 time.
+
+### 8-4
+
+![World 8-4: Mario's path and the buttons](plan-log-8-4.svg)
+
+The last castle, and the one level the beam could not cross alone.
+World 8's three maze checks want a height Mario never has, so each
+fires whatever he does as the screen reaches its page: the game sends
+the page numbers back four pages but leaves the world under his feet,
+and he walks on in it, into the pipe past the check's column. The maze
+rule written for 4-4 called that loop-back a death, and the beam
+stalled at the first check for two runs. Read in the game's code and
+measured on the model, the loop-back became a page shift in such a
+world, counted as progress once per check. Counted every time, the
+beam circled the second section four times, because its exit is a
+raised pipe that needs a hidden block hit, stood on and jumped from,
+three moves that gain nothing to the right. That climb, and the jump
+onto the water pipe after the lava, were found by
+`tools/plan-climb.py`, a six-poll beam ranked by height, and spliced
+into the beam's saved state as 4-4's gap was. Two more rules came out
+of the wrong pipes: a pipe whose exit is more than a page behind its
+entry in the same area is a trap (every wrong pipe here leads to page
+1), and the area is the one loaded, not the pointer the pipe already
+carries. Six planner runs, 97 segments on the final path, about eight
+hours of planner time. The straight replay from power-on reached the
+axe with the lives it started with, and so did the part, first time:
+Bowser fell, the text came.
+
+## The whole game
+
+Thirty-two levels, one schedule of 1,752 entries, played from power-on
+on the part in run `20261020-192022`: 77,402 polls checked against the
+script after the final reset, none wrong, none missing, no life lost
+from the title screen to the princess. The planner that found it is
+the sum of what the levels taught, in this order: back up by segment
+when a move dies (1-1); time an enemy group by lookahead, and a held
+Mario is no stall (1-2); keep a move only when a way on lives (1-3);
+swim by tapping A, and a pipe taken counts above x (2-2); search as a
+beam when the way on is up (3-3); give the beam room for height, keep
+A held across a segment, call a warp a death (4-2); read the castle
+mazes' checks out of the game's code (4-4); a pipe passed stays passed
+(7-2); and in World 8's castle a loop-back is a page shift, once per
+check, a pipe that sends Mario back is a trap, and a climb is searched
+by height and spliced on (8-4). Everything from 4-4 to 8-3 the beam
+crossed on its own. Two stretches in thirty-two levels were searched
+by hand on the model and spliced in: 4-4's one-tile gap and 8-4's two
+climbs; the drawings mark neither apart, because the part played them
+the same way, open loop, from one script.
