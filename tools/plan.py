@@ -74,7 +74,7 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-WATCH = ["0770", "000e", "00b5", "006d", "0086", "075a", "0760", "001d", "075c", "075f", "00ce"]
+WATCH = ["0770", "000e", "00b5", "006d", "0086", "075a", "0760", "001d", "075c", "075f", "00ce", "074f"]
 START = """POWER ON
 WAIT 5 S
 MODE INJECT
@@ -93,6 +93,8 @@ STALL, STALL_PX = 8, 16   # 8 segments: room to wait for a lift (3-3)
 ESCALATE = 4
 EXTEND = 150
 DONE = (0x04, 0x05)
+UNCOND = set()   # worlds whose maze checks want a y Mario never has (8-4): their loop-backs are page shifts, not deaths
+CHECKS = {}      # the maze checks by world, from the ROM: a loop-back is named by the check page it fired under
 
 
 def loop_checks(rom):
@@ -156,6 +158,12 @@ def moves(seg, swim=False):
                 e.append((at + 2 + j, 0x82))
             name = f"jump{j}@{at}" if at + 2 + j < seg else f"jump@{at}"
             m.setdefault(name, e)
+    # 8-4's pipes: the castle is passed through pipes, not along the
+    # floor (the loop-back checks there want y $F0, which standing Mario
+    # never has). Down held on a pipe's top takes him in; run first so the
+    # top can be reached inside the segment
+    for at in range(0, seg, 5):
+        m[f"down@{at}"] = [(0, 0x82), (at, 0x20)] if at else [(0, 0x20)]
     if swim:
         m.update({
             "swim10": taps(seg, 10, 0x80, 0x81),
@@ -196,13 +204,33 @@ class Worker:
         self.p.wait(timeout=10)
 
 
-def judge(rows, lives0):
+def check_page(world, x):
+    """the maze check a loop-back at raw x fired under: the first check page
+    past Mario's (the check fires at a screen column, so Mario's own page
+    at that moment is one of two: pages 14 and 15 under 8-4's page-16
+    check, measured 2026-10-20)"""
+    page = x // 256
+    return min((p for p, _ in CHECKS.get(world, ()) if p > page), default=page)
+
+
+def judge(rows, lives0, looped=()):
     """(alive, done, area, x, latch of death or None, held): held is the
     first state that was not 08 while the game ran, or 08 if Mario was
     his own throughout (the stall rule counts only those)."""
     x = area = 0
     held = 0x08
     prev = None
+    pipe_at = None   # (x, area pointer) where a pipe was entered: a pipe that
+                     # sets Mario back more than a page in the same area ($074F, the loaded area's offset: $0750 is already the destination at the entry,
+                     # not the level's area number, which the water section of
+                     # 8-4 shares) is a trap (8-4's wrong pipes all lead to page
+                     # 1), a death; 7-2's exit pipe set him back 138 dots, which
+                     # is not (measured 2026-10-20)
+    xoff = 0   # 8-4's loop-backs: the game sends the page numbers back four
+               # pages but the world (the block buffer, the picture) stays
+               # under Mario, so he walks on in it and the pipe past the
+               # check's column still takes him (measured 2026-10-20);
+               # x is kept monotonic by adding the four pages back
     piped = 0   # a pipe taken counts above x: past 2-2's exit pipe Mario
                 # lands at a smaller x in the same area (measured 2026-10-18)
     level0 = tuple(rows[min(rows)][8:10]) if rows else None
@@ -221,10 +249,18 @@ def judge(rows, lives0):
         # to the start of the loop, x jumping from page 4 to $FF and then
         # 0 under his own control (4-4, measured 2026-10-19). Ranked by x,
         # the beam took $FF as the furthest yet. The wrong path is a death
-        if state == 0x08 and prev == 0x08 and abs(page * 256 + px - x) > 256:
-            return False, False, area, x, k, state
+        if state == 0x08 and prev == 0x08 and abs(page * 256 + px + xoff - x) > 256:
+            if world in UNCOND and page * 256 + px + xoff - x < -256 and check_page(world, x - xoff) not in looped:
+                # once per check: the same check firing again means the
+                # section's exit (a pipe before its column) was missed,
+                # and the beam would circle it for ever (8-4's page 11,
+                # four loops, measured 2026-10-20)
+                looped = tuple(looped) + (check_page(world, x - xoff),)
+                xoff += 1024
+            else:
+                return False, False, area, x, k, state
         prev = state if mode == 1 else None
-        x, area = page * 256 + px, ar
+        x, area = page * 256 + px + xoff, ar
         if mode == 2:
             # MEASURED 2026-10-18 on 1-4: the axe turns $0770 to 2 (the
             # bridge falls, Toad), and back to 1 at the next world
@@ -244,6 +280,10 @@ def judge(rows, lives0):
             held = state
         if state in (0x02, 0x03):
             piped = 0.5
+            if pipe_at is None:
+                pipe_at = (x, rows[k][11])
+        if state == 0x08 and pipe_at is not None and rows[k][11] == pipe_at[1] and x < pipe_at[0] - 256:
+            return False, False, area, x, k, state
     return True, False, area + piped, x, None, held
 
 
@@ -270,6 +310,8 @@ def main():
     global NO_CEILING
     NO_CEILING = a.no_ceiling
     checks = loop_checks(Path(a.rom).read_bytes())
+    UNCOND.update(w for w, c in checks.items() if all(y == 0xF0 for _, y in c))
+    CHECKS.update(checks)
     exe = Path(a.nes) / "target" / "release" / "examples" / "branch"
     if not exe.exists():
         sys.exit(f"build it first: cargo build --release -p nes-console --example branch (in {a.nes})")
@@ -298,13 +340,15 @@ def main():
         finally:
             pool.put(w)
 
-    resumed, pipes0 = [], 0
+    resumed, pipes0, loops0, looped0 = [], 0, 0, []
     if a.resume:
         # a beam state and the schedule that reached it (the .json beside
         # it): the search goes on from there, with no replay from power-on
         side = json.loads(Path(a.resume + ".json").read_text())
         a.first, lives0, resumed = side["t"], side["lives0"], [tuple(e) for e in side["chosen"]]
         pipes0 = side.get("pipes", 0)
+        loops0 = side.get("loops", 0)
+        looped0 = side.get("looped", [])
         s0 = tmp / f"s{a.first}.state"
         shutil.copy(a.resume, s0)
     else:
@@ -331,7 +375,7 @@ def main():
     def better(r):
         return (r[1], r[2], r[0], r[3] if r[0] else r[4] or 0, r[3])
 
-    def evaluate(state, t, entries):
+    def evaluate(state, t, entries, looped=()):
         end = t + a.seg + a.look
         outs, hit = [], -1
         for cont in continuations(t + a.seg):
@@ -357,7 +401,7 @@ def main():
             for r in rows.values():
                 if want is not None and r[1] == 0x08 and r[7] == 0 and r[10] == want and r[8:10] == rows[min(rows)][8:10]:
                     hit = max(hit, r[3] * 256 + r[4])
-            outs.append(judge(rows, lives0) + (cont,))
+            outs.append(judge(rows, lives0, looped) + (cont,))
         return max(outs, key=better) + (hit,)
 
     def ranked(state, t):
@@ -396,12 +440,12 @@ def main():
         # went in, and the beam stood at the pipe's mouth for twenty
         # segments (2026-10-19). Counted on the path, a pipe passed stays
         # passed.
-        beam = [dict(state=s0, chosen=resumed, pipes=pipes0, st=0x08)]
+        beam = [dict(state=s0, chosen=resumed, pipes=pipes0, loops=loops0, looped=looped0, st=0x08)]
         t, backs, done, chosen = a.first, 0, False, []
         while t < a.until and not done:
             jobs = [(i, n) for i in range(len(beam)) for n in mv]
             with ThreadPoolExecutor(a.jobs) as ex:
-                results = list(ex.map(lambda j: evaluate(beam[j[0]]["state"], t, [(t + o, b) for o, b in mv[j[1]]]), jobs))
+                results = list(ex.map(lambda j: evaluate(beam[j[0]]["state"], t, [(t + o, b) for o, b in mv[j[1]]], beam[j[0]]["looped"]), jobs))
             scored = [(j, r) for j, r in zip(jobs, results) if r[0]]
             if not scored:
                 sys.exit(f"latch {t}: the beam of {len(beam)} has no move that lives")
@@ -412,7 +456,7 @@ def main():
                 print(f"latch {t}: {n} (beam {i}) -> area {r[2]} x {r[3]} DONE", flush=True)
                 done = True
                 break
-            scored.sort(key=lambda jr: (jr[1][2] + beam[jr[0][0]]["pipes"], jr[1][3], -len(mv[jr[0][1]])), reverse=True)
+            scored.sort(key=lambda jr: (jr[1][2] + beam[jr[0][0]]["pipes"] + beam[jr[0][0]]["loops"], jr[1][3], -len(mv[jr[0][1]])), reverse=True)
             new, seen = [], set()
 
             def settle(c, name):
@@ -423,19 +467,26 @@ def main():
                 # entries into a pipe: Mario his own one latch, in a pipe
                 # the next (the last state carried over, so an entry on a
                 # segment's first latch counts too)
-                prev, entered = beam[i]["st"], 0
+                prev, entered, looped, px = beam[i]["st"], 0, list(beam[i]["looped"]), None
                 for k in sorted(rows):
                     entered += prev == 0x08 and rows[k][1] in (0x02, 0x03)
-                    prev = rows[k][1]
-                return nxt, rows[max(rows)], beam[i]["chosen"] + entries, beam[i]["pipes"] + entered
+                    # an unconditional loop-back on the played segment (8-4): a
+                    # page shift under Mario, counted as progress like a pipe,
+                    # and the page it fired at kept: once per check
+                    xk = rows[k][3] * 256 + rows[k][4]
+                    if prev == 0x08 and rows[k][1] == 0x08 and px is not None and xk - px < -256 and rows[k][9] in UNCOND:
+                        looped.append(check_page(rows[k][9], px))
+                    prev, px = rows[k][1], xk
+                return nxt, rows[max(rows)], beam[i]["chosen"] + entries, beam[i]["pipes"] + entered, looped
 
-            def take(nxt, last, chosen, pipes):
-                key = (pipes, last[6], (last[3] * 256 + last[4]) // 8, last[10] // 16)
-                if key in seen:
+            def take(nxt, last, chosen, pipes, looped):
+                loops = len(looped)
+                key = (pipes, loops, last[6], (last[3] * 256 + last[4]) // 8, last[10] // 16)
+                if key in seen or len(set(looped)) < loops:
                     return False
                 seen.add(key)
-                new.append(dict(state=nxt, chosen=chosen, pipes=pipes, st=last[1]))
-                Path(str(nxt) + ".json").write_text(json.dumps(dict(t=t + a.seg, lives0=lives0, chosen=chosen, pipes=pipes)))
+                new.append(dict(state=nxt, chosen=chosen, pipes=pipes, loops=loops, looped=looped, st=last[1]))
+                Path(str(nxt) + ".json").write_text(json.dumps(dict(t=t + a.seg, lives0=lives0, chosen=chosen, pipes=pipes, loops=loops, looped=looped)))
                 return True
 
             for c in scored[:a.beam * 6]:
@@ -459,19 +510,19 @@ def main():
                 # opening ledge (2026-10-19)
                 def high(s):
                     if loop_target(checks, s[1]) is not None:
-                        return (-s[3] - s[1][6], s[4] < 0, -s[4], -(s[1][3] * 256 + s[1][4]))
-                    return (-s[3] - s[1][6], s[1][7] != 0, s[1][10], -(s[1][3] * 256 + s[1][4]))
+                        return (-s[3] - len(s[4]) - s[1][6], s[5] < 0, -s[5], -(s[1][3] * 256 + s[1][4]))
+                    return (-s[3] - len(s[4]) - s[1][6], s[1][7] != 0, s[1][10], -(s[1][3] * 256 + s[1][4]))
                 rest.sort(key=high)
-                for nxt, last, chosen, pipes, _ in rest:
+                for nxt, last, chosen, pipes, looped, _ in rest:
                     if len(new) == a.beam:
                         break
-                    take(nxt, last, chosen, pipes)
+                    take(nxt, last, chosen, pipes, looped)
                 keep_files = {str(b["state"]) for b in new}
                 for nxt, *_ in rest:
                     if str(nxt) not in keep_files:
                         nxt.unlink(missing_ok=True)
             (i0, n0), r0 = scored[0]
-            print(f"latch {t}: beam {len(new)} kept of {len(scored)} alive; best {n0} -> area {r0[2]} x {r0[3]}, pipes {beam[i0]['pipes']}", flush=True)
+            print(f"latch {t}: beam {len(new)} kept of {len(scored)} alive; best {n0} -> area {r0[2]} x {r0[3]}, pipes {beam[i0]['pipes']}, loops {beam[i0]['loops']}", flush=True)
             beam = new
             t += a.seg
     else:
